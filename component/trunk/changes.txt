@@ -41,3 +41,7 @@
 2004-10-19
 * Bugfix: I don't know why I added the GeZero check in TdzCustomXYChart.DrawLine in the first
   place, it was wrong...
+
+2005-03-27
+* moved repository to berlios file history is lost
+* Added support for Delphi 2005
