@@ -1,0 +1,1 @@
+I can no longer support 16 bit code so if you use charts with D1 you will need to create your own icon in charts.D16 and the old keyword file won't match the newer help. BTW I haven't added help for the pie chart yet that'll come later.
