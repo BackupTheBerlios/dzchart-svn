@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{EE95A50B-0DEA-45BD-91B3-EB52DAE81870}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
+      <Projects Name="dummzeuchchartd9.bpl">dummzeuchchartd9.bdsproj</Projects>
+      <Projects Name="dcldummzeuchchartd9.bpl">dcldummzeuchchartd9.bdsproj</Projects>
+      <Projects Name="ChartTest.exe">test-d9\ChartTest.bdsproj</Projects>
+      <Projects Name="Targets">dummzeuchchartd9.bpl dcldummzeuchchartd9.bpl ChartTest.exe</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>

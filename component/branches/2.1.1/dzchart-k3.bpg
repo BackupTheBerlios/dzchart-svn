@@ -1,0 +1,25 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.02.5
+#------------------------------------------------------------------------------
+ifndef ROOT
+ROOT = /usr/local/kylix3
+endif
+#------------------------------------------------------------------------------
+MAKE = make -$(MAKEFLAGS) -f$**
+DCC =dcc $<
+#------------------------------------------------------------------------------
+PROJECTS = bpldummzeuchchartk3.so bpldcldummzeuchchartk3.so ChartTest
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+bpldummzeuchchartk3.so: dummzeuchchartk3.dpk
+	$(DCC)
+
+bpldcldummzeuchchartk3.so: dcldummzeuchchartk3.dpk
+	$(DCC)
+
+ChartTest: test-k3/ChartTest.dpr
+	$(DCC)
+
+

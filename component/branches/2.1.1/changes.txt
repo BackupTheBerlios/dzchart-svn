@@ -1,0 +1,47 @@
+2004-08-10 -- changelog started
+* removed TdzCanvas.Rectangle again since it just didn't help, now the rectangle point markers are adjusted to be centered.
+* renamed TdzPointDataseries.BarColor and TdzMultiValueDataSeries.BarColor to FillColor to match the interface
+* removed unused TdzLegend.fLineDescriptions field and AddLineDescription property (which shouldn't have been published anyway.
+* DataSeries without a caption are now ignored in the legend.
+* SelectClipRgn was called twice in TdzCustomXYCharts.DrawDataPoints, removed duplicate
+* TdzCustomChart.Grid is now a subcomponent describing the grid's appearance rather than just a TGridType
+* Bugfix: TextWidth for vertically drawn text is now calculated with the correct font.
+* Bugfix: IdzDataSeries.GetMinMax is now a function that returns false if there are no values, so 0 is no longer the default if there are no values
+
+2004-08-20
+* Bugfix: alternating lines did not work correctly with non infinite points outside the chart area
+* Bugfix: property editor for polynom data series raised access violation in Delphi 7
+
+2004-08-21
+* Updated u_dzQWindows to latest CVS version from JVCL
+
+2004-08-28
+* changed line breaks in readme
+* added instructions on how to generate pasdoc documentation
+* added point styles psHorizontalLine and psVerticalLine (to mark points in multiline data series)
+* in the legend the meaning of psHorizontalLine and psVerticalLine are reversed
+
+2004-08-29
+* made the DataSeries parameter of TdzXYChart.AddDataSeries non const to fix reference counting
+* adjusted the width of candle charts
+* started support for logarithmic scales (disabled for now)
+* changed clip region for drawing data series to full chart rect
+* added Canvas.Start/Stop for clipping to work on Linux
+
+2004-08-30
+* removed TdzChartGrid.Tag property by declaring a nil property editor for it
+* copied test code from Kylix example to Delphi example.
+* Bugfix: changing the order of a polynomial data series in the property editor did noch add/remove input fields.
+
+2004-10-04
+* Bugfix: Legend-Title should now be stored, no matter what content.
+* Bugfix: Polyline did not draw horizontal/vertical lines, replaced by MoveTo/LineTo (again),
+  hope this still works with Kylix.
+
+2004-10-19
+* Bugfix: I don't know why I added the GeZero check in TdzCustomXYChart.DrawLine in the first
+  place, it was wrong...
+
+2005-03-27
+* moved repository to berlios file history is lost
+* Added support for Delphi 2005

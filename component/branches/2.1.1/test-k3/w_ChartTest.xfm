@@ -1,0 +1,248 @@
+object f_ChartTest: Tf_ChartTest
+  Left = 461
+  Top = 216
+  Width = 572
+  Height = 573
+  HorzScrollBar.Range = 179
+  VertScrollBar.Range = 25
+  ActiveControl = Button1
+  Caption = 'Chart Test'
+  Color = clButton
+  Constraints.MinHeight = 50
+  Font.Color = clText
+  Font.Height = 11
+  Font.Name = 'MS Sans Serif'
+  Font.Pitch = fpVariable
+  Font.Style = []
+  ParentFont = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 18
+  TextWidth = 5
+  object XYChart: TdzXYChart
+    Left = 0
+    Top = 0
+    Width = 572
+    Height = 573
+    OnGetPointHint = XYChartGetPointHint
+    Align = alClient
+    BackGround = clWhite
+    Grid.GridType = gtBoth
+    Grid.Color = clSilver
+    Grid.LineStyle = psDot
+    ChartTitle.Title = 'dummzeuch.de Chart'
+    ChartTitle.TitleFont.Color = clRed
+    ChartTitle.TitleFont.Height = 15
+    ChartTitle.TitleFont.Name = 'arial'
+    ChartTitle.TitleFont.Pitch = fpVariable
+    ChartTitle.TitleFont.Style = [fsBold]
+    BottomAxis.Title = 'Zeit'
+    BottomAxis.TitleFont.Color = clText
+    BottomAxis.TitleFont.Height = 13
+    BottomAxis.TitleFont.Name = 'Arial'
+    BottomAxis.TitleFont.Pitch = fpVariable
+    BottomAxis.TitleFont.Style = [fsBold]
+    BottomAxis.LabelFont.Color = clText
+    BottomAxis.LabelFont.Height = 11
+    BottomAxis.LabelFont.Name = 'arial'
+    BottomAxis.LabelFont.Pitch = fpVariable
+    BottomAxis.LabelFont.Style = []
+    BottomAxis.LabelOrientation = loVertical
+    BottomAxis.OnFormatLabel = XYChart1FormatXAxisLabel
+    BottomAxis.Scale.Automatic = True
+    BottomAxis.Scale.Min = -10.000000000000000000
+    BottomAxis.Scale.Max = 10.000000000000000000
+    BottomAxis.Scale.Divisions = 10.000000000000000000
+    BottomAxis.Scale.ScaleType = stLinear
+    LeftAxis.Title = 'Value'
+    LeftAxis.TitleFont.Color = clText
+    LeftAxis.TitleFont.Height = 13
+    LeftAxis.TitleFont.Name = 'Arial'
+    LeftAxis.TitleFont.Pitch = fpVariable
+    LeftAxis.TitleFont.Style = [fsBold]
+    LeftAxis.LabelFont.Color = clText
+    LeftAxis.LabelFont.Height = 11
+    LeftAxis.LabelFont.Name = 'MS Sans Serif'
+    LeftAxis.LabelFont.Pitch = fpVariable
+    LeftAxis.LabelFont.Style = []
+    LeftAxis.LabelOrientation = loHorizontal
+    LeftAxis.Scale.Automatic = True
+    LeftAxis.Scale.Max = 100.000000000000000000
+    LeftAxis.Scale.Divisions = 10.000000000000000000
+    LeftAxis.Scale.ScaleType = stLinear
+    Legend.LegendFont.Color = clText
+    Legend.LegendFont.Height = 11
+    Legend.LegendFont.Name = 'Arial'
+    Legend.LegendFont.Pitch = fpVariable
+    Legend.LegendFont.Style = []
+    Legend.Position = lpBottom
+    Legend.Frame.Color = clBlack
+    Legend.Frame.Width = 1
+    Legend.Frame.Rounded = False
+    Legend.BackGround = clWhite
+    Legend.Title = 'Legend'
+    Legend.TitleFont.Color = clText
+    Legend.TitleFont.Height = 11
+    Legend.TitleFont.Name = 'Arial'
+    Legend.TitleFont.Pitch = fpVariable
+    Legend.TitleFont.Style = [fsBold]
+    Legend.Columns = 3
+    ChartFrame.Color = clBlack
+    ChartFrame.Width = 1
+    ChartFrame.Rounded = False
+  end
+  object Button1: TButton
+    Left = 104
+    Top = 0
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object pd_squared2: TdzPolynomialDataseries
+    ChartType = ctScatter
+    MinX = -1.000000000000000000
+    MaxX = 1.000000000000000000
+    PointCount = 11
+    LineColor = clRed
+    LineStyle = psSolid
+    ForceLineColor = False
+    PointColor = clRed
+    PointStyle = psRectangle
+    FillColor = clBlack
+    Caption = 'y = x'#178' + x + 10'
+    Chart = XYChart
+    Polynom.Order = 2
+    Polynom.Coefficients = (
+      10.000000000000000000
+      1.000000000000000000
+      1.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000)
+    Left = 264
+    Top = 312
+  end
+  object pd_Cubic: TdzPolynomialDataseries
+    ChartType = ctXY
+    MinX = -1.000000000000000000
+    MaxX = 1.000000000000000000
+    PointCount = 11
+    LineColor = clTeal
+    LineStyle = psSolid
+    ForceLineColor = False
+    PointColor = clTeal
+    PointStyle = psUpArrow
+    FillColor = clPurple
+    Caption = 'y = x'#179' + x'#178' + x + 10'
+    Chart = XYChart
+    Polynom.Order = 3
+    Polynom.Coefficients = (
+      10.000000000000000000
+      1.000000000000000000
+      1.000000000000000000
+      1.000000000000000000
+      1.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000)
+    Left = 200
+    Top = 208
+  end
+  object pd_Squared1: TdzPolynomialDataseries
+    ChartType = ctXY
+    MinX = -10.000000000000000000
+    MaxX = 10.000000000000000000
+    PointCount = 100
+    LineColor = clGreen
+    LineStyle = psSolid
+    ForceLineColor = False
+    PointColor = clGreen
+    PointStyle = psNone
+    FillColor = clBlack
+    Caption = 'y = x'#178' + x'
+    Chart = XYChart
+    Polynom.Order = 2
+    Polynom.Coefficients = (
+      0.000000000000000000
+      0.000000000000000000
+      1.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000)
+    Left = 272
+    Top = 256
+  end
+  object pd_Squared4: TdzPolynomialDataseries
+    ChartType = ctBar
+    MinX = -1.000000000000000000
+    MaxX = 1.000000000000000000
+    PointCount = 11
+    LineColor = clFuchsia
+    LineStyle = psSolid
+    ForceLineColor = False
+    PointColor = clFuchsia
+    PointStyle = psCircle
+    FillColor = clNone
+    Caption = 'y = 2x'#178' + 1'
+    Chart = XYChart
+    Polynom.Order = 2
+    Polynom.Coefficients = (
+      1.000000000000000000
+      0.000000000000000000
+      2.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000)
+    Left = 312
+    Top = 360
+  end
+  object pd_Sqared3: TdzPolynomialDataseries
+    ChartType = ctXY
+    MinX = -1.000000000000000000
+    MaxX = 1.000000000000000000
+    PointCount = 11
+    LineColor = clOlive
+    LineStyle = psSolid
+    ForceLineColor = False
+    PointColor = clOlive
+    PointStyle = psDownArrow
+    FillColor = clRed
+    Caption = 'y = x'#178
+    Chart = XYChart
+    Polynom.Order = 2
+    Polynom.Coefficients = (
+      0.000000000000000000
+      0.000000000000000000
+      1.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000
+      0.000000000000000000)
+    Left = 192
+    Top = 360
+  end
+end

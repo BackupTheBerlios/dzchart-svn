@@ -1,0 +1,5 @@
+#!/bin/sh
+# pasdoc is from pasdoc.sourceforge.net
+
+mkdir docs
+utils/pasdoc --marker=: --output=docs *.pas
