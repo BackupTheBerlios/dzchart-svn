@@ -17,6 +17,13 @@ uses
   u_dzGraphics;
 
 type
+{$ifdef linux}
+  GraphicsString = WideString;
+{$else}
+  GraphicsString = String;
+{$endif}
+
+type
   TdzSvgWriter = class
   private
     FBrush: TBrush;
@@ -55,23 +62,18 @@ type
     procedure Lock;
     procedure Pie(X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer); overload;
 //    procedure Pie(X, Y, W, H, Angle, AngleLength: Integer); overload;
-{$ifdef linux}
-    procedure Polygon(const _Points: array of TPoint; _Winding: Boolean = False;
-      _StartIndex: Integer = 0; _NumPts: Integer = -1);
-{$else}
     procedure Polygon(const _Points: array of TPoint);
-{$endif}
     procedure Rectangle(const Rect: TRect); overload;
     procedure Rectangle(_X1, _Y1, _X2, _Y2: Integer); overload;
     procedure RoundRect(X1, Y1, X2, Y2, X3, Y3: Integer);
     procedure SetClipRgn(_Rgn: hRgn);
     procedure Start(FreshState: Boolean = True);
     procedure Stop;
-    function TextHeight(const Text: String): Integer;
-    procedure TextOut(_x, _y: Integer; const _Text: String);
-    procedure TextOutAngle(_Angle, _x, _y: integer; const _Text: string);
-    function TextWidth(const Text: String): Integer;
-    function TextWidthAngle(_Angle: integer; const _Text: string): integer;
+    function TextHeight(const _Text: GraphicsString): Integer;
+    procedure TextOut(_x, _y: Integer; const _Text: GraphicsString);
+    procedure TextOutAngle(_Angle, _x, _y: integer; const _Text: GraphicsString);
+    function TextWidth(const _Text: GraphicsString): Integer;
+    function TextWidthAngle(_Angle: integer; const _Text: GraphicsString): integer;
     procedure Unlock;
 
     property Brush: TBrush read GetBrush write SetBrush;
@@ -84,6 +86,7 @@ type
   TdzSvgCanvas = class(TInterfacedObject, IdzCanvas)
   protected
     FWriter: TdzSvgWriter;
+    procedure DrawPolygon(const _Points: array of TPoint);
     property Writer: TdzSvgWriter read FWriter implements IdzCanvas;
   public
     constructor Create(_Writer: TdzSvgWriter);
@@ -123,23 +126,20 @@ type
 
 implementation
 
-type
-  TTextOutAngle = procedure(_Canvas: TCanvas; _Angle, _x, _y: integer; const _Text: string);
-
+procedure DrawTextAngle(_Canvas: TCanvas; _Angle, _x, _y: integer; const _Text: string);
 
 {$IFDEF MSWINDOWS}
-procedure SetFontRotation(_Font: TFont; _Angle: integer);
-var
-  lf: TLogFont;
-begin
-  GetObject(_Font.Handle, SizeOf(lf), @lf);
-  lf.lfEscapement := _Angle;
-  lf.lfOrientation := _Angle;
-  lf.lfOutPrecision := OUT_TT_ONLY_PRECIS;
-  _Font.Handle := CreateFontIndirect(lf);
-end;
+  procedure SetFontRotation(_Font: TFont; _Angle: integer);
+  var
+    lf: TLogFont;
+  begin
+    GetObject(_Font.Handle, SizeOf(lf), @lf);
+    lf.lfEscapement := _Angle;
+    lf.lfOrientation := _Angle;
+    lf.lfOutPrecision := OUT_TT_ONLY_PRECIS;
+    _Font.Handle := CreateFontIndirect(lf);
+  end;
 
-procedure TextOutAngle(_Canvas: TCanvas; _Angle, _x, _y: integer; const _Text: string);
 var
   OrigFont: TFont;
 begin
@@ -152,11 +152,11 @@ begin
     _Canvas.Font.Assign(OrigFont);
     OrigFont.Free;
   end;
-end;
+{$else}
+begin
+  TextOutAngle(_Canvas.Handle, _Angle, _x, _y, _Text);
 {$endif}
-const
-  doTextOutAngle: TTextOutAngle = TextOutAngle;
-
+end;
 
 { TdzSvgWriter }
 
@@ -285,7 +285,7 @@ begin
   FBrushChanged := true;
 end;
 
-procedure TdzSvgWriter.TextOut(_x, _y: integer; const _Text: String);
+procedure TdzSvgWriter.TextOut(_x, _y: integer; const _Text: GraphicsString);
 begin
   if Assigned(Shadow) then begin
     Shadow.Pen := Pen;
@@ -453,28 +453,28 @@ begin
   // do nothing
 end;
 
-function TdzSvgWriter.TextHeight(const Text: String): Integer;
+function TdzSvgWriter.TextHeight(const _Text: GraphicsString): Integer;
 begin
   Result := FFont.Height;
 end;
 
-procedure TdzSvgWriter.TextOutAngle(_Angle, _x, _y: integer; const _Text: string);
+procedure TdzSvgWriter.TextOutAngle(_Angle, _x, _y: integer; const _Text: Graphicsstring);
 begin
   if Assigned(Shadow) then begin
     Shadow.Font := Font;
-    doTextOutAngle(Shadow, _Angle, _x, _y, _Text);
+    DrawTextAngle(Shadow, _Angle, _x, _y, _Text);
 
   end;
   FContent.Add(Format('<text style="%s" x="%d" y="%d" transform="rotate(-%d %d %d)">%s</text>',
     [FontSettings, _x, _y + Font.Height, _Angle, _x, _y, _Text]));
 end;
 
-function TdzSvgWriter.TextWidth(const Text: String): Integer;
+function TdzSvgWriter.TextWidth(const _Text: GraphicsString): Integer;
 begin
-  Result := Length(Text) * FFont.Size;
+  Result := Length(_Text) * FFont.Size;
 end;
 
-function TdzSvgWriter.TextWidthAngle(_Angle: integer; const _Text: string): integer;
+function TdzSvgWriter.TextWidthAngle(_Angle: integer; const _Text: Graphicsstring): integer;
 begin
   Result := Length(_Text) * FFont.Size;
 end;
@@ -552,6 +552,11 @@ constructor TdzSvgCanvas.Create(_Writer: TdzSvgWriter);
 begin
   inherited Create;
   FWriter := _Writer;
+end;
+
+procedure TdzSvgCanvas.DrawPolygon(const _Points: array of TPoint);
+begin
+  FWriter.Polygon(_Points);
 end;
 
 end.

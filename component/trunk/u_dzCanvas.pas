@@ -14,6 +14,13 @@ uses
 {$endif}
 
 type
+{$ifdef linux}
+  GraphicsString = WideString;
+{$else}
+  GraphicsString = String;
+{$endif}
+
+type
   IdzCanvas = interface ['{F824149C-03A9-D911-8B90-000854097AB5}']
     function GetBrush: TBrush;
     procedure SetBrush(const _Brush: TBrush);
@@ -30,18 +37,18 @@ type
     procedure Lock;
     procedure Pie(X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer); overload;
 //    procedure Pie(X, Y, W, H, Angle, AngleLength: Integer); overload;
-    procedure Polygon(const Points: array of TPoint);
+    procedure DrawPolygon(const Points: array of TPoint);
     procedure Rectangle(const Rect: TRect); overload;
     procedure Rectangle(X1, Y1, X2, Y2: Integer); overload;
     procedure RoundRect(X1, Y1, X2, Y2, X3, Y3: Integer);
     procedure SetClipRgn(_Rgn: hRgn);
     procedure Start(FreshState: Boolean = True);
     procedure Stop;
-    function TextHeight(const Text: String): Integer;
-    procedure TextOut(X, Y: Integer; const Text: String);
-    procedure TextOutAngle(_Angle, _x, _y: integer; const _Text: string);
-    function TextWidth(const Text: String): Integer;
-    function TextWidthAngle(_Angle: integer; const _Text: string): integer;
+    function TextHeight(const Text: GraphicsString): Integer;
+    procedure TextOut(X, Y: Integer; const Text: GraphicsString);
+    procedure TextOutAngle(_Angle, _x, _y: integer; const _Text: GraphicsString);
+    function TextWidth(const Text: GraphicsString): Integer;
+    function TextWidthAngle(_Angle: integer; const _Text: GraphicsString): integer;
     procedure Unlock;
 
     property Font: TFont read GetFont write SetFont;
@@ -54,7 +61,7 @@ type
   private
     FCanvas: TCanvas;
 
-    procedure Polygon(const Points: array of TPoint);
+    procedure DrawPolygon(const Points: array of TPoint);
 
     property Canvas: TCanvas read FCanvas implements IdzCanvas;
 
@@ -67,13 +74,13 @@ type
 
   protected
 {$IFDEF mswindows}
-    procedure DrawPoint(_X, _Y: integer);
     procedure Start(FreshState: Boolean = True);
     procedure Stop;
 {$ENDIF}
+    procedure DrawPoint(_X, _Y: integer);
     procedure SetClipRgn(_Rgn: hRgn);
-    function TextWidthAngle(_Angle: integer; const _Text: string): integer;
-    procedure TextOutAngle(_Angle, _x, _y: integer; const _Text: string);
+    function TextWidthAngle(_Angle: integer; const _Text: GraphicsString): integer;
+    procedure TextOutAngle(_Angle, _x, _y: integer; const _Text: GraphicsString);
     procedure Line(_x1, _y1, _x2, _y2: integer);
   public
     constructor Create(_Canvas: TCanvas);
@@ -104,7 +111,7 @@ begin
 end;
 {$ENDIF}
 
-procedure TdzCanvas.TextOutAngle(_Angle, _x, _y: integer; const _Text: string);
+procedure TdzCanvas.TextOutAngle(_Angle, _x, _y: integer; const _Text: GraphicsString);
 {$IFDEF MSWINDOWS}
 var
   OrigFont: TFont;
@@ -124,7 +131,7 @@ begin
 {$ENDIF}
 end;
 
-function TdzCanvas.TextWidthAngle(_Angle: integer; const _Text: string): integer;
+function TdzCanvas.TextWidthAngle(_Angle: integer; const _Text: GraphicsString): integer;
 {$IFDEF MSWINDOWS}
 var
   OrigFont: TFont;
@@ -144,19 +151,20 @@ begin
 {$ENDIF}
 end;
 
-{$IFDEF MSWINDOWS}
-
 procedure TdzCanvas.DrawPoint(_X, _Y: integer);
 begin
+{$IFDEF linux}
+  Canvas.DrawPoint(_x, _y);
+{$else}
   // There is now DrawPoint method in VCL
   // LineTo does not draw the last point, so we
   // simulate DrawPoint by moving to the correct coordinates and
   // drawing a line to the adjacent pixel
   Canvas.MoveTo(_X, _Y);
   Canvas.LineTo(_X + 1, _Y);
+{$ENDIF linux}
 end;
 
-{$ENDIF MSWINDOWS}
 
 procedure TdzCanvas.Line(_x1, _y1, _x2, _y2: integer);
 begin
@@ -214,7 +222,7 @@ end;
 
 {$endif}
 
-procedure TdzCanvas.Polygon(const Points: array of TPoint);
+procedure TdzCanvas.DrawPolygon(const Points: array of TPoint);
 begin
   Canvas.Polygon(Points);
 end;

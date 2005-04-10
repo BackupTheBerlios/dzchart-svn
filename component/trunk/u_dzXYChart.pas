@@ -1118,14 +1118,14 @@ begin
       end;
     psTriangle:
       begin
-        Cnvs.Polygon([Point(_AbsX, _AbsY - round(e)),
+        Cnvs.DrawPolygon([Point(_AbsX, _AbsY - round(e)),
           Point(_AbsX - Round(a / 2), _AbsY + round(d)),
             Point(_AbsX + Round(a / 2), _AbsY + round(d)),
             Point(_AbsX, _AbsY - round(e))]);
       end;
     psDownTriangle:
       begin
-        Cnvs.Polygon([Point(_AbsX, _AbsY + round(e)),
+        Cnvs.DrawPolygon([Point(_AbsX, _AbsY + round(e)),
           Point(_AbsX + Round(a / 2), _AbsY - round(d)),
             Point(_AbsX - Round(a / 2), _AbsY - round(d)),
             Point(_AbsX, _AbsY + round(e))]);
@@ -1149,7 +1149,7 @@ begin
       end;
     psDiamond:
       begin
-        Cnvs.Polygon([
+        Cnvs.DrawPolygon([
           Point(_AbsX, _AbsY + 4),
             Point(_AbsX + 4, _AbsY),
             Point(_AbsX, _AbsY - 4),
@@ -1160,7 +1160,7 @@ begin
       Cnvs.Ellipse(_AbsX - 1, _AbsY - 1, _AbsX + 2, _AbsY + 2);
     psDownArrow:
       begin
-        Cnvs.Polygon([
+        Cnvs.DrawPolygon([
           Point(_AbsX, _AbsY),
             Point(_AbsX - ARROW_WIDTH, _AbsY - ARROW_WIDTH),
             Point(_AbsX - 1, _AbsY - ARROW_WIDTH),
@@ -1172,7 +1172,7 @@ begin
       end;
     psUpArrow:
       begin
-        Cnvs.Polygon([
+        Cnvs.DrawPolygon([
           Point(_AbsX, _AbsY),
             Point(_AbsX - ARROW_WIDTH, _AbsY + ARROW_WIDTH),
             Point(_AbsX - 1, _AbsY + ARROW_WIDTH),
