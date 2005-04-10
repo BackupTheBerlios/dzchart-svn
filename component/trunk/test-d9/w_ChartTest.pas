@@ -44,7 +44,9 @@ implementation
 {$R *.dfm}
 
 uses
-  Math;
+  Math,
+  u_dzGraphics,
+  u_dzSvgOutput;
 
 procedure Tf_ChartTest.FormCreate(Sender: TObject);
 label
@@ -151,7 +153,14 @@ end;
 procedure Tf_ChartTest.Button1Click(Sender: TObject);
 var
   wmf: TMetafile;
+var
+  svg: IdzGraphics;
 begin
+  svg := TdzSvgGraphics.Create;
+  XYChart.PaintTo(svg);
+  (svg as IdzSvgGraphics).WriteToFile('c:\dzcharttext.svg');
+
+  exit;
   if XYChart.BottomAxis.LabelOrientation = loVertical then
     XYChart.BottomAxis.LabelOrientation := loHorizontal
   else
