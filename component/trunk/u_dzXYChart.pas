@@ -69,7 +69,9 @@ uses
   QStdCtrls,
 {$ENDIF LINUX}
   u_dzDataSeries,
-  u_dzCustomCharts;
+  u_dzCustomCharts,
+  u_dzCanvas,
+  u_dzGraphics;
 
 type
   EInvalidDataSeries = class(EdzCharts);
@@ -214,7 +216,7 @@ type
        @param(Min is the minimum value of the axis as determined by the chart component)
        @param(Max is the maximum value of the axis as determined by the chart component)
        @param(Canvas is the canvas used to draw the axis) }
-    procedure InitDefaultLabels(_Size: integer; const _Min, _Max: double; _Canvas: TdzCanvas);
+    procedure InitDefaultLabels(_Size: integer; const _Min, _Max: double; const _Canvas: IdzCanvas);
     {: Calls the OnGetNextLabel event if assigned, otherwise uses the values of
        the Scale subcomponent to calculate the axis labels.
        @param(Idx is the label index, starting with 0 and incremented by 1 after
@@ -229,7 +231,7 @@ type
     function FormatLabel(const _Value: double): string;
     {: Calculates the space in pixels needed for drawing the axis' labels
        @param(Canvas is the canvas used to calculate the space) }
-    function CalcLabelingSpace(_Canvas: TdzCanvas): integer; virtual;
+    function CalcLabelingSpace(const _Canvas: IdzCanvas): integer; virtual;
 
     {: @name is a sub component @link(TdzAxisScale) describing how the axis is to be scaled }
     property Scale: TdzAxisScale read fScale;
@@ -393,7 +395,7 @@ type
     {: @name stores the OnGetPointHint event }
     FOnGetPointHint: TOnGetPointHint;
     {: @name calculates the width of the bars in a bar chart }
-    function CalcBarWidth: integer;
+    function CalcBarWidth(const _Target: IdzGraphics): integer;
     {: @name gets the maximum point count for all data series }
     function GetDataSeriesMaxPointCount: integer;
     {: @name draws a single point in a XY or Scatter chart
@@ -403,21 +405,21 @@ type
        @param(ForLegend is a boolean determining whether the point is drawn for
               the legend or for the actual chart. This will switch the meaning of
               psHorizontalLine and psVerticalLine for the legend. }
-    procedure DrawPoint(const _Series: IdzDataSeries; _AbsX, _AbsY: integer; _ForLegend: boolean = false);
+    procedure DrawPoint(const _Target: IdzGraphics; const _Series: IdzDataSeries; _AbsX, _AbsY: integer; _ForLegend: boolean = false);
     {: @name draws a line between the given coordnates for a XY or line chart
        @param(Series is the data series for this line)
        @param(X1 is the X coordinate of the starting point in pixels (after scaling)
        @param(Y1 is the Y coordinate of the starting point in pixels (after scaling)
        @param(X2 is the X coordinate of the end point in pixels (after scaling)
        @param(Y2 is the Y coordinate of the end point in pixels (after scaling) }
-    procedure DrawLine(const _Series: IdzDataSeries; _X1, _Y1, _X2, _Y2: integer);
+    procedure DrawLine(const _Target: IdzGraphics; const _Series: IdzDataSeries; _X1, _Y1, _X2, _Y2: integer);
     {: @name calculates space for the chart's area by first calling the inherited method and
        then substracting the space for the legend and the axis descriptions. }
-    function CalcChartRect: TRect; override;
+    function CalcChartRect(const _Target: IdzGraphics): TRect; override;
     {: @name calculates space for the chart's drawing area (used for values) }
-    function CalcDrawRect: TRect;
+    function CalcDrawRect(const _Target: IdzGraphics): TRect;
     {: @name calculates the space used for the chart's legend }
-    function CalcLegendRect(var _ChartRect: TRect): TRect;
+    function CalcLegendRect(const _Target: IdzGraphics; var _ChartRect: TRect): TRect;
     {: @name scales the chart to the available drawing space }
     procedure ScaleChart; override;
     {: @name transform point's data to chart dimension for a given axis
@@ -429,32 +431,32 @@ type
     function NormalizePt(const _Point, _Min, _Max: double; _Size: integer): double;
     {: @name transforms X-axis data to chart dimensions
        @param(Point is the X-axis position of a point) }
-    function NormalizePtX(const _Point: Double): Double;
+    function NormalizePtX(const _Target: IdzGraphics; const _Point: Double): Double;
     {: @name transforms Y-axis data to chart dimensions
        @param(Point is the Y-axis position of a point) }
-    function NormalizePtY(const _Point: Double): Double;
+    function NormalizePtY(const _Target: IdzGraphics; const _Point: Double): Double;
     {: @name draws the grid at the label positions of both axis
        @param(Rect is the space used for the grid) }
-    procedure DrawGrid(_Rect: TRect); override;
+    procedure DrawGrid(const _Target: IdzGraphics; _Rect: TRect); override;
     {: @name drawas the chart's bottom scale including ticks and labels }
-    procedure DrawBottomScale; override;
+    procedure DrawBottomScale(const _Target: IdzGraphics); override;
     {: @name drawas the chart's left scale including ticks and labels }
-    procedure DrawLeftScale; override;
+    procedure DrawLeftScale(const _Target: IdzGraphics); override;
     {: @name draws the chart's data points, lines and bars }
-    procedure DrawDataPoints; override;
+    procedure DrawDataPoints(const _Target: IdzGraphics); override;
     {: @name draws the frame items of the chart, that is the title, the legend and the
        axis scales }
-    procedure DrawFrameItems; override;
+    procedure DrawFrameItems(const _Target: IdzGraphics); override;
     {: @name draws a legend entry for a data series
        @param(Canvas is the canvas used for drawing)
        @param(Series is the data series for which to draw the legend entry)
        @param(X is the X coordinate in pixels of the entry)
        @param(Y is the Y coordinate in pixels of the entry) }
-    procedure DrawLegendEntry(const _Series: IdzDataSeries; _X, _Y: integer);
+    procedure DrawLegendEntry(const _Target: IdzGraphics; const _Series: IdzDataSeries; _X, _Y: integer);
     {: @name draws the chart's legend
        @param(Canvas is the canvas used for drawing)
        @param(LegendRect is the space for the legend) }
-    procedure DrawLegend(_LegendRect: TRect);
+    procedure DrawLegend(const _Target: IdzGraphics; _LegendRect: TRect);
     {: @name overrides the inherited method to conditionally display point hints
        @param(Shift describes the special keys pressed)
        @param(X is the X coordinate in pixels of the mouse pointer)
@@ -582,9 +584,9 @@ begin
   inherited Destroy;
 end;
 
-function TdzCustomXYChart.CalcLegendRect(var _ChartRect: TRect): TRect;
+function TdzCustomXYChart.CalcLegendRect(const _Target: IdzGraphics; var _ChartRect: TRect): TRect;
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
 
   function CalcLongestSeriesText: integer;
   var
@@ -619,7 +621,7 @@ begin
       exit;
     end;
 
-  Cnvs := fOffscreen.Canvas;
+  Cnvs := _Target.Canvas;
   if fLegend.Title <> '' then
     begin
       Cnvs.Font := fLegend.TitleFont;
@@ -674,18 +676,18 @@ begin
   end;
 end;
 
-function TdzCustomXYChart.CalcChartRect: TRect;
+function TdzCustomXYChart.CalcChartRect(const _Target: IdzGraphics): TRect;
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   LegendRect: TRect;
 begin
-  Result := inherited CalcChartRect;
+  Result := inherited CalcChartRect(_Target);
 
   // in addition leave some space for the Axis labels and the legend
 
-  LegendRect := CalcLegendRect(Result);
+  LegendRect := CalcLegendRect(_Target, Result);
 
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
 
   // leave 1.5 times the axis caption height for the axis captions
   fLeftAxis.InitDefaultLabels(0, MinY, MaxY, Cnvs);
@@ -697,9 +699,9 @@ end;
 
 { CalcDrawRect - get area for drawing }
 
-function TdzCustomXYChart.CalcDrawRect: TRect;
+function TdzCustomXYChart.CalcDrawRect(const _Target: IdzGraphics): TRect;
 begin
-  Result := CalcChartRect;
+  Result := CalcChartRect(_Target);
   { offset inwards 3 and 4 percent }
   Result.Left := Result.Left + ((4 * Width) div 100);
   Result.Top := Result.Top + ((3 * Width) div 100);
@@ -723,14 +725,14 @@ end;
 
 { GetBarWidth - get width of bars for bar chart }
 
-function TdzCustomXYChart.CalcBarWidth: integer;
+function TdzCustomXYChart.CalcBarWidth(const _Target: IdzGraphics): integer;
 const
   MaxBarWidth: integer = 15;
 var
   DrawRect: TRect;
   PointCount: integer;
 begin
-  DrawRect := CalcDrawRect;
+  DrawRect := CalcDrawRect(_Target);
   PointCount := GetDataSeriesMaxPointCount;
   if PointCount > 0 then
     Result := (((DrawRect.Right - DrawRect.Left) div PointCount) div 2)
@@ -845,9 +847,9 @@ end;
 
 { procedure to draw grids if desired }
 
-procedure TdzCustomXYChart.DrawGrid(_Rect: TRect);
+procedure TdzCustomXYChart.DrawGrid(const _Target: IdzGraphics; _Rect: TRect);
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   GraphWd: integer;
   GraphHt: integer;
   RangeX: double;
@@ -877,9 +879,9 @@ var
 begin
   if FGrid.GridType = gtNone then
     Exit;
-  DrawRect := CalcDrawRect;
-  ChartRect := CalcChartRect;
-  Cnvs := fOffScreen.Canvas;
+  DrawRect := CalcDrawRect(_Target);
+  ChartRect := CalcChartRect(_Target);
+  Cnvs := _Target.Canvas;
   Cnvs.Pen.Width := 1;
   GraphWd := (DrawRect.Right - DrawRect.Left);
   GraphHt := (DrawRect.Bottom - DrawRect.Top);
@@ -919,7 +921,7 @@ procedure TdzCustomXYChart.DrawBottomScale;
 var
   DrawRect: TRect;
   ChartRect: TRect;
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   TextHeight: integer;
 
   procedure DoDrawScale(_Offs: integer; _Value: Double);
@@ -964,11 +966,11 @@ var
   GraphWid: integer;
   Range: Double;
 begin
-  ChartRect := CalcChartRect;
-  DrawRect := CalcDrawRect;
+  ChartRect := CalcChartRect(_Target);
+  DrawRect := CalcDrawRect(_Target);
   GraphWid := (DrawRect.Right - DrawRect.Left);
   Range := fMaxX - fMinX;
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
   Cnvs.Pen.Color := clBlack;
   Cnvs.Brush.Color := FBackGround;
   Cnvs.Font := fBottomAxis.LabelFont;
@@ -988,7 +990,7 @@ var
   GraphHt: integer;
   DrawRect: TRect;
   ChartRect: TRect;
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   TextHeight: integer;
 
   procedure DoDrawScale(_Offs: integer; _Value: Double);
@@ -1034,11 +1036,11 @@ var
   Value: double;
   Range: Double;
 begin
-  ChartRect := CalcChartRect;
-  DrawRect := CalcDrawRect;
+  ChartRect := CalcChartRect(_Target);
+  DrawRect := CalcDrawRect(_Target);
   GraphHt := (DrawRect.Bottom - DrawRect.Top);
   Range := fMaxY - fMinY;
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
   Cnvs.Pen.Color := clBlack;
   Cnvs.Brush.Color := FBackGround;
   Cnvs.Font := FLeftAxis.LabelFont;
@@ -1070,25 +1072,25 @@ end;
 
 { NormalizePtX - transform  X-axis data to chart dimensions }
 
-function TdzCustomXYChart.NormalizePtX(const _Point: Double): Double;
+function TdzCustomXYChart.NormalizePtX(const _Target: IdzGraphics; const _Point: Double): Double;
 var
   DrawRect: TRect;
 begin
-  DrawRect := CalcDrawRect;
+  DrawRect := CalcDrawRect(_Target);
   Result := NormalizePt(_Point, fMinX, fMaxX, DrawRect.Right - DrawRect.Left);
 end;
 
 { NormalizePtY - transform  Y-axis data to chart dimensions }
 
-function TdzCustomXYChart.NormalizePtY(const _Point: Double): Double;
+function TdzCustomXYChart.NormalizePtY(const _Target: IdzGraphics; const _Point: Double): Double;
 var
   DrawRect: TRect;
 begin
-  DrawRect := CalcDrawRect;
+  DrawRect := CalcDrawRect(_Target);
   Result := NormalizePt(_Point, fMinY, fMaxY, DrawRect.Bottom - DrawRect.Top);
 end;
 
-procedure TdzCustomXYChart.DrawPoint(const _Series: IdzDataSeries; _AbsX, _AbsY: integer; _ForLegend: boolean);
+procedure TdzCustomXYChart.DrawPoint(const _Target: IdzGraphics; const _Series: IdzDataSeries; _AbsX, _AbsY: integer; _ForLegend: boolean);
 const // for a equilateral triangle
   a = 9;
   e = a / 1.7320508075689; // sqrt(3)
@@ -1097,9 +1099,9 @@ const
   ARROW_LENGTH = 7;
   ARROW_WIDTH = 4;
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
 begin
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
   Cnvs.Pen.Color := _Series.GetPointColor;
   Cnvs.Pen.Style := psSolid;
   Cnvs.Pen.Width := 1;
@@ -1199,11 +1201,11 @@ begin
   end;
 end;
 
-procedure TdzCustomXYChart.DrawLine(const _Series: IdzDataSeries; _X1, _Y1, _X2, _Y2: integer);
+procedure TdzCustomXYChart.DrawLine(const _Target: IdzGraphics; const _Series: IdzDataSeries; _X1, _Y1, _X2, _Y2: integer);
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
 begin
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
   Cnvs.Pen.Color := _Series.GetLineColor;
   Cnvs.Pen.Style := _Series.GetLineStyle;
   Cnvs.Pen.Width := 1;
@@ -1222,9 +1224,9 @@ begin
     Result := Pd2.fYPos - pd1.fYPos;
 end;
 
-procedure TdzCustomXYChart.DrawDataPoints;
+procedure TdzCustomXYChart.DrawDataPoints(const _Target: IdzGraphics);
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   DrawRect: TRect;
   ChartRect: TRect;
   BarWidth: integer;
@@ -1235,9 +1237,9 @@ var
     Cnvs.Pen.Width := 1;
     Cnvs.Brush.Style := bsSolid;
     Cnvs.Brush.Color := _Series.GetFillColor;
-    Cnvs.Rectangle(DrawRect.Left + Ceil(NormalizePtX(_Point.GetX)) - BarWidth,
-      DrawRect.Bottom - Round(NormalizePtY(_Point.GetY)),
-      DrawRect.Left + Floor(NormalizePtX(_Point.GetX)) + BarWidth,
+    Cnvs.Rectangle(DrawRect.Left + Ceil(NormalizePtX(_Target, _Point.GetX)) - BarWidth,
+      DrawRect.Bottom - Round(NormalizePtY(_Target, _Point.GetY)),
+      DrawRect.Left + Floor(NormalizePtX(_Target, _Point.GetX)) + BarWidth,
       DrawRect.Bottom);
   end;
 
@@ -1256,7 +1258,7 @@ var
             end
           else
             begin
-               Result := DrawRect.Left + Round(NormalizePtX(_Value));
+               Result := DrawRect.Left + Round(NormalizePtX(_Target, _Value));
                if Result < ChartRect.Left then
                  Result := ChartRect.Left
                else if Result > ChartRect.Right then
@@ -1264,7 +1266,7 @@ var
             end;
         end
       else
-        Result := DrawRect.Left + Round(NormalizePtX(_Value));
+        Result := DrawRect.Left + Round(NormalizePtX(_Target, _Value));
     end;
 
     function CalcPointY(const _Value: double): integer;
@@ -1280,7 +1282,7 @@ var
             end
           else
             begin
-              Result := DrawRect.Bottom - Round(NormalizePtY(_Value));
+              Result := DrawRect.Bottom - Round(NormalizePtY(_Target, _Value));
               if Result > ChartRect.Bottom then
                 Result := ChartRect.Bottom
               else if Result < ChartRect.Top then
@@ -1288,7 +1290,7 @@ var
             end;
         end
       else
-        Result := DrawRect.Bottom - Round(NormalizePtY(_Value));
+        Result := DrawRect.Bottom - Round(NormalizePtY(_Target, _Value));
     end;
 
   var
@@ -1313,26 +1315,26 @@ var
         case _Series.GetChartType of
           ctLine:
             begin
-              DrawLine(_Series, OldX, OldY, x, y);
+              DrawLine(_Target, _Series, OldX, OldY, x, y);
             end;
           ctAlternatingLine:
             begin
               if LineIsOn then
-                DrawLine(_Series, OldX, OldY, x, y);
+                DrawLine(_Target, _Series, OldX, OldY, x, y);
               LineIsOn := not LineIsOn;
             end;
           ctXY:
             begin
-              DrawLine(_Series, OldX, OldY, x, y);
+              DrawLine(_Target, _Series, OldX, OldY, x, y);
               fPoints.Add(TdzPointDesc.Create(Point.GetX, Point.GetY, x, y));
-              DrawPoint(_Series, x, y);
+              DrawPoint(_Target, _Series, x, y);
             end;
         end;
         Oldx := x;
         OldY := y;
       end;
     if LineIsOn and (_Series.GetChartType = ctAlternatingLine) then
-      DrawLine(_Series, OldX, OldY, CalcPointX(Infinity), OldY);
+      DrawLine(_Target, _Series, OldX, OldY, CalcPointX(Infinity), OldY);
   end;
 
   procedure DrawSeriesLines(const _Series: IdzMultiValueDataSeries); overload;
@@ -1356,12 +1358,12 @@ var
         Value := Point.GetX;
         if IsInfinite(Value) then
           Continue; // infinite points can not be drawn
-        x := DrawRect.Left + Round(NormalizePtX(Value));
+        x := DrawRect.Left + Round(NormalizePtX(_Target, Value));
 
         Value := Point.GetY;
         if IsInfinite(Value) then
           Continue; // infinite points can not be drawn
-        y := DrawRect.Bottom - Round(NormalizePtY(Value));
+        y := DrawRect.Bottom - Round(NormalizePtY(_Target, Value));
 
         case _Series.GetChartType of
           ctBar:
@@ -1371,7 +1373,7 @@ var
             ctXY:
             begin
               fPoints.Add(TdzPointDesc.Create(Point.GetX, Point.GetY, x, y));
-              DrawPoint(_Series, x, y);
+              DrawPoint(_Target, _Series, x, y);
             end;
         end;
       end;
@@ -1391,13 +1393,13 @@ var
         Point := _Series.GetDataPoint(PtIdx);
         if Point.GetValueCount = 0 then
           Continue;
-        x := DrawRect.Left + Round(NormalizePtX(Point.GetX));
-        YMin := DrawRect.Bottom - Round(NormalizePtY(Point.GetY(0)));
-        YMax := DrawRect.Bottom - Round(NormalizePtY(Point.GetY(Point.GetValueCount - 1)));
+        x := DrawRect.Left + Round(NormalizePtX(_Target, Point.GetX));
+        YMin := DrawRect.Bottom - Round(NormalizePtY(_Target, Point.GetY(0)));
+        YMax := DrawRect.Bottom - Round(NormalizePtY(_Target, Point.GetY(Point.GetValueCount - 1)));
         if Point.GetValueCount > 1 then
           begin
-            YOpen := DrawRect.Bottom - Round(NormalizePtY(Point.GetY(1)));
-            YClose := DrawRect.Bottom - Round(NormalizePtY(Point.GetY(Point.GetValueCount - 2)));
+            YOpen := DrawRect.Bottom - Round(NormalizePtY(_Target, Point.GetY(1)));
+            YClose := DrawRect.Bottom - Round(NormalizePtY(_Target, Point.GetY(Point.GetValueCount - 2)));
           end
         else
           begin
@@ -1406,19 +1408,19 @@ var
           end;
         case _Series.GetChartType of
           ctHighLow:
-            DrawLine(_Series, x, YMin, x, YMax);
+            DrawLine(_Target, _Series, x, YMin, x, YMax);
           ctHighLowOpenClose:
             begin
-              DrawLine(_Series, x, YMin, x, YMax);
+              DrawLine(_Target, _Series, x, YMin, x, YMax);
               if Point.GetValueCount > 1 then
                 begin
-                  DrawLine(_Series, x - 5, YOpen, x, YOpen);
-                  DrawLine(_Series, x, YClose, x + 5, YClose);
+                  DrawLine(_Target, _Series, x - 5, YOpen, x, YOpen);
+                  DrawLine(_Target, _Series, x, YClose, x + 5, YClose);
                 end;
             end;
           ctCandle:
             begin
-              DrawLine(_Series, x, YMin, x, YMax);
+              DrawLine(_Target, _Series, x, YMin, x, YMax);
               if Point.GetValueCount > 1 then
                 begin
                   Cnvs.Pen.Color := _Series.GetLineColor;
@@ -1434,8 +1436,8 @@ var
         end;
         for ValIdx := 0 to Point.GetValueCount - 1 do
           begin
-            y := DrawRect.Bottom - Round(NormalizePtY(Point.GetY(ValIdx)));
-            DrawPoint(_Series, x, y);
+            y := DrawRect.Bottom - Round(NormalizePtY(_Target, Point.GetY(ValIdx)));
+            DrawPoint(_Target, _Series, x, y);
           end;
       end;
   end;
@@ -1446,15 +1448,15 @@ var
   Rgn: hRgn;
 begin
   fPoints.Clear;
-  ChartRect := CalcChartRect;
-  DrawRect := CalcDrawRect;
-  Cnvs := fOffScreen.Canvas;
-  BarWidth := CalcBarWidth;
+  ChartRect := CalcChartRect(_Target);
+  DrawRect := CalcDrawRect(_Target);
+  Cnvs := _Target.Canvas;
+  BarWidth := CalcBarWidth(_Target);
 
   Rgn := CreateRectRgn(ChartRect.Left + 1, ChartRect.Top + 1, ChartRect.Right - 1, ChartRect.Bottom - 1);
 //  Rgn := CreateRectRgn(DrawRect.Left - 5, DrawRect.Top - 5, DrawRect.Right + 5, DrawRect.Bottom + 5);
   try
-    SelectClipRgn(Cnvs.Handle, Rgn);
+    Cnvs.SetClipRgn(Rgn);
     for SeriesIdx := 0 to fDataSeriesList.Count - 1 do
       begin
         Series := fDataSeriesList[SeriesIdx] as IdzDataSeries;
@@ -1502,24 +1504,24 @@ begin
   Refresh;
 end;
 
-procedure TdzCustomXYChart.DrawLegendEntry(const _Series: IdzDataSeries; _X, _Y: integer);
+procedure TdzCustomXYChart.DrawLegendEntry(const _Target: IdzGraphics; const _Series: IdzDataSeries; _X, _Y: integer);
 var
   h: integer;
   s: string;
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
 begin
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
   s := _Series.GetCaption;
   h := Cnvs.TextHeight(s) div 2;
-  DrawLine(_Series, _X + 2, _Y + h, _X + 25, _Y + h);
-  DrawPoint(_Series, _X + 13, _Y + h, true);
+  DrawLine(_Target, _Series, _X + 2, _Y + h, _X + 25, _Y + h);
+  DrawPoint(_Target, _Series, _X + 13, _Y + h, true);
   Cnvs.Brush.Color := FLegend.BackGround;
   Cnvs.TextOut(_x + 30, _y, s);
 end;
 
-procedure TdzCustomXYChart.DrawLegend(_LegendRect: TRect);
+procedure TdzCustomXYChart.DrawLegend(const _Target: IdzGraphics; _LegendRect: TRect);
 
-  procedure DrawLineEntry(_Canvas: TdzCanvas; const _LineDesc: TLineDescription;
+  procedure DrawLineEntry(const _Canvas: IdzCanvas; const _LineDesc: TLineDescription;
     _X, _Y: integer);
   var
     h: integer;
@@ -1556,13 +1558,13 @@ var
   h: integer;
   w: integer;
   i: integer;
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   Series: IdzDataSeries;
 begin
   if fLegend.Position = lpNoLegend then
     exit;
 
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
   Cnvs.Pen := fLegend.Frame.Pen;
   Cnvs.Brush.Color := fLegend.BackGround;
   Cnvs.Brush.Style := bsSolid;
@@ -1591,7 +1593,7 @@ begin
       Series := fDataSeriesList[i] as IdzDataSeries;
       if Series.GetCaption <> '' then
         begin
-          DrawLegendEntry(Series,
+          DrawLegendEntry(_Target, Series,
             _LegendRect.Left + 4 + Column * w,
             _LegendRect.Top + 4 + Offs + Row * h);
           NextColumn;
@@ -1599,23 +1601,23 @@ begin
     end;
 end;
 
-procedure TdzCustomXYChart.DrawFrameItems;
+procedure TdzCustomXYChart.DrawFrameItems(const _Target: IdzGraphics);
 var
-  Cnvs: TdzCanvas;
+  Cnvs: IdzCanvas;
   LegendRect: TRect;
   FrameRect: TRect;
   ChartRect: TRect;
   s: string;
 begin
   inherited;
-  FrameRect := inherited CalcChartRect;
-  LegendRect := CalcLegendRect(FrameRect);
+  FrameRect := inherited CalcChartRect(_Target);
+  LegendRect := CalcLegendRect(_Target, FrameRect);
 
-  ChartRect := CalcChartRect;
+  ChartRect := CalcChartRect(_Target);
 
-  Cnvs := fOffScreen.Canvas;
+  Cnvs := _Target.Canvas;
 
-  DrawLegend(LegendRect);
+  DrawLegend(_Target, LegendRect);
 
   Cnvs.Font := FBottomAxis.TitleFont;
   Cnvs.Brush.Color := fBackGround;
@@ -1707,7 +1709,7 @@ begin
     FOnFormatLabel(fChart, _Value, Result);
 end;
 
-function TdzCustomChartAxis.CalcLabelingSpace(_Canvas: TdzCanvas): integer;
+function TdzCustomChartAxis.CalcLabelingSpace(const _Canvas: IdzCanvas): integer;
 var
   i: integer;
   dbl: double;
@@ -1770,7 +1772,7 @@ begin
     end;
 end;
 
-procedure TdzCustomChartAxis.InitDefaultLabels(_Size: integer; const _Min, _Max: double; _Canvas: TdzCanvas);
+procedure TdzCustomChartAxis.InitDefaultLabels(_Size: integer; const _Min, _Max: double; const _Canvas: IdzCanvas);
 begin
   if fScale.Automatic then
     begin

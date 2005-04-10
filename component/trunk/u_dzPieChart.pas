@@ -63,6 +63,8 @@ uses
   QDialogs,
   QStdCtrls,
 {$endif LINUX}
+  u_dzCanvas,
+  u_dzGraphics,
   u_dzDataSeries,
   u_dzCustomCharts;
 
@@ -77,13 +79,13 @@ type
     FUseLabels: boolean;
     FOnDrawPie: TDrawPie;
     FOnDrawLabel: TDrawLabel;
-    function GetLegendRect(var Offs: integer): TRect;
+    function GetLegendRect(const _Target: IdzGraphics; var Offs: integer): TRect;
   protected
-    function GetDrawRect: TRect;
-    procedure DrawGrid(Rect: TRect); override;
-    procedure DrawBottomScale; override;
-    procedure DrawLeftScale; override;
-    procedure DrawDataPoints; override;
+    function GetDrawRect(const _Target: IdzGraphics): TRect;
+    procedure DrawGrid(const _Target: IdzGraphics; Rect: TRect); override;
+    procedure DrawBottomScale(const _Target: IdzGraphics); override;
+    procedure DrawLeftScale(const _Target: IdzGraphics); override;
+    procedure DrawDataPoints(const _Target: IdzGraphics); override;
     procedure ScaleChart; override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -123,15 +125,15 @@ begin
   inherited Destroy;
 end;
 
-function TdzPieChart.GetLegendRect(var Offs: integer): TRect;
+function TdzPieChart.GetLegendRect(const _Target: IdzGraphics; var Offs: integer): TRect;
 var
   Cnt: integer;
 begin
   // get chart rect
-  Result := CalcChartRect;
+  Result := CalcChartRect(_Target);
 
   // size it
-  Result.Left := Result.Right - fOffscreen.Canvas.TextWidth('Abcdefghijklmno') - 19;
+  Result.Left := Result.Right - _Target.Canvas.TextWidth('Abcdefghijklmno') - 19;
 
   // calc space for legends
   Cnt := fDataSeries.GetPointCount;
@@ -143,16 +145,16 @@ end;
 
 { GetDrawRect - get area for drawing }
 
-function TdzPieChart.GetDrawRect: TRect;
+function TdzPieChart.GetDrawRect(const _Target: IdzGraphics): TRect;
 var
   Offs: integer;
   CR, LR: TRect;
   dx, dy: integer;
 begin
   // get chart rect
-  CR := CalcChartRect;
+  CR := CalcChartRect(_Target);
   // get legend rect
-  LR := GetLegendRect(Offs);
+  LR := GetLegendRect(_Target, Offs);
 
   // calculate difference
   SubtractRect(Result, CR, LR);
@@ -204,7 +206,7 @@ end;
 //  FDataSum := 0; // re-set datasum
 //end;
 
-procedure TdzPieChart.DrawGrid(Rect: TRect);
+procedure TdzPieChart.DrawGrid(const _Target: IdzGraphics; Rect: TRect);
 begin
   // no grids
 end;
@@ -267,7 +269,7 @@ var
   var
     Rect: TRect;
   begin
-    Rect := GetDrawRect;
+    Rect := GetDrawRect(_Target);
     Result := (Rect.Bottom - Rect.Top) div 2;
   end;
 
@@ -280,7 +282,7 @@ var
     SA, EA: integer;
   begin
     TmpRgn := hRgn(0);
-    with fOffScreen.Canvas do
+    with _Target.Canvas do
       begin
       // offset text starting point so
       // center of text at center of pie
@@ -325,17 +327,18 @@ var
         end;
       end;
   end;
+
 var
   DrawRect: TRect;
 begin
   // get rect for drawing legend
-  LegendRect := GetLegendRect(LegendOffs);
+  LegendRect := GetLegendRect(_Target, LegendOffs);
 
   // draw fOffScreen for speed
-  with fOffScreen.Canvas do
+  with _Target.Canvas do
     begin
     // calculate center
-      DrawRect := GetDrawRect;
+      DrawRect := GetDrawRect(_Target);
       midX := ((DrawRect.Right + DrawRect.Left) div 2);
       midY := ((DrawRect.Bottom + DrawRect.Top) div 2);
 

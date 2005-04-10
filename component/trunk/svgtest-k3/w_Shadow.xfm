@@ -1,0 +1,27 @@
+object Form1: TForm1
+  Left = 348
+  Top = 174
+  Width = 319
+  Height = 301
+  HorzScrollBar.Range = 275
+  VertScrollBar.Range = 292
+  Caption = 'Form1'
+  Color = clBackground
+  OnCreate = FormCreate
+  PixelsPerInch = 75
+  TextHeight = 20
+  TextWidth = 7
+  object Image1: TImage
+    Left = -1
+    Top = 0
+    Width = 276
+    Height = 261
+  end
+  object Label1: TLabel
+    Left = 64
+    Top = 272
+    Width = 43
+    Height = 20
+    Caption = 'Label1'
+  end
+end

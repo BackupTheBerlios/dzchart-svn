@@ -48,7 +48,10 @@ implementation
 
 uses
   Math,
-  u_dzDataSeries;
+  u_dzDataSeries,
+  u_dzGraphics,
+  w_Bitmap,
+  u_dzSvgOutput;
 
 procedure Tf_Charttest.CreateHighLowOpenClose;
 var
@@ -116,9 +119,9 @@ label
   lbl;
 var
   x: integer;
-  y: integer;
+//  y: integer;
   SvSeries: TdzPointDataSeries;
-  MvSeries: TdzMultiValueDataSeries;
+//  MvSeries: TdzMultiValueDataSeries;
 begin
 goto lbl;         // Have you ever used goto in Delphi? This is how it is done. ;-)
   SvSeries := tdzPointDataSeries.Create;
@@ -177,7 +180,8 @@ end;
 procedure Tf_ChartTest.XYChart1FormatXAxisLabel(_Sender: TObject; _Value: Double; var _Text: string);
 var
   Sign: string;
-begin                               exit;
+begin
+  exit;
   if _Value < 0 then
     begin
       Sign := '-';
@@ -193,7 +197,24 @@ begin                               exit;
 end;
 
 procedure Tf_ChartTest.Button1Click(Sender: TObject);
+var
+  frm: Tf_Bitmap;
+  Grahics: IdzGraphics;
 begin
+  Grahics := TdzSvgGraphics.Create;
+  XYChart.PaintTo(Grahics);
+  (Grahics as IdzSvgGraphics).WriteToFile('/home/twm/dzsvntest.svg');
+
+  frm := Tf_Bitmap.Create(self);
+  try
+    XYChart.PaintTo(TdzBitmap.Create(frm.Image1.Picture.Bitmap));
+    frm.ShowModal;
+  finally
+    frm.Free;
+  end;
+
+  exit;
+
   XYChart.BeginUpdate;
   try
     if XYChart.BottomAxis.LabelOrientation = loVertical then

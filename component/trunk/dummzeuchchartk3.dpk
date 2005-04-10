@@ -28,7 +28,8 @@ package dummzeuchchartk3;
 
 requires
   rtl,
-  visualclx;
+  visualclx,
+  vcl;
 
 contains
   u_dzQWindows in 'u_dzQWindows.pas',
@@ -36,6 +37,9 @@ contains
   u_dzCustomCharts in 'u_dzCustomCharts.pas',
   u_dzPieChart in 'u_dzPieChart.pas',
   u_dzXYChart in 'u_dzXYChart.pas',
-  u_dzPolynomialDataseries in 'u_dzPolynomialDataseries.pas';
+  u_dzPolynomialDataseries in 'u_dzPolynomialDataseries.pas',
+  u_dzSvgOutput in 'u_dzSvgOutput.pas',
+  u_dzCanvas in 'u_dzCanvas.pas',
+  u_dzGraphics in 'u_dzGraphics.pas';
 
 end.

@@ -66,6 +66,8 @@ uses
   QDialogs,
   QStdCtrls,
 {$ENDIF LINUX}
+  u_dzGraphics,
+  u_dzCanvas,
   u_dzDataSeries;
 
 type
@@ -184,32 +186,10 @@ type
     property LineStyle: TPenStyle read fLineStyle write SetLineStyle;
   end;
 
-  TdzCanvas = class(TCanvas)
-  private
-    // This is a hack, may only have static functions no inheritance takes place!
-  public
-{$IFDEF mswindows}
-    procedure DrawPoint(_X, _Y: integer); // must not be virtual
-{$ELSE} // linux
-{$ENDIF}
-    function TextWidthAngle(_Angle: integer; _Text: string): integer;
-    procedure TextOutAngle(_Angle, _x, _y: integer; _Text: string);
-    procedure Line(_x1, _y1, _x2, _y2: integer);
-  end;
-
-  TdzOffscreenBitmap = class(TBitmap)
-  protected
-    function GetCanvas: TdzCanvas;
-  public
-    property Canvas: TdzCanvas read GetCanvas;
-  end;
-
   {: Ancestor to all chart components, declares and partially implements the
      methods and properties for drawing and calculating all frame items }
   TdzCustomChart = class(TGraphicControl)
   protected
-    {: TBitmap used in offscreen drawing }
-    fOffScreen: TdzOffscreenBitMap;
     {: Stores the ChartTitle subcomponent }
     FChartTitle: TdzTitle;
     {: Stores the Grid property }
@@ -229,28 +209,28 @@ type
     {: Calculats a TRect for the chart area, that is the component's
        size minus the space for frame items. Frame items in this
        case is only the title, but descendants may have more, e.g. a legend. }
-    function CalcChartRect: TRect; virtual;
+    function CalcChartRect(const _Target: IdzGraphics): TRect; virtual;
     {: Paints the chart by calling DrawOffscreen and then copying the
        result to the screen }
     procedure Paint; override;
     {: Calls the DrawXxx methods to draw an offscreen image of the chart }
-    procedure DrawOffscreen; virtual;
+    procedure DrawOffscreen(const _Target: IdzGraphics); virtual;
     {: Draws the frame items, in this case that is only the title but
        descendants may draw more, e.g. a legend. }
-    procedure DrawFrameItems; virtual;
+    procedure DrawFrameItems(const _Target: IdzGraphics); virtual;
     {: Does nothing, must be overridden by descendants to draw the chart's
        grid lines. }
-    procedure DrawGrid(_Rect: TRect); virtual;
+    procedure DrawGrid(const _Target: IdzGraphics; _Rect: TRect); virtual;
     {: Does nothing, must be overridden by descendants to draw the bottom scale }
-    procedure DrawBottomScale; virtual;
+    procedure DrawBottomScale(const _Target: IdzGraphics); virtual;
     {: Does nothing, must be overridden by descendants to draw the left scale }
-    procedure DrawLeftScale; virtual;
+    procedure DrawLeftScale(const _Target: IdzGraphics); virtual;
     {: Does nothing, must be overridden by descendants to draw the actual data points }
-    procedure DrawDataPoints; virtual;
+    procedure DrawDataPoints(const _Target: IdzGraphics); virtual;
     {: Does nothing, must be overridden by descendants to scale the chart }
     procedure ScaleChart; virtual;
     {: Draws a frame around the chart as described by the Frame property }
-    procedure DrawFrame; virtual;
+    procedure DrawFrame(const _Target: IdzGraphics); virtual;
     {: Describes the type of grid used for the chart }
     property Grid: TdzChartGrid read FGrid;
     {: Describes the background color used as background for the frame area, default is clSilver }
@@ -272,8 +252,8 @@ type
        @param(Y is the Y position for drawing) }
     procedure PaintTo(_DC: HDC; _X, _Y: Integer); overload;
     {: Paints the chart to a bitmap
-       @param(Bitmap is a TBitmap object to draw to) }
-    procedure PaintTo(_Bitmap: TBitmap); overload;
+       @param(Graphics is a IdzGraphics object to draw to) }
+    procedure PaintTo(const _Target: IdzGraphics); overload;
     {: Prevents repainting until @link(EndUpdate) has been called. Calls to
        BeginUpdate / EndUpdate can be nested, so if your chart does not
        redraw properly checke whether there is an EndUpdate call missing }
@@ -326,13 +306,11 @@ begin
 
   FBackGround := clSilver;
   FChartColor := clWhite;
-  fOffScreen := TdzOffscreenBitmap.Create;
 end;
 
 destructor TdzCustomChart.Destroy;
 begin
   FChartTitle.Free;
-  fOffScreen.Free;
   inherited Destroy;
 end;
 
@@ -358,21 +336,21 @@ end;
 
 { calculate the TRect for the whole chart including the Axis labels }
 
-function TdzCustomChart.CalcChartRect: TRect;
+function TdzCustomChart.CalcChartRect(const _Target: IdzGraphics): TRect;
 var
-  Canvas: TCanvas;
+  Canvas: IdzCanvas;
 begin
   Result.Left := 0;
-  Result.Right := fOffScreen.Width;
-  Result.Bottom := fOffScreen.Height;
+  Result.Right := _Target.Width;
+  Result.Bottom := _Target.Height;
 
   // leave 1.5 times the title height for the title
-  Canvas := fOffScreen.Canvas;
+  Canvas := _Target.Canvas;
   Canvas.Font := FChartTitle.TitleFont;
   Result.Top := Round(Canvas.TextHeight(FChartTitle.Title) * 1.5);
 end;
 
-procedure TdzCustomChart.DrawGrid(_Rect: TRect);
+procedure TdzCustomChart.DrawGrid(const _Target: IdzGraphics; _Rect: TRect);
 begin
   // do nothing
 end;
@@ -397,42 +375,42 @@ begin
   // do nothing
 end;
 
-procedure TdzCustomChart.DrawFrameItems;
+procedure TdzCustomChart.DrawFrameItems(const _Target: IdzGraphics);
 var
-  Canvas: TCanvas;
+  Canvas: IdzCanvas;
   s: string;
 begin
-  Canvas := fOffScreen.Canvas;
+  Canvas := _Target.Canvas;
   Canvas.Font := FChartTitle.TitleFont;
   s := FChartTitle.Title;
   Canvas.TextOut((Width - Canvas.TextWidth(s)) div 2, 1, s);
 end;
 
-procedure TdzCustomChart.DrawFrame;
+procedure TdzCustomChart.DrawFrame(const _Target: IdzGraphics);
 var
-  Canvas: TCanvas;
+  Canvas: IdzCanvas;
   r: TRect;
 begin
   if ChartFrame.Width <= 0 then
     exit;
-  Canvas := fOffScreen.Canvas;
+  Canvas := _Target.Canvas;
   Canvas.Brush.Style := bsSolid;
   Canvas.Brush.Color := FChartColor;
   Canvas.Pen := ChartFrame.fPen;
-  r := CalcChartRect;
+  r := CalcChartRect(_Target);
   if ChartFrame.Rounded then
     Canvas.RoundRect(r.Left, r.Top, r.Right, r.Bottom, 15, 15)
   else
     Canvas.Rectangle(r);
 end;
 
-procedure TdzCustomChart.DrawOffscreen;
+procedure TdzCustomChart.DrawOffscreen(const _Target: IdzGraphics); 
 var
-  Canvas: TCanvas;
+  Canvas: IdzCanvas;
 begin
-  fOffScreen.Width := ClientWidth;
-  fOffScreen.Height := ClientHeight;
-  Canvas := fOffScreen.Canvas;
+  _Target.Width := ClientWidth;
+  _Target.Height := ClientHeight;
+  Canvas := _Target.Canvas;
 {$ifdef linux}
   Canvas.Start();
   try
@@ -444,19 +422,19 @@ begin
     Canvas.Brush.Color := FBackGround;
     Canvas.FillRect(ClientRect);
 
-    DrawFrameItems;
+    DrawFrameItems(_Target);
 
     { scale the chart - abstract }
     ScaleChart;
 
-    DrawFrame;
+    DrawFrame(_Target);
 
-    DrawGrid(CalcChartRect);
-    DrawBottomScale;
-    DrawLeftScale;
+    DrawGrid(_Target, CalcChartRect(_Target));
+    DrawBottomScale(_Target);
+    DrawLeftScale(_Target);
 
     { draw data points - abstract }
-    DrawDataPoints;
+    DrawDataPoints(_Target);
 {$ifdef linux}
   finally
     Canvas.Stop;
@@ -465,10 +443,21 @@ begin
 end;
 
 procedure TdzCustomChart.Paint;
+var
+  Bitmap: TBitmap;
+  Buffer: IdzGraphics;
 begin
-  if fBeginUpdateCount = 0 then
-    DrawOffscreen;
-  self.Canvas.Draw(0, 0, fOffScreen);
+  if fBeginUpdateCount = 0 then begin
+    Bitmap := TBitmap.Create;
+    try
+      Buffer := TdzBitmap.Create(Bitmap);
+      DrawOffscreen(Buffer);
+      self.Canvas.Draw(0, 0, Bitmap);
+      Buffer := nil;
+    finally
+      Bitmap.Free;
+    end;
+  end;
 end;
 
 procedure TdzCustomChart.PaintTo(_DC: HDC; _X, _Y: Integer);
@@ -488,15 +477,15 @@ begin
   end;
 end;
 
-procedure TdzCustomChart.PaintTo(_Bitmap: TBitmap);
+procedure TdzCustomChart.PaintTo(const _Target: IdzGraphics);
 begin
-  _Bitmap.Width := ClientWidth;
-  _Bitmap.Height := ClientHeight;
-  _Bitmap.Canvas.Lock;
+  _Target.Width := ClientWidth;
+  _Target.Height := ClientHeight;
+//  _Target.Canvas.Lock;
   try
-    PaintTo(_Bitmap.Canvas.Handle, 0, 0);
+    DrawOffscreen(_Target);
   finally
-    _Bitmap.Canvas.Unlock;
+//    _Target.Canvas.Unlock;
   end;
 end;
 
@@ -617,91 +606,6 @@ procedure TdzChartFrame.RefreshChart;
 begin
   if Assigned(fChart) then
     fChart.Refresh;
-end;
-
-{ TdzCanvas }
-
-{$IFDEF MSWINDOWS}
-
-procedure SetFontRotation(_Font: TFont; _Angle: integer);
-var
-  lf: TLogFont;
-begin
-  GetObject(_Font.Handle, SizeOf(lf), @lf);
-  lf.lfEscapement := _Angle;
-  lf.lfOrientation := _Angle;
-  lf.lfOutPrecision := OUT_TT_ONLY_PRECIS;
-  _Font.Handle := CreateFontIndirect(lf);
-end;
-{$ENDIF}
-
-procedure TdzCanvas.TextOutAngle(_Angle, _x, _y: integer; _Text: string);
-{$IFDEF MSWINDOWS}
-var
-  OrigFont: TFont;
-begin
-  OrigFont := TFont.Create;
-  try
-    OrigFont.Assign(Font);
-    SetFontRotation(Font, _Angle * 10);
-    TextOut(_x, _y, _Text);
-  finally
-    Font.Assign(OrigFont);
-    OrigFont.Free;
-  end;
-{$ELSE}
-begin
-  u_dzQWindows.TextOutAngle(self, _Angle, _X, _Y, _Text);
-{$ENDIF}
-end;
-
-function TdzCanvas.TextWidthAngle(_Angle: integer; _Text: string): integer;
-{$IFDEF MSWINDOWS}
-var
-  OrigFont: TFont;
-begin
-  OrigFont := TFont.Create;
-  try
-    OrigFont.Assign(Font);
-    SetFontRotation(Font, _Angle * 10);
-    Result := TextWidth(_Text);
-  finally
-    Font.Assign(OrigFont);
-    OrigFont.Free;
-  end;
-{$ELSE}
-begin
-  result := TextWidth(_Text);
-{$ENDIF}
-end;
-
-{$IFDEF MSWINDOWS}
-
-procedure TdzCanvas.DrawPoint(_X, _Y: integer);
-begin
-  // There is now DrawPoint method in VCL
-  // LineTo does not draw the last point, so we
-  // simulate DrawPoint by moving to the correct coordinates and
-  // drawing a line to the adjacent pixel
-  MoveTo(_X, _Y);
-  LineTo(_X + 1, _Y);
-end;
-
-{$ENDIF MSWINDOWS}
-
-procedure TdzCanvas.Line(_x1, _y1, _x2, _y2: integer);
-begin
-  MoveTo(_X1, _Y1);
-  LineTo(_X2, _Y2);
-  DrawPoint(_X1, _Y1);
-  DrawPoint(_X2, _Y2);
-end;
-
-{ TdzOffscreenBitmap }
-
-function TdzOffscreenBitmap.GetCanvas: TdzCanvas;
-begin
-  Result := TdzCanvas(inherited Canvas);
 end;
 
 { TdzChartGrid }

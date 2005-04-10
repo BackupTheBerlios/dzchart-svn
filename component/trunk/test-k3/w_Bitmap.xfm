@@ -1,0 +1,18 @@
+object f_Bitmap: Tf_Bitmap
+  Left = 253
+  Top = 134
+  Width = 567
+  Height = 568
+  Caption = 'f_Bitmap'
+  Color = clBackground
+  PixelsPerInch = 75
+  TextHeight = 20
+  TextWidth = 7
+  object Image1: TImage
+    Left = 0
+    Top = 0
+    Width = 567
+    Height = 568
+    Align = alClient
+  end
+end
