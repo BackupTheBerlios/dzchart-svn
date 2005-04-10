@@ -45,3 +45,7 @@
 2005-03-27
 * moved repository to berlios file history is lost
 * Added support for Delphi 2005
+
+2005-04-10
+* added preliminary support for svg export (works for ksvg, doesn't work for Adobe SVG viewer)
+* changed the way the offscreen canvas is handled.
