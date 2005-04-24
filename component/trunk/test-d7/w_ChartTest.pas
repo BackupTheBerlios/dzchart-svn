@@ -19,7 +19,7 @@ uses
   u_dzPolynomialDataseries,
   QControls,
   QStdCtrls,
-  ExtCtrls;
+  ExtCtrls, u_dzLineStyleCombo, u_dzPointStyleCombo;
 
 type
   Tf_ChartTest = class(TForm)XYChart: TdzXYChart;
@@ -29,6 +29,8 @@ type
     pd_Squared4: TdzPolynomialDataseries;
     pd_Sqared3: TdzPolynomialDataseries;
     Button1: TButton;
+    dzLineStyleCombo1: TdzLineStyleCombo;
+    dzPointStyleCombo1: TdzPointStyleCombo;
     procedure FormCreate(Sender: TObject);
     procedure XYChart1GetNextXAxisLabel(_Sender: TObject; _Idx: integer; var _Value: Double; var _Stop: Boolean);
     procedure XYChart1FormatXAxisLabel(_Sender: TObject; _Value: Double; var _Text: string);

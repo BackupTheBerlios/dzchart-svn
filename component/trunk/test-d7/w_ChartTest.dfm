@@ -106,6 +106,26 @@ object f_ChartTest: Tf_ChartTest
     TabOrder = 0
     OnClick = Button1Click
   end
+  object dzLineStyleCombo1: TdzLineStyleCombo
+    Left = 8
+    Top = 440
+    Width = 145
+    Height = 21
+    LineStyle = psInsideFrame
+    ItemHeight = 13
+    TabOrder = 1
+    Text = 'InsideFrame'
+  end
+  object dzPointStyleCombo1: TdzPointStyleCombo
+    Left = 8
+    Top = 464
+    Width = 145
+    Height = 21
+    PointStyle = psDownArrow
+    ItemHeight = 13
+    TabOrder = 2
+    Text = 'DownArrow'
+  end
   object pd_squared2: TdzPolynomialDataseries
     ChartType = ctXY
     MinX = -1.000000000000000000
