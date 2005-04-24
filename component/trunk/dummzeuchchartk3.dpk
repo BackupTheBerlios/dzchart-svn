@@ -40,6 +40,8 @@ contains
   u_dzPolynomialDataseries in 'u_dzPolynomialDataseries.pas',
   u_dzSvgOutput in 'u_dzSvgOutput.pas',
   u_dzCanvas in 'u_dzCanvas.pas',
-  u_dzGraphics in 'u_dzGraphics.pas';
+  u_dzGraphics in 'u_dzGraphics.pas',
+  u_dzLineStyleCombo in 'u_dzLineStyleCombo.pas',
+  u_dzPointStyleCombo in 'u_dzPointStyleCombo.pas';
 
 end.
