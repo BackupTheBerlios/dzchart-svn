@@ -2,4 +2,4 @@
 # pasdoc is from pasdoc.sourceforge.net
 
 mkdir docs
-utils/pasdoc --marker=: --output=docs --graphviz-uses --link-gv-uses=jpg --graphviz-classes --link-gv-classes=jpg *.pas
+utils/pasdoc --marker=: --output=docs *.pas
