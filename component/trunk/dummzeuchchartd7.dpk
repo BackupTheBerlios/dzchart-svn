@@ -35,6 +35,8 @@ contains
   u_dzCustomCharts in 'u_dzCustomCharts.pas',
   u_dzPieChart in 'u_dzPieChart.pas',
   u_dzXYChart in 'u_dzXYChart.pas',
-  u_dzPolynomialDataseries in 'u_dzPolynomialDataseries.pas';
+  u_dzPolynomialDataseries in 'u_dzPolynomialDataseries.pas',
+  u_dzLineStyleCombo in 'u_dzLineStyleCombo.pas',
+  u_dzPointStyleCombo in 'u_dzPointStyleCombo.pas';
 
 end.
