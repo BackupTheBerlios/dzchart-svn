@@ -47,6 +47,8 @@ uses
   u_dzCustomCharts,
   u_dzXYChart,
   u_dzPieChart,
+  u_dzLineStyleCombo,
+  u_dzPointStyleCombo,
   u_dzPolynomialDataseries,
   w_dzPolynomEdit;
 
@@ -56,10 +58,12 @@ uses
 
 procedure Register;
 begin
-  // register components on HomeGrown page
+  // register components on dummzeuch.de page
   RegisterComponents('dummzeuch.de', [TdzXYChart]);
   RegisterComponents('dummzeuch.de', [TdzPieChart]);
   RegisterComponents('dummzeuch.de', [TdzPolynomialDataseries]);
+  RegisterComponents('dummzeuch.de', [TdzLineStyleCombo]);
+  RegisterComponents('dummzeuch.de', [TdzPointStyleCombo]);
 
   // hide Tag property for all subcomponents
   RegisterPropertyEditor(TypeInfo(LongInt), TdzXYChartLegend, 'Tag', nil);
