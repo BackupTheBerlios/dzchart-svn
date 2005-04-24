@@ -163,6 +163,6 @@
 			<VersionInfoKeys Name="ProductName">dummzeuch.de charts</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">2.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments">released under the MPL 1.1</VersionInfoKeys>
-    </VersionInfoKeys>
-  </Delphi.Personality>
+		</VersionInfoKeys>
+	</Delphi.Personality>
 </BorlandProject>
