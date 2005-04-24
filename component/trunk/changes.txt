@@ -49,3 +49,6 @@
 2005-04-10
 * added preliminary support for svg export (works for ksvg, doesn't work for Adobe SVG viewer)
 * changed the way the offscreen canvas is handled.
+
+2005-04-24
+* added two new components TdzLineStyleCombo and TdzPointStyleCombo to select the line / point style
