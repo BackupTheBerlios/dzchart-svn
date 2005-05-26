@@ -1,4 +1,4 @@
-package rtldzAutoConfigd9;
+package dcldzConfigd9;
 
 {$R *.res}
 {$ALIGN 8}
@@ -22,20 +22,16 @@ package rtldzAutoConfigd9;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'dummzeuch.de Auto Config - runtime package'}
-{$RUNONLY}
+{$DESCRIPTION 'dummzeuch.de Auto Config - designtime package'}
+{$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
 requires
   rtl,
-  vcl;
+  designide,
+  rtldzAutoConfigd9;
 
 contains
-  c_dzConfigEdit in 'c_dzConfigEdit.pas',
-  c_dzConfigRadioGroup in 'c_dzConfigRadioGroup.pas',
-  c_dzConfigCheckBox in 'c_dzConfigCheckBox.pas',
-  c_dzConfigListBox in 'c_dzConfigListBox.pas',
-  c_dzConfigComboBox in 'c_dzConfigComboBox.pas',
-  u_dzConfigCommon in 'u_dzConfigCommon.pas';
+  u_dzConfigRegister in 'u_dzConfigRegister.pas';
 
 end.

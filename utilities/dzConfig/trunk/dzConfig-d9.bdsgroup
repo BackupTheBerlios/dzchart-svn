@@ -9,10 +9,10 @@
 		</Option>
 	</PersonalityInfo>
 	<Default.Personality>  <Projects>
-      <Projects Name="rtldzAutoConfigd9.bpl">rtldzAutoConfigd9.bdsproj</Projects>
-      <Projects Name="dcldzAutoConfigd9.bpl">dcldzAutoConfigd9.bdsproj</Projects>
+      <Projects Name="dzConfigd9.bpl">dzConfigd9.bdsproj</Projects>
+      <Projects Name="dcldzConfigd9.bpl">dcldzConfigd9.bdsproj</Projects>
       <Projects Name="AutoConfigTestD9.exe">test-d9\AutoConfigTestD9.bdsproj</Projects>
-      <Projects Name="Targets">rtldzAutoConfigd9.bpl dcldzAutoConfigd9.bpl AutoConfigTestD9.exe</Projects>
+      <Projects Name="Targets">dzConfigd9.bpl dcldzConfigd9.bpl AutoConfigTestD9.exe</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{7AD165C1-1EE7-462F-B367-1CEFE864ABB2}">

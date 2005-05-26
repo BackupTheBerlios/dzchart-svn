@@ -1,4 +1,4 @@
-unit w_AutoConfigTest;
+unit w_dzConfigTest;
 
 interface
 
@@ -21,7 +21,7 @@ uses
   c_dzConfigEdit;
 
 type
-  Tf_AutoConfigTest = class(TForm)
+  Tf_dzConfigTest = class(TForm)
     grp_ConfigGroup1: TGroupBox;
     l_StringSetting1: TLabel;
     ed_StringSetting1: TdzConfigEdit;
@@ -47,7 +47,7 @@ type
   end;
 
 var
-  f_AutoConfigTest: Tf_AutoConfigTest;
+  f_dzConfigTest: Tf_dzConfigTest;
 
 implementation
 
@@ -61,7 +61,7 @@ uses
 
 { Tf_AutoConfigTest }
 
-procedure Tf_AutoConfigTest.b_OKClick(Sender: TObject);
+procedure Tf_dzConfigTest.b_OKClick(Sender: TObject);
 var
   // Note that both are interfaces so no destructor call is needed
   Writer: IdzConfigWriter;
@@ -86,12 +86,12 @@ begin
   Close;
 end;
 
-procedure Tf_AutoConfigTest.b_CancelClick(Sender: TObject);
+procedure Tf_dzConfigTest.b_CancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure Tf_AutoConfigTest.FormCreate(Sender: TObject);
+procedure Tf_dzConfigTest.FormCreate(Sender: TObject);
 var
   Reader: IdzConfigReader;
   FormHandler: IdzConfigFormHandler;

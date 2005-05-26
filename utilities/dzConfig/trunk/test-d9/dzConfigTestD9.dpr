@@ -1,8 +1,8 @@
-program AutoConfigTestD9;
+program dzConfigTestD9;
 
 uses
   Forms,
-  w_AutoConfigTest in 'w_AutoConfigTest.pas',
+  w_dzConfigTest in 'w_dzConfigTest.pas' {f_dzConfigTest},
   u_dzConfigFormHandler in '..\u_dzConfigFormHandler.pas',
   u_dzConfigToConsole in '..\u_dzConfigToConsole.pas',
   u_dzConfigToIni in '..\u_dzConfigToIni.pas',
@@ -12,6 +12,6 @@ uses
 
 begin
   Application.Initialize;
-  Application.CreateForm(Tf_AutoConfigTest, f_AutoConfigTest);
+  Application.CreateForm(Tf_dzConfigTest, f_dzConfigTest);
   Application.Run;
 end.
