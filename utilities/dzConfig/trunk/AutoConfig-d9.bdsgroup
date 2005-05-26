@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{138EE66D-5AF2-48E6-87DC-69C3F9E660D3}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
+      <Projects Name="rtldzAutoConfigd9.bpl">rtldzAutoConfigd9.bdsproj</Projects>
+      <Projects Name="dcldzAutoConfigd9.bpl">dcldzAutoConfigd9.bdsproj</Projects>
+      <Projects Name="AutoConfigTestD9.exe">test-d9\AutoConfigTestD9.bdsproj</Projects>
+      <Projects Name="Targets">rtldzAutoConfigd9.bpl dcldzAutoConfigd9.bpl AutoConfigTestD9.exe</Projects>
+    </Projects>
+    <Dependencies>
+      <Dependency GUID="{7AD165C1-1EE7-462F-B367-1CEFE864ABB2}">
+        <Dependency GUID="{0E2B11EA-752B-401C-8DD1-1F3E9E4A0A1C}"/>
+      </Dependency>
+      <Dependency GUID="{951348C5-7256-436D-8C67-ADDECA9C3DAA}">
+        <Dependency GUID="{0E2B11EA-752B-401C-8DD1-1F3E9E4A0A1C}"/>
+        <Dependency GUID="{7AD165C1-1EE7-462F-B367-1CEFE864ABB2}"/>
+      </Dependency>
+    </Dependencies>
+  </Default.Personality>
+</BorlandProject>

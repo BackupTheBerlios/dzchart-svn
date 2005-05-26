@@ -1,0 +1,3 @@
+#!/bin/sh
+rm *.res *.conf *.~* *.tmp~ *.txt~
+rm test-k3/*.res test-k3/*.conf test-k3/*.~* test-k3/*.ddp

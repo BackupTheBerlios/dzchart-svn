@@ -1,0 +1,6 @@
+#!/bin/sh
+windres -i c_dzConfigCheckBox.rc -o c_dzConfigCheckBox.dcr  -I rc -O res
+windres -i c_dzConfigComboBox.rc -o c_dzConfigComboBox.dcr  -I rc -O res
+windres -i c_dzConfigEdit.rc -o c_dzConfigEdit.dcr  -I rc -O res
+windres -i c_dzConfigListBox.rc -o c_dzConfigListBox.dcr  -I rc -O res
+windres -i c_dzConfigRadioGroup.rc -o c_dzConfigRadioGroup.dcr  -I rc -O res

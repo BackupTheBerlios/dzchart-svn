@@ -1,0 +1,17 @@
+2004-10-17:
+* Changes.txt started
+* added {$ifdef Linux}/{$endif} around some units in the uses clause
+* added pasdoc documentation comments to most units
+* added readme.txt in aft format (for generating html)
+* added 'rootpath' to the Kylix demo
+
+2004-10-21:
+* added icons for all controls
+* set line-end to native for all text files
+* adapted to Delphi 7 (vcl)
+* added *.res to svn ignore list
+* u_ConfigToIni: added .ini to INI-filename if no extension was given
+* Bugfix: c_ConfigListBox + c_ConfigRadioGroup: When storing as string, must look it up in Items and set ItemIndex.
+* Bugifx: u_dzAutoConfigCommon: GetEnvVariable -> GetEnvironmentVariable
+* Bugfix: component icons should be stored in *.dcr rather than *.res
+* buildres script (linux) using windres to build the *.dcr files

@@ -1,0 +1,28 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.02.5
+#------------------------------------------------------------------------------
+ifndef ROOT
+ROOT = /usr/local/kylix3
+endif
+#------------------------------------------------------------------------------
+MAKE = make -$(MAKEFLAGS) -f$**
+DCC =dcc $<
+#------------------------------------------------------------------------------
+PROJECTS = bplrtldzAutoConfigk3.so bpldcldzAutoConfigk3.so AutoConfigTestk3
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+AutoConfigTestk3: test-k3/AutoConfigTestk3.dpr
+	$(DCC)
+
+bpldcldzAutoConfigk3.so: dcldzAutoConfigk3.dpk
+	$(DCC)
+
+: ../../../../usr/local/kylix3/source/toolsapi/DesignIntf.pas
+	$(DCC)
+
+bplrtldzAutoConfigk3.so: rtldzAutoConfigk3.dpk
+	$(DCC)
+
+

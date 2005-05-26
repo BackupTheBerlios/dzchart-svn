@@ -1,0 +1,26 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = rtldzAutoConfigd7.bpl dcldzAutoConfigd7.bpl AutoConfigTestD7.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+rtldzAutoConfigd7.bpl: rtldzAutoConfigd7.dpk
+  $(DCC)
+
+AutoConfigTestD7.exe: test-d7\AutoConfigTestD7.dpr
+  $(DCC)
+
+dcldzAutoConfigd7.bpl: dcldzAutoConfigd7.dpk
+  $(DCC)
+
+
