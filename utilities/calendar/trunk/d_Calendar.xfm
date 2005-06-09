@@ -1,0 +1,26 @@
+object dm_Calendar: Tdm_Calendar
+  OldCreateOrder = False
+  Left = 476
+  Top = 304
+  Height = 150
+  Width = 215
+  object hs_HttpServer: TIdHTTPServer
+    Active = True
+    Bindings = <>
+    CommandHandlers = <>
+    DefaultPort = 4711
+    Greeting.NumericCode = 0
+    MaxConnectionReply.NumericCode = 0
+    ReplyExceptionCode = 0
+    ReplyTexts = <>
+    ReplyUnknownCommand.NumericCode = 0
+    AutoStartSession = True
+    OnSessionStart = hs_HttpServerSessionStart
+    OnSessionEnd = hs_HttpServerSessionEnd
+    ServerSoftware = 'Opera Calendar'
+    SessionState = True
+    SessionTimeOut = 600000
+    Left = 40
+    Top = 16
+  end
+end

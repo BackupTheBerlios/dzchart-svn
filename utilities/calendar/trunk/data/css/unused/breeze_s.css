@@ -1,0 +1,14 @@
+@import "menu.css";
+body {margin: 1px; padding: 0; font: 11px/11px "Bitstream vera sans", Verdana, Helvetica, sans-serif; color: #000; background: #FAFAFC;}
+.dow {background: #D6D3CE; min-width: 24px; max-width: 26px;}
+.head, .head td, .head a {padding: 5px 0;color: #800; background: #EDEDED;}
+.holiday, a {color: #654; text-decoration: none;}
+.desc {color: #654; text-decoration: underline;}
+.today {font-weight: bold; color: #b00; background-color: #EDEDED; outline: 1px outset #888;}
+.today:before {content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAMCAYAAAC0qUeeAAAABGdBTUEAAK/INwWK6QAAAT5JREFUKFNlj79qwlAchcXFB2gnu7VDlz5A0kHsFEgWSaZk6B4MdhCELvm3ZImLguCgCaIhaJE4OgmKovB7irxIes8lcWgvfHA457twb60oilp1BEFoiqJomKY51XV9iozuLlRyq9V67Xa7h9vtRnmec5DRYbvL7Xb7qdPpHGazGS2XS0qShIOMDhscLkuS9GkYBg0GA3Ich2zb5iCjwwaHy7Isz3u9HgVBQKPRiCaTCQcZHTZFUeZc1jRt4XkeRVFE6/WattstBzmOY/J9n1RVXXDZsqx+GIa03+/pdDrR+XzmIKMbDof4aJ/L4/H4w3Xdy/V6pb8HHXv7BQ6XWfeSpunXarX6Z6PDBqeSHxnvWZZ973a7H/bW42azOSKjwwankhuMJkNk6AyrBBkdtkYl18sLD4xnxlsJMjps9V/r1TR+8nbKAwAAAABJRU5ErkJggg==);}
+.today .holiday, .today .desc {color: #555; }
+.week, .week_head {border-right: 1px solid #222;background:#FCFCFC;}
+#content {border: 0px outset #BBB; margin: auto; width: 99%;max-width: 450px;text-align: center;}
+#calendar {}
+#calendar:before {content: "Calendar:"; font: bold 1.2em "Bitstream vera sans", Verdana, Helvetica, sans-serif;}
+#options {margin: 20px 0 0 0; display: block;}

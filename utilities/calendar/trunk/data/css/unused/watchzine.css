@@ -1,0 +1,79 @@
+@import "menu.css";
+body {
+background-color: #ccc;
+font: 11px Verdana, serif, georgia;
+color: #000;
+margin: 5px;
+padding: 5px;
+}
+select, .button {
+font: 11px Verdana, serif, georgia;
+background-color: #fff;
+border: 1px solid #000;
+}
+a:link, a:hover, a:active, a:visited {
+text-decoration: none;
+color: #f00;
+border-bottom: 1px dotted #000;
+}
+.head, #more_options_title {
+font-weight: bold;
+background-color: #dedfde;
+}
+.head a {
+font-weight: normal;
+border-bottom: 0px;
+}
+.head td {
+border-top: 1px solid #000;
+border-bottom: 1px solid #000;
+}
+.holiday, .desc {
+color: #f00;
+}
+.today {
+font-weight: bold;
+background-color: #eee;
+border: 1px solid #000;
+}
+.week_head, .dow td {
+background-color: #eee;
+border-bottom: 1px solid #000;
+}
+.week, .week_head {
+border-right: 1px solid #000;
+background-color: #eee;
+}
+#content {
+margin: auto;
+min-width: 182px;
+max-width: 200px;
+text-align: center;
+}
+#cal1, #cal2, #cal3 {
+border: 1px solid #000;
+border-top: none;
+background-color: #fff;
+}
+#cal2, #cal3 {
+margin-top: 10px;
+}
+#more_options_title {
+display: block;
+margin-top: 10px;
+clear: both;
+content: "Options";
+border-top: 1px solid #000;
+border-bottom: 1px solid #000;
+}
+#more_options {
+border: 1px solid #000;
+border-top: none;
+background-color: #eee;
+}
+#at, #clock_button {
+font-weight: bold;
+}
+#popup {
+background-color: #fff;
+}

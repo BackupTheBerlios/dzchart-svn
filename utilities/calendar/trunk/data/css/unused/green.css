@@ -1,0 +1,29 @@
+@import "menu.css";
+body {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #000; background-color: #3CB371;}
+td {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #000;}
+select {background-color: #00FF7F; font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #000;}
+.button {position: relative; background-color: #00FF7F; color: #000;} /* style for buttons */
+.dow {font-family: Verdana, Helvetica, Arial; font-size: 8pt; background-color: lightgrey; color: #000; min-width: 24px;
+max-width: 29px;} /* style for days of week (Mon, Tue, etc) */
+.head {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #000; background-color: #00FF7F;} /* style for month and year (April 2003, May 2003, etc) */
+.holiday {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #ADFF2F;} /* style for holidays */
+.desc {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #ADFF2F; text-decoration: underline;} /* style for holidays with description */
+.day {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #000;} /* style for days */
+.today {font-family: Verdana, Helvetica, Arial; font-size: 8pt; font-weight: bold; color: #000; background-color: Lime; border-width: 1px; border-style:solid; border-color: #000;} /* style for today */
+.week, .week_head {border-right: 1px solid #000;}
+a {font-family: Verdana, Helvetica, Arial; font-size: 8pt; color: #000; text-decoration: none;} /* style for links */
+#content {
+margin: auto;
+min-width: 182px;
+max-width: 200px;
+text-align: center;
+}
+#calendar {
+border: 1px solid #000;
+}
+#more_options_title {
+font-style: italic;
+}
+#at, #clock_button {
+font-weight: bold;
+}

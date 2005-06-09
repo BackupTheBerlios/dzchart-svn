@@ -1,0 +1,76 @@
+@import "menu.css";
+body {font-family: Verdana, Helvetica, Arial; font-size: 11px; color: InfoText; background-color: ThreeDShadow;}
+td {font-family: Verdana, Helvetica, Arial; font-size: 11px; color: InfoText;}
+select {background-color: Menu; font-family: Verdana, Helvetica, Arial; font-size: 11px; color: MenuText;}
+.button {position: relative; background-color: ButtonFace; color: ButtonText;} /* style for buttons */
+/* style for days of week (Mon, Tue, etc) */
+.dow {
+font-family: Verdana, Helvetica, Arial;
+font-size: 11px;
+background-color: Menu;
+color: MenuText;
+min-width: 24px;
+max-width: 29px;
+}
+.dow td {
+color: MenuText;
+}
+.dow td:active/*hover*/ {
+border-top: 1px outset ThreeDLightShadow;
+border-left: 1px outset ThreeDLightShadow;
+border-right: 1px ridge ThreeDDarkShadow;
+border-bottom: 1px ridge ThreeDDarkShadow;
+}
+.head, #more_options_title {
+font-family: Verdana, Helvetica, Arial;
+font-size: 11px;
+color: CaptionText;
+background-color: ActiveCaption;
+} /* style for month and year (April 2003, May 2003, etc) */
+.head td, .head a {color: CaptionText;}
+.holiday {font-family: Verdana, Helvetica, Arial; font-size: 11px; color: Highlight;} /* style for holidays */
+.today .holiday {color: HighlightText;}
+.desc {font-family: Verdana, Helvetica, Arial; font-size: 11px; color: Highlight; text-decoration: underline;} /* style for holidays with description */
+.day {font-family: Verdana, Helvetica, Arial; font-size: 11px; color: InfoText;} /* style for days */
+.today {font-family: Verdana, Helvetica, Arial; font-size: 11px; font-weight: bold; color: HighlightText; background-color: Highlight; border-width: 1px; border-style:solid; border-color: InfoText;} /* style for today */
+.week, .week_head {border-right: 1px solid ThreeDDarkShadow;}
+a {font-family: Verdana, Helvetica, Arial; font-size: 11px; color: Highlight; text-decoration: none;} /* style for links */
+#content {
+margin: auto;
+min-width: 182px;
+max-width: 200px;
+text-align: center;
+}
+#calendar {
+/*border: 1px solid InfoText;*/
+}
+#cal1, #cal2, #cal3, #more_options {
+border-top: 2px outset ThreeDLightShadow;
+border-left: 2px outset ThreeDLightShadow;
+border-right: 2px ridge ThreeDDarkShadow;
+border-bottom: 2px ridge ThreeDDarkShadow;
+margin-bottom: 10px;
+}
+#cal1 {
+background-color: ThreeDLightShadow;
+}
+#cal2 {
+background-color: Window;
+}
+#cal3 {
+background-color: ThreeDLightShadow;
+}
+#navigation {
+margin-bottom: 10px;
+}
+#more_options {
+background-color: Menu;
+}
+#more_options_title {
+display: block;
+font-style: normal;
+font-weight: bold;
+margin-top: 0px;
+clear: both;
+content: "Options";
+}
