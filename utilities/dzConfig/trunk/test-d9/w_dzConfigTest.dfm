@@ -3,12 +3,8 @@ object f_dzConfigTest: Tf_dzConfigTest
   Top = 216
   Width = 327
   Height = 362
-  HorzScrollBar.Range = 252
-  VertScrollBar.Range = 302
   ActiveControl = ed_StringSetting1
-  BorderIcons = [biSystemMenu]
-  BorderStyle = bsDialog
-  Caption = 'autoconfig test'
+  Caption = 'dzConfig test'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

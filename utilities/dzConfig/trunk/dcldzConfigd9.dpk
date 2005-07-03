@@ -29,7 +29,7 @@ package dcldzConfigd9;
 requires
   rtl,
   designide,
-  rtldzAutoConfigd9;
+  dzConfigd9;
 
 contains
   u_dzConfigRegister in 'u_dzConfigRegister.pas';

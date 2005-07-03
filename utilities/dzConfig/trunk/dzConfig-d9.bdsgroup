@@ -11,15 +11,14 @@
 	<Default.Personality>  <Projects>
       <Projects Name="dzConfigd9.bpl">dzConfigd9.bdsproj</Projects>
       <Projects Name="dcldzConfigd9.bpl">dcldzConfigd9.bdsproj</Projects>
-      <Projects Name="AutoConfigTestD9.exe">test-d9\AutoConfigTestD9.bdsproj</Projects>
-      <Projects Name="Targets">dzConfigd9.bpl dcldzConfigd9.bpl AutoConfigTestD9.exe</Projects>
+      <Projects Name="dzConfigTestD9.exe">test-d9\dzConfigTestD9.bdsproj</Projects>
+      <Projects Name="Targets">dzConfigd9.bpl dcldzConfigd9.bpl dzConfigTestD9.exe</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{7AD165C1-1EE7-462F-B367-1CEFE864ABB2}">
         <Dependency GUID="{0E2B11EA-752B-401C-8DD1-1F3E9E4A0A1C}"/>
       </Dependency>
       <Dependency GUID="{951348C5-7256-436D-8C67-ADDECA9C3DAA}">
-        <Dependency GUID="{0E2B11EA-752B-401C-8DD1-1F3E9E4A0A1C}"/>
         <Dependency GUID="{7AD165C1-1EE7-462F-B367-1CEFE864ABB2}"/>
       </Dependency>
     </Dependencies>
