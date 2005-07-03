@@ -1,4 +1,4 @@
-object f_AutoConfigTest: Tf_AutoConfigTest
+object f_dzConfigTest: Tf_dzConfigTest
   Left = 452
   Top = 216
   Width = 327

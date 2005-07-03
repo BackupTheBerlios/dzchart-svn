@@ -11,6 +11,7 @@ uses
   QForms;
 {$ENDIF linux}
 {$IFDEF mswindows}
+  Windows,
   Forms;
 {$ENDIF mswindows}
 

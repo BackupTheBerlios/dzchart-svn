@@ -91,7 +91,7 @@ ImageBase=4194304
 ExeDescription=dummzeuch.de Auto Config - runtime package
 [Directories]
 OutputDir=q:\test
-UnitOutputDir=q:\dzautoconfig\dcu
+UnitOutputDir=q:\dzconfig\dcu
 PackageDLLOutputDir=Q:\bpl
 PackageDCPOutputDir=Q:\bpl\dcp
 SearchPath=$(DELPHI)\Source\Toolsapi;S:\headwork
