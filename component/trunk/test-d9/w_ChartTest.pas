@@ -154,11 +154,11 @@ procedure Tf_ChartTest.Button1Click(Sender: TObject);
 var
   wmf: TMetafile;
 var
-  svg: IdzGraphics;
+  svg: IdzSvgGraphics;
 begin
   svg := TdzSvgGraphics.Create;
   XYChart.PaintTo(svg);
-  (svg as IdzSvgGraphics).WriteToFile('c:\dzcharttext.svg');
+  svg.WriteToFile('c:\dzcharttext.svg');
 
   exit;
   if XYChart.BottomAxis.LabelOrientation = loVertical then

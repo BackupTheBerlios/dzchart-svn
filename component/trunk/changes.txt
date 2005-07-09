@@ -52,3 +52,13 @@
 
 2005-04-24
 * added two new components TdzLineStyleCombo and TdzPointStyleCombo to select the line / point style
+
+2005-07-09
+* Fixed two memory leaks:
+- TdzCustomXYChart did not free FDataSeriesList -> fixed by declaring it a IInterfaceList
+  rather than TInterfaceList
+- TdzSvgWriter did not free it's Font
+* implemented TdzSvgGraphics.WriteToStream and made TdzSvgGraphics use it
+* IdzSvgGraphics now descends from IdzGraphics
+* in Delphi2005 version of Tf_ChartTest.Button1click, changed declaration of svg to
+  IdzSvgGraphics, getting rid of the typecast later in the code.

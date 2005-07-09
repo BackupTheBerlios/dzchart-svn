@@ -389,7 +389,7 @@ type
     fPoints: TObjectList;
     {: @name stores an internally used list of IdzSingleValueDataSeries and
        IdzMultiValueDataSeries interfaces }
-    fDataSeriesList: TInterfaceList;
+    fDataSeriesList: IInterfaceList;
     {: @name stores the OnScaling event }
     FOnScaling: TOnScaling;
     {: @name stores the OnGetPointHint event }

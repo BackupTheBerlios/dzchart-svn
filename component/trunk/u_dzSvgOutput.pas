@@ -93,7 +93,7 @@ type
   end;
 
 type
-  IdzSvgGraphics = interface ['{BA806F85-BEA9-D911-995B-000854097AB5}']
+  IdzSvgGraphics = interface(IdzGraphics) ['{BA806F85-BEA9-D911-995B-000854097AB5}']
     function AsSvg: string;
     procedure WriteToFile(const _Filename: string);
     procedure WriteToStream(_st: TStream);
@@ -177,6 +177,7 @@ end;
 
 destructor TdzSvgWriter.Destroy;
 begin
+  FFont.Free;
   FPen.Free;
   FBrush.Free;
   FContent.Free;
@@ -530,20 +531,22 @@ end;
 
 procedure TdzSvgGraphics.WriteToFile(const _Filename: string);
 var
-  t: TextFile;
+  st: TFileStream;
 begin
-  AssignFile(t, _Filename);
-  Rewrite(t);
+  st := TFileStream.Create(_Filename, fmCreate or fmShareExclusive);
   try
-    Write(t, AsSvg);
+    WriteToStream(st);
   finally
-    CloseFile(t);
+    st.Free
   end;
 end;
 
 procedure TdzSvgGraphics.WriteToStream(_st: TStream);
+var
+  S: string;
 begin
-  // not implemented
+  S := AsSvg;
+  _st.WriteBuffer(Pointer(S)^, Length(S));
 end;
 
 { TdzSvgCanvas }
