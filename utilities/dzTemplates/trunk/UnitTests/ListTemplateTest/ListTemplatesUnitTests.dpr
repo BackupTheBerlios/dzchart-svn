@@ -19,6 +19,9 @@ program ListTemplatesUnitTests;
 {%File '..\..\Templates\t_dzListInterfaceTemplate.tpl'}
 {%File '..\..\Templates\t_dzIntegerSortedListTemplate.tpl'}
 {%File '..\..\Templates\t_dzIntegerSortedObjectListTemplate.tpl'}
+{%File '..\..\Templates\t_dzSortedListInterfaceTemplate.tpl'}
+{%File '..\..\Templates\t_dzObjectListTemplate.tpl'}
+{%File '..\..\Templates\t_dzSortedObjectListTemplate.tpl'}
 
 uses
   Forms,
@@ -29,12 +32,10 @@ uses
   u_dzQuicksort in '..\..\Units\u_dzQuicksort.pas',
   i_MyItemSortedList in '..\..\Examples\i_MyItemSortedList.pas',
   u_MyItemList in '..\..\Examples\u_MyItemList.pas',
-  t_dzSortedListInterfaceTemplate in '..\..\Templates\t_dzSortedListInterfaceTemplate.tpl',
   u_MyItemSortedList in '..\..\Examples\u_MyItemSortedList.pas',
   u_MyItem in '..\..\Examples\u_MyItem.pas',
   i_MyItemList in '..\..\Examples\i_MyItemList.pas',
-  u_MyItemIntList in '..\..\Examples\u_MyItemIntList.pas',
-  t_dzObjectListTemplate in '..\..\Templates\t_dzObjectListTemplate.tpl';
+  u_MyItemIntList in '..\..\Examples\u_MyItemIntList.pas';
 
 {$R *.RES}
 

@@ -23,8 +23,9 @@ type
 {$INCLUDE 't_dzSortedListTemplate.tpl'}
 
 type
-  {: This is a list storing items that are sorted by an integer number,
-     any class built on this template must implement the KeyOf method. }
+  {: This extends _DZ_SORTED_LIST_TEMPLATE for storing items that are sorted by an
+     integer number, any class built on this template must implement the KeyOf method
+     to return an integer. }
   _DZ_INTEGER_SORTED_LIST_TEMPLATE_ = class(_DZ_SORTED_LIST_TEMPLATE_)
   protected
     {: compares two keys, returns 0 if they are equal, >0 if Key1>Key2 and <0 if Key1<Key2 }

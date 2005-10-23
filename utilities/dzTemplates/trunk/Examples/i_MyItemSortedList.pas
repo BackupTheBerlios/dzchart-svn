@@ -15,7 +15,7 @@ type
 {$INCLUDE 't_dzSortedListInterfaceTemplate.tpl'}
 
 type
-  IMySortedItemList = interface(_DZ_SORTED_LIST_TEMPLATE_INTERFACE_)
+  IMySortedItemList = interface(_DZ_SORTED_LIST_INTERFACE_TEMPLATE_)
     ['{75759FED-F7FA-407F-92F0-F8C6A6A6109C}']
   end;
 

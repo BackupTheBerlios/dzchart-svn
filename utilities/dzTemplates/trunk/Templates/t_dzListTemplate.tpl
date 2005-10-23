@@ -24,19 +24,32 @@ type
 type
   _DZ_LIST_TEMPLATE_ = class(_LIST_ANCESTOR_)
   private
+    {: This actually stores the items }
     FItems: _LIST_CONTAINER_;
-    function GetItems(_Idx: integer): _ITEM_TYPE_;
+    {: Getter function for Items property }
+    function _GetItems(_Idx: integer): _ITEM_TYPE_;
+  protected
+    {: Frees an item (does nothing here, must be overwritten }
     procedure FreeItem(_Item: _ITEM_TYPE_); virtual;
   public
+    {: Creates a list for storing items }
     constructor Create;
+    {: Calls FreeItem for alle items and frees the list }
     destructor Destroy; override;
+    {: Returns the number of items stored in the list }
     function Count: integer;
+    {: Deletes all items from the list without calling FreeItem }
     procedure DeleteAll;
-    function Extract(_Idx: integer): _ITEM_TYPE_;
-    procedure FreeAll;
-    function Insert(_Item: _ITEM_TYPE_): integer; virtual;
+    {: Exchanges the two items at index Idx1 and Idx2 }
     procedure Exchange(_Idx1, _Idx2: integer);
-    property Items[_Idx: integer]: _ITEM_TYPE_ read GetItems; default;
+    {: removes the item with index Idx from the list and returns it }
+    function Extract(_Idx: integer): _ITEM_TYPE_;
+    {: Calls FreeItem for all items and removes them from the list }
+    procedure FreeAll;
+    {: inserts an item into the list and returns its index }
+    function Insert(_Item: _ITEM_TYPE_): integer; virtual;
+    {: allows accessing the items in the list by index }
+    property Items[_Idx: integer]: _ITEM_TYPE_ read _GetItems; default;
   end;
 
 {$ENDIF __DZ_LIST_TEMPLATE_SECOND_PASS__}
@@ -104,10 +117,10 @@ end;
 
 procedure _DZ_LIST_TEMPLATE_.FreeItem(_Item: _ITEM_TYPE_);
 begin
-//  _Item.Free;
+  // do nothing, override if the items must be freed
 end;
 
-function _DZ_LIST_TEMPLATE_.GetItems(_Idx: integer): _ITEM_TYPE_;
+function _DZ_LIST_TEMPLATE_._GetItems(_Idx: integer): _ITEM_TYPE_;
 begin
   Result := _ITEM_TYPE_(FItems[_Idx]);
 end;

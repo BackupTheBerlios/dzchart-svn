@@ -21,8 +21,11 @@ type
 {$INCLUDE 't_dzSortedListTemplate.tpl'}
 
 type
+  {: Extends _DZ_SORTED_LIST_TEMPLATE_ to call the item's Free method in FreeItem,
+     thereby allowing to store any TObject descendant. }
   _DZ_SORTED_OBJECT_LIST_TEMPLATE_ = class(_DZ_SORTED_LIST_TEMPLATE_)
   protected
+    {: calls the Item's Free method }
     procedure FreeItem(_Item: _ITEM_TYPE_); override;
   end;
 

@@ -12,16 +12,24 @@ type
 {$IFNDEF __DZ_LIST_INTERFACE_TEMPLATE_SECOND_PASS__}
 
 type
+  {: This interface declares all public methods a _DZ_LIST_TEMPLATE_ implements }
   _DZ_LIST_INTERFACE_TEMPLATE_ = interface
+    {: Getter method for the Items property }
+    function _GetItems(_Idx: integer): _ITEM_TYPE_;
+    {: Returns the number of items stored in the list }
     function Count: integer;
+    {: Deletes all items from the list without calling FreeItem }
     procedure DeleteAll;
+    {: Exchanges the two items at index Idx1 and Idx2 }
     procedure Exchange(_Idx1, _Idx2: integer);
+    {: removes the item with index Idx from the list and returns it }
     function Extract(_Idx: integer): _ITEM_TYPE_;
+    {: Calls FreeItem for all items and removes them from the list }
     procedure FreeAll;
-    procedure FreeItem(_Item: _ITEM_TYPE_);
-    function GetItems(_Idx: integer): _ITEM_TYPE_;
+    {: inserts an item into the list and returns its index }
     function Insert(_Item: _ITEM_TYPE_): integer;
-    property Items[_Idx: integer]: _ITEM_TYPE_ read GetItems;
+    {: allows accessing the items in the list by index }
+    property Items[_Idx: integer]: _ITEM_TYPE_ read _GetItems; default;
   end;
 
 {$ENDIF __DZ_LIST_INTERFACE_TEMPLATE_SECOND_PASS__}

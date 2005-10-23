@@ -25,8 +25,9 @@ type
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
 
 type
-  {: This is a list storing items derived from TObject that are sorted by an integer number,
-     any class built on this template must implement the KeyOf method. }
+  {: This extends _DZ_SORTED_OBJECT_LIST_TEMPLATE_ to store objects sorted by
+     an integer number, any class built on this template must implement the KeyOf method
+     so it returns an integer. }
   _DZ_INTEGER_SORTED_OBJECT_LIST_TEMPLATE_ = class(_DZ_SORTED_OBJECT_LIST_TEMPLATE_)
   protected
     {: compares two keys, returns 0 if they are equal, >0 if Key1>Key2 and <0 if Key1<Key2 }

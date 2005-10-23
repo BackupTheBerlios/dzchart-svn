@@ -28,22 +28,43 @@ type
 {$INCLUDE 't_dzListTemplate.tpl'}
 
 type
+  {: extends _DZ_LIST_TEMPLATE_ to store the items sorted and allow searching for them }
   _DZ_SORTED_LIST_TEMPLATE_ = class(_DZ_LIST_TEMPLATE_)
   private
     FDuplicates: TDuplicates;
   protected
+    {: abstract function to return the key of an item for comparison }
     function KeyOf(const _Item: _ITEM_TYPE_): _KEY_TYPE_; virtual; abstract;
+    {: abstract function to compare the keys of two items, must return a value
+       <0 if Key1 < Key2, =0 if Key1 = Key2 and >0 if Key1 > Key2 }
     function Compare(const _Key1, _Key2: _KEY_TYPE_): integer; virtual; abstract;
+    {: compares the given key to the key of the item at index Idx }
     function CompareTo(const _Key; _Idx: integer): integer; virtual;
   public
+    {: creates a new sorted list }
     constructor Create;
+    {: Inserts an item at the position determined by comparing its key with the existing
+       items. }
     function Insert(_Item: _ITEM_TYPE_): integer; override;
+    {: searches for the item with the given Key
+       @param Key is the sought item's key
+       @param Idx is the index of the item, if found, only valid if the function returns true
+       @returns true, if the item has been found, false otherwise }
     function Search(_Key: _KEY_TYPE_; out _Idx: integer): boolean; overload;
 {$IFNDEF __DZ_SORTED_LIST_TEMPLATE_ITEM_TYPE_IS_INTEGER__}
-    // if ITEM_TYPE = integer we can not create overload Search methods,
-    // in this case declare the conditional define above in your unit.
+    {: searches for the item with the given key
+       @param Key is the sought item's key
+       @param Item is the item, if found, only valid if the function returns true
+       @returns true, if the item has been found, false otherwise
+       @note: if ITEM_TYPE = integer we can not create overloaded Search methods,
+              in this case declare the conditional define above in your unit. }
     function Search(_Key: _KEY_TYPE_; out _Item: _ITEM_TYPE_): boolean; overload;
 {$ENDIF __DZ_SORTED_LIST_TEMPLATE_ITEM_TYPE_IS_INTEGER__}
+    {: determines what to do if trying to insert an item with a key that already exists
+       in the list:
+       * dupError: will raise EListError
+       * dupIgnore: do not insert the item and return -1
+       * dupAccept: insert the item before the existing one }
     property Duplicates: TDuplicates read FDuplicates write FDuplicates;
   end;
 

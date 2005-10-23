@@ -26,8 +26,12 @@ type
 {$INCLUDE 't_dzListTemplate.tpl'}
 
 type
+  {: Extends _DZ_LIST_TEMPLATE_ to call Item.Free in FreeItem, so any
+     items derived from TObject can be stored without having to free them
+     explicitly. }
   _DZ_OBJECT_LIST_TEMPLATE_ = class(_DZ_LIST_TEMPLATE_)
   protected
+    {: Calls _Item.Free }
     procedure FreeItem(_Item: _ITEM_TYPE_); override;
   end;
 
