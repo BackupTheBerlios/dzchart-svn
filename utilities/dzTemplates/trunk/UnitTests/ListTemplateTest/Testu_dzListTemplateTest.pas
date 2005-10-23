@@ -20,7 +20,8 @@ uses
   u_MyItemList,
   i_MyItemSortedList,
   u_MyItemSortedList,
-  u_MyItemIntList;
+  u_MyItemIntList,
+  u_MyItemIntSortedList;
 
 type
   // Test methods for interface IMyItemList
@@ -53,7 +54,7 @@ type
     procedure testFreeAll;
   end;
 
-  // Test methods for class TMySortedList
+  // Test methods for class TMyItemSortedList
   TestTMySortedList = class(TTestCase)
   strict private
     FMySortedList: TMyItemSortedList;
@@ -91,6 +92,29 @@ type
     procedure testDeleteAll;
     procedure testExtract;
     procedure testFreeAll;
+  end;
+
+  // Test methods for class TMyItemIntSortedList
+  TestTMyItemIntSortedList = class(TTestCase)
+  strict private
+    FMyItemIntSortedList: TMyItemIntSortedList;
+    FExpectedItemLeak: integer;
+  private
+    procedure Fill;
+    procedure InsertDupError;
+  public
+    procedure SetUp; override;
+    procedure TearDown; override;
+  published
+    procedure testInsert;
+    procedure testInsertDupError;
+    procedure testInsertDupIgnore;
+    procedure testInsertDupAccept;
+    procedure testDeleteAll;
+    procedure testExtract;
+    procedure testFreeAll;
+    procedure testSearchIdx;
+    procedure testSearchItem;
   end;
 
 implementation
@@ -459,11 +483,140 @@ begin
   end;
 end;
 
+{ TestTMyItemIntSortedList }
+
+procedure TestTMyItemIntSortedList.SetUp;
+begin
+  FMyItemIntSortedList := TMyItemIntSortedList.Create;
+  ItemCount := 0;
+  FExpectedItemLeak := 0;
+end;
+
+procedure TestTMyItemIntSortedList.TearDown;
+begin
+  FMyItemIntSortedList.Free;
+  FMyItemIntSortedList := nil;
+  CheckEquals(FExpectedItemLeak, ItemCount, 'Items were not destroyed');
+end;
+
+procedure TestTMyItemIntSortedList.Fill;
+var
+  i: integer;
+begin
+  for i := INSERT_COUNT - 1 downto 0 do begin
+    FMyItemIntSortedList.Insert(TMyItem.Create(i));
+  end;
+end;
+
+procedure TestTMyItemIntSortedList.testDeleteAll;
+begin
+  Fill;
+  FMyItemIntSortedList.DeleteAll;
+  CheckEquals(0, FMyItemIntSortedList.Count, 'List is not empty');
+  CheckEquals(0, ItemCount, 'Items were destroyed');
+  FExpectedItemLeak := 0;
+end;
+
+procedure TestTMyItemIntSortedList.testExtract;
+var
+  i: integer;
+  Item: u_MyItem.IMyItem;
+begin
+  Fill;
+
+  for i := 0 to INSERT_COUNT - 1 do begin
+    Item := FMyItemIntSortedList.Extract(0);
+    CheckEquals(i, Item.Key, 'Key does not match');
+    CheckEquals(INSERT_COUNT - i, ItemCount, 'Item has been destroyed');
+    Item := nil;
+    CheckEquals(INSERT_COUNT - 1 - i, ItemCount, 'Item has not been destroyed');
+  end;
+  CheckEquals(0, FMyItemIntSortedList.Count, 'List is not empty');
+end;
+
+procedure TestTMyItemIntSortedList.testFreeAll;
+begin
+  Fill;
+  FMyItemIntSortedList.FreeAll;
+  CheckEquals(0, FMyItemIntSortedList.Count, 'List is not empty');
+  CheckEquals(0, ItemCount, 'Items were not destroyed');
+end;
+
+procedure TestTMyItemIntSortedList.testInsert;
+var
+  i: integer;
+  Item: u_MyItem.IMyItem;
+begin
+  Fill;
+
+  Assert(FMyItemIntSortedList.Count = INSERT_COUNT);
+
+  for i := 0 to FMyItemIntSortedList.Count - 1 do begin
+    Item := FMyItemIntSortedList.Items[i];
+    CheckEquals(i, Item.Key, 'Key does not match');
+  end;
+end;
+
+procedure TestTMyItemIntSortedList.testInsertDupAccept;
+begin
+  FMyItemIntSortedList.Duplicates := dupAccept;
+  Fill;
+
+  FMyItemIntSortedList.Insert(TMyItem.Create(5));
+  CheckEquals(INSERT_COUNT + 1, FMyItemIntSortedList.Count, 'Count does not match');
+
+  CheckEquals(INSERT_COUNT + 1, ItemCount, 'Number of created items does not match');
+end;
+
+procedure TestTMyItemIntSortedList.InsertDupError;
+begin
+  FMyItemIntSortedList.Insert(TMyItem.Create(5));
+end;
+
+procedure TestTMyItemIntSortedList.testInsertDupError;
+begin
+  Fill;
+
+  CheckException(InsertDupError, EListError, 'expected exception did not occur');
+end;
+
+procedure TestTMyItemIntSortedList.testInsertDupIgnore;
+begin
+  FMyItemIntSortedList.Duplicates := dupIgnore;
+  Fill;
+
+  FMyItemIntSortedList.Insert(TMyItem.Create(5));
+  CheckEquals(INSERT_COUNT, FMyItemIntSortedList.Count, 'Count does not match');
+
+  CheckEquals(INSERT_COUNT, ItemCount, 'Number of created items does not match');
+end;
+
+procedure TestTMyItemIntSortedList.testSearchIdx;
+var
+  Idx: integer;
+begin
+  Fill;
+
+  CheckTrue(FMyItemIntSortedList.Search(5, Idx), 'item not found');
+  CheckEquals(5, Idx, 'Item does not have expected index');
+end;
+
+procedure TestTMyItemIntSortedList.testSearchItem;
+var
+  Item: u_MyItem.IMyItem;
+begin
+  Fill;
+
+  CheckTrue(FMyItemIntSortedList.Search(5, Item), 'item not found');
+  CheckEquals(5, Item.Key, 'Item does not have expected Key');
+end;
+
 initialization
   // Register any test cases with the test runner
   RegisterTest(TestIMyItemList.Suite);
   RegisterTest(TestTMyItemList.Suite);
   RegisterTest(TestTMySortedList.Suite);
   RegisterTest(TestTMyItemIntList.Suite);
+  Registertest(TestTMyItemIntSortedList.Suite);
 end.
 

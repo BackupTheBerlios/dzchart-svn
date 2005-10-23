@@ -35,7 +35,8 @@ uses
   u_MyItemSortedList in '..\..\Examples\u_MyItemSortedList.pas',
   u_MyItem in '..\..\Examples\u_MyItem.pas',
   i_MyItemList in '..\..\Examples\i_MyItemList.pas',
-  u_MyItemIntList in '..\..\Examples\u_MyItemIntList.pas';
+  u_MyItemIntList in '..\..\Examples\u_MyItemIntList.pas',
+  u_MyItemIntSortedList in '..\..\Examples\u_MyItemIntSortedList.pas';
 
 {$R *.RES}
 

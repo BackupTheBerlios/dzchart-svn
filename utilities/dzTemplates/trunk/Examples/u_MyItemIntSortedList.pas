@@ -37,7 +37,7 @@ implementation
 
 function TMyItemIntSortedList.KeyOf(const _Item: IMyItem): integer;
 begin
-  Result := _Item.Id;
+  Result := _Item.Key;
 end;
 
 end.
