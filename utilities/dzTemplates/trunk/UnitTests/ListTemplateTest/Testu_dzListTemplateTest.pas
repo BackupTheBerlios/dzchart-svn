@@ -15,8 +15,12 @@ uses
   Classes,
   TestFramework,
   u_dzQuicksort,
-  u_dzListTest,
-  u_dzSortedListTest;
+  u_MyItem,
+  i_MyItemList,
+  u_MyItemList,
+  i_MyItemSortedList,
+  u_MyItemSortedList,
+  u_MyItemIntList;
 
 type
   // Test methods for interface IMyItemList
@@ -24,7 +28,6 @@ type
   strict private
     FIMyItemList: IMyItemList;
     FExpectedItemLeak: integer;
-    function Compare(_Item1, _Item2: u_dzListTest.TMyItem): integer;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -33,7 +36,6 @@ type
     procedure testExtract;
     procedure testDeleteAll;
     procedure testFreeAll;
-    procedure testSort;
   end;
 
   // Test methods for class TMyItemList
@@ -41,7 +43,6 @@ type
   strict private
     FMyItemList: TMyItemList;
     FExpectedItemLeak: integer;
-    function Compare(_Item1, _Item2: u_dzListTest.TMyItem): integer;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -50,13 +51,12 @@ type
     procedure testExtract;
     procedure testDeleteAll;
     procedure testFreeAll;
-    procedure testSort;
   end;
 
   // Test methods for class TMySortedList
   TestTMySortedList = class(TTestCase)
   strict private
-    FMySortedList: TMySortedList;
+    FMySortedList: TMyItemSortedList;
     FExpectedItemLeak: integer;
   private
     procedure Fill;
@@ -76,6 +76,23 @@ type
     procedure testSearchItem;
   end;
 
+  // Test methods for class IMyItemIntList
+  TestTMyItemIntList = class(TTestCase)
+  strict private
+    FMyItemIntList: TMyItemIntList;
+    FExpectedItemLeak: integer;
+  private
+    procedure Fill;
+  public
+    procedure SetUp; override;
+    procedure TearDown; override;
+  published
+    procedure testInsert;
+    procedure testDeleteAll;
+    procedure testExtract;
+    procedure testFreeAll;
+  end;
+
 implementation
 
 const
@@ -85,7 +102,7 @@ var
   ItemCount: integer = 0;
 
 type
-  TMyItem = class(u_dzListTest.TMyItem)
+  TMyItem = class(u_MyItem.TMyItem)
   public
     constructor Create(_Id: integer);
     destructor Destroy; override;
@@ -123,13 +140,13 @@ end;
 procedure TestIMyItemList.testExtract;
 var
   i: integer;
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   testInsert;
 
   for i := 0 to INSERT_COUNT - 1 do begin
     Item := FIMyItemList.Extract(0);
-    CheckEquals(i, Item.Id, 'Id does not match');
+    CheckEquals(i, Item.Key, 'Key does not match');
     CheckEquals(INSERT_COUNT - i, ItemCount, 'Item has been destroyed');
     Item.Free;
     CheckEquals(INSERT_COUNT - 1 - i, ItemCount, 'Item has not been destroyed');
@@ -157,7 +174,7 @@ end;
 procedure TestIMyItemList.testInsert;
 var
   i: integer;
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   for i := 0 to INSERT_COUNT - 1 do begin
     FIMyItemList.Insert(TMyItem.Create(i));
@@ -167,24 +184,7 @@ begin
 
   for i := 0 to FIMyItemList.Count - 1 do begin
     Item := FIMyItemList.Items[i];
-    CheckEquals(i, Item.Id, 'Id does not match');
-  end;
-end;
-
-function TestIMyItemList.Compare(_Item1, _Item2: u_dzListTest.TMyItem): integer;
-begin
-  Result := _Item2.Id - _Item1.Id;
-end;
-
-procedure TestIMyItemList.testSort;
-var
-  i: integer;
-begin
-  testInsert;
-
-  FIMyItemList.Sort(Compare);
-  for i := 0 to FIMyItemList.Count - 1 do begin
-    CheckEquals(INSERT_COUNT - 1 - i, FIMyItemList.Items[i].Id);
+    CheckEquals(i, Item.Key, 'Key does not match');
   end;
 end;
 
@@ -206,13 +206,13 @@ end;
 procedure TestTMyItemList.testExtract;
 var
   i: integer;
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   testInsert;
 
   for i := 0 to INSERT_COUNT - 1 do begin
     Item := FMyItemList.Extract(0);
-    CheckEquals(i, Item.Id, 'Id does not match');
+    CheckEquals(i, Item.Key, 'Key does not match');
     CheckEquals(INSERT_COUNT - i, ItemCount, 'Item has been destroyed');
     Item.Free;
     CheckEquals(INSERT_COUNT - 1 - i, ItemCount, 'Item has not been destroyed');
@@ -240,7 +240,7 @@ end;
 procedure TestTMyItemList.testInsert;
 var
   i: integer;
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   for i := 0 to INSERT_COUNT - 1 do begin
     FMyItemList.Insert(TMyItem.Create(i));
@@ -250,24 +250,7 @@ begin
 
   for i := 0 to FMyItemList.Count - 1 do begin
     Item := FMyItemList.Items[i];
-    CheckEquals(i, Item.Id, 'Id does not match');
-  end;
-end;
-
-function TestTMyItemList.Compare(_Item1, _Item2: u_dzListTest.TMyItem): integer;
-begin
-  Result := _Item2.Id - _Item1.Id;
-end;
-
-procedure TestTMyItemList.testSort;
-var
-  i: integer;
-begin
-  testInsert;
-
-  FMyItemList.Sort(Compare);
-  for i := 0 to FMyItemList.Count - 1 do begin
-    CheckEquals(INSERT_COUNT - 1 - i, FMyItemList.Items[i].Id);
+    CheckEquals(i, Item.Key, 'Key does not match');
   end;
 end;
 
@@ -275,7 +258,7 @@ end;
 
 procedure TestTMySortedList.SetUp;
 begin
-  FMySortedList := TMySortedList.Create;
+  FMySortedList := TMyItemSortedList.Create;
   ItemCount := 0;
 end;
 
@@ -307,13 +290,13 @@ end;
 procedure TestTMySortedList.testExtract;
 var
   i: integer;
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   Fill;
 
   for i := 0 to INSERT_COUNT - 1 do begin
     Item := FMySortedList.Extract(0);
-    CheckEquals(i, Item.Id, 'Id does not match');
+    CheckEquals(i, Item.Key, 'Key does not match');
     CheckEquals(INSERT_COUNT - i, ItemCount, 'Item has been destroyed');
     Item.Free;
     CheckEquals(INSERT_COUNT - 1 - i, ItemCount, 'Item has not been destroyed');
@@ -332,7 +315,7 @@ end;
 procedure TestTMySortedList.testInsert;
 var
   i: integer;
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   Fill;
 
@@ -340,7 +323,7 @@ begin
 
   for i := 0 to FMySortedList.Count - 1 do begin
     Item := FMySortedList.Items[i];
-    CheckEquals(i, Item.Id, 'Id does not match');
+    CheckEquals(i, Item.Key, 'Key does not match');
   end;
 end;
 
@@ -394,12 +377,86 @@ end;
 
 procedure TestTMySortedList.testSearchItem;
 var
-  Item: u_dzListTest.TMyItem;
+  Item: u_MyItem.TMyItem;
 begin
   Fill;
 
   CheckTrue(FMySortedList.Search(5, Item), 'item not found');
-  CheckEquals(5, Item.Id, 'Item does not have expected Id');
+  CheckEquals(5, Item.Key, 'Item does not have expected Key');
+end;
+
+{ TestTMyItemIntList }
+
+procedure TestTMyItemIntList.Fill;
+var
+  i: integer;
+begin
+  for i := 0 to INSERT_COUNT - 1 do begin
+    FMyItemIntList.Insert(TMyItem.Create(i));
+  end;
+end;
+
+procedure TestTMyItemIntList.SetUp;
+begin
+  FMyItemIntList := TMyItemIntList.Create;
+  ItemCount := 0;
+  FExpectedItemLeak := 0;
+end;
+
+procedure TestTMyItemIntList.TearDown;
+begin
+  FMyItemIntList.Free;
+  CheckEquals(FExpectedItemLeak, ItemCount, 'Items were not destroyed');
+end;
+
+procedure TestTMyItemIntList.testDeleteAll;
+begin
+  Fill;
+  FMyItemIntList.DeleteAll;
+  CheckEquals(0, FMyItemIntList.Count, 'List is not empty');
+  CheckEquals(0, ItemCount, 'Items were not destroyed');
+end;
+
+procedure TestTMyItemIntList.testExtract;
+var
+  i: integer;
+  Item: u_MyItem.IMyItem;
+begin
+  Fill;
+
+  for i := 0 to INSERT_COUNT - 1 do begin
+    Item := FMyItemIntList.Extract(0);
+    CheckEquals(i, Item.Key, 'Key does not match');
+    CheckEquals(INSERT_COUNT - i, ItemCount, 'Item has been destroyed');
+    Item := nil;
+    CheckEquals(INSERT_COUNT - 1 - i, ItemCount, 'Item has not been destroyed');
+  end;
+  CheckEquals(0, FMyItemIntList.Count, 'List is not empty');
+end;
+
+procedure TestTMyItemIntList.testFreeAll;
+begin
+  Fill;
+  FMyItemIntList.FreeAll;
+  CheckEquals(0, FMyItemIntList.Count, 'List is not empty');
+  CheckEquals(0, ItemCount, 'Items were not destroyed');
+end;
+
+procedure TestTMyItemIntList.testInsert;
+var
+  i: integer;
+  Item: u_MyItem.IMyItem;
+begin
+  for i := 0 to INSERT_COUNT - 1 do begin
+    FMyItemIntList.Insert(TMyItem.Create(i));
+  end;
+  CheckEquals(INSERT_COUNT, FMyItemIntList.Count, 'Count does not match');
+  CheckEquals(INSERT_COUNT, ItemCount, 'Number of created items does not match');
+
+  for i := 0 to FMyItemIntList.Count - 1 do begin
+    Item := FMyItemIntList.Items[i];
+    CheckEquals(i, Item.Key, 'Key does not match');
+  end;
 end;
 
 initialization
@@ -407,5 +464,6 @@ initialization
   RegisterTest(TestIMyItemList.Suite);
   RegisterTest(TestTMyItemList.Suite);
   RegisterTest(TestTMySortedList.Suite);
+  RegisterTest(TestTMyItemIntList.Suite);
 end.
 

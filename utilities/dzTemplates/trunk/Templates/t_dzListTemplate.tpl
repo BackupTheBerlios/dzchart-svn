@@ -3,29 +3,30 @@ unit t_dzListTemplate;
 
 interface
 
+{: These units must be added to the uses clause of any class built on this template }
 uses
-  Classes,
-  u_dzQuicksort;
+  Classes;
 
+{: These types must be declared for each class built on this template }
 type
+  {: the ancestor class for the template, can be TObject or TInterfacedObject
+     or anything else you like}
+  _LIST_ANCESTOR_ = TInterfacedObject;
+  {: Container type used to actually store the items: TList or TInterfacelist }
+  _LIST_CONTAINER_ = TList;
+  {: The item type to be stored in the list }
   _ITEM_TYPE_ = TObject;
+
 {$ENDIF __DZ_LIST_TEMPLATE__}
 
 {$IFNDEF __DZ_LIST_TEMPLATE_SECOND_PASS__}
 
-{$IFNDEF __DZ_LIST_INTERFACE_TEMPLATE__}
 type
-  TOnCompareItems = function(_Item1, _Item2: _ITEM_TYPE_): integer of object;
-{$ENDIF __DZ_LIST_INTERFACE_TEMPLATE__}
-
-type
-  _DZ_LIST_TEMPLATE_ = class
-  {$IFDEF __DZ_LIST_TEMPLATE_IS_INTERFACED__}(TInterfacedObject){$ENDIF}
+  _DZ_LIST_TEMPLATE_ = class(_LIST_ANCESTOR_)
   private
-    FItems: TList;
-    FOnCompareItems: TOnCompareItems;
+    FItems: _LIST_CONTAINER_;
     function GetItems(_Idx: integer): _ITEM_TYPE_;
-    function CompareItems(_Idx1, _Idx2: integer): integer;
+    procedure FreeItem(_Item: _ITEM_TYPE_); virtual;
   public
     constructor Create;
     destructor Destroy; override;
@@ -33,11 +34,9 @@ type
     procedure DeleteAll;
     function Extract(_Idx: integer): _ITEM_TYPE_;
     procedure FreeAll;
-    procedure FreeItem(_Item: _ITEM_TYPE_); virtual;
     function Insert(_Item: _ITEM_TYPE_): integer; virtual;
-    procedure Sort(_OnCompareItems: TOnCompareItems);
     procedure Exchange(_Idx1, _Idx2: integer);
-    property Items[_Idx: integer]: _ITEM_TYPE_ read GetItems;
+    property Items[_Idx: integer]: _ITEM_TYPE_ read GetItems; default;
   end;
 
 {$ENDIF __DZ_LIST_TEMPLATE_SECOND_PASS__}
@@ -51,11 +50,6 @@ implementation
 
 { _DZ_LIST_TEMPLATE_ }
 
-function _DZ_LIST_TEMPLATE_.CompareItems(_Idx1, _Idx2: integer): integer;
-begin
-  Result := FOnCompareItems(FItems[_Idx1], FItems[_Idx2]);
-end;
-
 function _DZ_LIST_TEMPLATE_.Count: integer;
 begin
   Result := FItems.Count;
@@ -64,7 +58,7 @@ end;
 constructor _DZ_LIST_TEMPLATE_.Create;
 begin
   inherited Create;
-  FItems := TList.Create;
+  FItems := _LIST_CONTAINER_.Create;
 end;
 
 procedure _DZ_LIST_TEMPLATE_.DeleteAll;
@@ -79,7 +73,7 @@ var
 begin
   if Assigned(FItems) then begin
     for i := 0 to FItems.Count - 1 do begin
-      Item := FItems[i];
+      Item := _ITEM_TYPE_(FItems[i]);
       FreeItem(Item);
     end;
   end;
@@ -94,7 +88,7 @@ end;
 
 function _DZ_LIST_TEMPLATE_.Extract(_Idx: integer): _ITEM_TYPE_;
 begin
-  Result := FItems[_Idx];
+  Result := _ITEM_TYPE_(FItems[_Idx]);
   Fitems.Delete(_Idx);
 end;
 
@@ -103,30 +97,24 @@ var
   i: integer;
 begin
   for i := 0 to FItems.Count - 1 do begin
-    _ITEM_TYPE_(FItems[i]).Free;
+    FreeItem(_ITEM_TYPE_(FItems[i]));
   end;
   FItems.Clear;
 end;
 
 procedure _DZ_LIST_TEMPLATE_.FreeItem(_Item: _ITEM_TYPE_);
 begin
-  _Item.Free;
+//  _Item.Free;
 end;
 
 function _DZ_LIST_TEMPLATE_.GetItems(_Idx: integer): _ITEM_TYPE_;
 begin
-  Result := FItems[_Idx];
+  Result := _ITEM_TYPE_(FItems[_Idx]);
 end;
 
 function _DZ_LIST_TEMPLATE_.Insert(_Item: _ITEM_TYPE_): integer;
 begin
   Result := FItems.Add(_Item);
-end;
-
-procedure _DZ_LIST_TEMPLATE_.Sort(_OnCompareItems: TOnCompareItems);
-begin
-  FOnCompareItems := _OnCompareItems;
-  QuickSort(0, Count - 1, CompareItems, Exchange);
 end;
 
 {$ENDIF __DZ_LIST_TEMPLATE_SECOND_PASS__}

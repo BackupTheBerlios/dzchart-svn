@@ -3,22 +3,28 @@ unit t_dzSortedListTemplate;
 
 interface
 
+{: any class built on this template must add these units to the uses clause }
 uses
   Classes,
   u_dzQuicksort;
 
+{: these types must be declared for any class built on this template }
 type
-  _KEY_TYPE_ = integer;
+  {: the ancestor class for the template, can be TObject or TInterfacedObject
+     or anything else you like}
+  _LIST_ANCESTOR_ = TInterfacedObject;
+  {: Container type used to actually store the items: TList or TInterfacelist }
+  _LIST_CONTAINER_ = TList;
+  {: The item type to be stored in the list }
   _ITEM_TYPE_ = TObject;
+  {: The type of the item's keys }
+  _KEY_TYPE_ = integer;
 
 {$ENDIF __DZ_SORTED_LIST_TEMPLATE__}
 
 {$IFNDEF __DZ_SORTED_LIST_TEMPLATE_SECOND_PASS__}
 
 {$DEFINE __DZ_LIST_TEMPLATE__}
-{$IFDEF __DZ_SORTED_LIST_TEMPLATE_IS_INTERFACED__}
-{$DEFINE __DZ_LIST_TEMPLATE_IS_INTERFACED__}
-{$ENDIF __DZ_SORTED_LIST_TEMPLATE_IS_INTERFACED__}
 {$INCLUDE 't_dzListTemplate.tpl'}
 
 type
@@ -26,7 +32,7 @@ type
   private
     FDuplicates: TDuplicates;
   protected
-    function KeyOf(_Item: _ITEM_TYPE_): _KEY_TYPE_; virtual; abstract;
+    function KeyOf(const _Item: _ITEM_TYPE_): _KEY_TYPE_; virtual; abstract;
     function Compare(const _Key1, _Key2: _KEY_TYPE_): integer; virtual; abstract;
     function CompareTo(const _Key; _Idx: integer): integer; virtual;
   public
@@ -56,7 +62,7 @@ implementation
 
 function _DZ_SORTED_LIST_TEMPLATE_.CompareTo(const _Key; _Idx: integer): integer;
 begin
-  Result :=  Compare(_KEY_TYPE_(_Key), KeyOf(FItems[_Idx]));
+  Result :=  Compare(_KEY_TYPE_(_Key), KeyOf(_ITEM_TYPE_(FItems[_Idx])));
 end;
 
 constructor _DZ_SORTED_LIST_TEMPLATE_.Create;
@@ -92,7 +98,7 @@ var
 begin
   Result := Search(_Key, Idx);
   if Result then
-    _Item := FItems[Idx];
+    _Item := _ITEM_TYPE_(FItems[Idx]);
 end;
 
 {$ENDIF __DZ_SORTED_LIST_TEMPLATE_SECOND_PASS__}
