@@ -28,10 +28,11 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function Exists(const _Key: string): boolean;
+    function Contains(const _Key: string): boolean;
     function Extract(const _Key: string): _HASH_ITEM_;
     function FindKeyOf(_Item: _HASH_ITEM_; out _Key: string): boolean;
     function GetAllKeys(_Keys: TStrings): integer;
+    function Count: integer;
     property Keys[_Idx: integer]: string read GetKeys;
     property Items[_Idx: integer]: _HASH_ITEM_ read GetItems;
     property Values[const _Key: string]: _HASH_ITEM_ read GetValues write SetValues; default;
@@ -69,11 +70,16 @@ begin
   inherited;
 end;
 
-function _HASH_TEMPLATE_.Exists(const _Key: string): boolean;
+function _HASH_TEMPLATE_.Contains(const _Key: string): boolean;
 var
   Idx: integer;
 begin
   Result := FList.Find(_Key, Idx);
+end;
+
+function _HASH_TEMPLATE_.Count: integer;
+begin
+  Result := FList.Count;
 end;
 
 function _HASH_TEMPLATE_.Extract(const _Key: string): _HASH_ITEM_;
@@ -104,8 +110,9 @@ end;
 
 function _HASH_TEMPLATE_.GetAllKeys(_Keys: TStrings): integer;
 begin
-  _Keys.Assign(FList);
-  Result := _Keys.Count;
+  if Assigned(_Keys) then
+    _Keys.Assign(FList);
+  Result := FList.Count;
 end;
 
 function _HASH_TEMPLATE_.GetItems(_Idx: integer): _HASH_ITEM_;
