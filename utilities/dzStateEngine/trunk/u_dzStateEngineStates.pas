@@ -22,7 +22,7 @@ type
 
 {$DEFINE __DZ_INTEGER_SORTED_OBJECT_LIST_TEMPLATE__}
 type
-  _LIST_ANCESTOR_ = TInterfacedObject; // or TObject or anything else you like
+  _LIST_ANCESTOR_ = TObject;
   _LIST_CONTAINER_ = TList;
   _ITEM_TYPE_ = TStateEngineState;
 {$INCLUDE t_dzIntegerSortedObjectListTemplate.tpl}
