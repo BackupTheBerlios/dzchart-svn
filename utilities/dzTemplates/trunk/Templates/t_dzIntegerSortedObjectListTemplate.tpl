@@ -1,7 +1,7 @@
 {$IFNDEF __DZ_INTEGER_SORTED_OBJECT_LIST_TEMPLATE__}
 {: This unit declares a template for storing objects sorted by integers
    Usage: See u_MyItemSortedList example }
-unit t_dzIntegerSortedListTemplate;
+unit t_dzIntegerSortedObjectListTemplate;
 
 interface
 
@@ -12,7 +12,7 @@ uses
 
 {: these types must be declared for any class built on this template }
 type
-  _LIST_PARENT_ = TInterfacedObject; // or TObject or anything else you like
+  _LIST_ANCESTOR_ = TInterfacedObject; // or TObject or anything else you like
   _ITEM_TYPE_ = TObject;
 
 {$ENDIF __DZ_INTEGER_SORTED_OBJECT_LIST_TEMPLATE__}

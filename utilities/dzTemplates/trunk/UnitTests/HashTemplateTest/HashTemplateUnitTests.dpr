@@ -14,6 +14,8 @@ program HashTemplateUnitTests;
 {$APPTYPE CONSOLE}
 {$ENDIF}
 
+{%File '..\..\Templates\t_dzHashTemplate.tpl'}
+
 uses
   Forms,
   TestFramework,
