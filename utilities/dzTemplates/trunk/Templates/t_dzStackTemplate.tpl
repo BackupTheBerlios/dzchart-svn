@@ -59,14 +59,14 @@ end;
 
 procedure _STACK_TEMPLATE_.Push(_Item: _STACK_ITEM_);
 begin
-  FList.Add(_Item);
+  FList.Add(pointer(_Item));
 end;
 
 function _STACK_TEMPLATE_.Pop: _STACK_ITEM_;
 begin
   Assert(FList.Count >= 0);
 
-  Result := FList[FList.Count - 1];
+  Result := _STACK_ITEM_(FList[FList.Count - 1]);
   FList.Delete(FList.Count - 1);
 end;
 
@@ -74,7 +74,7 @@ function _STACK_TEMPLATE_.Peek: _STACK_ITEM_;
 begin
   Assert(FList.Count >= 0);
 
-  Result := FList[FList.Count - 1];
+  Result := _STACK_ITEM_(FList[FList.Count - 1]);
 end;
 
 function _STACK_TEMPLATE_.IsEmpty: boolean;

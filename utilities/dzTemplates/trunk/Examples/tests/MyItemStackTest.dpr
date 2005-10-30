@@ -39,3 +39,4 @@ begin
   Assert(Stack.Depth = 0);
   Stack.Free;
 end.
+

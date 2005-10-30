@@ -28,7 +28,6 @@ uses
   TestFramework,
   GUITestRunner,
   TextTestRunner,
-  Testu_dzListTemplateTest in 'Testu_dzListTemplateTest.pas',
   u_dzQuicksort in '..\..\Units\u_dzQuicksort.pas',
   i_MyItemSortedList in '..\..\Examples\i_MyItemSortedList.pas',
   u_MyItemList in '..\..\Examples\u_MyItemList.pas',
@@ -36,7 +35,9 @@ uses
   u_MyItem in '..\..\Examples\u_MyItem.pas',
   i_MyItemList in '..\..\Examples\i_MyItemList.pas',
   u_MyItemIntList in '..\..\Examples\u_MyItemIntList.pas',
-  u_MyItemIntSortedList in '..\..\Examples\u_MyItemIntSortedList.pas';
+  u_MyItemIntSortedList in '..\..\Examples\u_MyItemIntSortedList.pas',
+  u_MyItemQueue in '..\..\Examples\u_MyItemQueue.pas',
+  Testu_dzListTemplateTest in 'Testu_dzListTemplateTest.pas';
 
 {$R *.RES}
 
