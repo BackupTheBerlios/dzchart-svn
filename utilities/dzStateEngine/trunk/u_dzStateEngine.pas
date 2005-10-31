@@ -19,15 +19,18 @@ type
     FCurrentState: TStateEngineState;
     FStates: TStateEngineStatesList;
     FActions: TStateEngineActionList;
+    FEndStates: TStateEngineStatesList;
   public
     constructor Create;
     destructor Destroy; override;
     function RegisterState(const _Name: string; _Data: pointer = nil): TStateEngineState;
     function RegisterAction(const _Name: string): TStateEngineAction;
     procedure SetInitialState(_State: TStateEngineState);
+    procedure AddEndState(_State: TStateEngineState);
     function GetState: TStateEngineState;
     procedure ExecuteAction(_Action: TStateEngineAction);
     function IsActionAllowed(_Action: TStateEngineAction): boolean;
+    function IsInEndState: boolean;
   end;
 
 implementation
@@ -41,12 +44,20 @@ begin
   FStates.OwnsItems := true;
   FActions := TStateEngineActionList.Create;
   FCurrentState := nil;
+  FEndStates := TStateEngineStatesList.Create;
+  FEndStates.OwnsItems := false;
 end;
 
 destructor TStateEngine.Destroy;
 begin
+  FEndStates.Free;
   FStates.Free;
   inherited;
+end;
+
+procedure TStateEngine.AddEndState(_State: TStateEngineState);
+begin
+  FEndStates.Insert(_State);
 end;
 
 procedure TStateEngine.ExecuteAction(_Action: TStateEngineAction);
@@ -89,6 +100,13 @@ var
   ToState: TStateEngineState;
 begin
   Result := _Action.HasFromState(FCurrentState, ToState);
+end;
+
+function TStateEngine.IsInEndState: boolean;
+var
+  Idx: integer;
+begin
+  Result := FEndStates.Search(FCurrentState.GetKey, Idx);
 end;
 
 end.
