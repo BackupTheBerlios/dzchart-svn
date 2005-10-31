@@ -1,9 +1,10 @@
 object f_TrafficLight: Tf_TrafficLight
   Left = 416
   Top = 108
-  Width = 147
-  Height = 192
+  BorderStyle = bsDialog
   Caption = 'Traffic Light'
+  ClientHeight = 168
+  ClientWidth = 139
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +12,7 @@ object f_TrafficLight: Tf_TrafficLight
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object b_Close: TButton

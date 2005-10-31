@@ -6,7 +6,7 @@ uses
   SysUtils,
   Forms,
   u_dzStateEngineStates in 'u_dzStateEngineStates.pas',
-  u_dzQuicksort in '..\dzTemplates\Units\u_dzQuicksort.pas',
+  u_dzQuicksort in 'libs\dzTemplates\Units\u_dzQuicksort.pas',
   u_dzStateEngineTransitions in 'u_dzStateEngineTransitions.pas',
   u_dzStateEngineActions in 'u_dzStateEngineActions.pas',
   u_dzException in 'u_dzException.pas',
