@@ -73,25 +73,6 @@ implementation
 { TStringParser }
 
 constructor TStringParser.Create;
-type
-  TCharSet = set of char;
-
-  procedure MapCharsToActions(_Chars: TCharSet; _Action: TStateEngineAction);
-  var
-    c: char;
-    Actions: TCharActions;
-  begin
-    for c := low(char) to high(char) do begin
-      if c in _Chars then begin
-        if not FCharActions.Search(c, Actions) then begin
-          Actions := TCharActions.Create(c);
-          FCharActions.Insert(Actions);
-        end;
-        Actions.Insert(_Action);
-      end;
-    end;
-  end;
-
 begin
   inherited;
 
@@ -135,14 +116,14 @@ begin
   FCharActions := TCharSortedListOfActionLists.Create;
 
   // and initialize it
-  MapCharsToActions([''''], FActionQuote);
-  MapCharsToActions(['^'], FActionCaret);
-  MapCharsToActions(['#'], FActionHash);
-  MapCharsToActions(['$'], FActionDollar);
-  MapCharsToActions(['a'..'z', 'A'..'Z'], FActionAtoZaTOz);
-  MapCharsToActions(['0'..'9', 'a'..'f', 'A'..'F'], FActionHexDigit);
-  MapCharsToActions(['0'..'9'], FActionDigit);
-  MapCharsToActions([#1..#255] - [#13] - [#10] - [''''], FActionAnyNonQuoteCrLf);
+  FCharActions.MapCharsToActions([''''], FActionQuote);
+  FCharActions.MapCharsToActions(['^'], FActionCaret);
+  FCharActions.MapCharsToActions(['#'], FActionHash);
+  FCharActions.MapCharsToActions(['$'], FActionDollar);
+  FCharActions.MapCharsToActions(['a'..'z', 'A'..'Z'], FActionAtoZaTOz);
+  FCharActions.MapCharsToActions(['0'..'9', 'a'..'f', 'A'..'F'], FActionHexDigit);
+  FCharActions.MapCharsToActions(['0'..'9'], FActionDigit);
+  FCharActions.MapCharsToActions([#1..#255] - [#13] - [#10] - [''''], FActionAnyNonQuoteCrLf);
 
   // set the possible end states for the engine
   FEngine.AddEndState(FStateEndQuote);
