@@ -12,6 +12,9 @@ uses
   u_CharSortedListOfActionLists;
 
 type
+  TIsStringLiteral = (slNo, slYes, slPartial, slError);
+
+type
   {: A TStringParser validates a Pascal string literal
      Valid string literals are:
      * '<some text here>'
@@ -66,6 +69,15 @@ type
        @param s is the string to check
        @raises exception if there is an error }
     procedure Execute(const _s: string);
+    {: parses the 0 terminated string Buffer and returns true, if it starts with a string literal
+       @Buffer on input points to the first character, on output points to the
+          last character that is part of the string literal
+       @returns
+           slNo, if there is no string literal at the start
+           slYes, if the whole is a string literal
+           slPartial, if there is a string literal at the start but followed by other stuff
+           slError, if there is a string literal at the start but it wasn't finished at the end }
+    function Parse(var _Buffer: PChar): TIsStringLiteral;
   end;
 
 implementation
@@ -138,31 +150,101 @@ begin
   inherited;
 end;
 
-procedure TStringParser.Execute(const _s: string);
+// slNo, if there is no string literal at the start
+// slYes, if the whole is a string literal
+// slPartial, if there is a string literal at the start but followed by other stuff
+// slError, if there is a string literal at the start but it wasn't finished at the end }
+
+function TStringParser.Parse(var _Buffer: PChar): TIsStringLiteral;
 var
-  i: integer;
   Actions: TCharActions;
   Action: TStateEngineAction;
+  LastEndStatePos: PChar;
+  p: PChar;
 begin
   // restart the engine
   FEngine.SetInitialState(FStateEndQuote);
 
-  // for each character in s
-  i := 1;
-  while i <= Length(_s) do begin
-    // search the character
-    if not FCharActions.Search(_s[i], Actions) then
-      raise exception.CreateFmt('Invalid string literal (could not find action for character #%d  %s)', [i, _s[i]]);
+  LastEndStatePos := nil;
+  p := _Buffer;
+  while p^ <> #0 do begin
+    // search for the character
+    if not FCharActions.Search(p^, Actions) then begin
+      if LastEndStatePos = nil then
+        // we didn't even find a valid string part
+        Result := slNo
+      else begin
+        _Buffer := LastEndStatePos;
+        Result := slPartial;
+      end;
+      exit;
+    end;
+    // search for the (only one) allowed action for the character
     // search the (only one) allowed action for the character
-    if not Actions.SearchAllowedAction(FEngine, Action) then
-      raise exception.CreateFmt('Invalid string literal (could not find allowed action for character #%d %s)', [i, _s[i]]);
+    if not Actions.SearchAllowedAction(FEngine, Action) then begin
+      // if there is none, we found the end of the valid string part
+      if LastEndStatePos = nil then
+        // we didn't even find a valid string part
+        Result := slNo
+      else begin
+        _Buffer := LastEndStatePos;
+        Result := slPartial;
+      end;
+      exit;
+    end;
     // execute the action
     FEngine.ExecuteAction(Action);
-    Inc(i);
+    if FEngine.IsInEndState then
+      LastEndStatePos := p;
+    Inc(p);
   end;
-  // check that the engine is in an allowed end state
-  if not FEngine.IsInEndState then
-    raise exception.CreateFmt('Invalid string literal (invalid end state %s)', [FEngine.GetState.Name]);
+  if FEngine.IsInEndState then begin
+    if LastEndStatePos = nil then
+      // we didn't even find a valid string part
+      Result := slNo
+    else
+      Result := slYes;
+  end else begin
+    Result := slError;
+  end;
+  _Buffer := p - 1;
+end;
+
+procedure TStringParser.Execute(const _s: string);
+var
+  Buffer: PChar;
+  p: PChar;
+begin
+  Buffer := PChar(_s);
+  p := Buffer;
+  case Parse(p) of
+    slYes: exit;
+    slNo: raise exception.Create('This does not even start with a valid string literal');
+    slPartial: raise exception.CreateFmt('This is a string literal up to the %dth character (#%d %s)',
+        [p - Buffer + 1, Ord(p^), p^]);
+    slError: raise exception.Create('This is an unterminated string literal');
+  end;
+
+//  // restart the engine
+//  FEngine.SetInitialState(FStateEndQuote);
+//
+//  // for each character in s
+//  i := 1;
+//  while i <= Length(_s) do begin
+//    // search the character
+//    if not FCharActions.Search(_s[i], Actions) then
+//      raise exception.CreateFmt('Invalid string literal (could not find action for character #%d  %s)', [i, _s[i]]);
+//    // search the (only one) allowed action for the character
+//    if not Actions.SearchAllowedAction(FEngine, Action) then
+//      raise exception.CreateFmt('Invalid string literal (could not find allowed action for character #%d %s)', [i, _s[i]]);
+//    // execute the action
+//    FEngine.ExecuteAction(Action);
+//    Inc(i);
+//  end;
+//  // check that the engine is in an allowed end state
+//  if not FEngine.IsInEndState then
+//    raise exception.CreateFmt('Invalid string literal (invalid end state %s)', [FEngine.GetState.Name]);
 end;
 
 end.
+
