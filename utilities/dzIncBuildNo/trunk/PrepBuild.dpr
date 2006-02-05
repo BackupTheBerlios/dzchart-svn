@@ -1,4 +1,4 @@
-program IncBuildNo;
+program PrepBuild;
 
 {$APPTYPE CONSOLE}
 
