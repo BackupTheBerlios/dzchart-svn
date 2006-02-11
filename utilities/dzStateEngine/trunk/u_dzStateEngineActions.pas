@@ -16,6 +16,9 @@ type
 
 type
   TStateEngineAction = class
+  private
+    FBeforeOnExecute: TNotifyEvent;
+    FAfterExecute: TNotifyEvent;
   protected
     FKey: integer;
     FName: string;
@@ -27,7 +30,11 @@ type
     function HasFromState(_State: TStateEngineState): boolean; overload;
     function HasFromState(_State: TStateEngineState; out _ToState: TStateEngineState): boolean; overload;
     function GetKey: integer;
+    procedure doBeforeExecute;
+    procedure doAfterExecute;
     property Name: string read FName write FName;
+    property BeforeExecute: TNotifyEvent read FBeforeOnExecute write FBeforeOnExecute;
+    property AfterExecute: TNotifyEvent read FAfterExecute write FAfterExecute;
   end;
 
 {$DEFINE __DZ_INTEGER_SORTED_OBJECT_LIST_TEMPLATE__}
@@ -45,7 +52,7 @@ type
     procedure FreeItem(_Item: TStateEngineAction); override;
     function KeyOf(const _Item: TStateEngineAction): integer; override;
   public
-    constructor Create; 
+    constructor Create;
     property OwnsItems: boolean read FOwnsItems write FOwnsItems;
   end;
 
@@ -103,8 +110,20 @@ end;
 
 destructor TStateEngineAction.Destroy;
 begin
-  FTransitions.free;
+  FTransitions.Free;
   inherited;
+end;
+
+procedure TStateEngineAction.doBeforeExecute;
+begin
+  if Assigned(FBeforeOnExecute) then
+    FBeforeOnExecute(Self);
+end;
+
+procedure TStateEngineAction.doAfterExecute;
+begin
+  if Assigned(FAfterExecute) then
+    FAfterExecute(Self);
 end;
 
 function TStateEngineAction.GetKey: integer;

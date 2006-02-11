@@ -68,7 +68,9 @@ begin
   if not _Action.HasFromState(FCurrentState, ToState) then
     raise EActionNotAllowed.CreateFmt('Action %s not allowed in state %s.',
       [_Action.Name, FCurrentState.Name]);
+  _Action.doBeforeExecute;
   FCurrentState := ToState;
+  _Action.doAfterExecute;
 end;
 
 function TStateEngine.GetState: TStateEngineState;
@@ -79,7 +81,7 @@ end;
 function TStateEngine.RegisterAction(const _Name: string): TStateEngineAction;
 begin
   Result := TStateEngineAction.Create(FActions.Count + 1, _Name);
-  FActions.Insert(Result)
+  FActions.Insert(Result);
 end;
 
 function TStateEngine.RegisterState(const _Name: string; _Data: pointer = nil): TStateEngineState;
