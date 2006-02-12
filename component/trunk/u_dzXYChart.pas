@@ -91,26 +91,26 @@ type
   {: Defnies the orientation of the axis labels }
   TAxisLabelOrientation = (loHorizontal, loVertical);
   {: Event procedure type used in the @link(TdzXYChart.OnScaling) event
-     @param(Sender is the sending chart)
-     @param(MinX is the minimum X value to display in the chart)
-     @param(MaxX is the maximum X value to display in the chart)
-     @param(MinY is the minimum Y value to display in the chart)
-     @param(MaxY is the maximum Y value to display in the chart) }
+     @param Sender is the sending chart)
+     @param MinX is the minimum X value to display in the chart
+     @param MaxX is the maximum X value to display in the chart
+     @param MinY is the minimum Y value to display in the chart
+     @param MaxY is the maximum Y value to display in the chart }
   TOnScaling = procedure(_Sender: TObject; var _MinX, _MaxX, _MinY, _MaxY: Double) of object;
   {: Event procecure used in the @link(TdzChartAxis.OnFormatLabel) event.
-     @param(Sender is the sending axis)
-     @param(Value is the label's value to be formatted)
-     @param(Text is the actual label text, defaults to FloatToStr(Value) ) }
+     @param Sender is the sending axis
+     @param Value is the label's value to be formatted
+     @param Text is the actual label text, defaults to FloatToStr(Value) }
   TOnFormatAxisLabel = procedure(_Sender: TObject; _Value: Double; var _Text: string) of object;
   {: Event procedure used in the @link(TdzChartAxis.OnGetNextLabel) event.
-     @param(Sender is the sending axis)
-     @param(LabelIndex is the current label's index, starting with 0 and
-            by 1 after every call to this event)
-     @param(Value is the position of the next label)
-     @param(Stop is a boolean indicating whether the call returned a label for
+     @param Sender is the sending axis
+     @param LabelIndex is the current label's index, starting with 0 and
+            by 1 after every call to this event
+     @param Value is the position of the next label
+     @param Stop is a boolean indicating whether the call returned a label for
             the axis, it defaults to true so it must be set to false as long
             as there are labels to draw, the last call must set Stop to true
-            the value of Value will be ignored.) }
+            the value of Value will be ignored. }
   TOnGetNextAxisLabel = procedure(_Sender: TObject; _LabelIndex: integer; var _Value: double; var _Stop: boolean) of object;
 
 type
@@ -212,25 +212,25 @@ type
     {: Setter method for the LabelOrientation property }
     procedure SetLabelOrientation(_LabelOrientation: TAxisLabelOrientation);
     {: Initializes the default labels for the axis
-       @param(Size is the current axis size in pixels)
-       @param(Min is the minimum value of the axis as determined by the chart component)
-       @param(Max is the maximum value of the axis as determined by the chart component)
-       @param(Canvas is the canvas used to draw the axis) }
+       @param Size is the current axis size in pixels
+       @param Min is the minimum value of the axis as determined by the chart component
+       @param Max is the maximum value of the axis as determined by the chart component
+       @param Canvas is the canvas used to draw the axis }
     procedure InitDefaultLabels(_Size: integer; const _Min, _Max: double; const _Canvas: IdzCanvas);
     {: Calls the OnGetNextLabel event if assigned, otherwise uses the values of
        the Scale subcomponent to calculate the axis labels.
-       @param(Idx is the label index, starting with 0 and incremented by 1 after
-              each call)
-       @param(Value is the value of the next label)
-       @returns(true, if there is no (more) label, false otherwise) }
+       @param Idx is the label index, starting with 0 and incremented by 1 after
+              each call
+       @param Value is the value of the next label
+       @returns true, if there is no (more) label, false otherwise }
     function GetNextLabel(_Idx: integer; var _Value: double): boolean;
     {: Calls the OnFormatLabel event if assigned, otherwise the label will
        be formatted using FloatToStr(Value).
-       @param(Value is the value to be formatted)
-       @returns(A formatted label string) }
+       @param Value is the value to be formatted
+       @returns A formatted label string }
     function FormatLabel(const _Value: double): string;
     {: Calculates the space in pixels needed for drawing the axis' labels
-       @param(Canvas is the canvas used to calculate the space) }
+       @param Canvas is the canvas used to calculate the space }
     function CalcLabelingSpace(const _Canvas: IdzCanvas): integer; virtual;
 
     {: @name is a sub component @link(TdzAxisScale) describing how the axis is to be scaled }
@@ -356,15 +356,15 @@ type
   end;
 
   {: Event procedure used in the @link(TdzXYChart.OnGetPointHint) event.
-     @param(Sender is the sending chart)
-     @param(X is the X coordinate of the point)
-     @param(Y is the Y coordinate of the point)
-     @param(Hint is the hint text, initialized to
+     @param Sender is the sending chart
+     @param X is the X coordinate of the point
+     @param Y is the Y coordinate of the point
+     @param Hint is the hint text, initialized to
             @code(x = <xvalue>
                   y = <yvalue>)
             where the values are formatted calling the FormatLabel method
             of the respective axis.
-            If set to an empty string, no hint will be displayed.) }
+            If set to an empty string, no hint will be displayed. }
   TOnGetPointHint = procedure(_Sender: TObject; const _x, _y: double; var _Hint: string) of object;
 
   {: @name is the custom ancestor of TdzXYChart for drawing XY, scatter, line and bar charts }
@@ -399,19 +399,19 @@ type
     {: @name gets the maximum point count for all data series }
     function GetDataSeriesMaxPointCount: integer;
     {: @name draws a single point in a XY or Scatter chart
-       @param(Series is the data series for this point)
-       @param(AbsX is the absolute X position of the point in pixels (after scaling))
-       @param(AbsY is the absolute Y position of the point in pixels (after scaling))
-       @param(ForLegend is a boolean determining whether the point is drawn for
+       @param Series is the data series for this point
+       @param AbsX is the absolute X position of the point in pixels (after scaling)
+       @param AbsY is the absolute Y position of the point in pixels (after scaling)
+       @param ForLegend is a boolean determining whether the point is drawn for
               the legend or for the actual chart. This will switch the meaning of
               psHorizontalLine and psVerticalLine for the legend. }
     procedure DrawPoint(const _Target: IdzGraphics; const _Series: IdzDataSeries; _AbsX, _AbsY: integer; _ForLegend: boolean = false);
     {: @name draws a line between the given coordnates for a XY or line chart
-       @param(Series is the data series for this line)
-       @param(X1 is the X coordinate of the starting point in pixels (after scaling)
-       @param(Y1 is the Y coordinate of the starting point in pixels (after scaling)
-       @param(X2 is the X coordinate of the end point in pixels (after scaling)
-       @param(Y2 is the Y coordinate of the end point in pixels (after scaling) }
+       @param Series is the data series for this line
+       @param X1 is the X coordinate of the starting point in pixels (after scaling)
+       @param Y1 is the Y coordinate of the starting point in pixels (after scaling)
+       @param X2 is the X coordinate of the end point in pixels (after scaling)
+       @param Y2 is the Y coordinate of the end point in pixels (after scaling) }
     procedure DrawLine(const _Target: IdzGraphics; const _Series: IdzDataSeries; _X1, _Y1, _X2, _Y2: integer);
     {: @name calculates space for the chart's area by first calling the inherited method and
        then substracting the space for the legend and the axis descriptions. }
@@ -424,19 +424,19 @@ type
     procedure ScaleChart; override;
     {: @name transform point's data to chart dimension for a given axis
        (used internally by @link(NormalizePtX) and @link(NormalizeptY))
-       @param(Point is the point's position in regard to an axis)
-       @param(Min is the minimum of the axis)
-       @param(Max is the maximum of the axis)
-       @param(Size is the length of the axis in pixels) }
+       @param Point is the point's position in regard to an axis
+       @param Min is the minimum of the axis
+       @param Max is the maximum of the axis
+       @param Size is the length of the axis in pixels }
     function NormalizePt(const _Point, _Min, _Max: double; _Size: integer): double;
     {: @name transforms X-axis data to chart dimensions
-       @param(Point is the X-axis position of a point) }
+       @param Point is the X-axis position of a point }
     function NormalizePtX(const _Target: IdzGraphics; const _Point: Double): Double;
     {: @name transforms Y-axis data to chart dimensions
-       @param(Point is the Y-axis position of a point) }
+       @param Point is the Y-axis position of a point }
     function NormalizePtY(const _Target: IdzGraphics; const _Point: Double): Double;
     {: @name draws the grid at the label positions of both axis
-       @param(Rect is the space used for the grid) }
+       @param Rect is the space used for the grid }
     procedure DrawGrid(const _Target: IdzGraphics; _Rect: TRect); override;
     {: @name drawas the chart's bottom scale including ticks and labels }
     procedure DrawBottomScale(const _Target: IdzGraphics); override;
@@ -448,19 +448,19 @@ type
        axis scales }
     procedure DrawFrameItems(const _Target: IdzGraphics); override;
     {: @name draws a legend entry for a data series
-       @param(Canvas is the canvas used for drawing)
-       @param(Series is the data series for which to draw the legend entry)
-       @param(X is the X coordinate in pixels of the entry)
-       @param(Y is the Y coordinate in pixels of the entry) }
+       @param Canvas is the canvas used for drawing
+       @param Series is the data series for which to draw the legend entry
+       @param X is the X coordinate in pixels of the entry
+       @param Y is the Y coordinate in pixels of the entry }
     procedure DrawLegendEntry(const _Target: IdzGraphics; const _Series: IdzDataSeries; _X, _Y: integer);
     {: @name draws the chart's legend
-       @param(Canvas is the canvas used for drawing)
-       @param(LegendRect is the space for the legend) }
+       @param Canvas is the canvas used for drawing
+       @param LegendRect is the space for the legend }
     procedure DrawLegend(const _Target: IdzGraphics; _LegendRect: TRect);
     {: @name overrides the inherited method to conditionally display point hints
-       @param(Shift describes the special keys pressed)
-       @param(X is the X coordinate in pixels of the mouse pointer)
-       @param(Y is the Y coordinate in pixels of the mouse pointer) }
+       @param Shift describes the special keys pressed
+       @param X is the X coordinate in pixels of the mouse pointer
+       @param Y is the Y coordinate in pixels of the mouse pointer }
     procedure MouseMove(_Shift: TShiftState; _X, _Y: Integer); override;
     {: @name calls the OnGetPointHint event if assigned }
     procedure doGetPointHint(const _X, _Y: double; var _Hint: string);
@@ -479,8 +479,8 @@ type
     destructor Destroy; override;
     {: Add a data series to the chart. (Note: the parameter is not 'const' because
        this could run havoc with reference counting)
-       @param(DataSeries is a IdzSingleValueDataSeries or IdzMultiValueDataSeries
-              interface for a data series to add) }
+       @param DataSeries is a IdzSingleValueDataSeries or IdzMultiValueDataSeries
+              interface for a data series to add }
     function AddDataSeries(_DataSeries: IdzDataSeries): integer;
     function RemoveDataSeries(const _DataSeries: IdzDataSeries): integer;
   published

@@ -28,8 +28,8 @@ package dummzeuchchartk3;
 
 requires
   rtl,
-  visualclx,
-  vcl;
+  vcl,
+  visualclx;
 
 contains
   u_dzQWindows in 'u_dzQWindows.pas',

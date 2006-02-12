@@ -44,11 +44,11 @@ ExeDescription=
 DynamicLoader=/lib/ld-linux.so.2
 
 [Directories]
-OutputDir=$(Q:)/test
-UnitOutputDir=$(Q:)/test/dcu
-PackageDLLOutputDir=$(Q:)/bpl
-PackageDCPOutputDir=$(Q:)/bpl/dcp
-SearchPath=$(DELPHI)/lib/debug:/home/twm/source/3rd/jedi/jcl/lib/k3/debug:../
+OutputDir=
+UnitOutputDir=dcu
+PackageDLLOutputDir=
+PackageDCPOutputDir=
+SearchPath=$(DELPHI)/lib/debug:$(HOME)/source/3rd/jedi/jcl/lib/k3/debug:../
 Packages=rtl:pvisualclx:pvisualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
 Conditionals=
 DebugSourceDirs=
@@ -61,37 +61,39 @@ Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=0
 DebugCWD=
 
-[Excluded Packages]
-/home/twm/out/bpl/bpldcldummzeuchchart.so=dummzeuch.de Charts - designtime package
-
 [HistoryLists\hlSearchPath]
-Count=7
-Item0=$(DELPHI)/lib/debug:/home/twm/source/3rd/jedi/jcl/lib/k3/debug:../
-Item1=$(S:)/3rd/dzchart
-Item2=$(HOME)/source/3rd/dzchart
-Item3=($HOME)/source/3rd/dzchart
-Item4=($home)/source/3rd/dzchart
-Item5=/home/twm/dzchart
-Item6=$(DELPHI)/lib/debug:/home/twm/source/3rd/jedi/jcl/lib/k3/debug
+Count=9
+Item0=$(DELPHI)/lib/debug:$(HOME)/source/3rd/jedi/jcl/lib/k3/debug:../
+Item1=$(DELPHI)/lib/debug:$(HOMe)/source/3rd/jedi/jcl/lib/k3/debug:../
+Item2=$(DELPHI)/lib/debug:/home/twm/source/3rd/jedi/jcl/lib/k3/debug:../
+Item3=$(S:)/3rd/dzchart
+Item4=$(HOME)/source/3rd/dzchart
+Item5=($HOME)/source/3rd/dzchart
+Item6=($home)/source/3rd/dzchart
+Item7=/home/twm/dzchart
+Item8=$(DELPHI)/lib/debug:/home/twm/source/3rd/jedi/jcl/lib/k3/debug
 
 [HistoryLists\hlUnitOutputDirectory]
-Count=3
-Item0=$(Q:)/test/dcu
-Item1=$(HOME)/out/test/dcu
-Item2=$(HOME)/out/dzchart/dcu
+Count=5
+Item0=dcu
+Item1=$(HOME)/out/dzchart/dcu/test
+Item2=$(Q:)/test/dcu
+Item3=$(HOME)/out/test/dcu
+Item4=$(HOME)/out/dzchart/dcu
 
 [HistoryLists\hlOutputDirectorry]
-Count=2
-Item0=$(Q:)/test
-Item1=$(HOME)/out/test
+Count=3
+Item0=$(HOME)/out/test
+Item1=$(HOME)/out/dzchart
+Item2=$(Q:)/test
 
 [HistoryLists\hlBPLOutput]
 Count=2
-Item0=$(Q:)/bpl
-Item1=$(HOME)/out/bpl
+Item0=$(HOME)/out/bpl
+Item1=$(Q:)/bpl
 
 [HistoryLists\hlDCPOutput]
 Count=2
-Item0=$(Q:)/bpl/dcp
-Item1=$(HOME)/out/bpl/dcp
+Item0=$(HOME)/out/bpl/dcp
+Item1=$(Q:)/bpl/dcp
 

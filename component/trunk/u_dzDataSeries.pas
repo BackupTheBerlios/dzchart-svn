@@ -27,7 +27,7 @@
 *
 * The Initial Developer of the Original Code is
 * Thomas Mueller.
-* Portions created by Thomas Mueller are Copyright (C) 2003-2004
+* Portions created by Thomas Mueller are Copyright (C) 2003-2006
 * by Thomas Mueller. All Rights Reserved.
 *
 * Contributor(s):
@@ -101,8 +101,8 @@ type
        @returns the number of data points }
     function GetPointCount: integer;
     {: Get the Idx'th data point of the data series
-       @param(Idx is the index of the data point, must be >=0 and < GetPointCount)
-       @returns(a IdzDataPoint interface for the Idx'th data point) }
+       @param Idx is the index of the data point, must be >=0 and < GetPointCount
+       @returns a IdzDataPoint interface for the Idx'th data point }
     {: Get the line color for the data series }
     function GetLineColor: TColor;
     {: Get the line style for the data series }
@@ -116,19 +116,19 @@ type
     {: Get the caption of the data series used in the legend. }
     function GetCaption: string;
     {: This procedure is called to notify the class of some operations.
-       @param(Component is the component causing the notification)
-       @param(Operation is the operation causing the notification, that is one of
+       @param Component is the component causing the notification
+       @param Operation is the operation causing the notification, that is one of
               opInsert and opRemove }
     procedure Notification(_Component: TComponent; _Operation: TOperation);
     {: returns true if this is a IdzMultiValueDataSeries }
     function IsMulti: boolean;
     {: returns the minimum and maximum X / Y values of the data series
-       (only valid if result is true)
-       @param(MinX is the minium X value)
-       @param(MaxX is the maximum X value)
-       @param(MinY is the minimum Y value)
-       @param(MaxX is the maximum Y value)
-       @returns(true, if there is at least one data point in the series) }
+       (only valid if result is true
+       @param MinX is the minium X value
+       @param MaxX is the maximum X value
+       @param MinY is the minimum Y value
+       @param MaxX is the maximum Y value
+       @returns(true, if there is at least one data point in the series }
     function GetMinAndMax(out _MinX, _MaxX, _MinY, _MaxY: Double): boolean;
   end;
 
@@ -158,9 +158,10 @@ type
     {: Returns the number of Y values of the data point }
     function GetValueCount: integer;
     {: Returns the Idx'th Y value of the data point.
-       @param(Idx is the value's index, must be >=0 and <GetValueCount)
-       Note that these points need not be in any order but low to high is recommended
-       otherwise the result might not be as expected, depending on the chart type. }
+       @param Idx is the value's index, must be >=0 and <GetValueCount
+       Note that these points do not need to be in any order but low to high is
+       recommended otherwise the result might not be as expected, depending on
+       the chart type. }
     function GetY(_Idx: integer): double;
   end;
 
@@ -170,8 +171,8 @@ type
      There is currently no implementation of this interface in TdzChart. }
   IdzMultiValueDataSeries = interface(IdzDataSeries)['{02A14F76-F1D4-D811-B814-000854097AB5}']
     {: Returns the Idx'th data point of the data series
-       @param(Idx is the index of the data point, must be >=0 and < GetPointCount)
-       @returns(a IdzMultiValueDataPoint interface for retrieving the values) }
+       @param Idx is the index of the data point, must be >=0 and < GetPointCount
+       @returns a IdzMultiValueDataPoint interface for retrieving the values }
     function GetDataPoint(_Idx: integer): IdzMultiValueDataPoint;
     {: Get the chart type for this data series. The following types are available:
        <ul><li>ctHighLow is a vertical line described by GetLineColor and GetLineStyle
@@ -209,16 +210,16 @@ type
     {: Stores the value returned by GetY }
     fY: double;
     //    fPointLabel: string;
-        {: Returns the value stored in fX }
+    {: Returns the value stored in fX }
     function GetX: double;
     {: Returns the value stored in fY }
     function GetY: double;
     //    function GetLabel: string;
   public
     {: Creates a @classname object representing a data point at X/Y
-       @param(X is the X coordinate of the point)
-       @param(Y is the Y coordinate of the point)
-       @param(Label is an optional string describing the data point (not yet used)) }
+       @param X is the X coordinate of the point
+       @param Y is the Y coordinate of the point
+       @param Label is an optional string describing the data point (not yet used) }
     constructor Create(const _X, _Y: double; const _Label: string = '');
   end;
 
@@ -248,7 +249,7 @@ type
     {: Returns the number of items in the fPoints list }
     function GetPointCount: integer;
     {: Gets the Idx'th item from the fPoints list.
-       @param(Idx is the index into the fpoints list, must be >=0 and < @link(GetPointCount))
+       @param Idx is the index into the fpoints list, must be >=0 and < @link(GetPointCount)
        @returns a IdzDataPoint interface describing the point }
     function GetDataPoint(_Idx: integer): IdzDataPoint;
     {: Returns the line color for the data series }
@@ -271,11 +272,11 @@ type
     function IsMulti: boolean;
     {: returns the minimum and maximum X / Y values of the data series
        (only valid if result is true)
-       @param(MinX is the minium X value)
-       @param(MaxX is the maximum X value)
-       @param(MinY is the minimum Y value)
-       @param(MaxX is the maximum Y value)
-       @returns(true, if there is at least one data point in the series) }
+       @param MinX is the minium X value
+       @param MaxX is the maximum X value
+       @param MinY is the minimum Y value
+       @param MaxX is the maximum Y value
+       @returns true, if there is at least one data point in the series }
     function GetMinAndMax(out _MinX, _MaxX, _MinY, _MaxY: Double): boolean;
   public
     {: Creates a new @classname object with an empty data point list }
@@ -283,15 +284,15 @@ type
     {: Destroys a @classname object }
     destructor Destroy; override;
     {: Adds a data point to the data point list
-       @param(Point is the @link(IdzDataPoint) interface to add)
-       @returns(The index of the added data point) }
+       @param Point is the @link(IdzDataPoint) interface to add
+       @returns The index of the added data point }
     function AddDataPoint(const _Point: IdzDataPoint): integer; overload;
     {: Creates a new TdzDataPoint object and adds it to the data point list
        This is short for AddDataPoint(TdzDatapoint.Create(...)).
-       @param(X is the X coordinate of the new data point)
-       @param(Y is the Y coordinate of the new data point)
-       @param(Label is an optional string describing the data point (not used yet))
-       @returns(The index of the added data point) }
+       @param X is the X coordinate of the new data point
+       @param Y is the Y coordinate of the new data point
+       @param Label is an optional string describing the data point (not used yet)
+       @returns The index of the added data point }
     function AddDataPoint(const _X, _Y: double; const _Label: string = ''): integer; overload;
     {: Contains the point color of the data series, default is clblack. }
     property PointColor: TColor read fPointColor write fPointColor;
@@ -319,7 +320,7 @@ type
     {: Stores the value returned by GetY }
     fYArr: array of double;
     //    fPointLabel: string;
-        {: Returns the value stored in fX }
+    {: Returns the value stored in fX }
     function GetX: double;
     {: Returns the number of Y values of the data point (that is Length(fYArr))}
     function GetValueCount: integer;
@@ -328,9 +329,9 @@ type
     //    function GetLabel: string;
   public
     {: Creates a @classname object representing a data point at X/Y
-       @param(X is the X coordinate of the point)
-       @param(YArr is a const arrry of double with Y values of the point)
-       @param(Label is an optional string describing the data point (not yet used)) }
+       @param X is the X coordinate of the point
+       @param YArr is a const arrry of double with Y values of the point
+       @param Label is an optional string describing the data point (not yet used) }
     constructor Create(const _X: double; const _YArr: array of double; const _Label: string = '');
   end;
 
@@ -354,8 +355,8 @@ type
     {: Returns the number of points in the data series, that is the number of different X values. }
     function GetPointCount: integer;
     {: Returns the Idx'th data point of the data series
-       @param(Idx is the index of the data point, must be >=0 and < GetPointCount)
-       @returns(a IdzMultiValueDataPoint interface for retrieving the values) }
+       @param Idx is the index of the data point, must be >=0 and < GetPointCount
+       @returns a IdzMultiValueDataPoint interface for retrieving the values }
     function GetDataPoint(_Idx: integer): IdzMultiValueDataPoint;
     {: Get the chart type for this data series. The following types are available:
        <ul><li>ctHighLow is a vertical line described by GetLineColor and GetLineStyle
@@ -392,19 +393,19 @@ type
     {: Get the the caption for the data series used in the legend }
     function GetCaption: string;
     {: This procedure is called to notify the class of some operations.
-       @param(Component is the component causing the notification)
-       @param(Operation is the operation causing the notification, that is one of
+       @param Component is the component causing the notification
+       @param Operation is the operation causing the notification, that is one of
               opInsert and opRemove }
     procedure Notification(_Component: TComponent; _Operation: TOperation);
     {: returns true if this is a IdzMultiValueDataSeries }
     function IsMulti: boolean;
     {: returns the minimum and maximum X / Y values of the data series
        (only valid if result is true)
-       @param(MinX is the minium X value)
-       @param(MaxX is the maximum X value)
-       @param(MinY is the minimum Y value)
-       @param(MaxX is the maximum Y value)
-       @returns(true, if there is at least one data point in the series) }
+       @param MinX is the minium X value
+       @param MaxX is the maximum X value
+       @param MinY is the minimum Y value
+       @param MaxX is the maximum Y value
+       @returns true, if there is at least one data point in the series }
     function GetMinAndMax(out _MinX, _MaxX, _MinY, _MaxY: Double): boolean;
     function GetBearishColor:TColor;
     function GetBullishColor:TColor;
@@ -414,15 +415,15 @@ type
     {: Destroys a @classname object }
     destructor Destroy; override;
     {: Adds a data point to the data point list
-       @param(Point is the @link(IdzMultiValueDataPoint) interface to add)
-       @returns(The index of the added data point) }
+       @param Point is the @link(IdzMultiValueDataPoint) interface to add
+       @returns The index of the added data point }
     function AddDataPoint(const _Point: IdzMultiValueDataPoint): integer; overload;
     {: Creates a new TdzDataPoint object and adds it to the data point list
        This is short for AddDataPoint(TdzDatapoint.Create(...)).
-       @param(X is the X coordinate of the new data point)
-       @param(YArr is an open array containing the Y values of the new data point)
-       @param(Label is an optional string describing the data point (not used yet))
-       @returns(The index of the added data point) }
+       @param X is the X coordinate of the new data point
+       @param YArr is an open array containing the Y values of the new data point
+       @param Label is an optional string describing the data point (not used yet)
+       @returns The index of the added data point }
     function AddDataPoint(const _X: double; const _YArr: array of double; const _Label: string = ''): integer; overload;
     {: Contains the point color of the data series, default is clblack. }
     property PointColor: TColor read fPointColor write fPointColor;
