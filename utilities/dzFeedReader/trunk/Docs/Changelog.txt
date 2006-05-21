@@ -1,0 +1,54 @@
+*******************************************************************************
+*                        SimpleRSS 0.4 (BlueHippo)                            *
+*******************************************************************************
+*                               New Features                                  *
+*******************************************************************************
+*                                                                             *
+* LoadFromHTTP - You can now link a Indy TidHTTP to the TSimpleRSS and using  *
+*                the LoadFromHTTP function load directly from the internet.   *
+* LanguageToString - Converts from TLanguages to the string equivalant.       *
+* AboutURL - This string field has been added to Channels. It is used for RDF *
+*            feeds                                                            *
+* Generation of RDF feeds - SimpleRSS can not generate RDF feeds. This is     *
+*                           still slighty buggy. But is released in the hope  *
+*                           a guru can step in to help fix it                 *
+* iTunes Support - SimpleRSS now can handle iTunes podcast feeds for both     *
+*                  parsing and generation                                     *
+* 3 new events - OnCreate happens after the creation of the TSimpleRSS        *
+*                component                                                    *
+*                OnParseXML happens after the successful parse of XML data    *
+*                OnGenerateXML happens after a successful generation of XML   *
+*                data                                                         *
+*                                                                             *
+*******************************************************************************
+*                         Bug Fixes and Changes                               *
+*******************************************************************************
+*                                                                             *
+* A lot of memory leaks were plugged                                          *
+* SF Bug #1049619 Fixed	                                                      *
+* SF Bug #1048764 Fixed                                                       *
+* TSimpleRSSException renamed to ESimpleRSSException to follow best coding    *
+*   practises better                                                          *
+* Default for Generator is now set to SimpleRSS                               *
+* GUID is automatically generated for each item                               *
+* Default feed type is set to RSS                                             *
+* Generation of feeds moved to seperate files. This allows better generation  *
+*   for other feed types such as ATOM or iTunes                               *
+* Removed XMLFileOptions and TXMLFileOptions because all options can be       *
+*   accessed via XMLFile property                                             *
+* Certain strings can excluded (removed) by setting them to an empty string   *
+*   these are:                                                                *
+*   TRSSChannelOpt   -> Copyright                                             *
+*   TRSSChannelOpt   -> Generator                                             *
+*   TRSSChannelOpt   -> Managing Editor                                       *
+*   TRSSChannelOpt   -> Rating                                                *
+*   TRSSChannelOpt   -> Webmaster                                             *
+*   TRSSImageOpt     -> Description                                           *
+*   TRSSItemCategory -> Domain                                                *
+*   TRSSItem         -> Comments                                              *
+*   TRSSItem         -> Description                                           *
+*   TRSSItem         -> Link                                                  *
+*   TRSSItem         -> Title                                                 *
+*   TRSSItem         -> Domain                                                *
+*                                                                             *
+*******************************************************************************

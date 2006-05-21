@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2006-05-20 10:53:31.921.pas,C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Unit1.pas=D:\source\simplerss\test\Unit1.pas</Transaction>
+    <Transaction>2006-05-20 10:53:31.921.dfm,C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Unit1.dfm=D:\source\simplerss\test\Unit1.dfm</Transaction>
+    <Transaction>2006-05-20 10:53:33.553.bdsproj,C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Project1.bdsproj=D:\source\simplerss\test\Project1.bdsproj</Transaction>
+    <Transaction>2006-05-20 11:25:54.685.pas,D:\source\simplerss\test\Unit1.pas=D:\source\simplerss\test\w_MainForm.pas</Transaction>
+    <Transaction>2006-05-20 11:25:54.685.dfm,D:\source\simplerss\test\Unit1.dfm=D:\source\simplerss\test\w_MainForm.dfm</Transaction>
+    <Transaction>2006-05-20 11:26:09.937.pas,D:\source\simplerss\test\Unit2.pas=D:\source\simplerss\test\wf_RssFrame.pas</Transaction>
+    <Transaction>2006-05-20 11:26:09.937.dfm,D:\source\simplerss\test\Unit2.dfm=D:\source\simplerss\test\wf_RssFrame.dfm</Transaction>
+    <Transaction>2006-05-20 12:48:32.634.bdsproj,D:\source\simplerss\test\Project1.bdsproj=D:\source\simplerss\test\dzFeedReader.bdsproj</Transaction>
+    <Transaction>2006-05-20 13:01:05.106.pas,D:\source\simplerss\test\Unit1.pas=D:\source\simplerss\test\u_FeedDesc.pas</Transaction>
+    <Transaction>2006-05-20 13:14:21.190.pas,D:\source\simplerss\test\Unit1.pas=D:\source\simplerss\test\w_FeedEditForm.pas</Transaction>
+    <Transaction>2006-05-20 13:14:21.190.dfm,D:\source\simplerss\test\Unit1.dfm=D:\source\simplerss\test\w_FeedEditForm.dfm</Transaction>
+    <Transaction>2006-05-20 13:33:28.100.pas,D:\source\simplerss\test\Unit1.pas=D:\source\simplerss\test\u_FeedFrameList.pas</Transaction>
+    <Transaction>2006-05-20 14:26:46.979.pas,D:\source\simplerss\test\Unit1.pas=D:\source\simplerss\test\u_EventThread.pas</Transaction>
+    <Transaction>2006-05-21 19:53:06.254.pas,D:\source\simplerss\test\wf_RssFrame.pas=D:\source\simplerss\test\wf_MovableFrame.pas</Transaction>
+    <Transaction>2006-05-21 19:53:06.254.dfm,D:\source\simplerss\test\wf_RssFrame.dfm=D:\source\simplerss\test\wf_MovableFrame.dfm</Transaction>
+    <Transaction>2006-05-21 19:53:35.977.pas,D:\source\simplerss\test\wf_MovableFrame.pas=D:\source\simplerss\test\wf_.pas</Transaction>
+    <Transaction>2006-05-21 19:53:35.977.dfm,D:\source\simplerss\test\wf_MovableFrame.dfm=D:\source\simplerss\test\wf_.dfm</Transaction>
+    <Transaction>2006-05-21 19:54:26.339.pas,D:\source\simplerss\test\wf_.pas=D:\source\simplerss\test\wf_TileFrame.pas</Transaction>
+    <Transaction>2006-05-21 19:54:26.339.dfm,D:\source\simplerss\test\wf_.dfm=D:\source\simplerss\test\wf_TileFrame.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
