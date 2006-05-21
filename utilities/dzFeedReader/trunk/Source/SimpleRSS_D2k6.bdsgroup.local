@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject>
-  <Transactions>
-    <Transaction>2006-05-20 10:44:07.139.bdsgroup,D:\source\simplerss\Source\SimpleRSS_D2k5.bdsgroup=D:\source\simplerss\Source\SimpleRSS_D2k6.bdsgroup</Transaction>
-  </Transactions>
-  <Default.Personality>
-    <Projects ActiveProject="SimpleRSS_D2k6_Win32.bpl"/>
-  </Default.Personality>
-</BorlandProject>
