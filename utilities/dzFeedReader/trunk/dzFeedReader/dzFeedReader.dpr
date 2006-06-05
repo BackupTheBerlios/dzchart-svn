@@ -8,7 +8,8 @@ uses
   w_FeedEditForm in 'w_FeedEditForm.pas' {f_FeedEditForm},
   u_FeedFrameList in 'u_FeedFrameList.pas',
   u_EventThread in 'u_EventThread.pas',
-  wf_RssFrame in 'wf_RssFrame.pas' {fr_RssFrame: TFrame};
+  wf_RssFrame in 'wf_RssFrame.pas' {fr_RssFrame: TFrame},
+  w_HintWindow in 'w_HintWindow.pas';
 
 {$R *.res}
 

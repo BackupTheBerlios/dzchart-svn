@@ -123,7 +123,7 @@
 			<Directories Name="UnitOutputDir"></Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
-			<Directories Name="SearchPath">$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;..\source;..\..\dztemplates\templates;..\..\dztemplates\units</Directories>
+			<Directories Name="SearchPath">$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;..\SimpleRss\Source;..\..\dztemplates\templates;..\..\dztemplates\units</Directories>
 			<Directories Name="Packages">rtl;vcl;vclx;xmlrtl;vclactnband;VclSmp;dummzeuchchartd2006;dbrtl;vcldb;dbxcds;dbexpress;vclie;inet;inetdbbde;inetdbxpress;IndyCore;IndySystem;dsnap;bdertl;vcldbx;IndyProtocols;SimpleRSS_D2k6_Win32</Directories>
 			<Directories Name="Conditionals"></Directories>
 			<Directories Name="DebugSourceDirs">$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10</Directories>
@@ -170,8 +170,7 @@
 			<VersionInfoKeys Name="ProductName"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments"></VersionInfoKeys>
-		</VersionInfoKeys>  
-    <Excluded_Packages>
+		</VersionInfoKeys>  <Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\bin\dclado100.bpl">Borland ADO DB Components</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dclib100.bpl">Borland InterBase Express Components</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\applet100.bpl">Borland Control Panel Applet Package</Excluded_Packages>

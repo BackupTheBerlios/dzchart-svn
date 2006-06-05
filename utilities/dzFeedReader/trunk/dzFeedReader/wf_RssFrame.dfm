@@ -50,6 +50,7 @@ inherited fr_RssFrame: Tfr_RssFrame
         end
         inherited p_TitleCaption: TPanel
           Width = 259
+          PopupMenu = pm_Title
           ExplicitWidth = 259
         end
       end
