@@ -18,7 +18,8 @@ uses
   Menus,
   u_FeedDesc,
   u_FeedFrameList,
-  wf_TileFrame;
+  wf_TileFrame,
+  w_HintWindow;
 
 // http://rss.slashdot.org/Slashdot/slashdot
 // http://delphi.wikia.com/index.php?title=Special:Recentchanges&feed=atom
