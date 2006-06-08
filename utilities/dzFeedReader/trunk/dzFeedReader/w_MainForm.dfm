@@ -13,8 +13,6 @@ object f_MainForm: Tf_MainForm
   Font.Style = []
   OldCreateOrder = False
   PopupMenu = pm_Main
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object pm_Main: TPopupMenu

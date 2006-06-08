@@ -112,7 +112,7 @@ procedure Tfr_TileFrame.p_TitleMouseUp(Sender: TObject; Button: TMouseButton;
 var
   pnt: TPoint;
 begin
-  if not FMoving or (Button <> mbLeft) or (Shift <> [ssLeft]) or not Assigned(FOnEndMove) then
+  if not FMoving or (Button <> mbLeft) or (Shift <> []) or not Assigned(FOnEndMove) then
     exit;
   FMoving := false;
   pnt := ClientToParent(Point(X, Y), Parent);

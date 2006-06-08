@@ -34,18 +34,17 @@ type
   Tf_MainForm = class(TForm)
     pm_Main: TPopupMenu;
     mi_AddFeed: TMenuItem;
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure mi_ExitClick(Sender: TObject);
     procedure mi_AddFeedClick(Sender: TObject);
   private
     FHintWindow: TMyHintWindow;
     FFeedFrames: TFeedFrameList;
-    procedure ShowDescriptionEvent(_Sender: TObject; const _Title, _Description, _Link: string);
-    procedure HideFeedEvent(_Sender: TObject);
-    procedure InitFeeds;
-    function ReadFeed(_Reg: TRegistry; _Feed: TFeedDesc): boolean;
     procedure CreateFeedFrame(_Feed: TFeedDesc);
+    procedure InitFeeds;
+    procedure EditFeed(_Sender: TObject);
+    procedure HideFeedEvent(_Sender: TObject);
+    function ReadFeed(_Reg: TRegistry; _Feed: TFeedDesc): boolean;
+    procedure ShowDescriptionEvent(_Sender: TObject; const _Title, _Description, _Link: string);
     procedure WriteFeed(_Feed: TFeedDesc);
   private
     FMoving: boolean;
@@ -55,8 +54,9 @@ type
     procedure EndMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
     procedure MoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
     procedure StartMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
-    procedure EditFeed(_Sender: TObject);
   public
+    constructor Create(_Owner: TComponent); override;
+    destructor Destroy; override;
   end;
 
 var
@@ -71,108 +71,19 @@ uses
   wf_RssFrame,
   w_FeedEditForm;
 
-procedure Tf_MainForm.EndMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+constructor Tf_MainForm.Create(_Owner: TComponent);
 begin
-  FMoving := false;
-  Refresh;
-end;
-
-procedure Tf_MainForm.FormCreate(Sender: TObject);
-begin
+  inherited;
   FHintWindow := TMyHintWindow.Create(nil);
   FFeedFrames := TFeedFrameList.Create;
   InitFeeds;
 end;
 
-procedure Tf_MainForm.FormDestroy(Sender: TObject);
+destructor Tf_MainForm.Destroy;
 begin
   FreeAndNil(FHintWindow);
   FreeAndNil(FFeedFrames);
-end;
-
-procedure Tf_MainForm.mi_AddFeedClick(Sender: TObject);
-var
-  frm: Tf_FeedEditForm;
-begin
-  frm := Tf_FeedEditForm.Create(self);
-  try
-    if mrOK = frm.ShowModal then begin
-      WriteFeed(frm.Feed);
-      CreateFeedFrame(frm.Feed);
-    end;
-  finally
-    frm.Free;
-  end;
-end;
-
-procedure Tf_MainForm.EditFeed(_Sender: TObject);
-var
-  frm: Tf_FeedEditForm;
-  FeedFrame: Tfr_RssFrame;
-begin
-  FeedFrame := _Sender as Tfr_RssFrame;
-  frm := Tf_FeedEditForm.Create(self);
-  try
-    frm.Feed := FeedFrame.Feed;
-    if mrOK = frm.ShowModal then begin
-      WriteFeed(frm.Feed);
-      FeedFrame.Feed := frm.Feed;
-    end;
-  finally
-    frm.Free;
-  end;
-end;
-
-procedure Tf_MainForm.mi_ExitClick(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure Tf_MainForm.MoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
-var
-  dx: integer;
-  dy: integer;
-  l: integer;
-  t: integer;
-begin
-  if FMoving then begin
-    dx := _MouseX - FMovingX;
-    dy := _MouseY - FMovingY;
-    l := FMovingControl.Left + dx;
-    if l < 0 then
-      l := 0;
-    FMovingControl.Left := l;
-    t := FMovingControl.Top + dy;
-    if t < 0 then
-      t := 0;
-    FMovingControl.Top := t;
-    FMovingX := _MouseX;
-    FMovingY := _MouseY;
-  end;
-  Refresh;
-end;
-
-procedure Tf_MainForm.HideFeedEvent(_Sender: TObject);
-var
-  Idx: integer;
-  Feed: TFeedDesc;
-begin
-  Feed := (_Sender as Tfr_RssFrame).Feed;
-  if FFeedFrames.Search(Feed.FeedKey, Idx) then begin
-    FFeedFrames.Extract(Idx);
-  end;
-end;
-
-function Tf_MainForm.ReadFeed(_Reg: TRegistry; _Feed: TFeedDesc): boolean;
-begin
-  try
-    _Feed.FeedKey := ExtractFileName(_Reg.CurrentPath);
-    _Feed.FeedName := _Reg.ReadString('FeedName');
-    _Feed.FeedUrl := _Reg.ReadString('FeedURL');
-    Result := true;
-  except
-    Result := false;
-  end;
+  inherited;
 end;
 
 procedure Tf_MainForm.CreateFeedFrame(_Feed: TFeedDesc);
@@ -194,42 +105,52 @@ begin
     fr.Free;
     exit;
   end;
-  fr.Left := FFeedFrames.Count * fr.Width + 1;
+//  fr.Left := FFeedFrames.Count * fr.Width + 1;
   FFeedFrames.Insert(fr);
 end;
 
-procedure Tf_MainForm.StartMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+procedure Tf_MainForm.EditFeed(_Sender: TObject);
 var
-  i: integer;
-  Frame: Tfr_TileFrame;
+  frm: Tf_FeedEditForm;
+  FeedFrame: Tfr_RssFrame;
 begin
-  for i := 0 to FFeedFrames.Count - 1 do begin
-    FFeedFrames[i].Deactivate;
-  end;
-  Frame := _Sender as Tfr_TileFrame;
-  Frame.Activate;
-  FMoving := true;
-  FMovingX := _MouseX;
-  FMovingY := _MouseY;
-  FMovingControl := Frame;
-end;
-
-procedure Tf_MainForm.WriteFeed(_Feed: TFeedDesc);
-var
-  Reg: TRegistry;
-begin
-  Reg := TRegistry.Create;
+  FeedFrame := _Sender as Tfr_RssFrame;
+  frm := Tf_FeedEditForm.Create(self);
   try
-    Reg.RootKey := HKEY_CURRENT_USER;
-    Reg.OpenKey(REGISTRY_KEY + '\Feeds\' + _Feed.FeedKey, true);
-    try
-      Reg.WriteString('FeedName', _Feed.FeedName);
-      Reg.WriteString('FeedURL', _Feed.FeedUrl);
-    finally
-      Reg.CloseKey
+    frm.Feed := FeedFrame.Feed;
+    if mrOK = frm.ShowModal then begin
+      WriteFeed(frm.Feed);
+      FeedFrame.Feed := frm.Feed;
     end;
   finally
-    Reg.Free;
+    frm.Free;
+  end;
+end;
+
+procedure Tf_MainForm.EndMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+var
+  Frame: Tfr_RssFrame;
+  Feed: TFeedDesc;
+begin
+  FMoving := false;
+  Refresh;
+  Frame := _Sender as Tfr_RssFrame;
+  Feed := Frame.Feed;
+  Feed.Top := Frame.Top;
+  Feed.Left := Frame.Left;
+  Feed.Width := Frame.Width;
+  Feed.Height := Frame.Height;
+  WriteFeed(Feed);
+end;
+
+procedure Tf_MainForm.HideFeedEvent(_Sender: TObject);
+var
+  Idx: integer;
+  Feed: TFeedDesc;
+begin
+  Feed := (_Sender as Tfr_RssFrame).Feed;
+  if FFeedFrames.Search(Feed.FeedKey, Idx) then begin
+    FFeedFrames.Extract(Idx);
   end;
 end;
 
@@ -280,6 +201,46 @@ begin
   end;
 end;
 
+procedure Tf_MainForm.MoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+var
+  dx: integer;
+  dy: integer;
+  l: integer;
+  t: integer;
+begin
+  if FMoving then begin
+    dx := _MouseX - FMovingX;
+    dy := _MouseY - FMovingY;
+    l := FMovingControl.Left + dx;
+    if l < 0 then
+      l := 0;
+    FMovingControl.Left := l;
+    t := FMovingControl.Top + dy;
+    if t < 0 then
+      t := 0;
+    FMovingControl.Top := t;
+    FMovingX := _MouseX;
+    FMovingY := _MouseY;
+  end;
+  Refresh;
+end;
+
+function Tf_MainForm.ReadFeed(_Reg: TRegistry; _Feed: TFeedDesc): boolean;
+begin
+  try
+    _Feed.FeedKey := ExtractFileName(_Reg.CurrentPath);
+    _Feed.FeedName := _Reg.ReadString('FeedName');
+    _Feed.FeedUrl := _Reg.ReadString('FeedURL');
+    _Feed.Left := _Reg.ReadInteger('Left');
+    _Feed.Top := _Reg.ReadInteger('Top');
+    _Feed.Width := _Reg.ReadInteger('Width');
+    _Feed.Height := _Reg.ReadInteger('Height');
+    Result := true;
+  except
+    Result := false;
+  end;
+end;
+
 procedure Tf_MainForm.ShowDescriptionEvent(_Sender: TObject;
   const _Title, _Description, _Link: string);
 var
@@ -292,6 +253,65 @@ begin
     FHintWindow.ShowHint(Mouse.CursorPos, _Title, _Description, _Link)
   else
     FHintWindow.HideHint;
+end;
+
+procedure Tf_MainForm.StartMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+var
+  i: integer;
+  Frame: Tfr_TileFrame;
+begin
+  for i := 0 to FFeedFrames.Count - 1 do begin
+    FFeedFrames[i].Deactivate;
+  end;
+  Frame := _Sender as Tfr_TileFrame;
+  Frame.Activate;
+  FMoving := true;
+  FMovingX := _MouseX;
+  FMovingY := _MouseY;
+  FMovingControl := Frame;
+end;
+
+procedure Tf_MainForm.WriteFeed(_Feed: TFeedDesc);
+var
+  Reg: TRegistry;
+begin
+  Reg := TRegistry.Create;
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    Reg.OpenKey(REGISTRY_KEY + '\Feeds\' + _Feed.FeedKey, true);
+    try
+      Reg.WriteString('FeedName', _Feed.FeedName);
+      Reg.WriteString('FeedURL', _Feed.FeedUrl);
+      Reg.WriteInteger('Left', _Feed.Left);
+      Reg.WriteInteger('Top', _Feed.Top);
+      Reg.WriteInteger('Width', _Feed.Width);
+      Reg.WriteInteger('Height', _Feed.Height);
+    finally
+      Reg.CloseKey
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
+procedure Tf_MainForm.mi_AddFeedClick(Sender: TObject);
+var
+  frm: Tf_FeedEditForm;
+begin
+  frm := Tf_FeedEditForm.Create(self);
+  try
+    if mrOK = frm.ShowModal then begin
+      WriteFeed(frm.Feed);
+      CreateFeedFrame(frm.Feed);
+    end;
+  finally
+    frm.Free;
+  end;
+end;
+
+procedure Tf_MainForm.mi_ExitClick(Sender: TObject);
+begin
+  Close;
 end;
 
 end.

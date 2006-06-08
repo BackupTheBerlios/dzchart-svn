@@ -11,6 +11,10 @@ type
     FFeedName: string;
     FFeedUrl: string;
     FFeedKey: string;
+    FTop: integer;
+    FLeft: integer;
+    FWidth: integer;
+    FHeight: integer;
   public
     constructor Create;
     procedure Assign(_Src: TFeedDesc);
@@ -18,6 +22,10 @@ type
     property FeedName: string read FFeedName write FFeedName;
     property FeedUrl: string read FFeedUrl write FFeedUrl;
     property FeedKey: string read FFeedKey write FFeedKey;
+    property Top: integer read FTop write FTop;
+    property Left: integer read FLeft write FLeft;
+    property Width: integer read FWidth write FWidth;
+    property Height: integer read FHeight write FHeight;
     class function CreateGuidString: string;
   end;
 

@@ -251,6 +251,13 @@ procedure Tfr_RssFrame.SetFeed(const _Feed: TFeedDesc);
 begin
   FFeed.Assign(_Feed);
   Caption := Feed.FeedName;
+  Top := _Feed.Top;
+  Left := _Feed.Left;
+  if _Feed.Width <> 0 then
+    Width := _Feed.Width;
+  if _Feed.Height <> 0 then
+    Height := _Feed.Height;
+
   FUpdateEvent.SetEvent;
   FThread.Resume;
 end;
