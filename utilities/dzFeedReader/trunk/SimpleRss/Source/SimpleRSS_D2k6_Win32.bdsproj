@@ -100,10 +100,11 @@
 			<Compiler Name="UnsafeCast">False</Compiler>
 			<Compiler Name="OptionTruncated">True</Compiler>
 			<Compiler Name="WideCharReduced">True</Compiler>
-			<Compiler Name="DuplicatesIgnored">True</Compiler>  <Compiler Name="UnitInitSeq">True</Compiler>
-      <Compiler Name="LocalPInvoke">True</Compiler>
-      <Compiler Name="CodePage"></Compiler>
-    </Compiler>
+			<Compiler Name="DuplicatesIgnored">True</Compiler>
+			<Compiler Name="UnitInitSeq">True</Compiler>
+			<Compiler Name="LocalPInvoke">True</Compiler>
+			<Compiler Name="CodePage"></Compiler>
+		</Compiler>
 		<Linker>
 			<Linker Name="MapFile">3</Linker>
 			<Linker Name="OutputObjs">0</Linker>
@@ -114,8 +115,9 @@
 			<Linker Name="MinStackSize">16384</Linker>
 			<Linker Name="MaxStackSize">1048576</Linker>
 			<Linker Name="ImageBase">4194304</Linker>
-			<Linker Name="ExeDescription">SimpleRSS 0.4 (BlueHippo) Release 1</Linker>  <Linker Name="GenerateHpps">False</Linker>
-    </Linker>
+			<Linker Name="ExeDescription">SimpleRSS 0.4 (BlueHippo) Release 1</Linker>
+			<Linker Name="GenerateHpps">False</Linker>
+		</Linker>
 		<Directories>
 			<Directories Name="OutputDir"></Directories>
 			<Directories Name="UnitOutputDir">./</Directories>
@@ -137,10 +139,11 @@
 			<Parameters Name="RemotePath"></Parameters>
 			<Parameters Name="RemoteLauncher"></Parameters>
 			<Parameters Name="RemoteCWD"></Parameters>
-			<Parameters Name="RemoteDebug">False</Parameters>  <Parameters Name="Debug Symbols Search Path"></Parameters>
-      <Parameters Name="LoadAllSymbols">True</Parameters>
-      <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-    </Parameters>
+			<Parameters Name="RemoteDebug">False</Parameters>
+			<Parameters Name="Debug Symbols Search Path"></Parameters>
+			<Parameters Name="LoadAllSymbols">True</Parameters>
+			<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+		</Parameters>
 		<Language>
 			<Language Name="ActiveLang"></Language>
 			<Language Name="ProjectLang">$00000000</Language>
@@ -171,9 +174,7 @@
 			<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName"></VersionInfoKeys>
-		</VersionInfoKeys>  
-    
-    <Excluded_Packages>
+		</VersionInfoKeys>  <Excluded_Packages>
       <Excluded_Packages Name="C:\Documents and Settings\a\My Documents\Borland Studio Projects\Bpl\HTML_Folder_Clean.bpl">(untitled)</Excluded_Packages>
       <Excluded_Packages Name="C:\Documents and Settings\a\My Documents\Borland Studio Projects\Bpl\ZCore.bpl">Zeos Core Classes and Intefaces</Excluded_Packages>
       <Excluded_Packages Name="C:\Documents and Settings\a\My Documents\Borland Studio Projects\Bpl\ZPlain.bpl">Zeos Plain Database API</Excluded_Packages>
