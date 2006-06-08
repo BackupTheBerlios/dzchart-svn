@@ -30,6 +30,7 @@ uses
 
 procedure TFeedDesc.Assign(_Src: TFeedDesc);
 begin
+  FFeedKey := _Src.FeedKey;
   FeedName := _Src.FeedName;
   FeedUrl := _Src.FeedUrl;
 end;

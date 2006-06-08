@@ -32,12 +32,6 @@ const
 
 type
   Tf_MainForm = class(TForm)
-    p_Description: TPanel;
-    l_Description: TLabel;
-    p_Title: TPanel;
-    l_Title: TLabel;
-    p_Link: TPanel;
-    l_Link: TLabel;
     pm_Main: TPopupMenu;
     mi_AddFeed: TMenuItem;
     procedure FormCreate(Sender: TObject);
@@ -45,6 +39,7 @@ type
     procedure mi_ExitClick(Sender: TObject);
     procedure mi_AddFeedClick(Sender: TObject);
   private
+    FHintWindow: TMyHintWindow;
     FFeedFrames: TFeedFrameList;
     procedure ShowDescriptionEvent(_Sender: TObject; const _Title, _Description, _Link: string);
     procedure HideFeedEvent(_Sender: TObject);
@@ -60,6 +55,7 @@ type
     procedure EndMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
     procedure MoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
     procedure StartMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+    procedure EditFeed(_Sender: TObject);
   public
   end;
 
@@ -83,14 +79,15 @@ end;
 
 procedure Tf_MainForm.FormCreate(Sender: TObject);
 begin
+  FHintWindow := TMyHintWindow.Create(nil);
   FFeedFrames := TFeedFrameList.Create;
-  l_Description.Top := p_Title.Height + 1;
   InitFeeds;
 end;
 
 procedure Tf_MainForm.FormDestroy(Sender: TObject);
 begin
-  FFeedFrames.Free;
+  FreeAndNil(FHintWindow);
+  FreeAndNil(FFeedFrames);
 end;
 
 procedure Tf_MainForm.mi_AddFeedClick(Sender: TObject);
@@ -102,6 +99,24 @@ begin
     if mrOK = frm.ShowModal then begin
       WriteFeed(frm.Feed);
       CreateFeedFrame(frm.Feed);
+    end;
+  finally
+    frm.Free;
+  end;
+end;
+
+procedure Tf_MainForm.EditFeed(_Sender: TObject);
+var
+  frm: Tf_FeedEditForm;
+  FeedFrame: Tfr_RssFrame;
+begin
+  FeedFrame := _Sender as Tfr_RssFrame;
+  frm := Tf_FeedEditForm.Create(self);
+  try
+    frm.Feed := FeedFrame.Feed;
+    if mrOK = frm.ShowModal then begin
+      WriteFeed(frm.Feed);
+      FeedFrame.Feed := frm.Feed;
     end;
   finally
     frm.Free;
@@ -169,6 +184,7 @@ begin
   fr.Name := '';
   fr.OnShowDescription := ShowDescriptionEvent;
   fr.OnRemoveFeed := HideFeedEvent;
+  fr.OnEditFeed := EditFeed;
   fr.OnEndMove := EndMoveTile;
   fr.OnMove := MoveTile;
   fr.OnStartMove := StartMoveTile;
@@ -182,7 +198,7 @@ begin
   FFeedFrames.Insert(fr);
 end;
 
-procedure Tf_MainForm.StartMoveTile(_Sender: TObject; _MouseX,  _MouseY: integer);
+procedure Tf_MainForm.StartMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
 var
   i: integer;
   Frame: Tfr_TileFrame;
@@ -266,46 +282,16 @@ end;
 
 procedure Tf_MainForm.ShowDescriptionEvent(_Sender: TObject;
   const _Title, _Description, _Link: string);
-const
-  MIN_WIDTH = 100;
 var
   b: boolean;
-  MPos: TPoint;
-  x: integer;
-  y: integer;
-  w: integer;
-  h: integer;
-  Size: integer;
 begin
-  MPos := ScreenToClient(Mouse.CursorPos);
+  if not Assigned(FHintWindow) then
+    exit;
   b := _Title <> '';
-  if b then begin
-    l_Title.Caption := _Title;
-    l_Description.Caption := _Description;
-    l_Link.Caption := _Link;
-    w := MIN_WIDTH;
-    Size := l_Title.Canvas.TextWidth(_Title);
-    if Size > w then
-      w := Size;
-    Size := l_Link.Canvas.TextWidth(_Link);
-    if Size > w then
-      w := Size;
-    p_Description.ClientWidth := w;
-    l_Description.Width := w;
-    h := p_Title.Height + l_Description.Height + p_Link.Height;
-    p_Description.ClientHeight := h;
-    x := MPos.X + 16;
-    if x + w > ClientWidth then
-      x := ClientWidth - w;
-    p_Description.Left := x;
-    y := MPos.Y + 16;
-    if y + h > ClientHeight then
-      y := ClientHeight - h;
-    p_Description.Top := y;
-
-    p_Description.BringToFront;
-  end;
-  p_Description.Visible := b;
+  if b then
+    FHintWindow.ShowHint(Mouse.CursorPos, _Title, _Description, _Link)
+  else
+    FHintWindow.HideHint;
 end;
 
 end.

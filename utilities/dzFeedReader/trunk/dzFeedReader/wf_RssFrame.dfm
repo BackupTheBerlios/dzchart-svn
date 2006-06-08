@@ -66,6 +66,7 @@ inherited fr_RssFrame: Tfr_RssFrame
         ParentShowHint = False
         ShowHint = False
         TabOrder = 1
+        OnDblClick = lb_RssFeedDblClick
         OnMouseLeave = lb_RssFeedMouseLeave
         OnMouseMove = lb_RssFeedMouseMove
         ExplicitLeft = 0
@@ -130,13 +131,23 @@ inherited fr_RssFrame: Tfr_RssFrame
     Top = 64
     object mi_Properties: TMenuItem
       Caption = 'Properties'
+      OnClick = mi_PropertiesClick
     end
     object mi_Saveas: TMenuItem
       Caption = 'Save as ...'
+      OnClick = mi_SaveasClick
     end
     object mi_Remove: TMenuItem
       Caption = 'Remove'
       OnClick = mi_RemoveClick
     end
+  end
+  object sd_Save: TSaveDialog
+    DefaultExt = 'xml'
+    Filter = 'XML files (*.xml)|*.xml|all files (*.*)|*.*'
+    FilterIndex = 0
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    Left = 112
+    Top = 72
   end
 end

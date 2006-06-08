@@ -168,7 +168,6 @@ object fr_TileFrame: Tfr_TileFrame
           Top = 1
           Width = 351
           Height = 22
-          Hint = 'This is a testhint which should be displayed with red background'
           Align = alClient
           Alignment = taLeftJustify
           BevelOuter = bvNone
@@ -180,8 +179,6 @@ object fr_TileFrame: Tfr_TileFrame
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ParentShowHint = False
-          ShowHint = True
           TabOrder = 2
           OnMouseDown = p_TitleMouseDown
           OnMouseMove = p_TitleMouseMove
