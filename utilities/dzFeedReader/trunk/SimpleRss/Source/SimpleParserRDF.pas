@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 This File Originally Created By Thomas Zangl <thomas@tzis.net> 2005
 Additional work by:
  - Robert MacLean <dfantom@gmail.com> 2005
+ - Thomas Mueller <http://www.dummzeuch.de> 2006
 
 Spec
 http://www.w3.org/TR/1999/REC-rdf-syntax-19990222/
@@ -41,6 +42,8 @@ uses
 
 type
   TSimpleParserRDF = class(TSimpleParserBase)
+  private
+    procedure ParseItem(_ItemNode: IXMLNode);
   protected
   public
     procedure Generate; override;
@@ -150,6 +153,75 @@ begin
     FSimpleRSS.XMLFile.ChildNodes[rdfeRDF].ChildNodes.Add(TextInput);
 end;
 
+procedure TSimpleParserRDF.ParseItem(_ItemNode: IXMLNode);
+var
+  NewItem: TRSSItem;
+  ItemChilds: IXMLNodeList;
+  s: string;
+  Title: string;
+  Description: string;
+  SecondCounter: Integer;
+  NewItemCategory: TRSSItemCategory;
+  ChildNode: IXMLNode;
+  HasTitle: boolean;
+  HasDescription: boolean;
+begin
+  NewItem := FSimpleRSS.Items.Add;
+  ItemChilds := _ItemNode.ChildNodes;
+  HasTitle := TryGetChildnodeValue(ItemChilds, reTitle, Title);
+  HasDescription := TryGetChildnodeValue(ItemChilds, reDescription, Description);
+  if not HasDescription and not HasTitle then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reItem
+      + strArrow + reTitle);
+  if HasTitle then
+    NewItem.Title := Title;
+  if HasDescription then
+    NewItem.Description := Description;
+  if TryGetChildnodeValue(ItemChilds, reLink, s) then
+    NewItem.Link := s;
+  if TryGetChildnodeValue(ItemChilds, reAuthor, s) then
+    NewItem.Author.Name := s;
+  if TryGetChildnodeValue(ItemChilds, reComments, s) then
+    NewItem.Comments := s;
+  if TryGetChildnodeValue(ItemChilds, rdfeDate, s) then
+    NewItem.PubDate.LoadDCDateTime(s);
+  if ContainsNode(ItemChilds, reEnclosure, ChildNode) then begin
+    if not TryGetAttributeValue(ChildNode.AttributeNodes, reURL, s) then
+      raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reURL);
+    NewItem.Enclosure.URL := s;
+    if not TryGetAttributeValue(ChildNode.AttributeNodes, reLength, s) then
+      raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reLength);
+    NewItem.Enclosure.Length := StrToInt(s);
+    if not TryGetAttributeValue(ChildNode.AttributeNodes, reType, s) then
+      raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reType);
+    NewItem.Enclosure.EnclosureType := s;
+    NewItem.Enclosure.Include := True;
+  end; // if then
+  if ContainsNode(ItemChilds, reGUID, ChildNode) then begin
+    NewItem.GUID.Include := True;
+    NewItem.GUID.GUID := GetNodeValue(ChildNode);
+    if TryGetAttributeValue(ChildNode.AttributeNodes, reIsPermaLink, s) then
+      NewItem.GUID.IsPermaLink := (s = strTrue);
+  end; // if then
+  if TryGetChildnodeValue(ItemChilds, rePubDate, s) then
+    NewItem.PubDate.LoadDateTime(s);
+  if ContainsNode(ItemChilds, reSource, ChildNode) then begin
+    if not TryGetAttributeValue(ChildNode.AttributeNodes, reURL, s) then
+      raise ESimpleRSSException.Create(emRequiredFieldMissing + reSource + strArrow + reURL);
+    NewItem.Source.Include := True;
+    NewItem.Source.Title := GetNodeValue(ChildNode);
+    NewItem.Source.URL := s;
+  end; // if then
+  for SecondCounter := 0 to ItemChilds.Count - 1 do begin
+    if ItemChilds.Nodes[SecondCounter].LocalName = reCategory then begin
+      NewItemCategory := NewItem.Categories.Add;
+      NewItemCategory.Title := ItemChilds.Nodes[SecondCounter].NodeValue;
+      if TryGetAttributeValue(ItemChilds.Nodes[SecondCounter].AttributeNodes, reDomain, s) then
+        NewItemCategory.Domain := s;
+    end; // if then
+  end; // for 2 do
+end;
+
 procedure TSimpleParserRDF.Parse;
 var
   MainIdx, SecondCounter: Integer;
@@ -158,10 +230,8 @@ var
   MainChildChilds: IXMLNodeList;
   Node: IXMLNode;
   NodeName: string;
-  NewItem: TRSSItem;
   Doc: IXMLNode;
   NewChannelCategory: TRSSChannelCategory;
-  NewItemCategory: TRSSItemCategory;
   s: string;
 begin
   Doc := FSimpleRSS.XMLFile.DocumentElement;
@@ -192,60 +262,7 @@ begin
     end // end categorie
     // begin item
     else if MainChildName = reItem then begin
-      NewItem := FSimpleRSS.Items.Add;
-      if not TryGetChildnodeValue(MainChildChilds, reTitle, s) and
-        not TryGetChildnodeValue(MainChildChilds, reDescription, s) then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reItem
-          + strArrow + reTitle);
-      NewItem.Title := TryGetChildnodeValue(MainChildChilds, reTitle);
-      NewItem.Description := TryGetChildnodeValue(MainChildChilds, reDescription);
-
-      if MainChildChilds.FindNode(reLink) <> nil then
-        NewItem.Link := self.GetNodeValue(MainChildChilds.FindNode(reLink));
-      if MainChildChilds.FindNode(reAuthor) <> nil then
-        NewItem.Author.Name := MainChildChilds.FindNode(reAuthor).NodeValue;
-      if MainChildChilds.FindNode(reComments) <> nil then
-        NewItem.Comments := MainChildChilds.FindNode(reComments).NodeValue;
-      if MainChildChilds.FindNode(rdfeDate) <> nil then
-        NewItem.PubDate.LoadDCDateTime(MainChildChilds.FindNode(rdfeDate).NodeValue);
-      if MainChildChilds.FindNode(reEnclosure) <> nil then begin
-        if MainChildChilds.FindNode(reEnclosure).AttributeNodes.FindNode(reURL) = nil then
-          raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reURL);
-        if MainChildChilds.FindNode(reEnclosure).AttributeNodes.FindNode(reLength) = nil then
-          raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reLength);
-        if MainChildChilds.FindNode(reEnclosure).AttributeNodes.FindNode(reType) = nil then
-          raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reType);
-        NewItem.Enclosure.URL := MainChildChilds.FindNode(reEnclosure).AttributeNodes.Nodes[reURL].NodeValue;
-        NewItem.Enclosure.Length := MainChildChilds.FindNode(reEnclosure).AttributeNodes.Nodes[reLength].NodeValue;
-        NewItem.Enclosure.EnclosureType := MainChildChilds.FindNode(reEnclosure).AttributeNodes.Nodes[reType].NodeValue;
-        NewItem.Enclosure.Include := True;
-      end; // if then
-      if MainChildChilds.FindNode(reGUID) <> nil then begin
-        NewItem.GUID.Include := True;
-        NewItem.GUID.GUID := MainChildChilds.FindNode(reGUID).NodeValue;
-        if MainChildChilds.FindNode(reGUID).AttributeNodes.FindNode(reIsPermaLink) <> nil then
-          NewItem.GUID.IsPermaLink := MainChildChilds.FindNode(reGUID).AttributeNodes.Nodes[reIsPermaLink].NodeValue = strTrue;
-      end; // if then
-      if MainChildChilds.FindNode(rePubDate) <> nil then
-        NewItem.PubDate.LoadDateTime(MainChildChilds.Nodes[rePubDate].NodeValue);
-      if MainChildChilds.FindNode(reSource) <> nil then begin
-        if
-          MainChildChilds.FindNode(reSource).AttributeNodes.FindNode(reURL) = nil then
-          raise ESimpleRSSException.Create(emRequiredFieldMissing + reSource + strArrow + reURL);
-        NewItem.Source.Include := True;
-        NewItem.Source.Title := MainChildChilds.FindNode(reSource).NodeValue;
-        NewItem.Source.URL := MainChildChilds.FindNode(reSource).AttributeNodes.Nodes[reURL].NodeValue;
-      end; // if then
-      for SecondCounter := 0 to MainChildChilds.Count - 1 do begin
-        if
-          MainChildChilds.Nodes[SecondCounter].LocalName = reCategory then begin
-          NewItemCategory := NewItem.Categories.Add;
-          NewItemCategory.Title := MainChildChilds.Nodes[SecondCounter].NodeValue;
-          if
-            MainChildChilds.Nodes[SecondCounter].AttributeNodes.FindNode(reDomain) <> nil then
-            NewItemCategory.Domain := MainChildChilds.Nodes[SecondCounter].AttributeNodes.Nodes[reDomain].NodeValue;
-        end; // if then
-      end; // for 2 do
+      ParseItem(MainChild);
     end // END ITEM
     else if MainChildName = reTitle then
       FSimpleRSS.Channel.Required.Title := Doc.ChildNodes.Nodes[MainIdx].NodeValue

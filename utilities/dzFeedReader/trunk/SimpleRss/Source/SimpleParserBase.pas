@@ -38,8 +38,13 @@ type
   protected
     FSimpleRSS: TSimpleRSS;
     function GetNodeValue(_Node: IXmlNode; const _Default: string = ''): string;
+    function ContainsNode(_ChildNodes: IXMLNodeList; const _NodeName: string;
+      out _Node: IXMLNode): boolean;
     function TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string): string; overload;
-    function TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string; out _NodeValue: string): boolean; overload;
+    function TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string;
+      out _NodeValue: string): boolean; overload;
+    function TryGetAttributeValue(_Attributes: IXMLNodeList; const _AttrName: string;
+      out _AttrValue: string): boolean;
   public
     procedure Generate; virtual; abstract;
     procedure Parse; virtual; abstract;
@@ -70,13 +75,19 @@ begin
   end;
 end;
 
+function TSimpleParserBase.ContainsNode(_ChildNodes: IXMLNodeList; const _NodeName: string;
+  out _Node: IXMLNode): boolean;
+begin
+  _Node := _ChildNodes.FindNode(_NodeName);
+  Result := Assigned(_Node);
+end;
+
 function TSimpleParserBase.TryGetChildnodeValue(_ChildNodes: IXMLNodeList;
   const _NodeName: string; out _NodeValue: string): boolean;
 var
   Node: IXMLNode;
 begin
-  Node := _ChildNodes.FindNode(_NodeName);
-  Result := Assigned(Node);
+  Result := ContainsNode(_ChildNodes, _NodeName, Node);
   if Result then
     _NodeValue := GetNodeValue(Node);
 end;
@@ -84,6 +95,16 @@ end;
 function TSimpleParserBase.TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string): string;
 begin
   TryGetChildnodeValue(_ChildNodes, _NodeName, Result);
+end;
+
+function TSimpleParserBase.TryGetAttributeValue(_Attributes: IXMLNodeList; const _AttrName: string; out _AttrValue: string): boolean;
+var
+  Node: IXMLNode;
+begin
+  Node := _Attributes.FindNode(_AttrName);
+  Result := Assigned(Node);
+  if Result then
+    _AttrValue := GetNodeValue(Node, '');
 end;
 
 end.
