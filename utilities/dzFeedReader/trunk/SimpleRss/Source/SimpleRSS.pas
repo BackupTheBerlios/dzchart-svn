@@ -50,11 +50,11 @@ type
     FOnParseXML: TNotifyEvent;
     FOnCreate: TNotifyEvent;
     FOnGenerateXML: TNotifyEvent;
-    Procedure SetChannel(const Value: TRSSChannel);
-    Procedure SetItems(const Value: TRSSItems);
-    Procedure SetVersion(const Value: string);
-    Procedure SetIndyHTTP(const Value: TIdHTTP);
-    function GetSimpleRSSVersion: String;
+    procedure SetChannel(const Value: TRSSChannel);
+    procedure SetItems(const Value: TRSSItems);
+    procedure SetVersion(const Value: string);
+    procedure SetIndyHTTP(const Value: TIdHTTP);
+    function GetSimpleRSSVersion: string;
     procedure SetOnCreate(const Value: TNotifyEvent);
     procedure SetOnGenerateXML(const Value: TNotifyEvent);
     procedure SetOnParseXML(const Value: TNotifyEvent);
@@ -65,19 +65,19 @@ type
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    Procedure SaveToFile(Filename: string);
-    Function SaveToString: string;
-    Procedure SaveToStream(Stream: TStream);
-    Function SaveToStrings: TStrings;
-    Procedure LoadFromHTTP(URL:String);
-    Procedure LoadFromString(S: string);
-    Procedure LoadFromFile(Filename: string);
-    Procedure LoadFromStream(Stream: TStream);
-    Procedure LoadFromStrings(Strings: TStrings);
-    Procedure GenerateXML;overload;
-    Procedure GenerateXML(FeedType:TXMLType);overload;
-    Procedure GenerateComponent;
-    Procedure ClearXML;
+    procedure SaveToFile(Filename: string);
+    function SaveToString: string;
+    procedure SaveToStream(Stream: TStream);
+    function SaveToStrings: TStrings;
+    procedure LoadFromHTTP(URL: string);
+    procedure LoadFromString(S: string);
+    procedure LoadFromFile(Filename: string);
+    procedure LoadFromStream(Stream: TStream);
+    procedure LoadFromStrings(Strings: TStrings);
+    procedure GenerateXML; overload;
+    procedure GenerateXML(FeedType: TXMLType); overload;
+    procedure GenerateComponent;
+    procedure ClearXML;
   published
     { Published declarations }
     property Channel: TRSSChannel read FChannel write SetChannel;
@@ -85,14 +85,14 @@ type
     property Version: string read FVersion write SetVersion;
     property XMLType: TXMLType read FXMLType write FXMLType;
     property XMLFile: TXMLDocument read FXMLFile;
-    Property IndyHTTP : TIdHTTP Read FIndyHTTP Write SetIndyHTTP;
-    Property SimpleRSSVersion:String Read GetSimpleRSSVersion;
-    Property OnCreate:TNotifyEvent Read FOnCreate Write SetOnCreate;
-    Property OnGenerateXML:TNotifyEvent Read FOnGenerateXML Write SetOnGenerateXML;
-    Property OnParseXML:TNotifyEvent Read FOnParseXML Write SetOnParseXML;
+    property IndyHTTP: TIdHTTP read FIndyHTTP write SetIndyHTTP;
+    property SimpleRSSVersion: string read GetSimpleRSSVersion;
+    property OnCreate: TNotifyEvent read FOnCreate write SetOnCreate;
+    property OnGenerateXML: TNotifyEvent read FOnGenerateXML write SetOnGenerateXML;
+    property OnParseXML: TNotifyEvent read FOnParseXML write SetOnParseXML;
   end;
 
-Procedure Register;
+procedure Register;
 
 implementation
 
@@ -101,15 +101,16 @@ uses
   SimpleParserRDF,
   SimpleParserRSS,
   SimpleParserAtom,
-  SimpleParserBase, SimpleParseriTunes;
+  SimpleParserBase,
+  SimpleParseriTunes;
 
-Procedure Register;
+procedure Register;
 begin
   RegisterComponents('WebTools', [TSimpleRSS]);
 end;
 { TSimpleRSS }
 
-Procedure TSimpleRSS.ClearXML;
+procedure TSimpleRSS.ClearXML;
 begin
   FXMLFile.Active := False;
   FXMLFile.Free;
@@ -128,8 +129,8 @@ begin
   FXMLFile.Active := True;
   FVersion := strRSSVersion;
   FXMLType := xtRSS;
-  FXMLFile.Options := [doNodeAutoCreate,doAttrNull,doAutoPrefix,doNodeAutoIndent];
-  If Assigned(FOnCreate) then
+  FXMLFile.Options := [doNodeAutoCreate, doAttrNull, doAutoPrefix, doNodeAutoIndent];
+  if Assigned(FOnCreate) then
     FOnCreate(Self);
 end;
 
@@ -144,7 +145,7 @@ begin
   inherited;
 end;
 
-Procedure TSimpleRSS.GenerateComponent;
+procedure TSimpleRSS.GenerateComponent;
 var
   aParser: TSimpleParserBase;
 begin
@@ -153,125 +154,115 @@ begin
   FItems.Free;
   FItems := TRSSItems.Create(Self, TRSSItem);
 
-  If (LowerCase(FXMLFile.DocumentElement.NodeName) = reFormatRDF) then
-    Begin
-      FXMLType := xtRDF
-    end // if then
-  else
-    Begin
-      if (LowerCase(FXMLFile.DocumentElement.NodeName) = reFormatRSS) then
-        Begin
-          If FXMLFile.DocumentElement.Attributes[ituneNS] <> null then
-            FXMLType := xtiTunes
-          else
-            FXMLType := xtRSS
-        end // if then
+  if (LowerCase(FXMLFile.DocumentElement.NodeName) = reFormatRDF) then begin
+    FXMLType := xtRDF
+  end // if then
+  else begin
+    if (LowerCase(FXMLFile.DocumentElement.NodeName) = reFormatRSS) then begin
+      if FXMLFile.DocumentElement.Attributes[ituneNS] <> null then
+        FXMLType := xtiTunes
       else
-        Begin
-          if (LowerCase(FXMLFile.DocumentElement.NodeName) = reFormatAtom) then
-            Begin
-              FXMLType := xtAtom
-            end // if then
-          else
-          raise ESimpleRSSException.CreateFmt(reFormatUnkown + ': %s', [FXMLFile.DocumentElement.NodeName]);
-        end; // if else
+        FXMLType := xtRSS
+    end // if then
+    else begin
+      if (LowerCase(FXMLFile.DocumentElement.NodeName) = reFormatAtom) then begin
+        FXMLType := xtAtom
+      end // if then
+      else
+        raise ESimpleRSSException.CreateFmt(reFormatUnkown + ': %s', [FXMLFile.DocumentElement.NodeName]);
     end; // if else
+  end; // if else
 
   if (not VarIsNull(FXMLFile.DocumentElement.Attributes[reVersion])) then
     FVersion := FXMLFile.DocumentElement.Attributes[reVersion];
 
   case FXMLType of
-    xtRDF: aParser:=TSimpleParserRDF.Create(Self);
-    xtRSS: aParser:=TSimpleParserRSS.Create(Self);
-    xtAtom: aParser:=TSimpleParserAtom.Create(Self);
-    xtiTunes : aParser := TSimpleParseriTunes.Create(Self);
+    xtRDF: aParser := TSimpleParserRDF.Create(Self);
+    xtRSS: aParser := TSimpleParserRSS.Create(Self);
+    xtAtom: aParser := TSimpleParserAtom.Create(Self);
+    xtiTunes: aParser := TSimpleParseriTunes.Create(Self);
   else
-    aParser:=nil;
+    aParser := nil;
   end;
 
-  if (aParser <> nil) then
-    begin
-      aParser.Parse;
+  if (aParser <> nil) then begin
+    aParser.Parse;
 
-      If Assigned(FOnParseXML) then
-        FOnParseXML(Self);
-    end
-  else
-    raise ESimpleRSSException.CreateFmt(reFormatUnkown+ ': %s', [FXMLFile.DocumentElement.NodeName]);
+    if Assigned(FOnParseXML) then
+      FOnParseXML(Self);
+  end else
+    raise ESimpleRSSException.CreateFmt(reFormatUnkown + ': %s', [FXMLFile.DocumentElement.NodeName]);
 end;
 
-Procedure TSimpleRSS.GenerateXML;
-Begin
+procedure TSimpleRSS.GenerateXML;
+begin
   GenerateXML(FXMLType);
 end;
 
 procedure TSimpleRSS.GenerateXML(FeedType: TXMLType);
-Var
-  aParser : TSimpleParserBase;
+var
+  aParser: TSimpleParserBase;
 begin
-  Case FeedType of
-    xtRSS : aParser := TSimpleParserRSS.Create(Self);
-    xtRDF : aParser := TSimpleParserRDF.Create(Self);
-    xtAtom : aParser := TSimpleParserAtom.Create(Self);
-    xtiTunes : aParser := TSimpleParseriTunes.Create(Self);
-    else
-      aParser := nil;
+  case FeedType of
+    xtRSS: aParser := TSimpleParserRSS.Create(Self);
+    xtRDF: aParser := TSimpleParserRDF.Create(Self);
+    xtAtom: aParser := TSimpleParserAtom.Create(Self);
+    xtiTunes: aParser := TSimpleParseriTunes.Create(Self);
+  else
+    aParser := nil;
   end; // case of
 
-  If aParser <> nil then
-    Begin
-      aParser.Generate;
-      If Assigned(FOnGenerateXML) then
-        FOnGenerateXML(Self);
-    end
-  else
-    Raise ESimpleRSSException.Create(reFormatUnkown);
+  if aParser <> nil then begin
+    aParser.Generate;
+    if Assigned(FOnGenerateXML) then
+      FOnGenerateXML(Self);
+  end else
+    raise ESimpleRSSException.Create(reFormatUnkown);
 end;
 
-function TSimpleRSS.GetSimpleRSSVersion: String;
+function TSimpleRSS.GetSimpleRSSVersion: string;
 begin
   Result := strSimpleRSSVersion;
 end;
 
-Procedure TSimpleRSS.LoadFromFile(Filename: string);
+procedure TSimpleRSS.LoadFromFile(Filename: string);
 begin
   ClearXML;
   FXMLFile.LoadFromFile(Filename);
   GenerateComponent;
 end;
 
-Procedure TSimpleRSS.LoadFromHTTP(URL: String);
-Var
-  MemoryStream : TMemoryStream;
+procedure TSimpleRSS.LoadFromHTTP(URL: string);
+var
+  MemoryStream: TMemoryStream;
 begin
-  If FIndyHTTP = nil then
-    Raise ESimpleRSSException.Create(emRequireComponentMissing+strIdHTTPComponent)
-  else
-    Begin
-      MemoryStream := TMemoryStream.Create;
-      Try
-        FIndyHTTP.Get(URL,MemoryStream);
-      Finally
-        MemoryStream.Position := 0;
-        LoadFromStream(MemoryStream);
-        MemoryStream.Free;
-      end; // try finally
-    end; // if then
+  if FIndyHTTP = nil then
+    raise ESimpleRSSException.Create(emRequireComponentMissing + strIdHTTPComponent)
+  else begin
+    MemoryStream := TMemoryStream.Create;
+    try
+      FIndyHTTP.Get(URL, MemoryStream);
+      MemoryStream.Position := 0;
+      LoadFromStream(MemoryStream);
+    finally
+      MemoryStream.Free;
+    end; // try finally
+  end; // if then
 end;
 
-Procedure TSimpleRSS.LoadFromStream(Stream: TStream);
+procedure TSimpleRSS.LoadFromStream(Stream: TStream);
 begin
   ClearXML;
   FXMLFile.LoadFromStream(Stream);
   GenerateComponent;
 end;
 
-Procedure TSimpleRSS.LoadFromString(S: string);
+procedure TSimpleRSS.LoadFromString(S: string);
 begin
   FXMLFile.XML.Text := S;
 end;
 
-Procedure TSimpleRSS.LoadFromStrings(Strings: TStrings);
+procedure TSimpleRSS.LoadFromStrings(Strings: TStrings);
 var
   MemoryStream: TMemoryStream;
 begin
@@ -281,41 +272,41 @@ begin
   MemoryStream.Free;
 end;
 
-Procedure TSimpleRSS.SaveToFile(Filename: string);
+procedure TSimpleRSS.SaveToFile(Filename: string);
 begin
   GenerateXML;
   FXMLFile.SaveToFile(Filename);
 end;
 
-Procedure TSimpleRSS.SaveToStream(Stream: TStream);
+procedure TSimpleRSS.SaveToStream(Stream: TStream);
 begin
   GenerateXML;
   FXMLFile.SaveToStream(Stream);
 end;
 
-Function TSimpleRSS.SaveToString: string;
+function TSimpleRSS.SaveToString: string;
 begin
   GenerateXML;
   Result := FXMLFile.XML.Text;
 end;
 
-Function TSimpleRSS.SaveToStrings: TStrings;
+function TSimpleRSS.SaveToStrings: TStrings;
 begin
   GenerateXML;
   Result := FXMLFile.XML;
 end;
 
-Procedure TSimpleRSS.SetChannel(const Value: TRSSChannel);
+procedure TSimpleRSS.SetChannel(const Value: TRSSChannel);
 begin
   FChannel := Value;
 end;
 
-Procedure TSimpleRSS.SetIndyHTTP(const Value: TIdHTTP);
+procedure TSimpleRSS.SetIndyHTTP(const Value: TIdHTTP);
 begin
   FIndyHTTP := Value;
 end;
 
-Procedure TSimpleRSS.SetItems(const Value: TRSSItems);
+procedure TSimpleRSS.SetItems(const Value: TRSSItems);
 begin
   FItems := Value;
 end;
@@ -335,7 +326,7 @@ begin
   FOnGenerateXML := Value;
 end;
 
-Procedure TSimpleRSS.SetVersion(const Value: string);
+procedure TSimpleRSS.SetVersion(const Value: string);
 begin
   FVersion := Value;
 end;
