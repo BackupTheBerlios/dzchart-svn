@@ -27,26 +27,43 @@ unit SimpleParserBase;
 
 interface
 
-uses Classes, SimpleRSS;
+uses
+  Classes,
+  SimpleRSS,
+  XMLIntf;
 
 type
-    TSimpleParserBase = class(TObject)
-    private
-    protected
-      FSimpleRSS: TSimpleRSS;
-    public
-        Procedure Generate; virtual; abstract;
-        procedure Parse; virtual; abstract;
-        constructor Create(SimpleRSS: TSimpleRSS);
-    published
-    end; { TSimpleParserBase }
+  TSimpleParserBase = class(TObject)
+  private
+  protected
+    FSimpleRSS: TSimpleRSS;
+    function GetNodeValue(_Node: IXmlNode): string;
+  public
+    procedure Generate; virtual; abstract;
+    procedure Parse; virtual; abstract;
+    constructor Create(SimpleRSS: TSimpleRSS);
+  published
+  end; { TSimpleParserBase }
 
 implementation
+
+uses
+  Variants;
 
 constructor TSimpleParserBase.Create(SimpleRSS: TSimpleRSS);
 begin
   inherited Create;
-  FSimpleRSS:=SimpleRSS;
+  FSimpleRSS := SimpleRSS;
+end;
+
+function TSimpleParserBase.GetNodeValue(_Node: IXmlNode): string;
+begin
+  try
+    Result := VarToStrDef(_Node.NodeValue, '');
+  except
+    Result := 'error parsing NodeValue'
+  end;
 end;
 
 end.
+

@@ -34,23 +34,28 @@ unit SimpleParserRSS;
 
 interface
 
-uses Classes, SimpleParserBase, Variants;
+uses Classes,
+  SimpleParserBase,
+  Variants;
 
 type
-    TSimpleParserRSS = class(TSimpleParserBase)
-    private
-    protected
-    public
-        procedure Parse; override;
-        Procedure Generate; override;
-    published
-    end; { TSimpleParserRSS }
-
+  TSimpleParserRSS = class(TSimpleParserBase)
+  private
+  protected
+  public
+    procedure Parse; override;
+    procedure Generate; override;
+  published
+  end; { TSimpleParserRSS }
 
 implementation
 
 uses
-  XMLIntf, SimpleRSSTypes, SimpleRSSConst, SimpleRSSUtils, SysUtils;
+  XMLIntf,
+  SimpleRSSTypes,
+  SimpleRSSConst,
+  SimpleRSSUtils,
+  SysUtils;
 
 procedure TSimpleParserRSS.Generate;
 var
@@ -64,7 +69,7 @@ begin
     FSimpleRSS.XMLFile.ChildNodes.Add(XNode);
     AddChild(reRSS);
     ChildNodes.Nodes[reRSS].Attributes[reVersion] := FSimpleRSS.Version;
-    XNode := FSimpleRSS.XMLFile.CreateNode(Format(strAdvert,[FormatDateTime(strDateFormat,Now)]), ntComment);
+    XNode := FSimpleRSS.XMLFile.CreateNode(Format(strAdvert, [FormatDateTime(strDateFormat, Now)]), ntComment);
     ChildNodes.Nodes[reRSS].ChildNodes.Add(XNode);
     XNode := CreateNode(strRSSLicenceAdvert, ntComment);
     ChildNodes.Nodes[reRSS].ChildNodes.Add(XNode);
@@ -553,11 +558,9 @@ begin
   // END OPTIONAL
   // END CHANNEL
   // ITEMS
-  for Counter := 0 to FSimpleRSS.Items.Count - 1 do
-    begin
-      if FSimpleRSS.Items.Items[Counter].TitleChanged or FSimpleRSS.Items.Items[Counter].DescriptionChanged then
-        begin
-          Item := FSimpleRSS.XMLFile.CreateNode(reItem);
+  for Counter := 0 to FSimpleRSS.Items.Count - 1 do begin
+    if FSimpleRSS.Items.Items[Counter].TitleChanged or FSimpleRSS.Items.Items[Counter].DescriptionChanged then begin
+      Item := FSimpleRSS.XMLFile.CreateNode(reItem);
       with Item do begin
         if FSimpleRSS.Items.Items[Counter].TitleChanged then
           ChildNodes.Nodes[reTitle].NodeValue := FSimpleRSS.Items.Items[Counter].Title;
@@ -660,12 +663,12 @@ begin
               Title := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reTitle).NodeValue;
             if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reLink) <> nil then
               Link := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reLink).NodeValue;
-              
+
             // I have seen RSS2 with a content tag. can contain HTML
             // the content can be wrapped inside a <![CDATA statement. then its inside a childnode
             if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reContent) <> nil then begin
-              aTempNode:=ChildNodes.Nodes[Counter].ChildNodes.FindNode(reContent);
-              if (aTempNode.ChildNodes.Count>0) then begin
+              aTempNode := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reContent);
+              if (aTempNode.ChildNodes.Count > 0) then begin
                 Description := aTempNode.ChildNodes.Nodes[0].NodeValue;
               end else begin
                 Description := aTempNode.NodeValue;
@@ -673,8 +676,8 @@ begin
             end;
             // the content can also be encoded (content:encoded)
             if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reContentEncoded) <> nil then begin
-              aTempNode:=ChildNodes.Nodes[Counter].ChildNodes.FindNode(reContentEncoded);
-              if (aTempNode.ChildNodes.Count>0) then begin
+              aTempNode := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reContentEncoded);
+              if (aTempNode.ChildNodes.Count > 0) then begin
                 Description := aTempNode.ChildNodes.Nodes[0].NodeValue;
               end else begin
                 Description := aTempNode.NodeValue;
@@ -682,9 +685,9 @@ begin
             end;
             // the description can be wrapped inside a <![CDATA statement. then its inside a childnode
             if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reDescription) <> nil then begin
-              aTempNode:=ChildNodes.Nodes[Counter].ChildNodes.FindNode(reDescription);
-              if (aTempNode.ChildNodes.Count>0) then begin
-                Description := aTempNode.ChildNodes.Nodes[0].NodeValue;
+              aTempNode := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reDescription);
+              if (aTempNode.ChildNodes.Count > 0) then begin
+                Description := Self.GetNodeValue(aTempNode.ChildNodes.Nodes[0]);
               end else begin
                 Description := aTempNode.NodeValue;
               end;
@@ -696,18 +699,17 @@ begin
               Comments := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reComments).NodeValue;
             if ChildNodes.Nodes[Counter].ChildNodes.FindNode(rdfeDate) <> nil then
               PubDate.LoadDCDateTime(ChildNodes.Nodes[Counter].ChildNodes.FindNode(rdfeDate).NodeValue);
-            if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure) <> nil then
-              begin
-                If ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.FindNode(reURL) = nil then
-                  raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reURL);
-                if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.FindNode(reLength) = nil then
-                  raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reLength);
-                if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.FindNode(reType) = nil then
-                  raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reType);
-                Enclosure.URL := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.Nodes[reURL].NodeValue;
-                Enclosure.Length := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.Nodes[reLength].NodeValue;
-                Enclosure.EnclosureType := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.Nodes[reType].NodeValue;
-                Enclosure.Include := True;
+            if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure) <> nil then begin
+              if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.FindNode(reURL) = nil then
+                raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reURL);
+              if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.FindNode(reLength) = nil then
+                raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reLength);
+              if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.FindNode(reType) = nil then
+                raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reType);
+              Enclosure.URL := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.Nodes[reURL].NodeValue;
+              Enclosure.Length := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.Nodes[reLength].NodeValue;
+              Enclosure.EnclosureType := ChildNodes.Nodes[Counter].ChildNodes.FindNode(reEnclosure).AttributeNodes.Nodes[reType].NodeValue;
+              Enclosure.Include := True;
             end; // if then
             if ChildNodes.Nodes[Counter].ChildNodes.FindNode(reGUID) <> nil then begin
               GUID.Include := True;
@@ -854,19 +856,19 @@ begin
         end; // if then
         //END TEXTINPUT
       //BEGIN SKIPHOURS
-      if ChildNodes.Nodes[Counter].NodeName = reSkipHours then begin
-        GetSkipHours(ChildNodes.Nodes[Counter],FSimpleRSS);
-      end; // if then
+        if ChildNodes.Nodes[Counter].NodeName = reSkipHours then begin
+          GetSkipHours(ChildNodes.Nodes[Counter], FSimpleRSS);
+        end; // if then
       //END SKIPHOURS
       //BEGIN SKIPDAYS
-      if ChildNodes.Nodes[Counter].NodeName = reSkipDays then begin
-        GetSkipDays(ChildNodes.Nodes[Counter],FSimpleRss);
-      end; // if then
+        if ChildNodes.Nodes[Counter].NodeName = reSkipDays then begin
+          GetSkipDays(ChildNodes.Nodes[Counter], FSimpleRss);
+        end; // if then
       //END SKIPDAYS
       end; // for to do
     end; // if then
   end; // with do
 end;
 
-
 end.
+
