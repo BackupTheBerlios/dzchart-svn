@@ -213,10 +213,11 @@ begin
     NewItem.Source.URL := s;
   end; // if then
   for SecondCounter := 0 to ItemChilds.Count - 1 do begin
-    if ItemChilds.Nodes[SecondCounter].LocalName = reCategory then begin
+    ChildNode := ItemChilds.Nodes[SecondCounter];
+    if ChildNode.LocalName = reCategory then begin
       NewItemCategory := NewItem.Categories.Add;
-      NewItemCategory.Title := ItemChilds.Nodes[SecondCounter].NodeValue;
-      if TryGetAttributeValue(ItemChilds.Nodes[SecondCounter].AttributeNodes, reDomain, s) then
+      NewItemCategory.Title := GetNodeValue(ChildNode);
+      if TryGetAttributeValue(ChildNode.AttributeNodes, reDomain, s) then
         NewItemCategory.Domain := s;
     end; // if then
   end; // for 2 do
