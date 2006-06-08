@@ -21,6 +21,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 This File Originally Created By Thomas Zangl <thomas@tzis.net> 2005
+Additional work by:
+ - Thomas Mueller <http://www.dummzeuch.de> 2006
 --------------------------------------------------------------------------------
 }
 unit SimpleParserBase;
@@ -37,14 +39,12 @@ type
   private
   protected
     FSimpleRSS: TSimpleRSS;
-    function GetNodeValue(_Node: IXmlNode; const _Default: string = ''): string;
     function ContainsNode(_ChildNodes: IXMLNodeList; const _NodeName: string;
       out _Node: IXMLNode): boolean;
-    function TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string): string; overload;
-    function TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string;
+    function GetNodeValue(_Node: IXmlNode; const _Default: string = ''): string; overload;
+    function GetNodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string): string; overload;
+    function GetNodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string;
       out _NodeValue: string): boolean; overload;
-    function TryGetAttributeValue(_Attributes: IXMLNodeList; const _AttrName: string;
-      out _AttrValue: string): boolean;
   public
     procedure Generate; virtual; abstract;
     procedure Parse; virtual; abstract;
@@ -82,7 +82,7 @@ begin
   Result := Assigned(_Node);
 end;
 
-function TSimpleParserBase.TryGetChildnodeValue(_ChildNodes: IXMLNodeList;
+function TSimpleParserBase.GetNodeValue(_ChildNodes: IXMLNodeList;
   const _NodeName: string; out _NodeValue: string): boolean;
 var
   Node: IXMLNode;
@@ -92,19 +92,9 @@ begin
     _NodeValue := GetNodeValue(Node);
 end;
 
-function TSimpleParserBase.TryGetChildnodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string): string;
+function TSimpleParserBase.GetNodeValue(_ChildNodes: IXMLNodeList; const _NodeName: string): string;
 begin
-  TryGetChildnodeValue(_ChildNodes, _NodeName, Result);
-end;
-
-function TSimpleParserBase.TryGetAttributeValue(_Attributes: IXMLNodeList; const _AttrName: string; out _AttrValue: string): boolean;
-var
-  Node: IXMLNode;
-begin
-  Node := _Attributes.FindNode(_AttrName);
-  Result := Assigned(Node);
-  if Result then
-    _AttrValue := GetNodeValue(Node, '');
+  GetNodeValue(_ChildNodes, _NodeName, Result);
 end;
 
 end.

@@ -44,6 +44,8 @@ type
   TSimpleParserRDF = class(TSimpleParserBase)
   private
     procedure ParseItem(_ItemNode: IXMLNode);
+    procedure ParseImage(_ImageNode: IXMLNode);
+    procedure ParseTextInput(_TextInputNode: IXMLNode);
   protected
   public
     procedure Generate; override;
@@ -168,8 +170,8 @@ var
 begin
   NewItem := FSimpleRSS.Items.Add;
   ItemChilds := _ItemNode.ChildNodes;
-  HasTitle := TryGetChildnodeValue(ItemChilds, reTitle, Title);
-  HasDescription := TryGetChildnodeValue(ItemChilds, reDescription, Description);
+  HasTitle := GetNodeValue(ItemChilds, reTitle, Title);
+  HasDescription := GetNodeValue(ItemChilds, reDescription, Description);
   if not HasDescription and not HasTitle then
     raise ESimpleRSSException.Create(emRequiredFieldMissing + reItem
       + strArrow + reTitle);
@@ -177,22 +179,22 @@ begin
     NewItem.Title := Title;
   if HasDescription then
     NewItem.Description := Description;
-  if TryGetChildnodeValue(ItemChilds, reLink, s) then
+  if GetNodeValue(ItemChilds, reLink, s) then
     NewItem.Link := s;
-  if TryGetChildnodeValue(ItemChilds, reAuthor, s) then
+  if GetNodeValue(ItemChilds, reAuthor, s) then
     NewItem.Author.Name := s;
-  if TryGetChildnodeValue(ItemChilds, reComments, s) then
+  if GetNodeValue(ItemChilds, reComments, s) then
     NewItem.Comments := s;
-  if TryGetChildnodeValue(ItemChilds, rdfeDate, s) then
+  if GetNodeValue(ItemChilds, rdfeDate, s) then
     NewItem.PubDate.LoadDCDateTime(s);
   if ContainsNode(ItemChilds, reEnclosure, ChildNode) then begin
-    if not TryGetAttributeValue(ChildNode.AttributeNodes, reURL, s) then
+    if not GetNodeValue(ChildNode.AttributeNodes, reURL, s) then
       raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reURL);
     NewItem.Enclosure.URL := s;
-    if not TryGetAttributeValue(ChildNode.AttributeNodes, reLength, s) then
+    if not GetNodeValue(ChildNode.AttributeNodes, reLength, s) then
       raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reLength);
     NewItem.Enclosure.Length := StrToInt(s);
-    if not TryGetAttributeValue(ChildNode.AttributeNodes, reType, s) then
+    if not GetNodeValue(ChildNode.AttributeNodes, reType, s) then
       raise ESimpleRSSException.Create(emRequiredFieldMissing + reEnclosure + strArrow + reType);
     NewItem.Enclosure.EnclosureType := s;
     NewItem.Enclosure.Include := True;
@@ -200,13 +202,13 @@ begin
   if ContainsNode(ItemChilds, reGUID, ChildNode) then begin
     NewItem.GUID.Include := True;
     NewItem.GUID.GUID := GetNodeValue(ChildNode);
-    if TryGetAttributeValue(ChildNode.AttributeNodes, reIsPermaLink, s) then
+    if GetNodeValue(ChildNode.AttributeNodes, reIsPermaLink, s) then
       NewItem.GUID.IsPermaLink := (s = strTrue);
   end; // if then
-  if TryGetChildnodeValue(ItemChilds, rePubDate, s) then
+  if GetNodeValue(ItemChilds, rePubDate, s) then
     NewItem.PubDate.LoadDateTime(s);
   if ContainsNode(ItemChilds, reSource, ChildNode) then begin
-    if not TryGetAttributeValue(ChildNode.AttributeNodes, reURL, s) then
+    if not GetNodeValue(ChildNode.AttributeNodes, reURL, s) then
       raise ESimpleRSSException.Create(emRequiredFieldMissing + reSource + strArrow + reURL);
     NewItem.Source.Include := True;
     NewItem.Source.Title := GetNodeValue(ChildNode);
@@ -217,10 +219,68 @@ begin
     if ChildNode.LocalName = reCategory then begin
       NewItemCategory := NewItem.Categories.Add;
       NewItemCategory.Title := GetNodeValue(ChildNode);
-      if TryGetAttributeValue(ChildNode.AttributeNodes, reDomain, s) then
+      if GetNodeValue(ChildNode.AttributeNodes, reDomain, s) then
         NewItemCategory.Domain := s;
     end; // if then
   end; // for 2 do
+end;
+
+procedure TSimpleParserRDF.ParseImage(_ImageNode: IXMLNode);
+var
+  ImageChilds: IXMLNodeList;
+  Url: string;
+  Title: string;
+  Link: string;
+  Image: TRSSImage;
+  s: string;
+begin
+  ImageChilds := _ImageNode.ChildNodes;
+  if not GetNodeValue(ImageChilds, reURL, Url) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reImage + strArrow + reURL);
+  if not GetNodeValue(ImageChilds, reTitle, Title) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reImage + strArrow + reTitle);
+  if not GetNodeValue(ImageChilds, reLink, Link) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reImage +
+      strArrow + reLink);
+  Image := FSimpleRSS.Channel.Optional.Image;
+  Image.Include := true;
+  Image.Required.URL := Url;
+  Image.Required.Title := Title;
+  Image.Required.Link := Link;
+  if GetNodeValue(ImageChilds, reDescription, s) then
+    Image.Optional.Description := s;
+  if GetNodeValue(ImageChilds, reWidth, s) then
+    Image.Optional.Width := StrToInt(s);
+  if GetNodeValue(ImageChilds, reHeight, s) then
+    Image.Optional.Height := StrToInt(s);
+end;
+
+procedure TSimpleParserRDF.ParseTextInput(_TextInputNode: IXMLNode);
+var
+  Children: IXMLNodeList;
+  Title: string;
+  Description: string;
+  Name: string;
+  Link: string;
+begin
+  Children := _TextInputNode.ChildNodes;
+  if not GetNodeValue(Children, reTitle, Title) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
+      + strArrow + reTitle);
+  if not GetNodeValue(Children, reDescription, Description) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
+      + strArrow + reDescription);
+  if not GetNodeValue(Children, reName, Name) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
+      + strArrow + reName);
+  if not GetNodeValue(Children, reLink, Link) then
+    raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
+      + strArrow + reLink);
+  FSimpleRSS.Channel.Optional.TextInput.Include := true;
+  FSimpleRSS.Channel.Optional.TextInput.Title := Title;
+  FSimpleRSS.Channel.Optional.TextInput.Description := Description;
+  FSimpleRSS.Channel.Optional.TextInput.Link := Link;
+  FSimpleRSS.Channel.Optional.TextInput.TextInputName := Name;
 end;
 
 procedure TSimpleParserRDF.Parse;
@@ -228,18 +288,21 @@ var
   MainIdx, SecondCounter: Integer;
   MainChild: IXMLNode;
   MainChildName: string;
+  MainChildValue: string;
   MainChildChilds: IXMLNodeList;
   Node: IXMLNode;
   NodeName: string;
   Doc: IXMLNode;
   NewChannelCategory: TRSSChannelCategory;
   s: string;
+  Cloud: TRSSCloud;
 begin
   Doc := FSimpleRSS.XMLFile.DocumentElement;
   for MainIdx := 0 to Doc.ChildNodes.Count - 1 do begin
     MainChild := Doc.ChildNodes.Nodes[MainIdx];
     MainChildChilds := MainChild.ChildNodes;
     MainChildName := MainChild.NodeName;
+    MainChildValue := GetNodeValue(MainChild);
     // begin channel
     if MainChildName = reChannel then begin
       for SecondCounter := 0 to MainChildChilds.Count - 1 do begin
@@ -256,9 +319,9 @@ begin
     // begin categorie
     else if MainChildName = reCategory then begin
       NewChannelCategory := FSimpleRSS.Channel.Optional.Categories.Add;
-      NewChannelCategory.Category := MainChild.NodeValue;
-      if MainChild.AttributeNodes.FindNode(reDomain) <> nil then begin
-        NewChannelCategory.Domain := MainChild.AttributeNodes.Nodes[reDomain].NodeValue;
+      NewChannelCategory.Category := MainChildValue;
+      if GetNodeValue(MainChild.AttributeNodes, reDomain, s) then begin
+        NewChannelCategory.Domain := s;
       end; // if then
     end // end categorie
     // begin item
@@ -266,114 +329,56 @@ begin
       ParseItem(MainChild);
     end // END ITEM
     else if MainChildName = reTitle then
-      FSimpleRSS.Channel.Required.Title := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Required.Title := MainChildValue
     else if MainChildName = reLink then
-      FSimpleRSS.Channel.Required.Link := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Required.Link := MainChildValue
     else if MainChildName = reDescription then
-      FSimpleRSS.Channel.Required.Desc := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Required.Desc := MainChildValue
     else if MainChildName = reLanguage then begin
-      FSimpleRSS.Channel.Optional.Language := StringToLanguage(Doc.ChildNodes.Nodes[MainIdx].NodeValue);
+      FSimpleRSS.Channel.Optional.Language := StringToLanguage(MainChildValue);
       if FSimpleRSS.Channel.Optional.Language = langX then
-        FSimpleRSS.Channel.Optional.Xlang := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+        FSimpleRSS.Channel.Optional.Xlang := MainChildValue
       else
         FSimpleRSS.Channel.Optional.Xlang := '';
     end // if then
     else if MainChildName = reCopyright then
-      FSimpleRSS.Channel.Optional.Copyright := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Optional.Copyright := MainChildValue
     else if MainChildName = reManagingEditor then
-      FSimpleRSS.Channel.Optional.ManagingEditor := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Optional.ManagingEditor := MainChildValue
     else if MainChildName = reWebMaster then
-      FSimpleRSS.Channel.Optional.WebMaster := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Optional.WebMaster := MainChildValue
     else if MainChildName = rePubDate then
-      FSimpleRSS.Channel.Optional.PubDate.LoadDateTime(Doc.ChildNodes.Nodes[MainIdx].NodeValue)
+      FSimpleRSS.Channel.Optional.PubDate.LoadDateTime(MainChildValue)
     else if MainChildName = reLastBuildDate then
-      FSimpleRSS.Channel.Optional.LastBuildDate.LoadDateTime(Doc.ChildNodes.Nodes[MainIdx].NodeValue)
+      FSimpleRSS.Channel.Optional.LastBuildDate.LoadDateTime(MainChildValue)
     else if MainChildName = reGenerator then
-      FSimpleRSS.Channel.Optional.Generator := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Optional.Generator := MainChildValue
     else if MainChildName = reDocs then
-      FSimpleRSS.Channel.Optional.Docs := Doc.ChildNodes.Nodes[MainIdx].NodeValue
+      FSimpleRSS.Channel.Optional.Docs := MainChildValue
     // BEGIN CLOUD
     else if MainChildName = reCloud then begin
-      FSimpleRSS.Channel.Optional.Cloud.Include := Doc.ChildNodes.Nodes[MainIdx].AttributeNodes.Count > 0;
-      if FSimpleRSS.Channel.Optional.Cloud.Include then begin
-        FSimpleRSS.Channel.Optional.Cloud.Domain := Doc.ChildNodes.Nodes[MainIdx].AttributeNodes.Nodes[reDomain].NodeValue;
-        FSimpleRSS.Channel.Optional.Cloud.Port := Doc.ChildNodes.Nodes[MainIdx].AttributeNodes.Nodes[rePort].NodeValue;
-        FSimpleRSS.Channel.Optional.Cloud.Path := Doc.ChildNodes.Nodes[MainIdx].AttributeNodes.Nodes[rePath].NodeValue;
-        FSimpleRSS.Channel.Optional.Cloud.RegisterProcedure := Doc.ChildNodes.Nodes[MainIdx].AttributeNodes.Nodes[reRegisterProcedure].NodeValue;
-        FSimpleRSS.Channel.Optional.Cloud.Protocol := Doc.ChildNodes.Nodes[MainIdx].AttributeNodes.Nodes[reProtocol].NodeValue;
+      Cloud := FSimpleRSS.Channel.Optional.Cloud;
+      Cloud.Include := MainChild.AttributeNodes.Count > 0;
+      if Cloud.Include then begin
+        Cloud.Domain := GetNodeValue(MainChild.AttributeNodes, reDomain);
+        Cloud.Port := StrToInt(GetNodeValue(MainChild.AttributeNodes, rePort));
+        Cloud.Path := GetNodeValue(MainChild.AttributeNodes, rePath);
+        Cloud.RegisterProcedure := GetNodeValue(MainChild.AttributeNodes, reRegisterProcedure);
+        Cloud.Protocol := GetNodeValue(MainChild.AttributeNodes, reProtocol);
       end; // if then
     end //END CLOUD
     else if MainChildName = reTTL then
-      FSimpleRSS.Channel.Optional.TTL := Doc.ChildNodes.Nodes[MainIdx].NodeValue
-    //BEGIN IMAGE
-    else if MainChildName = reImage then begin
-      if MainChildChilds.FindNode(reURL) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reImage +
-          strArrow + reURL);
-      if MainChildChilds.FindNode(reTitle) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reImage +
-          strArrow + reTitle);
-      if MainChildChilds.FindNode(reLink) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reImage +
-          strArrow + reLink);
-      FSimpleRSS.Channel.Optional.Image.Include :=
-        MainChildChilds.Count > 0;
-      if FSimpleRSS.Channel.Optional.Image.Include then begin
-        FSimpleRSS.Channel.Optional.Image.Required.URL :=
-          MainChildChilds.FindNode(reURL).NodeValue;
-        FSimpleRSS.Channel.Optional.Image.Required.Title :=
-          MainChildChilds.FindNode(reTitle).NodeValue;
-        FSimpleRSS.Channel.Optional.Image.Required.Link :=
-          MainChildChilds.FindNode(reLink).NodeValue;
-        if MainChildChilds.FindNode(reDescription) <>
-          nil then
-          FSimpleRSS.Channel.Optional.Image.Optional.Description :=
-            MainChildChilds.FindNode(reDescription).NodeValue;
-        if MainChildChilds.FindNode(reWidth) <> nil then
-          FSimpleRSS.Channel.Optional.Image.Optional.Width :=
-            MainChildChilds.FindNode(reWidth).NodeValue;
-        if MainChildChilds.FindNode(reHeight) <> nil then
-          FSimpleRSS.Channel.Optional.Image.Optional.Height :=
-            MainChildChilds.FindNode(reHeight).NodeValue;
-      end; // if then
-    end // END IMAGE
+      FSimpleRSS.Channel.Optional.TTL := StrToInt(MainChildValue)
+    else if MainChildName = reImage then
+      ParseImage(MainChild)
     else if MainChildName = reRating then
-      FSimpleRSS.Channel.Optional.Rating := Doc.ChildNodes.Nodes[MainIdx].NodeValue
-    //BEGIN TEXTINPUT
-    else if MainChildName = reTextInput then begin
-      if MainChildChilds.FindNode(reTitle) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
-          + strArrow + reTitle);
-      if MainChildChilds.FindNode(reDescription) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
-          + strArrow + reDescription);
-      if MainChildChilds.FindNode(reName) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
-          + strArrow + reName);
-      if MainChildChilds.FindNode(reLink) = nil then
-        raise ESimpleRSSException.Create(emRequiredFieldMissing + reTextInput
-          + strArrow + reLink);
-      FSimpleRSS.Channel.Optional.TextInput.Include :=
-        MainChildChilds.Count > 0;
-      if FSimpleRSS.Channel.Optional.TextInput.Include then begin
-        FSimpleRSS.Channel.Optional.TextInput.Title :=
-          MainChildChilds.FindNode(reTitle).NodeValue;
-        FSimpleRSS.Channel.Optional.TextInput.Description :=
-          MainChildChilds.FindNode(reDescription).NodeValue;
-        FSimpleRSS.Channel.Optional.TextInput.Link :=
-          MainChildChilds.FindNode(reLink).NodeValue;
-        FSimpleRSS.Channel.Optional.TextInput.TextInputName :=
-          MainChildChilds.FindNode(reName).NodeValue;
-      end; // if then
-    end // END TEXTINPUT
-    //BEGIN SKIPHOURS
-    else if MainChildName = reSkipHours then begin
-      GetSkipHours(Doc.ChildNodes.Nodes[MainIdx], FSimpleRSS);
-    end // END SKIPHOURS
-    //BEGIN SKIPDAYS
-    else if MainChildName = reSkipDays then begin
+      FSimpleRSS.Channel.Optional.Rating := MainChildValue
+    else if MainChildName = reTextInput then
+      ParseTextInput(MainChild)
+    else if MainChildName = reSkipHours then
+      GetSkipHours(Doc.ChildNodes.Nodes[MainIdx], FSimpleRSS)
+    else if MainChildName = reSkipDays then
       GetSkipDays(Doc.ChildNodes.Nodes[MainIdx], FSimpleRss);
-    end; //END SKIPDAYS
   end; // for to do
 end;
 
