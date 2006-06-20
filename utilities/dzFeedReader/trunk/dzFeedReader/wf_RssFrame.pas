@@ -25,7 +25,7 @@ uses
   u_FeedDesc,
   u_EventThread,
   wf_TileFrame,
-  oxmldom; // needed so this dom vendor is available
+  xmldom, XMLIntf, gtcXdom31DomUnit, XMLDoc, oxmldom; // needed so this dom vendor is available
 
 type
   TOnShowDescription = procedure(_Sender: TObject; const _Title, _Description, _Link: string) of object;

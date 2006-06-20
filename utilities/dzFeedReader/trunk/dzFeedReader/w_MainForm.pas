@@ -54,6 +54,7 @@ type
     procedure EndMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
     procedure MoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
     procedure StartMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+    procedure EndResizeTile(_Sender: TObject);
   public
     constructor Create(_Owner: TComponent); override;
     destructor Destroy; override;
@@ -72,15 +73,59 @@ uses
   w_FeedEditForm;
 
 constructor Tf_MainForm.Create(_Owner: TComponent);
+var
+  Reg: TRegistry;
 begin
   inherited;
   FHintWindow := TMyHintWindow.Create(nil);
   FFeedFrames := TFeedFrameList.Create;
+
+  Reg := TRegistry.Create;
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    Reg.OpenKey(REGISTRY_KEY + '\WindowPos', true);
+    try
+      try
+        Left := Reg.ReadInteger('Left');
+        Top := Reg.ReadInteger('Top');
+        Width := Reg.ReadInteger('Width');
+        Height := Reg.ReadInteger('Height');
+      except
+        // ignore
+      end;
+    finally
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+
   InitFeeds;
 end;
 
 destructor Tf_MainForm.Destroy;
+var
+  Reg: TRegistry;
 begin
+  Reg := TRegistry.Create;
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    Reg.OpenKey(REGISTRY_KEY + '\WindowPos', true);
+    try
+      try
+        Reg.WriteInteger('Left', Left);
+        Reg.WriteInteger('Top', Top);
+        Reg.WriteInteger('Width', Width);
+        Reg.WriteInteger('Height', Height);
+      except
+        // ignore
+      end;
+    finally
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
   FreeAndNil(FHintWindow);
   FreeAndNil(FFeedFrames);
   inherited;
@@ -99,13 +144,15 @@ begin
   fr.OnEndMove := EndMoveTile;
   fr.OnMove := MoveTile;
   fr.OnStartMove := StartMoveTile;
+  fr.OnResized := EndResizeTile;
   try
     fr.Feed := _Feed;
   except
     fr.Free;
     exit;
   end;
-//  fr.Left := FFeedFrames.Count * fr.Width + 1;
+  if fr.Left = 0 then
+    fr.Left := FFeedFrames.Count * fr.Width + 1;
   FFeedFrames.Insert(fr);
 end;
 
@@ -128,6 +175,22 @@ begin
 end;
 
 procedure Tf_MainForm.EndMoveTile(_Sender: TObject; _MouseX, _MouseY: integer);
+var
+  Frame: Tfr_RssFrame;
+  Feed: TFeedDesc;
+begin
+  FMoving := false;
+  Refresh;
+  Frame := _Sender as Tfr_RssFrame;
+  Feed := Frame.Feed;
+  Feed.Top := Frame.Top;
+  Feed.Left := Frame.Left;
+  Feed.Width := Frame.Width;
+  Feed.Height := Frame.Height;
+  WriteFeed(Feed);
+end;
+
+procedure Tf_MainForm.EndResizeTile(_Sender: TObject);
 var
   Frame: Tfr_RssFrame;
   Feed: TFeedDesc;
@@ -227,17 +290,19 @@ end;
 
 function Tf_MainForm.ReadFeed(_Reg: TRegistry; _Feed: TFeedDesc): boolean;
 begin
+  Result := false;
   try
     _Feed.FeedKey := ExtractFileName(_Reg.CurrentPath);
     _Feed.FeedName := _Reg.ReadString('FeedName');
     _Feed.FeedUrl := _Reg.ReadString('FeedURL');
+    Result := true;
+    // those may be missing -> ignore
     _Feed.Left := _Reg.ReadInteger('Left');
     _Feed.Top := _Reg.ReadInteger('Top');
     _Feed.Width := _Reg.ReadInteger('Width');
     _Feed.Height := _Reg.ReadInteger('Height');
-    Result := true;
   except
-    Result := false;
+    ; //ignore
   end;
 end;
 

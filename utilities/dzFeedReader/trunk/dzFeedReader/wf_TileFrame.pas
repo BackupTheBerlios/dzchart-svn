@@ -57,7 +57,9 @@ type
     FResizing: TResizeDirections;
     FResizingX: integer;
     FResizingY: integer;
+    FOnResized: TNotifyEvent;
     procedure StartResize(_Direction: TResizeDirections; _Button: TMouseButton; _Shift: TShiftState; _X, _Y: Integer);
+    procedure EndResize;
     function GetCaption: string;
     procedure SetCaption(const _Caption: string);
   public
@@ -72,6 +74,7 @@ type
     property OnEndMove: TOnMove read FOnEndMove write FOnEndMove;
     property OnMove: TOnMove read FOnMove write FOnMove;
     property OnStartMove: TOnMove read FOnStartMove write FOnStartMove;
+    property OnResized: TNotifyEvent read FOnResized write FOnResized;
   end;
 
 implementation
@@ -90,6 +93,13 @@ begin
   inherited;
 end;
 
+procedure Tfr_TileFrame.EndResize;
+begin
+  FResizing := [];
+  if Assigned(FOnResized) then
+    FOnResized(Self);
+end;
+
 function Tfr_TileFrame.GetCaption: string;
 begin
   Result := p_TitleCaption.Caption;
@@ -100,7 +110,7 @@ procedure Tfr_TileFrame.p_TitleMouseDown(Sender: TObject; Button: TMouseButton;
 var
   pnt: TPoint;
 begin
-  if (Button <> mbLeft) or (Shift <> [ssLeft]) or not Assigned(FOnStartMove) then
+  if (Button <> mbLeft) or not Assigned(FOnStartMove) then
     exit;
   FMoving := true;
   pnt := ClientToParent(Point(X, Y), Parent);
@@ -123,7 +133,7 @@ procedure Tfr_TileFrame.p_TitleMouseMove(Sender: TObject; Shift: TShiftState; X,
 var
   pnt: TPoint;
 begin
-  if not FMoving or (Shift <> [ssLeft]) or not Assigned(FOnEndMove) then
+  if not FMoving or not Assigned(FOnEndMove) then
     exit;
   pnt := ClientToParent(Point(X, Y), Parent);
   FOnMove(Self, pnt.X, pnt.Y);
@@ -134,7 +144,7 @@ var
   dx: integer;
   dy: integer;
 begin
-  if (FResizing = []) or (Shift <> [ssLeft]) or not Assigned(FOnEndMove) then
+  if (FResizing = []) or not Assigned(FOnEndMove) then
     exit;
   dx := X - FResizingX;
   dy := Y - FResizingY;
@@ -155,9 +165,9 @@ end;
 procedure Tfr_TileFrame.p_ResizeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  if (FResizing = []) or (Shift <> [ssLeft]) or not Assigned(FOnEndMove) then
+  if (FResizing = []) or (Button <> mbLeft) or not Assigned(FOnEndMove) then
     exit;
-  FResizing := [];
+  EndResize;
 end;
 
 procedure Tfr_TileFrame.SetCaption(const _Caption: string);
@@ -168,7 +178,7 @@ end;
 procedure Tfr_TileFrame.StartResize(_Direction: TResizeDirections;
   _Button: TMouseButton; _Shift: TShiftState; _X, _Y: Integer);
 begin
-  if (_Button <> mbLeft) or (_Shift <> [ssLeft]) then
+  if _Button <> mbLeft then
     exit;
   FResizing := _Direction;
   FResizingX := _X;
