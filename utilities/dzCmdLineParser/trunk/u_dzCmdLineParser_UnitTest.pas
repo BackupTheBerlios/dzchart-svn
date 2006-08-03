@@ -1,3 +1,5 @@
+{: Unit tests for the TCmdLineParser and the state machine it uses.
+   @author Thomas Mueller <http://www.dummzeuch.de> }
 unit u_dzCmdLineParser_UnitTest;
 
 interface
@@ -215,7 +217,7 @@ type
   end;
 
   TTestCmdLineParserMixed = class(TTestCmdlineParser)
-    published
+  published
     procedure testLongShortOptions;
     procedure testShortLongOptions;
     procedure testParamShortOptions;
@@ -223,6 +225,14 @@ type
     procedure testShortOptionParam;
     procedure testLongOptionParam;
     procedure testLongOptionParamParam;
+  end;
+
+  TTestCmdLineParserDuplicates = class(TTestCmdlineParser)
+  published
+    procedure testDuplicateLongOptions;
+    procedure testDuplicateShortOptions;
+    procedure testDuplicateOptionValues;
+    procedure testDuplicateParams;
   end;
 
 implementation
@@ -923,6 +933,47 @@ begin
   CheckEquals('two', FParams[0]);
 end;
 
+{ TTestCmdLineParserDuplicates }
+
+procedure TTestCmdLineParserDuplicates.testDuplicateLongOptions;
+begin
+  TCmdLineParser.Execute('--one=two --one=three', FOptions, FParams);
+  CheckEquals(2, FOptions.Count);
+  CheckEquals(0, FParams.Count);
+  CheckEquals('one=two', FOptions[0]);
+  CheckEquals('one=three', FOptions[1]);
+end;
+
+procedure TTestCmdLineParserDuplicates.testDuplicateOptionValues;
+begin
+  TCmdLineParser.Execute('-a two -a three', FOptions, FParams);
+  CheckEquals(2, FOptions.Count);
+  CheckEquals(0, FParams.Count);
+  CheckEquals('a=two', FOptions[0]);
+  CheckEquals('a=three', FOptions[1]);
+end;
+
+procedure TTestCmdLineParserDuplicates.testDuplicateParams;
+begin
+  TCmdLineParser.Execute('one one one', FOptions, FParams);
+  CheckEquals(0, FOptions.Count);
+  CheckEquals(3, FParams.Count);
+  CheckEquals('one', FParams[0]);
+  CheckEquals('one', FParams[1]);
+  CheckEquals('one', FParams[2]);
+end;
+
+procedure TTestCmdLineParserDuplicates.testDuplicateShortOptions;
+begin
+  TCmdLineParser.Execute('-a -a -a -a', FOptions, FParams);
+  CheckEquals(4, FOptions.Count);
+  CheckEquals(0, FParams.Count);
+  CheckEquals('a=', FOptions[0]);
+  CheckEquals('a=', FOptions[1]);
+  CheckEquals('a=', FOptions[2]);
+  CheckEquals('a=', FOptions[3]);
+end;
+
 initialization
   RegisterTest('states', TTestSpaceState.Suite);
   RegisterTest('states', TTestParamState.Suite);
@@ -941,5 +992,6 @@ initialization
   RegisterTest('parser', TTestCmdLineParserShortOptions.Suite);
   RegisterTest('parser', TTestCmdLineParserLongOptions.Suite);
   RegisterTest('parser', TTestCmdLineParserMixed.Suite);
+  RegisterTest('parser', TTestCmdLineParserDuplicates.Suite);
 end.
 

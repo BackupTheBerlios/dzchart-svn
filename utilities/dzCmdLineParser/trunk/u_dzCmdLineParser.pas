@@ -1,3 +1,8 @@
+{: Implements a simple commandline parser based on a state machine.
+   To use, call one of the overloaded TCmdLineParser.Execute class methods.
+   The state machine implementation is based on a concept described by
+   Julian Bucknail in the Delphi Magazine, issue 115: "Object-Oriented State Machines"
+   @author Thomas Mueller <http://www.dummzeuch.de> }
 unit u_dzCmdLineParser;
 
 interface
@@ -135,7 +140,23 @@ type
 type
   TCmdLineParser = class
   public
-    {: parses the CmdLine string and returns the options and paramteters }
+    {: parses the CmdLine string and returns the options and paramteters
+       @param CmdLine is a string with the commandline to parse
+       @param Options is a TStrings instance which returns all options found as
+              name=value pairs,
+              e.g. '--one=two --three -x four -y' will result in
+              'one=two'
+              'three='
+              'x=four'
+              'y'
+              This list must not be sorted. Duplicates are allowed. The order
+              of the options is preserved. If you do not care about duplicates,
+              you can use the Values property to access option values.
+       @param Params is a TStrings instance  wich returns all parameters found,
+              e.g. 'one two three' will result in
+              'one'
+              'two'
+              'three' }
     class procedure Execute(const _CmdLine: string; _Options: TStrings; _Params: TStrings); overload;
     {: parses the application's commandline and returns the options and paramteters }
     class procedure Execute(_Options: TStrings; _Params: TStrings); overload;
