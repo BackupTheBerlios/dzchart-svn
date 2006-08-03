@@ -31,7 +31,6 @@ type
     FParam: string;
   public
     constructor Create(const _Input: string);
-    {: returns the next character to parse }
     function GetNextChar: char;
     procedure AddToOption(_c: char);
     procedure AddToParameter(_c: char);
@@ -221,6 +220,9 @@ type
     procedure testShortLongOptions;
     procedure testParamShortOptions;
     procedure testParamLongOptions;
+    procedure testShortOptionParam;
+    procedure testLongOptionParam;
+    procedure testLongOptionParamParam;
   end;
 
 implementation
@@ -858,6 +860,24 @@ end;
 
 { TTestCmdLineParserMixed }
 
+procedure TTestCmdLineParserMixed.testLongOptionParam;
+begin
+  TCmdLineParser.Execute('--one two', FOptions, FParams);
+  CheckEquals(1, FOptions.Count);
+  CheckEquals(1, FParams.Count);
+  CheckEquals('one=', FOptions[0]);
+  CheckEquals('two', FParams[0]);
+end;
+
+procedure TTestCmdLineParserMixed.testLongOptionParamParam;
+begin
+  TCmdLineParser.Execute('--one=two three', FOptions, FParams);
+  CheckEquals(1, FOptions.Count);
+  CheckEquals(1, FParams.Count);
+  CheckEquals('one=two', FOptions[0]);
+  CheckEquals('three', FParams[0]);
+end;
+
 procedure TTestCmdLineParserMixed.testLongShortOptions;
 begin
   TCmdLineParser.Execute('--one -a', FOptions, FParams);
@@ -892,6 +912,15 @@ begin
   CheckEquals(0, FParams.Count);
   CheckEquals('a=', FOptions[0]);
   CheckEquals('one=', FOptions[1]);
+end;
+
+procedure TTestCmdLineParserMixed.testShortOptionParam;
+begin
+  TCmdLineParser.Execute('-a one two', FOptions, FParams);
+  CheckEquals(1, FOptions.Count);
+  CheckEquals(1, FParams.Count);
+  CheckEquals('a=one', FOptions[0]);
+  CheckEquals('two', FParams[0]);
 end;
 
 initialization
