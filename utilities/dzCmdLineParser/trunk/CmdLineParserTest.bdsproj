@@ -123,7 +123,7 @@
 			<Directories Name="UnitOutputDir"></Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
-			<Directories Name="SearchPath">;$(BDS)\Source\DUnit\src</Directories>
+			<Directories Name="SearchPath">$(BDS)\Source\DUnit\src;D:\source\berlios.dztemplates\Units;D:\source\berlios.dztemplates\Templates</Directories>
 			<Directories Name="Packages"></Directories>
 			<Directories Name="Conditionals">_CONSOLE_TESTRUNNER</Directories>
 			<Directories Name="DebugSourceDirs"></Directories>
@@ -171,6 +171,9 @@
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments"></VersionInfoKeys>
 		</VersionInfoKeys>  
+    
+    
+    
     <Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcldb100.bpl">Borland Database Components</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\bin\dclado100.bpl">Borland ADO DB Components</Excluded_Packages>

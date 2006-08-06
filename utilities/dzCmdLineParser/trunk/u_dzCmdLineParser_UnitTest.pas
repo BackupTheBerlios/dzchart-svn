@@ -205,6 +205,7 @@ type
     procedure testShortOptionParamEmbeddedQuotedString;
     procedure testShortOptionParamEmbeddedDoubleQuote;
     procedure testTwoShortOptionParams;
+    procedure testOptionWithDash;
   end;
 
   TTestCmdLineParserLongOptions = class(TTestCmdlineParser)
@@ -764,6 +765,14 @@ begin
   CheckEquals(1, FOptions.Count);
   CheckEquals(0, FParams.Count);
   CheckEquals('a=', FOptions[0]);
+end;
+
+procedure TTestCmdLineParserShortOptions.testOptionWithDash;
+begin
+  TCmdLineParser.Execute('--hallo-welt', FOptions, FParams);
+  CheckEquals(1, FOptions.Count);
+  CheckEquals(0, FParams.Count);
+  CheckEquals('hallo-welt=', FOptions[0]);
 end;
 
 procedure TTestCmdLineParserShortOptions.testShortOptionParam;
