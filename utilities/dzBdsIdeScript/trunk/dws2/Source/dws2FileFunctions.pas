@@ -40,7 +40,7 @@ unit dws2FileFunctions;
 
 interface
 
-uses Classes, dws2Functions, dws2Exprs, dws2Symbols;
+uses Windows, Classes, dws2Functions, dws2Exprs, dws2Symbols;
 
 type
 
