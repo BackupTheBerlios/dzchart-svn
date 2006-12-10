@@ -1,9 +1,9 @@
 object FDwsDemo: TFDwsDemo
   Left = 169
   Top = 164
-  Width = 733
-  Height = 566
   Caption = 'DWS Demo'
+  ClientHeight = 520
+  ClientWidth = 725
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,7 +13,6 @@ object FDwsDemo: TFDwsDemo
   KeyPreview = True
   Menu = MainMenu1
   OldCreateOrder = True
-  Position = poDefaultPosOnly
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,9 +21,7 @@ object FDwsDemo: TFDwsDemo
   object Splitter2: TSplitter
     Left = 448
     Top = 0
-    Width = 3
     Height = 520
-    Cursor = crHSplit
     Align = alRight
   end
   object Panel2: TPanel
@@ -114,6 +111,7 @@ object FDwsDemo: TFDwsDemo
       Lines.Strings = (
         'This memo displays the value of '
         'TDelphiWebScript.Result ')
+      ScrollBars = ssBoth
       TabOrder = 1
       WantTabs = True
       WordWrap = False
@@ -779,6 +777,7 @@ object FDwsDemo: TFDwsDemo
         OnReadVar = dws2UnitVariablestestReadVar
         OnWriteVar = dws2UnitVariablestestWriteVar
       end>
+    StaticSymbols = False
     Left = 172
     Top = 72
   end
@@ -793,8 +792,8 @@ object FDwsDemo: TFDwsDemo
       ConstraintErrorMessage = 'CustNo cannot be blank'
       FieldName = 'CustNo'
       DisplayFormat = 'CN 0000'
-      MaxValue = 9999
-      MinValue = 1000
+      MaxValue = 9999.000000000000000000
+      MinValue = 1000.000000000000000000
     end
     object Table1Company: TStringField
       CustomConstraint = 'X IS NOT NULL'
@@ -835,7 +834,7 @@ object FDwsDemo: TFDwsDemo
     object Table1TaxRate: TFloatField
       FieldName = 'TaxRate'
       DisplayFormat = '0.00%'
-      MaxValue = 100
+      MaxValue = 100.000000000000000000
     end
     object Table1Contact: TStringField
       FieldName = 'Contact'
@@ -860,6 +859,7 @@ object FDwsDemo: TFDwsDemo
   end
   object dws2ComConnector1: Tdws2ComConnector
     Script = Script
+    StaticSymbols = False
     Left = 236
     Top = 72
   end
