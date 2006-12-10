@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{9D5AB1EE-197B-4F43-8F8B-8D40A337E340}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    
+    
+    <Projects>
+      <Projects Name="dws2Runtime100.bpl.20">bds4\dws2Runtime.bdsproj</Projects>
+      <Projects Name="dws2VCLRuntime100.bpl.20">bds4\dws2VCLRuntime.bdsproj</Projects>
+      <Projects Name="dcldws2100.bpl.20">bds4\dcldws2.bdsproj</Projects>
+      <Projects Name="dws2SynEditUtilsRuntime100.bpl.20">bds4\dws2SynEditUtilsRuntime.bdsproj</Projects>
+      <Projects Name="Targets">dws2Runtime100.bpl.20 dws2VCLRuntime100.bpl.20 dcldws2100.bpl.20 dws2SynEditUtilsRuntime100.bpl.20</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
