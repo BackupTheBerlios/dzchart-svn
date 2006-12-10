@@ -1,4 +1,4 @@
-package MyOTAPack;
+package dzBdsIdeScript;
 
 {$R *.res}
 {$R 'MSScriptControl_TLB.dcr'}
@@ -23,6 +23,10 @@ package MyOTAPack;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DESCRIPTION 'BDS IDE Scripting using Delphi Web Script II'}
+{$LIBSUFFIX '100'}
+{$LIBVERSION '1.0'}
+{$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 {%File 'SampleScripts\ClassToList.txt'}
 {%File 'SampleScripts\ClassToList.vbs'}

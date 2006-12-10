@@ -176,14 +176,14 @@ begin
     { Add the compiler's folder. }
     if not Reg.ValueExists('Folder') then
       Reg.WriteString('Folder',
-        IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
+        IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
         'Scripts')
     else
       Folder := Reg.ReadString('Folder');
   finally
     Reg.Free;
   end;
-  Folder := IncludeTrailingBackslash(Folder);
+  Folder := IncludeTrailingPathDelimiter(Folder);
   FScripts.Clear;
   ListFiles(Folder + '*.vbs', FScripts);
   for i := 0 to FScripts.Count - 1 do
