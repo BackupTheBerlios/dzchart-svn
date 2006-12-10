@@ -1,0 +1,94 @@
+{ INTERFACE PART }
+
+{ T%OBJECT_NAME%List class }
+
+  T%OBJECT_NAME%List = class(TList)
+  private
+    FOwns%OBJECT_NAME%s: Boolean;
+  protected
+    procedure Notify(Ptr: Pointer; Action: TListNotification); override;
+    function GetItem(Index: Integer): T%OBJECT_NAME%;
+    procedure SetItem(Index: Integer; A%OBJECT_NAME%: T%OBJECT_NAME%);
+  public
+    constructor Create; overload;
+    constructor Create(AOwns%OBJECT_NAME%s: Boolean); overload;
+
+    function Add(A%OBJECT_NAME%: T%OBJECT_NAME%): Integer;
+    function Remove(A%OBJECT_NAME%: T%OBJECT_NAME%): Integer;
+    function IndexOf(A%OBJECT_NAME%: T%OBJECT_NAME%): Integer;
+    function FindInstanceOf(AClass: TClass; AExact: Boolean = True; AStartAt: Integer = 0): Integer;
+    procedure Insert(Index: Integer; A%OBJECT_NAME%: T%OBJECT_NAME%);
+    property Owns%OBJECT_NAME%s: Boolean read FOwns%OBJECT_NAME%s write FOwns%OBJECT_NAME%s;
+    property Items[Index: Integer]: T%OBJECT_NAME% read GetItem write SetItem; default;
+  end;
+  
+{ IMPLEMENTATION PART }  
+
+{ T%OBJECT_NAME%List }
+
+function T%OBJECT_NAME%List.Add(A%OBJECT_NAME%: T%OBJECT_NAME%): Integer;
+begin
+  Result := inherited Add(A%OBJECT_NAME%);
+end;
+
+constructor T%OBJECT_NAME%List.Create;
+begin
+  inherited Create;
+  FOwns%OBJECT_NAME%s := True;
+end;
+
+constructor T%OBJECT_NAME%List.Create(AOwns%OBJECT_NAME%s: Boolean);
+begin
+  inherited Create;
+  FOwns%OBJECT_NAME%s := AOwns%OBJECT_NAME%s;
+end;
+
+function T%OBJECT_NAME%List.FindInstanceOf(AClass: TClass; AExact: Boolean;
+  AStartAt: Integer): Integer;
+var
+  I: Integer;
+begin
+  Result := -1;
+  for I := AStartAt to Count - 1 do
+    if (AExact and
+        (Items[I].ClassType = AClass)) or
+       (not AExact and
+        Items[I].InheritsFrom(AClass)) then
+    begin
+      Result := I;
+      break;
+    end;
+end;
+
+function T%OBJECT_NAME%List.GetItem(Index: Integer): T%OBJECT_NAME%;
+begin
+  Result := inherited Items[Index];
+end;
+
+function T%OBJECT_NAME%List.IndexOf(A%OBJECT_NAME%: T%OBJECT_NAME%): Integer;
+begin
+  Result := inherited IndexOf(A%OBJECT_NAME%);
+end;
+
+procedure T%OBJECT_NAME%List.Insert(Index: Integer; A%OBJECT_NAME%: T%OBJECT_NAME%);
+begin
+  inherited Insert(Index, A%OBJECT_NAME%);
+end;
+
+procedure T%OBJECT_NAME%List.Notify(Ptr: Pointer; Action: TListNotification);
+begin
+  if Owns%OBJECT_NAME%s then
+    if Action = lnDeleted then
+      T%OBJECT_NAME%(Ptr).Free;
+  inherited Notify(Ptr, Action);
+end;
+
+function T%OBJECT_NAME%List.Remove(A%OBJECT_NAME%: T%OBJECT_NAME%): Integer;
+begin
+  Result := inherited Remove(A%OBJECT_NAME%);
+end;
+
+procedure T%OBJECT_NAME%List.SetItem(Index: Integer; A%OBJECT_NAME%: T%OBJECT_NAME%);
+begin
+  inherited Items[Index] := A%OBJECT_NAME%;
+end;

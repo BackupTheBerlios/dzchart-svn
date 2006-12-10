@@ -1,0 +1,50 @@
+package MyOTAPack;
+
+{$R *.res}
+{$R 'MSScriptControl_TLB.dcr'}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD OFF}
+{%File 'SampleScripts\ClassToList.txt'}
+{%File 'SampleScripts\ClassToList.vbs'}
+{%File 'SampleScripts\CommentLines.vbs'}
+{%File 'SampleScripts\HelloWorld.vbs'}
+{%File 'SampleScripts\SaveToFile.vbs'}
+{%File 'SampleScripts\ShowForm.vbs'}
+{%File 'SampleScripts\SnipIntoDb.vbs'}
+{%File 'SampleScripts\TempStringList.vbs'}
+{%File 'SampleScripts\UnCommentLines.vbs'}
+
+requires
+  vcl,
+  Inet,
+  designide;
+
+contains
+  ActionsToMenuDMUnit in 'ActionsToMenuDMUnit.pas' {ActionsToMenuDM: TDataModule},
+  MLROTExpertsUnit in 'MLROTExpertsUnit.pas',
+  OTADebugFormUnit in 'OTADebugFormUnit.pas' {OTADebugForm},
+  WebSearchDMUnit in 'WebSearchDMUnit.pas' {WebSearchDM: TDataModule},
+  MLRStringsLib_TLB in 'MLRStringsLib_TLB.pas',
+  MSScriptControl_TLB in 'MSScriptControl_TLB.pas';
+
+end.
