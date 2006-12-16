@@ -778,14 +778,14 @@ object FDwsDemo: TFDwsDemo
         OnWriteVar = dws2UnitVariablestestWriteVar
       end>
     StaticSymbols = False
-    Left = 172
-    Top = 72
+    Left = 124
+    Top = 88
   end
   object Table1: TTable
     DatabaseName = 'DBDEMOS'
     TableName = 'customer.db'
-    Left = 104
-    Top = 128
+    Left = 72
+    Top = 168
     object Table1CustNo: TFloatField
       Alignment = taLeftJustify
       CustomConstraint = 'CustNo IS NOT NULL'
@@ -845,8 +845,8 @@ object FDwsDemo: TFDwsDemo
   end
   object SimpleDebugger: Tdws2SimpleDebugger
     OnDebug = SimpleDebuggerDoDebug
-    Left = 268
-    Top = 72
+    Left = 300
+    Top = 120
   end
   object Script: TDelphiWebScriptII
     Config.CompilerOptions = []
@@ -854,33 +854,33 @@ object FDwsDemo: TFDwsDemo
     Config.ScriptPaths.Strings = (
       'scripts\')
     Config.Timeout = 0
-    Left = 172
+    Left = 124
     Top = 40
   end
   object dws2ComConnector1: Tdws2ComConnector
     Script = Script
     StaticSymbols = False
-    Left = 236
-    Top = 72
+    Left = 204
+    Top = 120
   end
   object dws2GUIFunctions1: Tdws2GUIFunctions
     Left = 236
     Top = 40
   end
   object dws2FileFunctions1: Tdws2FileFunctions
-    Left = 268
+    Left = 348
     Top = 40
   end
   object dws2HtmlUnit: Tdws2HtmlUnit
     Script = Script
-    Left = 248
-    Top = 136
+    Left = 272
+    Top = 184
   end
   object HtmlFilter: Tdws2HtmlFilter
     PatternClose = '%>'
     PatternEval = '='
     PatternOpen = '<%'
-    Left = 216
-    Top = 136
+    Left = 200
+    Top = 184
   end
 end

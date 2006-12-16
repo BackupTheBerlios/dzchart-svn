@@ -1,6 +1,7 @@
-package dzBdsIdeScript;
+package dws2hhIboLib;
 
 {$R *.res}
+{$R '..\IboLib\dws2IboLib.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -22,21 +23,16 @@ package dzBdsIdeScript;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'BDS IDE Scripting using Delphi Web Script II'}
-{$LIBSUFFIX '100'}
-{$LIBVERSION '1.0'}
-{$DESIGNONLY}
+{$DESCRIPTION 'DelphiWebScript II - IBO Library (hh)'}
+{$LIBSUFFIX '60'}
 {$IMPLICITBUILD OFF}
 
 requires
-  vcl,
-  designide,
-  dws2VCLRuntime,
   dws2Runtime,
-  dws2ClassesLibrary;
+  IBO40ADT;
 
 contains
-  de.dummzeuch.utils.IdeExpert in 'de.dummzeuch.utils.IdeExpert.pas',
-  de.dummzeuch.dm_BdsIdeScriptWizard in 'de.dummzeuch.dm_BdsIdeScriptWizard.pas' {dm_BdsIdeScript: TDataModule};
+  dws2IboModule in '..\IboLib\dws2IboModule.pas' {dws2IboLib: TDataModule},
+  dws2IboDataSrc in '..\IboLib\dws2IboDataSrc.pas';
 
 end.

@@ -126,12 +126,12 @@
 			<Directories Name="SearchPath"></Directories>
 			<Directories Name="Packages"></Directories>
 			<Directories Name="Conditionals"></Directories>
-			<Directories Name="DebugSourceDirs"></Directories>
+			<Directories Name="DebugSourceDirs">D:\source\berlios.BdsIdeScript\dws2\Source\</Directories>
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
 		<Parameters>
 			<Parameters Name="RunParams"></Parameters>
-			<Parameters Name="HostApplication"></Parameters>
+			<Parameters Name="HostApplication">$(BDS)\Bin\bds.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>
 			<Parameters Name="DebugCWD"></Parameters>
@@ -170,8 +170,29 @@
 			<VersionInfoKeys Name="ProductName"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments"></VersionInfoKeys>
-		</VersionInfoKeys>  
-    <Excluded_Packages>
+		</VersionInfoKeys>  <Excluded_Packages>
+      <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dclie100.bpl">Internet Explorer Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvAppFrmD10D.bpl">JVCL Application and Form Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvBDED10D.bpl">JVCL BDE Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvCmpD10D.bpl">JVCL Non-Visual Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvCryptD10D.bpl">JVCL Encryption and Compression</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvCustomD10D.bpl">JVCL Custom Controls</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvDockingD10D.bpl">JVCL Docking Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvDotNetCtrlsD10D.bpl">JVCL DotNet Controls</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvEDID10D.bpl">JVCL EDI Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvGlobusD10D.bpl">JVCL Globus Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvHMID10D.bpl">JVCL HMI Controls</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvInterpreterD10D.bpl">JVCL Interpreter Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvJansD10D.bpl">JVCL Jans Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvManagedThreadsD10D.bpl">JVCL Managed Threads</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvNetD10D.bpl">JVCL Network Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvPrintPreviewD10D.bpl">JVCL Print Preview Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvRuntimeDesignD10D.bpl">JVCL Runtime Design Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvTimeFrameworkD10D.bpl">JVCL Time Framework</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvUIBD10D.bpl">JVCL Unified Interbase Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvValidatorsD10D.bpl">JVCL Validators and Error Provider Components</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvWizardD10D.bpl">JVCL Wizard</Excluded_Packages>
+      <Excluded_Packages Name="C:\Documents and Settings\developer\My Documents\Borland Studio Projects\Bpl\JvXPCtrlsD10D.bpl">JVCL XP Controls</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dclIndyProtocols100.bpl">Indy 10 Protocols Design Time</Excluded_Packages>
     </Excluded_Packages>
   </Delphi.Personality>

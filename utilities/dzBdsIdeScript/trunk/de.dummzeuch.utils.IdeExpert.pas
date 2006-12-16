@@ -1,4 +1,4 @@
-unit MLROTExpertsUnit;
+unit de.dummzeuch.utils.IdeExpert;
 
 interface
 
@@ -13,17 +13,17 @@ type
   { We use just one expert, even if it's named after the first expert it
     sets up. }
   TMLRActionsToMenuExpert = class(TInterfacedObject, IOTAWizard, IOTANotifier)
-    { IOTANotifier implementation. }
+  private // IOTANotifier implementation.
     procedure AfterSave;
     procedure BeforeSave;
     procedure Destroyed;
     procedure Modified;
-    { IOTAWizard implementation. }
+  private // IOTAWizard implementation.
     function GetIDString: string;
     function GetName: string;
     function GetState: TWizardState;
     procedure Execute;
-    { Object-specific. }
+  public // Object-specific.
     constructor Create;
     destructor Destroy; override;
   end;
@@ -32,7 +32,6 @@ function AddDelphiImage(Bitmap: TBitmap; MaskColor: TColor = clWindow): Integer;
 function CreateCurrentFormComponent(const TypeName: string;
   X, Y, w, H: Integer): TComponent;
 function DebugDisabled(const Creator: string): Boolean;
-procedure DebugOTA(const Text: string);
 function CurrentForm: TCustomForm;
 function GetBaseRegistryKey: string;
 function GetDelphiCustomMenu(const Caption: string): TMenuItem;
@@ -46,11 +45,9 @@ procedure SetSelectedText(Text: string);
 implementation
 
 uses
-  ActionsToMenuDMUnit,
-  OTADebugFormUnit,
+  Windows,
   Registry,
-  WebSearchDMUnit,
-  Windows;
+  de.dummzeuch.dm_BdsIdeScriptWizard;
 
 function GetEditView: IOTAEditView; forward;
 function GetFormEditor: IOTAFormEditor; forward;
@@ -96,17 +93,6 @@ begin
   finally
     Reg.Free;
   end;
-end;
-
-procedure DebugOTA(const Text: string);
-begin
-  if DebugDisabled('MLR') then
-    Exit;
-  if not Assigned(OTADebugForm) then begin
-    OTADebugForm := TOTADebugForm.Create(nil);
-    OTADebugForm.Show;
-  end;
-  OTADebugForm.Memo1.Lines.Add(Text);
 end;
 
 function CurrentForm: TCustomForm;
@@ -314,14 +300,12 @@ end;
 
 constructor TMLRActionsToMenuExpert.Create;
 begin
-  ActionsToMenuDM := TActionsToMenuDM.Create(nil);
-  WebSearchDM := TWebSearchDM.Create(nil);
+  dm_BdsIdeScript := Tdm_BdsIdeScript.Create(nil);
 end;
 
 destructor TMLRActionsToMenuExpert.Destroy;
 begin
-  WebSearchDM.Free;
-  ActionsToMenuDM.Free;
+  dm_BdsIdeScript.Free;
 end;
 
 procedure TMLRActionsToMenuExpert.Destroyed;

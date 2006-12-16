@@ -1,0 +1,13 @@
+// This script removes leading "//" from lines
+
+var i: integer;
+var s: string;
+
+for i := 0 to IdeEditor.Count - 1 do begin
+  s := Trim(IdeEditor[i]);
+  if Copy(s, 1, 2) <> '//' then
+    IdeEditor[i] := '// ' + s;
+end;
+
+IdeEditor.Commit;
+
