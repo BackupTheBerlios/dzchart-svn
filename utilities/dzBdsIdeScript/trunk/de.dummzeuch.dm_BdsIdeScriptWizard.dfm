@@ -37,11 +37,6 @@ object dm_BdsIdeScript: Tdm_BdsIdeScript
     Left = 88
     Top = 280
   end
-  object dws2StringsUnit: Tdws2StringsUnit
-    Script = dws_Main
-    Left = 240
-    Top = 288
-  end
   object dws2ClassesLib: Tdws2ClassesLib
     OldCreateOrder = False
     Script = dws_Main

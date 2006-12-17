@@ -16,16 +16,14 @@ uses
   ToolsAPI,
   dws2Comp,
   dws2Exprs,
-  dws2FileFunctions,
-  dws2ClassesLibModule,
-  dws2StringResult;
+  dws2StringFunctions,
+  dws2FileFunctions, dws2ClassesLibModule;
 
 type
   Tdm_BdsIdeScript = class(TDataModule)
     TheTimer: TTimer;
     dws2Unit: Tdws2Unit;
     dws_Main: TDelphiWebScriptII;
-    dws2StringsUnit: Tdws2StringsUnit;
     dws2ClassesLib: Tdws2ClassesLib;
     dws2FileFunctions: Tdws2FileFunctions;
     procedure DataModuleCreate(Sender: TObject);

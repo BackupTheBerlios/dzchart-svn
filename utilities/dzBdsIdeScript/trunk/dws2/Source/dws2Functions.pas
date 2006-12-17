@@ -137,7 +137,7 @@ type
     InternalFunctionClass: TInternalFunctionClass;
     FuncName: string;
     FuncParams: array of string;
-    FuncType: string
+    FuncType: string;
   end;
   PRegisteredInternalFunction = ^TRegisteredInternalFunction;
 
