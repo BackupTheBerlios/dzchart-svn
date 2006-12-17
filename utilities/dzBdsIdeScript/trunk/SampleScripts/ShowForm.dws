@@ -1,0 +1,64 @@
+// Checks whether a character is visible
+function IsTokenChar(strChar: String): boolean;
+var
+  ascPosition: integer;
+begin
+  ascPosition := Ord(strChar);
+  if ((ascPosition >= 48) and (ascPosition <= 57)) or
+     ((ascPosition >= 65) and (ascPosition <= 90)) or
+     ((ascPosition >= 97) and (ascPosition <= 122)) then
+    Result := True
+  else
+    Result := False;
+end;
+
+function GetFirstToken(strText: string): string;
+var
+  i: integer;
+  CharFound: boolean;
+  TheChar: String;
+begin
+  Result := '';
+  CharFound := False;
+  for i := 1 to Length(strText) do begin
+    TheChar := Copy(strText, i, 1);
+    if IsTokenChar(TheChar) then begin
+      CharFound := True;
+      Result := Result + TheChar;
+    end else if CharFound then
+      Exit;
+  end;
+end;
+
+var i: integer;
+var strFormName: string;
+var strFormClass: string;
+var WasEmpty: boolean;
+var Selection: TStringList;
+
+strFormName := GetFirstToken(TIdeEditor.GetSelectedText);
+WasEmpty := (strFormName = '');
+if WasEmpty Then
+  strFormName := 'Form';
+strFormClass := 'T' + strFormName;
+
+Selection := TStringList.Create;
+Selection.Add('function Show' + strFormName + ': Boolean;');
+Selection.Add('var');
+Selection.Add('  ' + strFormName + ': ' + strFormClass + ';');
+Selection.Add('begin');
+Selection.Add('  ' + strFormName + ' := ' + strFormClass + '.Create(nil);');
+Selection.Add('  try');
+Selection.Add('    { TODO: Initialize the form, if required. }');
+Selection.Add('    Result := ' + strFormName + '.ShowModal = mrOk;');
+Selection.Add('  finally');
+Selection.Add('    ' + strFormName + '.Free;');
+Selection.Add('  end;');
+Selection.Add('end;');
+
+if WasEmpty then
+  TIdeEditor.InsertText(Selection.Text)
+else
+  TIdeEditor.SetSelectedText(Selection.Text);
+
+
