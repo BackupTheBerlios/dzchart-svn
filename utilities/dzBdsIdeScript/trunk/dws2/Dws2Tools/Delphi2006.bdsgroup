@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{472703E8-2D6B-43F8-826E-540FA178CC8E}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    
+    
+    <Projects>
+      <Projects Name="dws2VCLPasGenRuntime100.bpl.20">PascalGeneration\Delphi2006\dws2VCLPasGenRuntime.bdsproj</Projects>
+      <Projects Name="dcldws2PasGen100.bpl.20">PascalGeneration\Delphi2006\dcldws2PasGen.bdsproj</Projects>
+      <Projects Name="dws2PascalParsingRuntime100.bpl.20">PascalParsing\Delphi2006\dws2PascalParsingRuntime.bdsproj</Projects>
+      <Projects Name="dws2OTAFoundationRuntime100.bpl.20">OpenToolsAPI\Delphi2006\dws2OTAFoundationRuntime.bdsproj</Projects>
+      <Projects Name="dcldws2UnitEditorRichPkg100.bpl.20">UnitCompEditor\Delphi2006\dcldws2UnitEditorRichPkg.bdsproj</Projects>
+      <Projects Name="dcldws2UnitEditorSynPkg100.bpl.20">UnitCompEditor\Delphi2006\dcldws2UnitEditorSynPkg.bdsproj</Projects>
+      <Projects Name="Targets">dws2VCLPasGenRuntime100.bpl.20 dcldws2PasGen100.bpl.20 dws2PascalParsingRuntime100.bpl.20 dws2OTAFoundationRuntime100.bpl.20 dcldws2UnitEditorRichPkg100.bpl.20 dcldws2UnitEditorSynPkg100.bpl.20</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
