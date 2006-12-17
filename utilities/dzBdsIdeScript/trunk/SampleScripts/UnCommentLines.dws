@@ -2,12 +2,18 @@
 
 var i: integer;
 var s: string;
+var st: TStringList;
 
-for i := 0 to IdeEditor.Count - 1 do begin
-  s := Trim(IdeEditor[i]);
-  if Copy(s, 1, 2) = '//' then
-    IdeEditor[i] := Copy(s, 3, Length(s) - 2);
+st := TStringList.Create;
+st.Text := TIdeEditor.GetSelectedText;
+
+for i := 0 to st.Count - 1 do begin
+  s := Trim(st[i]);
+  if Copy(s, 1, 3) = '// ' then
+    st[i] := Copy(s, 4, Length(s) - 3)
+  else if Copy(s, 1, 2) = '//' then
+    st[i] := Copy(s, 3, Length(s) - 2);
 end;
 
-IdeEditor.Commit;
+TIdeEditor.SetSelectedText(st.Text);
 

@@ -29,9 +29,7 @@ type
   end;
 
 function AddDelphiImage(Bitmap: TBitmap; MaskColor: TColor = clWindow): Integer;
-function CreateCurrentFormComponent(const TypeName: string;
-  X, Y, w, H: Integer): TComponent;
-function DebugDisabled(const Creator: string): Boolean;
+function CreateCurrentFormComponent(const TypeName: string; X, Y, w, H: Integer): TComponent;
 function CurrentForm: TCustomForm;
 function GetBaseRegistryKey: string;
 function GetDelphiCustomMenu(const Caption: string): TMenuItem;
@@ -39,8 +37,10 @@ function GetDelphiDataMenu: TMenuItem;
 function GetDelphiHelpMenu: TMenuItem;
 function GetSelectedComponent: TComponent;
 function GetSelectedText: string;
+procedure InsertText(const _Text: string);
+procedure SetSelectedText(const _Text: string);
+
 procedure Register;
-procedure SetSelectedText(Text: string);
 
 implementation
 
@@ -72,27 +72,6 @@ begin
   if Assigned(OTAComponent) and
     (OTAComponent.QueryInterface(INTAComponent, NTAComponent) = S_OK) then
     Result := NTAComponent.GetComponent;
-end;
-
-function DebugDisabled(const Creator: string): Boolean;
-const
-  DebugEnabledValue = 'DebugOTAEnabled';
-var
-  Reg: TRegistry;
-begin
-  Reg := TRegistry.Create;
-  try
-    Reg.OpenKey(GetBaseRegistryKey, True);
-    Reg.OpenKey(Creator, True);
-    if Reg.ValueExists(DebugEnabledValue) then
-      Result := not Reg.ReadBool(DebugEnabledValue)
-    else begin
-      Reg.WriteBool(DebugEnabledValue, False);
-      Result := True;
-    end;
-  finally
-    Reg.Free;
-  end;
 end;
 
 function CurrentForm: TCustomForm;
@@ -217,7 +196,8 @@ var
 begin
   Result := '';
   CurrMod := (BorlandIDEServices as IOTAModuleServices).CurrentModule;
-  if not Assigned(CurrMod) then Exit;
+  if not Assigned(CurrMod) then
+    Exit;
   for i := 0 to CurrMod.GetModuleFileCount - 1 do
     if CurrMod.GetModuleFileEditor(i).QueryInterface(IOTASourceEditor,
       Editor) = S_OK then begin
@@ -256,7 +236,36 @@ begin
   RegisterPackageWizard(TMLRActionsToMenuExpert.Create as IOTAWizard);
 end;
 
-procedure SetSelectedText(Text: string);
+procedure InsertText(const _Text: string);
+var
+  OldAutoIndent: Boolean;
+  Buffer: IOTAEditBuffer;
+  Editor: IOTASourceEditor;
+  View: IOTAEditView;
+begin
+  Editor := GetSourceEditor;
+  if (Editor = nil) or (Editor.GetEditViewCount = 0) then
+    Exit;
+
+  View := Editor.GetEditView(0);
+  if View = nil then
+    Exit;
+
+  Buffer := View.GetBuffer;
+  if Buffer = nil then
+    Exit;
+
+  OldAutoIndent := Buffer.BufferOptions.AutoIndent;
+  try
+    Buffer.BufferOptions.AutoIndent := False;
+    View.Position.InsertText(_Text);
+    View.Paint;
+  finally
+    Buffer.BufferOptions.AutoIndent := OldAutoIndent;
+  end;
+end;
+
+procedure SetSelectedText(const _Text: string);
 var
   OldAutoIndent: Boolean;
   Buffer: IOTAEditBuffer;
@@ -266,17 +275,19 @@ var
   View: IOTAEditView;
 begin
   Editor := GetSourceEditor;
-  if Editor = nil then Exit;
+  if Editor = nil then
+    Exit;
   for i := 0 to Editor.GetEditViewCount - 1 do begin
     View := Editor.GetEditView(i);
-    if View = nil then continue;
+    if View = nil then
+      continue;
     Block := View.GetBlock;
     if Block.Text <> '' then begin
       Buffer := View.GetBuffer;
       OldAutoIndent := Buffer.BufferOptions.AutoIndent;
       try
         Buffer.BufferOptions.AutoIndent := False;
-        View.Position.InsertText(Text);
+        View.Position.InsertText(_Text);
         View.Paint;
       finally
         Buffer.BufferOptions.AutoIndent := OldAutoIndent;
@@ -320,7 +331,7 @@ end;
 
 function TMLRActionsToMenuExpert.GetIDString: string;
 begin
-  Result := 'XLSistemas.TMLRActionsToMenuExpert';
+  Result := 'de.dummzeuch.BdsIdeScript';
 end;
 
 function TMLRActionsToMenuExpert.GetName: string;

@@ -1,13 +1,18 @@
-// This script removes leading "//" from lines
+// This script adds leading "// " to all lines that don't already have it
 
 var i: integer;
 var s: string;
+var st: TStringList;
 
-for i := 0 to IdeEditor.Count - 1 do begin
-  s := Trim(IdeEditor[i]);
+st := TStringList.Create;
+st.Text := TIdeEditor.GetSelectedText;
+
+for i := 0 to st.Count - 1 do begin
+  s := Trim(st[i]);
   if Copy(s, 1, 2) <> '//' then
-    IdeEditor[i] := '// ' + s;
+    st[i] := '// ' + s;
 end;
 
-IdeEditor.Commit;
+TIdeEditor.SetSelectedText(st.Text);
+
 

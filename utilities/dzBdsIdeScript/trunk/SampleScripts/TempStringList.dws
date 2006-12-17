@@ -1,0 +1,67 @@
+// This script inserts a temporary TStringList
+//
+// st := TStringList.Create;
+// try
+//   ...
+// finally
+//   st.Free;
+// end;
+//
+// It uses the currently selected text as the variable name or 'st' if nothing
+// was selected.
+
+
+// Checks whether a character is visible
+function IsTokenChar(strChar: String): boolean;
+var
+  ascPosition: integer;
+begin
+  ascPosition := Ord(strChar);
+  if ((ascPosition >= 48) and (ascPosition <= 57)) or
+     ((ascPosition >= 65) and (ascPosition <= 90)) or
+     ((ascPosition >= 97) and (ascPosition <= 122)) then
+    Result := True
+  else
+    Result := False;
+end;
+
+function GetFirstToken(strText: string): string;
+var
+  i: integer;
+  CharFound: boolean;
+  TheChar: String;
+begin
+  Result := '';
+  CharFound := False;
+  for i := 1 to Length(strText) do begin
+    TheChar := Copy(strText, i, 1);
+    if IsTokenChar(TheChar) then begin
+      CharFound := True;
+      Result := Result + TheChar;
+    end else if CharFound then
+      Exit;
+  end;
+end;
+
+var strVarName: string;
+var WasEmpty: boolean;
+var Selection: TStringList;
+
+strVarName := GetFirstToken(TIdeEditor.GetSelectedText);
+WasEmpty := (strVarName = '');
+if WasEmpty Then
+  strVarName := 'st';
+
+Selection := TStringList.Create;
+Selection.Add('  ' + strVarName + ' := TStringList.Create;');
+Selection.Add('  try');
+Selection.Add('    { TODO: Use ' + strVarName + ' }');
+Selection.Add('  finally');
+Selection.Add('    ' + strVarName + '.Free;');
+Selection.Add('  end;');
+
+if WasEmpty then
+  TIdeEditor.InsertText(Selection.Text)
+else
+  TIdeEditor.SetSelectedText(Selection.Text);
+

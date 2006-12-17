@@ -16,6 +16,8 @@ object dm_BdsIdeScript: Tdm_BdsIdeScript
     Arrays = <>
     Classes = <>
     Constants = <>
+    Dependencies.Strings = (
+      'Classes')
     Enumerations = <>
     Forwards = <>
     Functions = <>
@@ -43,8 +45,8 @@ object dm_BdsIdeScript: Tdm_BdsIdeScript
   object dws2ClassesLib: Tdws2ClassesLib
     OldCreateOrder = False
     Script = dws_Main
-    Left = 304
-    Top = 296
+    Left = 232
+    Top = 344
     Height = 0
     Width = 0
   end

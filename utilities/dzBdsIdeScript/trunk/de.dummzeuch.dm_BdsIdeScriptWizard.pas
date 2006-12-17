@@ -37,8 +37,6 @@ type
     FScriptItems: TList;
     FScripts: TStringList;
     FMessageGroup: IOTAMessageGroup;
-    FOrigEditorText: string;
-    FNewEditorText: string;
 
     procedure ClearMenuItems(_List: TList);
     procedure ClearScriptMenuItems;
@@ -46,26 +44,17 @@ type
     procedure RefreshMenuItems;
     procedure RefreshScriptMenuItems;
     procedure SetTimerRefreshing;
-    procedure GenerateIdeEditorClass;
+    procedure RegisterOTAFunctions;
   private // Eval functions for the TIdeEditor class and IdeEditor global variable
-    procedure OnIdeEditorCommitEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorCountEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorGetLinesEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorCreateAssignExternalObject(Info: TProgramInfo; var ExtObject: TObject);
-    procedure OnIdeEditorDestroy(ExternalObject: TObject);
-    procedure OnIdeEditorSetLinesEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorAddEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorDeleteEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorClearEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorInsertEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorSetTextEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorGetTextEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure OnIdeEditorInstantiate(var ExtObject: TObject);
   private
     function Compile(const _Source: string): TProgram;
     procedure ExecuteScript(_Code: TStrings);
-    procedure WriteToMessages(const _Error: string);
+    procedure WriteToMessages(const _Msg: string; _Show: Boolean = False);
     procedure ClearMessages;
+    procedure OnIdeEditorGetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
+    procedure OnIdeEditorSetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
+    procedure OnIdeEditorInsertTextEval(_Info: TProgramInfo;
+      _ExtObject: TObject);
   public
   end;
 
@@ -93,7 +82,7 @@ begin
     Prog := Compile(_Code.Text);
   except
     on e: Exception do begin
-      WriteToMessages('Error compiling script:'#13#10 + e.Message);
+      WriteToMessages('Error compiling script:'#13#10 + e.Message, True);
       Exit;
     end;
   end;
@@ -124,7 +113,7 @@ begin
   end;
 end;
 
-procedure Tdm_BdsIdeScript.WriteToMessages(const _Error: string);
+procedure Tdm_BdsIdeScript.WriteToMessages(const _Msg: string; _Show: Boolean = False);
 var
   MessageView: IOTAMessageServices;
   st: TStringList;
@@ -133,9 +122,10 @@ begin
   if Supports(BorlandIDEServices, IOTAMessageServices, MessageView) then begin
     st := TStringList.Create;
     try
-      st.Text := _Error;
+      st.Text := _Msg;
       FMessageGroup := MessageView.AddMessageGroup('BdsIdeScript');
-      MessageView.ShowMessageView(FMessageGroup);
+      if _Show then
+        MessageView.ShowMessageView(FMessageGroup);
       for i := 0 to st.Count - 1 do
         MessageView.AddTitleMessage(st[i], FMessageGroup);
     finally
@@ -169,7 +159,7 @@ begin
 
   RefreshMenuItems;
 
-  GenerateIdeEditorClass;
+  RegisterOTAFunctions;
 end;
 
 procedure Tdm_BdsIdeScript.DataModuleDestroy(Sender: TObject);
@@ -179,237 +169,51 @@ begin
   FScriptItems.Free;
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorCommitEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
+procedure Tdm_BdsIdeScript.OnIdeEditorGetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
 begin
-  st := ExtObject as TStringList;
-  FNewEditorText := st.Text;
+  _Info.Result := GetSelectedText;
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorCountEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
+procedure Tdm_BdsIdeScript.OnIdeEditorSetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
 begin
-  st := ExtObject as TStringList;
-  Info.Result := st.Count;
+  SetSelectedText(_Info.Value['_Text']);
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorGetLinesEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-  Idx: Integer;
+procedure Tdm_BdsIdeScript.OnIdeEditorInsertTextEval(_Info: TProgramInfo; _ExtObject: TObject);
 begin
-  st := ExtObject as TStringList;
-  Idx := Info.Value['_Idx'];
-  Info.Result := st[Idx];
+  InsertText(_Info.Value['_Text']);
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorCreateAssignExternalObject(Info: TProgramInfo; var ExtObject: TObject);
-var
-  st: TStringList;
-begin
-  st := TStringList.Create;
-  st.Text := FOrigEditorText;
-  ExtObject := st;
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorAddEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-  Line: string;
-begin
-  st := ExtObject as TStringList;
-  Line := Info.Value['_Line'];
-  Info.Result := st.Add(Line);
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorClearEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-begin
-  st := ExtObject as TStringList;
-  st.Clear;
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorDeleteEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-  Idx: Integer;
-begin
-  st := ExtObject as TStringList;
-  Idx := Info.Value['_Idx'];
-  st.Delete(Idx);
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorGetTextEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-begin
-  st := ExtObject as TStringList;
-  Info.Result := st.Text;
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorInsertEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-  Idx: Integer;
-  Line: string;
-begin
-  st := ExtObject as TStringList;
-  Idx := Info.Value['_Idx'];
-  Line := Info.Value['_Line'];
-  st.Insert(Idx, Line);
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorSetLinesEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-  Idx: Integer;
-begin
-  st := ExtObject as TStringList;
-  Idx := Info.Value['_Idx'];
-  st[Idx] := Info.Value['_Line'];
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorSetTextEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  st: TStringList;
-begin
-  st := ExtObject as TStringList;
-  st.Text := Info.Value['_Text'];
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorDestroy(ExternalObject: TObject);
-begin
-  ExternalObject.Free;
-end;
-
-procedure Tdm_BdsIdeScript.OnIdeEditorInstantiate(var ExtObject: TObject);
-var
-  st: TStringList;
-begin
-  st := TStringList.Create;
-  st.Text := FOrigEditorText;
-  ExtObject := st;
-end;
-
-procedure Tdm_BdsIdeScript.GenerateIdeEditorClass;
+procedure Tdm_BdsIdeScript.RegisterOTAFunctions;
 var
   Item: Tdws2Class;
-  Constr: Tdws2Constructor;
   Meth: Tdws2Method;
   Param: Tdws2Parameter;
-  Prop: Tdws2Property;
-  Inst: Tdws2Instance;
 begin
   Item := dws2Unit.Classes.Add as Tdws2Class;
   Item.Name := 'TIdeEditor';
-  Item.OnObjectDestroy := Self.OnIdeEditorDestroy;
-
-  Constr := Item.Constructors.Add as Tdws2Constructor;
-  Constr.Name := 'Create';
-  Constr.OnAssignExternalObject := OnIdeEditorCreateAssignExternalObject;
 
   Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'Commit';
-  Meth.Kind := mkProcedure;
-  Meth.OnEval := OnIdeEditorCommitEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'Count';
-  Meth.Kind := mkFunction;
-  Meth.ResultType := 'Integer';
-  Meth.OnEval := OnIdeEditorCountEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'GetLines';
-  Meth.Kind := mkFunction;
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Idx';
-  Param.DataType := 'Integer';
+  Meth.Name := 'GetSelectedText';
+  Meth.Kind := mkClassFunction;
   Meth.ResultType := 'String';
-  Meth.OnEval := OnIdeEditorGetLinesEval;
+  Meth.OnEval := OnIdeEditorGetSelectedTextEval;
 
   Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'SetLines';
-  Meth.Kind := mkProcedure;
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Idx';
-  Param.DataType := 'Integer';
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Line';
-  Param.DataType := 'String';
-  Meth.OnEval := OnIdeEditorSetLinesEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'Add';
-  Meth.Kind := mkFunction;
-  Meth.ResultType := 'Integer';
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Line';
-  Param.DataType := 'String';
-  Meth.OnEval := OnIdeEditorAddEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'Delete';
-  Meth.Kind := mkProcedure;
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Idx';
-  Param.DataType := 'Integer';
-  Meth.OnEval := OnIdeEditorDeleteEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'Clear';
-  Meth.Kind := mkProcedure;
-  Meth.OnEval := OnIdeEditorClearEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'Insert';
-  Meth.Kind := mkProcedure;
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Idx';
-  Param.DataType := 'Integer';
-  Param := Meth.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Line';
-  Param.DataType := 'String';
-  Meth.OnEval := OnIdeEditorInsertEval;
-
-  Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'SetText';
-  Meth.Kind := mkProcedure;
+  Meth.Name := 'SetSelectedText';
+  Meth.Kind := mkClassProcedure;
   Param := Meth.Parameters.Add as Tdws2Parameter;
   Param.Name := '_Text';
   Param.DataType := 'String';
-  Meth.OnEval := OnIdeEditorSetTextEval;
+  Meth.OnEval := OnIdeEditorSetSelectedTextEval;
 
   Meth := Item.Methods.Add as Tdws2Method;
-  Meth.Name := 'GetText';
-  Meth.Kind := mkFunction;
-  Meth.ResultType := 'String';
-  Meth.OnEval := OnIdeEditorGetTextEval;
-
-  Prop := Item.Properties.Add as Tdws2Property;
-  Prop.Name := 'Lines';
-  Prop.DataType := 'String';
-  Prop.ReadAccess := 'GetLines';
-  Prop.WriteAccess := 'SetLines';
-  Param := Prop.Parameters.Add as Tdws2Parameter;
-  Param.Name := '_Idx';
-  Param.DataType := 'Integer';
-  Prop.IsDefault := True;
-
-  Prop := Item.Properties.Add as Tdws2Property;
-  Prop.Name := 'Text';
-  Prop.DataType := 'String';
-  Prop.ReadAccess := 'GetText';
-  Prop.WriteAccess := 'SetText';
-
-  Inst := dws2Unit.Instances.Add as Tdws2Instance;
-  Inst.Name := 'IdeEditor';
-  Inst.DataType := 'TIdeEditor';
-  Inst.AutoDestroyExternalObject := True;
-  Inst.OnInstantiate := OnIdeEditorInstantiate;
+  Meth.Name := 'InsertText';
+  Meth.Kind := mkClassProcedure;
+  Param := Meth.Parameters.Add as Tdws2Parameter;
+  Param.Name := '_Text';
+  Param.DataType := 'String';
+  Meth.OnEval := OnIdeEditorInsertTextEval;
 end;
 
 procedure ListFiles(const Path: string; Strings: TStrings);
@@ -553,11 +357,7 @@ begin
   Code := TStringList.Create;
   try
     Code.LoadFromFile(FileName);
-    FOrigEditorText := GetSelectedText;
-    FNewEditorText := FOrigEditorText;
     ExecuteScript(Code);
-    if FNewEditorText <> FOrigEditorText then
-      SetSelectedText(FNewEditorText);
   finally
     Code.Free;
   end;
