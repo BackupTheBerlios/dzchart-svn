@@ -1,0 +1,46 @@
+package dummzeuchchart;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS OFF}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'dummzeuch.de Charts - runtime package'}
+{$LIBSUFFIX '60'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl;
+
+contains
+  u_dzDataSeries in '..\..\source\u_dzDataSeries.pas',
+  u_dzCustomCharts in '..\..\source\u_dzCustomCharts.pas',
+  u_dzPieChart in '..\..\source\u_dzPieChart.pas',
+  u_dzXYChart in '..\..\source\u_dzXYChart.pas',
+  u_dzPolynomialDataseries in '..\..\source\u_dzPolynomialDataseries.pas',
+  u_dzLineStyleCombo in '..\..\source\u_dzLineStyleCombo.pas',
+  u_dzPointStyleCombo in '..\..\source\u_dzPointStyleCombo.pas',
+  u_dzGraphics in '..\..\source\u_dzGraphics.pas',
+  u_dzSvgOutput in '..\..\source\u_dzSvgOutput.pas',
+  u_dzCanvas in '..\..\source\u_dzCanvas.pas';
+
+end.

@@ -61,7 +61,9 @@ type
   published
     property AutoComplete default True;
     property AutoDropDown default False;
+{$ifdef Delphi7_up}
     property AutoCloseUp default False;
+{$endif}
     property BevelEdges;
     property BevelInner;
     property BevelKind default bkNone;

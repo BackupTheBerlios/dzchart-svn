@@ -41,6 +41,8 @@
 
 unit u_dzCustomCharts;
 
+{$i jedi.inc}
+
 interface
 
 uses
