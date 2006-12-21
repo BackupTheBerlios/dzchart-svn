@@ -40,6 +40,7 @@ contains
   u_dzCanvas in '..\..\source\u_dzCanvas.pas',
   u_dzPointStyleCombo in '..\..\source\u_dzPointStyleCombo.pas',
   u_dzLineStyleCombo in '..\..\source\u_dzLineStyleCombo.pas',
-  u_dzGraphics in '..\..\source\u_dzGraphics.pas';
+  u_dzGraphics in '..\..\source\u_dzGraphics.pas',
+  u_dzSvgOutput in '..\..\source\u_dzSvgOutput.pas';
 
 end.

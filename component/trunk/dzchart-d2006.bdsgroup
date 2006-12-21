@@ -11,10 +11,10 @@
 	<Default.Personality>  
     
     <Projects>
-      <Projects Name="dummzeuchchartd2006.bpl">dummzeuchchartd2006.bdsproj</Projects>
-      <Projects Name="dcldummzeuchchartd2006.bpl">dcldummzeuchchartd2006.bdsproj</Projects>
-      <Projects Name="ChartTest.exe">test-d2006\ChartTest.bdsproj</Projects>
-      <Projects Name="Targets">dummzeuchchartd2006.bpl dcldummzeuchchartd2006.bpl ChartTest.exe</Projects>
+      <Projects Name="dummzeuchchart.bpl">packages\delphi2006\dummzeuchchart.bdsproj</Projects>
+      <Projects Name="dcldummzeuchchart.bpl">packages\delphi2006\dcldummzeuchchart.bdsproj</Projects>
+      <Projects Name="ChartTest.exe">examples\test-d2006\ChartTest.bdsproj</Projects>
+      <Projects Name="Targets">dummzeuchchart.bpl dcldummzeuchchart.bpl ChartTest.exe</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{E8A10056-20B7-48E0-8C1E-71B49C691094}">
