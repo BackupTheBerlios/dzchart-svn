@@ -9,11 +9,15 @@
 		</Option>
 	</PersonalityInfo>
 	<Default.Personality>  <Projects>
-      <Projects Name="dummzeuchchartd9.bpl">dummzeuchchartd9.bdsproj</Projects>
-      <Projects Name="dcldummzeuchchartd9.bpl">dcldummzeuchchartd9.bdsproj</Projects>
-      <Projects Name="ChartTest.exe">test-d9\ChartTest.bdsproj</Projects>
-      <Projects Name="Targets">dummzeuchchartd9.bpl dcldummzeuchchartd9.bpl ChartTest.exe</Projects>
+      <Projects Name="dummzeuchchart100.bpl">packages\delphi2005\dummzeuchchart.bdsproj</Projects>
+      <Projects Name="dcldummzeuchchart90.bpl">packages\delphi2005\dcldummzeuchchart.bdsproj</Projects>
+      <Projects Name="ChartTest.exe">examples\test-d9\ChartTest.bdsproj</Projects>
+      <Projects Name="Targets">dummzeuchchart100.bpl dcldummzeuchchart90.bpl ChartTest.exe</Projects>
     </Projects>
-    <Dependencies/>
+    <Dependencies>
+      <Dependency GUID="{E8A10056-20B7-48E0-8C1E-71B49C691094}">
+        <Dependency GUID="{3A73BCFD-68FA-452A-BB92-D208DD513CA4}"/>
+      </Dependency>
+    </Dependencies>
   </Default.Personality>
 </BorlandProject>

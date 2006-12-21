@@ -5,12 +5,12 @@
 			<Option Name="Personality">Delphi.Personality</Option>
 			<Option Name="ProjectType">VCLApplication</Option>
 			<Option Name="Version">1.0</Option>
-			<Option Name="GUID">{E8A10056-20B7-48E0-8C1E-71B49C691094}</Option>
+			<Option Name="GUID">{3A73BCFD-68FA-452A-BB92-D208DD513CA4}</Option>
 		</Option>
 	</PersonalityInfo>
 	<Delphi.Personality>
 		<Source>
-			<Source Name="MainSource">dcldummzeuchchartd9.dpk</Source>
+			<Source Name="MainSource">dummzeuchchart.dpk</Source>
 		</Source>
 		<FileVersion>
 			<FileVersion Name="Version">7.0</FileVersion>
@@ -112,13 +112,13 @@
 			<Linker Name="MinStackSize">16384</Linker>
 			<Linker Name="MaxStackSize">1048576</Linker>
 			<Linker Name="ImageBase">4194304</Linker>
-			<Linker Name="ExeDescription">dummzeuch.de Charts - designtime package</Linker>
+			<Linker Name="ExeDescription">dummzeuch.de Charts - runtime package</Linker>
 		</Linker>
 		<Directories>
-			<Directories Name="OutputDir">q:\dummzeuch\charts</Directories>
+			<Directories Name="OutputDir">q:\test</Directories>
 			<Directories Name="UnitOutputDir">dcu</Directories>
-			<Directories Name="PackageDLLOutputDir">..\bpl</Directories>
-			<Directories Name="PackageDCPOutputDir">..\bpl</Directories>
+			<Directories Name="PackageDLLOutputDir"></Directories>
+			<Directories Name="PackageDCPOutputDir"></Directories>
 			<Directories Name="SearchPath">$(DELPHI)\Lib\Debug;$(DELPHI)\Source\Toolsapi</Directories>
 			<Directories Name="Packages"></Directories>
 			<Directories Name="Conditionals"></Directories>
@@ -127,12 +127,12 @@
 		</Directories>
 		<Parameters>
 			<Parameters Name="RunParams"></Parameters>
-			<Parameters Name="HostApplication">C:\Program Files\Borland\BDS\3.0\Bin\bds.exe</Parameters>
+			<Parameters Name="HostApplication">C:\Program Files\Borland\Delphi7\Bin\delphi32.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>
 			<Parameters Name="DebugCWD"></Parameters>
-			<Parameters Name="RemoteHost"></Parameters>
-			<Parameters Name="RemotePath"></Parameters>
+			<Parameters Name="RemoteHost">cerity</Parameters>
+			<Parameters Name="RemotePath">q:\software\makroedittest.exe</Parameters>
 			<Parameters Name="RemoteLauncher"></Parameters>
 			<Parameters Name="RemoteCWD"></Parameters>
 			<Parameters Name="RemoteDebug">False</Parameters>
@@ -143,26 +143,26 @@
 			<VersionInfo Name="MajorVer">2</VersionInfo>
 			<VersionInfo Name="MinorVer">0</VersionInfo>
 			<VersionInfo Name="Release">0</VersionInfo>
-			<VersionInfo Name="Build">32</VersionInfo>
+			<VersionInfo Name="Build">122</VersionInfo>
 			<VersionInfo Name="Debug">False</VersionInfo>
 			<VersionInfo Name="PreRelease">False</VersionInfo>
 			<VersionInfo Name="Special">False</VersionInfo>
 			<VersionInfo Name="Private">False</VersionInfo>
 			<VersionInfo Name="DLL">False</VersionInfo>
-			<VersionInfo Name="Locale">1033</VersionInfo>
+			<VersionInfo Name="Locale">1031</VersionInfo>
 			<VersionInfo Name="CodePage">1252</VersionInfo>
 		</VersionInfo>
 		<VersionInfoKeys>
 			<VersionInfoKeys Name="CompanyName">dummzeuch.de</VersionInfoKeys>
 			<VersionInfoKeys Name="FileDescription"></VersionInfoKeys>
-			<VersionInfoKeys Name="FileVersion">2.0.0.32</VersionInfoKeys>
+			<VersionInfoKeys Name="FileVersion">2.0.0.122</VersionInfoKeys>
 			<VersionInfoKeys Name="InternalName"></VersionInfoKeys>
-			<VersionInfoKeys Name="LegalCopyright">copyright 2003-2004 by Thomas Mueller</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalCopyright">copyright 2004 by Thomas Mueller</VersionInfoKeys>
 			<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName">dummzeuch.de charts</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">2.0</VersionInfoKeys>
-			<VersionInfoKeys Name="Comments">released under MPL 1.1</VersionInfoKeys>
+			<VersionInfoKeys Name="Comments">released under the MPL 1.1</VersionInfoKeys>
 		</VersionInfoKeys>
 	</Delphi.Personality>
 </BorlandProject>
