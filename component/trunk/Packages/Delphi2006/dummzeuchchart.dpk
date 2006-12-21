@@ -32,14 +32,14 @@ requires
   vcl;
 
 contains
-  u_dzDataSeries in 'u_dzDataSeries.pas',
-  u_dzCustomCharts in 'u_dzCustomCharts.pas',
-  u_dzPieChart in 'u_dzPieChart.pas',
-  u_dzXYChart in 'u_dzXYChart.pas',
-  u_dzPolynomialDataseries in 'u_dzPolynomialDataseries.pas',
-  u_dzCanvas in 'u_dzCanvas.pas',
-  u_dzPointStyleCombo in 'u_dzPointStyleCombo.pas',
-  u_dzLineStyleCombo in 'u_dzLineStyleCombo.pas',
-  u_dzGraphics in 'u_dzGraphics.pas';
+  u_dzDataSeries in '..\..\source\u_dzDataSeries.pas',
+  u_dzCustomCharts in '..\..\source\u_dzCustomCharts.pas',
+  u_dzPieChart in '..\..\source\u_dzPieChart.pas',
+  u_dzXYChart in '..\..\source\u_dzXYChart.pas',
+  u_dzPolynomialDataseries in '..\..\source\u_dzPolynomialDataseries.pas',
+  u_dzCanvas in '..\..\source\u_dzCanvas.pas',
+  u_dzPointStyleCombo in '..\..\source\u_dzPointStyleCombo.pas',
+  u_dzLineStyleCombo in '..\..\source\u_dzLineStyleCombo.pas',
+  u_dzGraphics in '..\..\source\u_dzGraphics.pas';
 
 end.

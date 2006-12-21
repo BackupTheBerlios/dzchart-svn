@@ -35,7 +35,7 @@ requires
   dummzeuchchart;
 
 contains
-  u_dzRegister in 'u_dzRegister.pas',
-  w_dzPolynomEdit in 'w_dzPolynomEdit.pas' {f_dzPolynomEdit};
+  u_dzRegister in '..\..\source\u_dzRegister.pas',
+  w_dzPolynomEdit in '..\..\source\w_dzPolynomEdit.pas' {f_dzPolynomEdit};
 
 end.
