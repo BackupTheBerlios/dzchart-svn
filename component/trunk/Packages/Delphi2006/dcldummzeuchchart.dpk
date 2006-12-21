@@ -1,4 +1,4 @@
-package dcldummzeuchchartd2006;
+package dcldummzeuchchart;
 
 {$R *.res}
 {$ALIGN 8}
@@ -23,6 +23,7 @@ package dcldummzeuchchartd2006;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'dummzeuch.de Charts - designtime package'}
+{$LIBSUFFIX '100'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -31,7 +32,7 @@ requires
   designide,
   vcl,
   vclsmp,
-  dummzeuchchartd2006;
+  dummzeuchchart;
 
 contains
   u_dzRegister in 'u_dzRegister.pas',

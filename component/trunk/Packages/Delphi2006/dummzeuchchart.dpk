@@ -1,4 +1,4 @@
-package dummzeuchchartd2006;
+package dummzeuchchart;
 
 {$R *.res}
 {$ALIGN 8}
@@ -23,6 +23,7 @@ package dummzeuchchartd2006;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'dummzeuch.de Charts - runtime package'}
+{$LIBSUFFIX '100'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
 

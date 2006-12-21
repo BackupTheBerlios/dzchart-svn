@@ -10,7 +10,7 @@
 	</PersonalityInfo>
 	<Delphi.Personality>
 		<Source>
-			<Source Name="MainSource">dummzeuchchartd2006.dpk</Source>
+			<Source Name="MainSource">dummzeuchchart.dpk</Source>
 		</Source>
 		<FileVersion>
 			<FileVersion Name="Version">7.0</FileVersion>
@@ -150,7 +150,7 @@
 			<VersionInfo Name="MajorVer">2</VersionInfo>
 			<VersionInfo Name="MinorVer">0</VersionInfo>
 			<VersionInfo Name="Release">0</VersionInfo>
-			<VersionInfo Name="Build">135</VersionInfo>
+			<VersionInfo Name="Build">136</VersionInfo>
 			<VersionInfo Name="Debug">False</VersionInfo>
 			<VersionInfo Name="PreRelease">False</VersionInfo>
 			<VersionInfo Name="Special">False</VersionInfo>
@@ -162,7 +162,7 @@
 		<VersionInfoKeys>
 			<VersionInfoKeys Name="CompanyName">dummzeuch.de</VersionInfoKeys>
 			<VersionInfoKeys Name="FileDescription"></VersionInfoKeys>
-			<VersionInfoKeys Name="FileVersion">2.0.0.135</VersionInfoKeys>
+			<VersionInfoKeys Name="FileVersion">2.0.0.136</VersionInfoKeys>
 			<VersionInfoKeys Name="InternalName"></VersionInfoKeys>
 			<VersionInfoKeys Name="LegalCopyright">copyright 2004 by Thomas Mueller</VersionInfoKeys>
 			<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
@@ -175,7 +175,8 @@
 			<Language Name="ActiveLang"></Language>
 			<Language Name="ProjectLang">$00000000</Language>
 			<Language Name="RootDir"></Language>
-		</Language>  <Excluded_Packages>
+		</Language>  
+    <Excluded_Packages>
       <Excluded_Packages Name="C:\Documents and Settings\Administrator\My Documents\Borland Studio Projects\Bpl\Unicode.bpl">(untitled)</Excluded_Packages>
     </Excluded_Packages>
   </Delphi.Personality>
