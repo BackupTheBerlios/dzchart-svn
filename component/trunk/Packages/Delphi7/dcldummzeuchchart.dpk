@@ -1,4 +1,4 @@
-package dcldummzeuchchartd7;
+package dcldummzeuchchart;
 
 {$R *.res}
 {$ALIGN 8}
@@ -23,6 +23,7 @@ package dcldummzeuchchartd7;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'dummzeuch.de Charts - designtime package'}
+{$LIBSUFFIX '70'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -31,10 +32,10 @@ requires
   designide,
   vcl,
   vclsmp,
-  dummzeuchchartd7;
+  dummzeuchchart;
 
 contains
-  u_dzRegister in 'u_dzRegister.pas',
-  w_dzPolynomEdit in 'w_dzPolynomEdit.pas' {f_dzPolynomEdit};
+  u_dzRegister in '..\..\source\u_dzRegister.pas',
+  w_dzPolynomEdit in '..\..\source\w_dzPolynomEdit.pas' {f_dzPolynomEdit};
 
 end.
