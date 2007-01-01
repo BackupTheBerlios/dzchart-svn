@@ -33,7 +33,7 @@
 {$DEFINE Delphi2006up}
 {$ENDIF}
 
-{$IFDEF Delphi6up}
+{$IFDEF Delphi7up}
 {$WARN unsafe_type off}
 {$WARN unsafe_code off}
 {$WARN unsafe_cast off}

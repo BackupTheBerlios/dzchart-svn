@@ -62,7 +62,7 @@ type
   public
   end;
 
-{$IFDEF delphi6up}
+{$IFDEF delphi7up}
   TMessageNotifier = class(TAutoSaveNotifier, IOTAMessageNotifier)
   private
     fShowMessageView: Boolean;
@@ -88,7 +88,7 @@ type
     fTimer: TTimer; // Timer for periodic auto-saving.
     fMenuItem: TMenuItem; // Tools menu item for Auto Save Properties.
     fIdeNotifier: TIdeNotifier;
-{$IFDEF delphi6up}
+{$IFDEF delphi7up}
     fMessageNotifier: TMessageNotifier;
 {$ENDIF}
     fSaveOnCompile: Boolean;
@@ -162,7 +162,7 @@ begin
 
   // Register the IDE notifier so the wizard knows when the user opens a file.
   fIdeNotifier := TIdeNotifier.Create(Self);
-{$IFDEF delphi6up}
+{$IFDEF delphi7up}
   fMessageNotifier := TMessageNotifier.Create(Self);
 {$ENDIF}
   // Add the Auto Save menu item to the Tools menu.
@@ -179,7 +179,7 @@ destructor TAutoSaveWizard.Destroy;
 begin
   if Assigned(fIdeNotifier) then
     fIdeNotifier.UnregisterNotifier; // Delphi frees the notifier when its ref count = 0
-{$IFDEF delphi6up}
+{$IFDEF delphi7up}
   if Assigned(fMessageNotifier) then
     fMessageNotifier.UnregisterNotifier; // Delphi frees the notifier when its ref count = 0
 {$ENDIF}
@@ -243,7 +243,7 @@ end;
 
 procedure TAutoSaveWizard.AutoSaveFiles;
 begin
-{$IFDEF delphi6up}
+{$IFDEF delphi7up}
   if Assigned(fMessageNotifier) then
     fMessageNotifier.ClearMessageView(ShowMessageView);
 {$ENDIF}
@@ -585,7 +585,7 @@ begin
     (BorlandIDEServices as IOTAServices).RemoveNotifier(_Index);
 end;
 
-{$IFDEF delphi6up}
+{$IFDEF delphi7up}
 { TMessageNotifier }
 
 constructor TMessageNotifier.Create(_Wizard: TAutoSaveWizard);

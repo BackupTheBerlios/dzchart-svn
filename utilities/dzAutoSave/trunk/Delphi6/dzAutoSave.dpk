@@ -1,4 +1,4 @@
-package AutoSave6;
+package dzAutoSave;
 
 {$R *.res}
 {$ALIGN 8}
@@ -23,6 +23,7 @@ package AutoSave6;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $F200000}
 {$DESCRIPTION 'dummzeuch.de Auto Save Wizard'}
+{$LIBSUFFIX '60'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -31,9 +32,9 @@ requires
   designide;
 
 contains
-  AutoSaveReg in 'AutoSaveReg.pas',
-  AutoWizard in 'AutoWizard.pas',
-  AutoConfig in 'AutoConfig.pas' {TAutoSaveForm},
-  AutoUtil in 'AutoUtil.pas';
+  dzAutoSaveReg in '..\source\dzAutoSaveReg.pas',
+  dzAutoWizard in '..\source\dzAutoWizard.pas',
+  dzAutoConfig in '..\source\dzAutoConfig.pas' {TAutoSaveForm},
+  dzAutoUtil in '..\source\dzAutoUtil.pas';
 
 end.
