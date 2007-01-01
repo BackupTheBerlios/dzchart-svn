@@ -23,7 +23,7 @@ package dzAutoSave;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $F200000}
 {$DESCRIPTION 'dummzeuch.de Auto Save Wizard'}
-{$LIBSUFFIX '10'}
+{$LIBSUFFIX '100'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -32,9 +32,9 @@ requires
   designide;
 
 contains
-  dzAutoSaveReg in '..\dzAutoSaveReg.pas',
-  dzAutoWizard in '..\dzAutoWizard.pas',
-  dzAutoConfig in '..\dzAutoConfig.pas' {TAutoSaveForm},
-  dzAutoUtil in '..\dzAutoUtil.pas';
+  dzAutoSaveReg in '..\source\dzAutoSaveReg.pas',
+  dzAutoWizard in '..\source\dzAutoWizard.pas',
+  dzAutoConfig in '..\source\dzAutoConfig.pas' {TAutoSaveForm},
+  dzAutoUtil in '..\source\dzAutoUtil.pas';
 
 end.
