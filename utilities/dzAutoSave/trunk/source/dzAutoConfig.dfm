@@ -15,9 +15,6 @@ object AutoSaveForm: TAutoSaveForm
   OldCreateOrder = True
   Position = poScreenCenter
   OnCreate = FormCreate
-  DesignSize = (
-    349
-    248)
   PixelsPerInch = 96
   TextHeight = 13
   object b_Cancel: TButton
@@ -41,9 +38,6 @@ object AutoSaveForm: TAutoSaveForm
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'General'
-      DesignSize = (
-        324
-        167)
       object Label2: TLabel
         Left = 91
         Top = 90
