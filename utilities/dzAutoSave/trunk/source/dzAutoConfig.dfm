@@ -1,6 +1,7 @@
 object AutoSaveForm: TAutoSaveForm
   Left = 322
   Top = 214
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = 'Auto Save Properties'
   ClientHeight = 248
@@ -180,10 +181,6 @@ object AutoSaveForm: TAutoSaveForm
     end
     object TabSheet2: TTabSheet
       Caption = 'Help'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Memo1: TMemo
         Left = 7
         Top = 7
@@ -225,10 +222,6 @@ object AutoSaveForm: TAutoSaveForm
     object TabSheet3: TTabSheet
       Caption = 'Files'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object FileList: TListBox
         Left = 0
         Top = 0
