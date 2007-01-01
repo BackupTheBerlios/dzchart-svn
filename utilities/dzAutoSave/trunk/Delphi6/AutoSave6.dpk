@@ -1,0 +1,39 @@
+package AutoSave6;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS ON}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $F200000}
+{$DESCRIPTION 'dummzeuch.de Auto Save Wizard'}
+{$DESIGNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  designide;
+
+contains
+  AutoSaveReg in 'AutoSaveReg.pas',
+  AutoWizard in 'AutoWizard.pas',
+  AutoConfig in 'AutoConfig.pas' {TAutoSaveForm},
+  AutoUtil in 'AutoUtil.pas';
+
+end.
