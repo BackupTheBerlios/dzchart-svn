@@ -1,15 +1,15 @@
-object dm_BdsIdeScript: Tdm_BdsIdeScript
-  OldCreateOrder = False
+inherited dm_dzBdsIdeScriptExpert: Tdm_dzBdsIdeScriptExpert
+  OldCreateOrder = True
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Height = 479
-  Width = 741
+  Height = 219
+  Width = 217
   object TheTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = TheTimerTimer
-    Left = 32
-    Top = 120
+    Left = 24
+    Top = 16
   end
   object dws2Unit: Tdws2Unit
     Script = dws_Main
@@ -27,26 +27,26 @@ object dm_BdsIdeScript: Tdm_BdsIdeScript
     UnitName = 'dzIdeEditor'
     Variables = <>
     StaticSymbols = False
-    Left = 152
-    Top = 280
+    Left = 112
+    Top = 88
   end
   object dws_Main: TDelphiWebScriptII
     Config.CompilerOptions = []
     Config.MaxDataSize = 0
     Config.Timeout = 0
-    Left = 88
-    Top = 280
+    Left = 24
+    Top = 88
   end
-  object dws2ClassesLib: Tdws2ClassesLib
+  inline dws2ClassesLib: Tdws2ClassesLib
     OldCreateOrder = False
     Script = dws_Main
-    Left = 232
-    Top = 344
+    Left = 24
+    Top = 144
     Height = 0
     Width = 0
   end
   object dws2FileFunctions: Tdws2FileFunctions
-    Left = 368
-    Top = 312
+    Left = 112
+    Top = 144
   end
 end

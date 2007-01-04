@@ -1,4 +1,4 @@
-unit de.dummzeuch.dm_BdsIdeScriptWizard;
+unit de.dummzeuch.experts.BdsIdeScriptExpert;
 
 interface
 
@@ -17,10 +17,12 @@ uses
   dws2Comp,
   dws2Exprs,
   dws2StringFunctions,
-  dws2FileFunctions, dws2ClassesLibModule;
+  dws2FileFunctions,
+  dws2ClassesLibModule,
+  de.dummzeuch.experts.BaseExpert;
 
 type
-  Tdm_BdsIdeScript = class(TDataModule)
+  Tdm_dzBdsIdeScriptExpert = class(Tdm_DzBaseExpert)
     TheTimer: TTimer;
     dws2Unit: Tdws2Unit;
     dws_Main: TDelphiWebScriptII;
@@ -34,7 +36,6 @@ type
   private
     FScriptItems: TList;
     FScripts: TStringList;
-    FMessageGroup: IOTAMessageGroup;
 
     procedure ClearMenuItems(_List: TList);
     procedure ClearScriptMenuItems;
@@ -42,22 +43,14 @@ type
     procedure RefreshMenuItems;
     procedure RefreshScriptMenuItems;
     procedure SetTimerRefreshing;
-    procedure RegisterOTAFunctions;
-  private // Eval functions for the TIdeEditor class and IdeEditor global variable
   private
     function Compile(const _Source: string): TProgram;
     procedure ExecuteScript(_Code: TStrings);
-    procedure WriteToMessages(const _Msg: string; _Show: Boolean = False);
-    procedure ClearMessages;
     procedure OnIdeEditorGetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
     procedure OnIdeEditorSetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
-    procedure OnIdeEditorInsertTextEval(_Info: TProgramInfo;
-      _ExtObject: TObject);
-  public
+    procedure OnIdeEditorInsertTextEval(_Info: TProgramInfo; _ExtObject: TObject);
+    procedure RegisterOTAFunctions;
   end;
-
-var
-  dm_BdsIdeScript: Tdm_BdsIdeScript;
 
 implementation
 
@@ -67,72 +60,47 @@ uses
   Registry,
   ShellAPI,
   dws2Symbols,
-  dws2Compiler,
-  de.dummzeuch.utils.IdeExpert;
+  dws2Compiler;
 
-procedure Tdm_BdsIdeScript.ExecuteScript(_Code: TStrings);
+const
+  MESSAGE_WINDOW_TITLE = 'BdsIdeScript';
+  CUSTOM_MENU_CAPTION = 'Scripts';
+  REGISTRY_BRANCH = 'dzBdsIdeScript';
+
+procedure Tdm_dzBdsIdeScriptExpert.ExecuteScript(_Code: TStrings);
 var
   i: Integer;
   Prog: TProgram;
+  Msg: IMsgWindow;
 begin
-  WriteToMessages('Compiling script.');
+  Msg := GetMsgWindow(MESSAGE_WINDOW_TITLE);
+  Msg.Write('Compiling script.');
   try
     Prog := Compile(_Code.Text);
   except
     on e: Exception do begin
-      WriteToMessages('Error compiling script:'#13#10 + e.Message, True);
+      Msg.Write('Error compiling script:'#13#10 + e.Message, True);
       Exit;
     end;
   end;
 
-  WriteToMessages('Running script.');
+  Msg.Write('Running script.');
   try
 //    Prog.BeginProgram();
     Prog.Execute;
 //    Prog.EndProgram;
 
     for i := 0 to Prog.Msgs.Count - 1 do
-      WriteToMessages(Prog.Msgs[i].asInfo);
-    WriteToMessages(Tdws2DefaultResult(Prog.Result).Text);
+      Msg.Write(Prog.Msgs[i].asInfo);
+    Msg.Write(Tdws2DefaultResult(Prog.Result).Text);
 
   finally
     Prog.Free;
   end;
-  WriteToMessages('Done.');
+  Msg.Write('Done.');
 end;
 
-procedure Tdm_BdsIdeScript.ClearMessages;
-var
-  MessageView: IOTAMessageServices;
-begin
-  if Supports(BorlandIDEServices, IOTAMessageServices, MessageView) then begin
-    FMessageGroup := MessageView.AddMessageGroup('BdsIdeScript');
-    MessageView.ClearMessageGroup(FMessageGroup);
-  end;
-end;
-
-procedure Tdm_BdsIdeScript.WriteToMessages(const _Msg: string; _Show: Boolean = False);
-var
-  MessageView: IOTAMessageServices;
-  st: TStringList;
-  i: Integer;
-begin
-  if Supports(BorlandIDEServices, IOTAMessageServices, MessageView) then begin
-    st := TStringList.Create;
-    try
-      st.Text := _Msg;
-      FMessageGroup := MessageView.AddMessageGroup('BdsIdeScript');
-      if _Show then
-        MessageView.ShowMessageView(FMessageGroup);
-      for i := 0 to st.Count - 1 do
-        MessageView.AddTitleMessage(st[i], FMessageGroup);
-    finally
-      st.Free;
-    end;
-  end;
-end;
-
-function Tdm_BdsIdeScript.Compile(const _Source: string): TProgram;
+function Tdm_dzBdsIdeScriptExpert.Compile(const _Source: string): TProgram;
 var
   i: Integer;
   err: string;
@@ -150,7 +118,7 @@ begin
   end;
 end;
 
-procedure Tdm_BdsIdeScript.DataModuleCreate(Sender: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.DataModuleCreate(Sender: TObject);
 begin
   FScriptItems := TList.Create;
   FScripts := TStringList.Create;
@@ -160,29 +128,30 @@ begin
   RegisterOTAFunctions;
 end;
 
-procedure Tdm_BdsIdeScript.DataModuleDestroy(Sender: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.DataModuleDestroy(Sender: TObject);
 begin
   ClearScriptMenuItems;
+  DeleteDelphiCustomMenu(CUSTOM_MENU_CAPTION);
   FScripts.Free;
   FScriptItems.Free;
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorGetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.OnIdeEditorGetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
 begin
   _Info.Result := GetSelectedText;
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorSetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.OnIdeEditorSetSelectedTextEval(_Info: TProgramInfo; _ExtObject: TObject);
 begin
   SetSelectedText(_Info.Value['_Text']);
 end;
 
-procedure Tdm_BdsIdeScript.OnIdeEditorInsertTextEval(_Info: TProgramInfo; _ExtObject: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.OnIdeEditorInsertTextEval(_Info: TProgramInfo; _ExtObject: TObject);
 begin
   InsertText(_Info.Value['_Text']);
 end;
 
-procedure Tdm_BdsIdeScript.RegisterOTAFunctions;
+procedure Tdm_dzBdsIdeScriptExpert.RegisterOTAFunctions;
 var
   Item: Tdws2Class;
   Meth: Tdws2Method;
@@ -228,7 +197,7 @@ begin
   FindClose(SearchRec);
 end;
 
-procedure Tdm_BdsIdeScript.LoadScripts;
+procedure Tdm_dzBdsIdeScriptExpert.LoadScripts;
 var
   Folder: string;
   i: Integer;
@@ -236,7 +205,7 @@ var
 begin
   Reg := TRegistry.Create;
   try
-    Reg.OpenKey(GetBaseRegistryKey + '\dzBdsIdeScript', True);
+    Reg.OpenKey(GetBaseRegistryKey + '\' + REGISTRY_BRANCH, True);
     if not Reg.ValueExists('ScriptFolder') then
       { Add the IDE's folder. }
       Reg.WriteString('ScriptFolder',
@@ -253,34 +222,34 @@ begin
     FScripts[i] := Folder + FScripts[i];
 end;
 
-procedure Tdm_BdsIdeScript.RunScriptExplainClick(Sender: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.RunScriptExplainClick(Sender: TObject);
 begin
   ShowMessage(
     'Scripts should be placed in the folder pointed by '#13 +
     'the registry value at:'#13#13 +
-    'HKCU\' + GetBaseRegistryKey + '\dzBdsIdeScript' +
+    'HKCU\' + GetBaseRegistryKey + '\' + REGISTRY_BRANCH +
     #13#13'The value should be assigned to "ScriptFolder".' +
     #13#13'You can always refresh the script list by clicking this item.'
     );
   RefreshMenuItems;
 end;
 
-procedure Tdm_BdsIdeScript.TheTimerTimer(Sender: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.TheTimerTimer(Sender: TObject);
 begin
   RefreshMenuItems;
 end;
 
-procedure Tdm_BdsIdeScript.RefreshMenuItems;
+procedure Tdm_dzBdsIdeScriptExpert.RefreshMenuItems;
 begin
   RefreshScriptMenuItems;
 end;
 
-procedure Tdm_BdsIdeScript.RefreshScriptMenuItems;
+procedure Tdm_dzBdsIdeScriptExpert.RefreshScriptMenuItems;
 var
   i: Integer;
   Item, ScriptMenu: TMenuItem;
 begin
-  ScriptMenu := GetDelphiCustomMenu('Scripts');
+  ScriptMenu := GetDelphiCustomMenu(CUSTOM_MENU_CAPTION);
   if ScriptMenu = nil then begin { The menu may not exist yet. }
     TheTimer.Enabled := True;
     Exit;
@@ -308,7 +277,7 @@ begin
   ScriptMenu.Visible := FScripts.Count > 0;
 end;
 
-procedure Tdm_BdsIdeScript.ClearMenuItems(_List: TList);
+procedure Tdm_dzBdsIdeScriptExpert.ClearMenuItems(_List: TList);
 var
   i: Integer;
 begin
@@ -319,18 +288,18 @@ begin
   _List.Clear;
 end;
 
-procedure Tdm_BdsIdeScript.ClearScriptMenuItems;
+procedure Tdm_dzBdsIdeScriptExpert.ClearScriptMenuItems;
 begin
   ClearMenuItems(FScriptItems);
 end;
 
-procedure Tdm_BdsIdeScript.SetTimerRefreshing;
+procedure Tdm_dzBdsIdeScriptExpert.SetTimerRefreshing;
 var
   Reg: TRegistry;
 begin
   Reg := TRegistry.Create;
   try
-    Reg.OpenKey(GetBaseRegistryKey + '\dzBdsIdeScript\Options', True);
+    Reg.OpenKey(GetBaseRegistryKey + '\' + REGISTRY_BRANCH + '\Options', True);
     if Reg.ValueExists('Refresh') then begin
       TheTimer.Enabled := Reg.ReadBool('Refresh');
     end else begin
@@ -342,16 +311,18 @@ begin
   end;
 end;
 
-procedure Tdm_BdsIdeScript.RunScriptSubItemClick(Sender: TObject);
+procedure Tdm_dzBdsIdeScriptExpert.RunScriptSubItemClick(Sender: TObject);
 var
   Code: TStringList;
   FileName: string;
   Idx: Integer;
+  Msg: IMsgWindow;
 begin
   Idx := (Sender as TComponent).Tag;
   FileName := FScripts[Idx];
-  ClearMessages;
-  WriteToMessages('Loading script ' + FileName);
+  Msg := GetMsgWindow(MESSAGE_WINDOW_TITLE);
+  Msg.Clear;
+  Msg.Write('Loading script ' + FileName);
   Code := TStringList.Create;
   try
     Code.LoadFromFile(FileName);
@@ -361,5 +332,12 @@ begin
   end;
 end;
 
+var
+  Expert: Tdm_dzBdsIdeScriptExpert;
+
+initialization
+  Expert := Tdm_dzBdsIdeScriptExpert.Create(nil);
+finalization
+  Expert.Free;
 end.
 

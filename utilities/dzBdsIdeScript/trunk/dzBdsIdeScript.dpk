@@ -27,6 +27,11 @@ package dzBdsIdeScript;
 {$LIBVERSION '1.0'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
+{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\default.txaPackage'}
+{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\default.txaPackage'}
+{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\dummzeuch\default.txaPackage'}
+{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\dummzeuch\experts\default.txaPackage'}
+{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\dummzeuch\experts\BaseExpert\default.txaPackage'}
 
 requires
   vcl,
@@ -36,7 +41,7 @@ requires
   dws2ClassesLibrary;
 
 contains
-  de.dummzeuch.utils.IdeExpert in 'de.dummzeuch.utils.IdeExpert.pas',
-  de.dummzeuch.dm_BdsIdeScriptWizard in 'de.dummzeuch.dm_BdsIdeScriptWizard.pas' {dm_BdsIdeScript: TDataModule};
+  de.dummzeuch.experts.BdsIdeScriptExpert in 'de.dummzeuch.experts.BdsIdeScriptExpert.pas' {dm_dzBdsIdeScriptExpert: TDataModule},
+  de.dummzeuch.experts.BaseExpert in 'de.dummzeuch.experts.BaseExpert.pas' {dm_DzBaseExpert: TDataModule};
 
 end.
