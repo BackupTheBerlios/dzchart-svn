@@ -37,6 +37,7 @@ uses
 type
   TSimpleParserBase = class(TObject)
   private
+    function CheckTextNode(_Node: IXmlNode): variant;
   protected
     FSimpleRSS: TSimpleRSS;
     function ContainsNode(_ChildNodes: IXMLNodeList; const _NodeName: string;
@@ -55,7 +56,9 @@ type
 implementation
 
 uses
-  Variants;
+  Variants,
+  xmldom,
+  XMLConst;
 
 constructor TSimpleParserBase.Create(SimpleRSS: TSimpleRSS);
 begin
@@ -63,12 +66,33 @@ begin
   FSimpleRSS := SimpleRSS;
 end;
 
+function TSimpleParserBase.CheckTextNode(_Node: IXmlNode): variant;
+var
+  i: integer;
+  Node: IXMLNode;
+begin
+  if not _Node.DOMNode.hasChildNodes then begin
+    Result := null
+  end else begin
+    Result := '';
+    for i := 0 to _Node.ChildNodes.Count - 1 do begin
+      Node := _Node.ChildNodes[i];
+      if not (Node.DOMNode.NodeType in [ELEMENT_NODE, TEXT_NODE, CDATA_SECTION_NODE, ENTITY_REFERENCE_NODE]) then
+        raise EXMLDocError.CreateFmt(SNotSingleTextNode, [_Node.DOMNode.nodeName]);
+      Result := Result + GetNodeValue(Node, '');
+    end;
+  end;
+end;
+
 function TSimpleParserBase.GetNodeValue(_Node: IXmlNode; const _Default: string = ''): string;
 begin
   try
-    if Assigned(_Node) then
-      Result := VarToStrDef(_Node.NodeValue, _Default)
-    else
+    if Assigned(_Node) then begin
+      if _Node.NodeType = ntElement then begin
+        Result := VarToStrDef(CheckTextNode(_Node), _Default);
+      end else
+        Result := VarToStrDef(_Node.NodeValue, _Default)
+    end else
       Result := _Default;
   except
     Result := 'error parsing NodeValue'

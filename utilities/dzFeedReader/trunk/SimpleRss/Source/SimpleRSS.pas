@@ -115,6 +115,7 @@ begin
   FXMLFile.Active := False;
   FXMLFile.Free;
   FXMLFile := TXMLDocument.Create(Self);
+//  FXMLFile.DOMVendor := GetDOMVendor('Open XML 3.2');
   FXMLFile.DOMVendor := GetDOMVendor('Open XML');
   FXMLFile.Active := True;
 end;
@@ -125,6 +126,7 @@ begin
   FChannel := TRSSChannel.Create;
   FItems := TRSSItems.Create(Self, TRSSItem);
   FXMLFile := TXMLDocument.Create(Self);
+//  FXMLFile.DOMVendor := GetDOMVendor('Open XML 3.2');
   FXMLFile.DOMVendor := GetDOMVendor('Open XML');
   FXMLFile.Active := True;
   FVersion := strRSSVersion;
