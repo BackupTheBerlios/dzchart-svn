@@ -37,17 +37,17 @@ type
   TSimpleDirEnumerator = class
   protected
     {: stores the search mask ('c:\windows\*.exe') }
-    fMask: string;
+    FMask: string;
     {: set of attributes a file must match }
-    fMustHaveAttr: TFileAttributeSet;
+    FMustHaveAttr: TFileAttributeSet;
     {: set of attributes a file may have }
-    fMayHaveAttr: TFileAttributeSet;
+    FMayHaveAttr: TFileAttributeSet;
     {: internally used TSearchRec structure }
-    fSr: TSearchRec;
+    FSr: TSearchRec;
     {: true if FindFirst was called and returned no error code }
-    fActive: boolean;
+    FActive: boolean;
     {: number of matching files found }
-    fMatchCount: integer;
+    FMatchCount: integer;
   public
     {: creates a TSimpleDirEnumerator, sets the Mask, MustHaveAttr and MayHaveAttr
        properties.
@@ -81,18 +81,65 @@ type
     procedure Reset;
     {: Returns the number of matches so far, that is the number of successful
        calls to FindNext }
-    property MatchCount: integer read fMatchCount;
+    property MatchCount: integer read FMatchCount;
     {: Returns the search mask }
-    property Mask: string read fMask; // write fMask;
+    property Mask: string read FMask; // write fMask;
     {: the set of attributes a file must have to be found by FindNext }
-    property MustHaveAttr: TFileAttributeSet read fMustHaveAttr write fMustHaveAttr;
+    property MustHaveAttr: TFileAttributeSet read FMustHaveAttr write FMustHaveAttr;
     {: the set of allowed attributes for a file to be found by FindNext }
-    property MayHaveAttr: TFileAttributeSet read fMayHaveAttr write fMayHaveAttr;
+    property MayHaveAttr: TFileAttributeSet read FMayHaveAttr write FMayHaveAttr;
     {: the search rec containing additional information about the file }
-    property Sr: TSearchRec read fSr;
+    property Sr: TSearchRec read FSr;
   end;
 
 type
+  {: represents the status of a CopyFile/MoveFileWithProgress operation, passed
+     as parameter to the callback function. }
+  TCopyProgressStatus = class
+  public
+  {(*}
+  type
+    {: possible return values for the callback function }
+    TProgressResult = (
+      prContinue, {:< continue with the copy/move operation }
+      prCancel,   {:< cancel the operation, cannot be resumed }
+      prStop,     {:< stop the operation, can be resumed, if cfwRestartable was passed }
+      prQuiet);   {:< continue the operation, do not call the callback }
+    {: reason for calling the callback function }
+    TProgressReason = (
+      prChunkFinished, {:< a chunk of the file has been copied }
+      prStreamSwitch); {:< started to copy a new stream (set in the first callback) }
+  {*)}
+  protected
+    FTotalFileSize: LARGE_INTEGER;
+    FTotalBytesTransferred: LARGE_INTEGER;
+    FStreamSize: LARGE_INTEGER;
+    FStreamBytesTransferred: LARGE_INTEGER;
+    FStreamNumber: LongWord;
+    FCallbackReason: TProgressReason;
+    FSourceFile: THandle;
+    FDestinationFile: THandle;
+  public
+    {: total size of the file }
+    property TotalFileSize: LARGE_INTEGER read FTotalFileSize;
+    {: total bytes that have been transferred so far }
+    property TotalBytesTransferred: LARGE_INTEGER read FTotalBytesTransferred;
+    {: size of the stream that is currently being transferred }
+    property StreamSize: LARGE_INTEGER read FStreamSize;
+    {: bytes of the current stream taht have been transferred so far }
+    property StreamBytesTransferred: LARGE_INTEGER read FStreamBytesTransferred;
+    {: Number of the current stream, starts with 1 (usually always 1) }
+    property StreamNumber: LongWord read FStreamNumber;
+    {: reason for callback }
+    property CallbackReason: TProgressReason read FCallbackReason;
+    {: Handle of source file }
+    property SourceFile: THandle read FSourceFile;
+    {: Handle of destination file }
+    property DestinationFile: THandle read FDestinationFile;
+  end;
+  TCopyFileProgressEvt = procedure(_Status: TCopyProgressStatus;
+    var _Continue: TCopyProgressStatus.TProgressResult) of object;
+
   {: This class owns all utility functions as class methods so they don't pollute the name space }
   TFileSystem = class
   public
@@ -101,6 +148,17 @@ type
     TCopyFileFlags = (cfFailIfExists, cfForceOverwrite, cfRaiseException);
     TCopyFileFlagSet = set of TCopyFileFlags;
     TMatchingFileResult = (mfNotFound, mfDirectory, mfFile, mfSpecial);
+    TCopyFileWithProgressFlags = (cfwFailIfExists, cfwRestartable, cfwRaiseException);
+    TCopyFileWithProgressFlagSet = set of TCopyFileWithProgressFlags;
+    TCopyFileWithProgressResult = (cfwOK, cfwAborted, cfwError);
+    TMoveFileWithProgressFlags = (
+      mfwFailIfExists, {:< fail if the destination file already exists }
+      mfwAllowCopy,    {:< allow using copy and delete if necessary }
+      mfwDelayUntilReboot, {:< wait until next reboot for moving the file }
+      mfwWriteThrough, {:< Setting this value guarantees that a move performed as a copy and delete operation is flushed to disk before the function returns. }
+      mfwFailIfNotTrackable, {:< The function fails if the source file is a link source, but the file cannot be tracked after the move. }
+      mfwRaiseException); {:< raise an exception if there is an error }
+    TMoveFileWithProgressFlagSet = set of TMoveFileWithProgressFlags;
   const
   {: set of char constant containing all characters that are invalid in a filename }
     INVALID_FILENAME_CHARS: set of Char = ['\', '/', ':', '*', '?', '"', '<', '>', '|'];
@@ -161,6 +219,52 @@ type
        @returns true, if the file could be copied, false otherwise. }
     class function CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = true;
       _RaiseException: boolean = true; _ForceOverwrite: boolean = false): boolean; overload;
+    {: Copies the file Source to Dest using the Windows CopyFile function.
+       @param(Source is a string containing the name of the existing file)
+       @param(Dest is a string containing the destination file name)
+       @param(Flags is a set of TCopyFileFlags specifying whether the copy operation
+              cfFailIfExists: fail if the destination file already exists.
+              cfForceOverwrite: remove a read-only flag from the destination file if necessary.
+              cfRaiseException: retrieve the Windows error and raise an exception if it fails.
+                If not set, it will not raise an exception but just return false if
+                copying the file fails.)
+       @returns(true, if the file could be copied, false otherwise.) }
+    class function CopyFile(const _Source, _Dest: string;
+      _Flags: TCopyFileFlagSet = [cfRaiseException]): boolean; overload;
+    {: Copies the file Source to Dest using the Windows CopyFileEx function which
+       allows for a progress callback
+       @param(Source is a string containing the name of the existing file)
+       @param(Dest is a string containing the destination file name)
+       @param(Flags is a set of TCopyFileWithProgressFlags specifying whether the copy operation
+              cfwFailIfExists: fail if the destination file already exists.
+              cfwRestartable: stores information in the destination file that allows
+                to restart a stopped copy operation
+              cfwRaiseException: retrieve the Windows error and raise an exception if it fails.
+                If not set, it will not raise an exception but just return cfwAborted
+                or cfwError if copying the file fails. (set by default))
+       @returns cfeOK, if the copying succeeds, cfeAborted if the copying was aborted or
+                stopped in the callback function and cfeError on any other error.
+       @raises  EOSError if an error occurs and cfwRaiseException was passed }
+    class function CopyFileWithProgress(const _Source, _Dest: string; _Progress: TCopyFileProgressEvt;
+      _Flags: TCopyFileWithProgressFlagSet = [cfwRaiseException]): TCopyFileWithProgressResult;
+    {: Copies the file Source to Dest using the Windows MoveFileWithProgress function which
+       allows for a progress callback
+       NOTE: If the file can be moved rather than copied, no call to the callback
+             function will occur!
+       @param(Source is a string containing the name of the existing file)
+       @param(Dest is a string containing the destination file name)
+       @param(Flags is a set of TCopyFileWithProgressFlags specifying whether the copy operation
+              cfwFailIfExists: fail if the destination file already exists.
+              cfwRestartable: stores information in the destination file that allows
+                to restart a stopped copy operation
+              cfwRaiseException: retrieve the Windows error and raise an exception if it fails.
+                If not set, it will not raise an exception but just return cfwAborted
+                or cfwError if copying the file fails. (set by default))
+       @returns cfeOK, if the copying succeeds, cfeAborted if the copying was aborted or
+                stopped in the callback function and cfeError on any other error.
+       @raises  EOSError if an error occurs and cfwRaiseException was passed }
+    class function MoveFileWithProgress(const _Source, _Dest: string; _Progress: TCopyFileProgressEvt;
+      _Flags: TMoveFileWithProgressFlagSet = [mfwRaiseException]): TCopyFileWithProgressResult;
     {: Creates a directory (parent directories must already exist)
        @param DirectoryName is the name for the new directory
        @param RaiseException determines whether an exception is raised on error, default = true
@@ -177,17 +281,6 @@ type
        @param Filename is the file to change
        @param Set determines whether to set or clear the flag }
     class function SetReadonly(const _Filename: string; _Set: boolean; _RaiseException: boolean = true): boolean;
-    {: Copies the file Source to Dest using the Windows CopyFile function.
-       @param(Source is a string containing the name of the existing file)
-       @param(Dest is a string containing the destination file name)
-       @param(Flags is a set of TCopyFileFlags specifying whether the copy operation
-              cfFailIfExists: fail if the destination file already exists.
-              cfForceOverwrite: remove a read-only flag from the destination file if necessary.
-              cfRaiseException: retrieve the Windows error and raise an exception if it fails.
-                If not set, it will not raise an exception but just return false if
-                copying the file fails.)
-       @returns(true, if the file could be copied, false otherwise.) }
-    class function CopyFile(const _Source, _Dest: string; _Flags: TCopyFileFlagSet): boolean; overload;
     {: Deletes the file using the SysUtils.DeleteFile function.
        @param(Filename is a string containing the name of the file)
        @param(RaiseException is a boolean which controls whether the function
@@ -284,9 +377,9 @@ end;
 
 constructor TSimpleDirEnumerator.Create(const _Mask: string);
 begin
-  fMask := _Mask;
-  fMustHaveAttr := [];
-  fMayHaveAttr := [faHidden, faSysFile, faVolumeID, faDirectory, faArchive];
+  FMask := _Mask;
+  FMustHaveAttr := [];
+  FMayHaveAttr := [faHidden, faSysFile, faVolumeID, faDirectory, faArchive];
 end;
 
 destructor TSimpleDirEnumerator.Destroy;
@@ -315,21 +408,21 @@ var
   function AttrOk(_EnumAttr: TFileAttributes; _SysAttr: integer): boolean;
   begin
     Result := true;
-    if _EnumAttr in fMustHaveAttr then
+    if _EnumAttr in FMustHaveAttr then
       if (Attr and _SysAttr) = 0 then
         Result := false;
   end;
 
   procedure CondAddAttr(_EnumAttr: TFileAttributes; _SysAttr: integer);
   begin
-    if _EnumAttr in fMayHaveAttr then
+    if _EnumAttr in FMayHaveAttr then
       Attr := Attr + _SysAttr;
   end;
 
 begin
   repeat
-    if not fActive then begin
-      fMatchCount := 0;
+    if not FActive then begin
+      FMatchCount := 0;
       Attr := 0;
       CondAddAttr(faReadOnly, SysUtils.faReadOnly);
       CondAddAttr(faHidden, SysUtils.faHidden);
@@ -337,20 +430,20 @@ begin
       CondAddAttr(faVolumeID, SysUtils.faVolumeID);
       CondAddAttr(faDirectory, SysUtils.faDirectory);
       CondAddAttr(faArchive, SysUtils.faArchive);
-      Res := FindFirst(fMask, Attr, fSr);
+      Res := FindFirst(FMask, Attr, FSr);
       Result := (Res = 0);
       if Result then
-        fActive := true;
+        FActive := true;
     end else begin
-      Res := SysUtils.FindNext(fSr);
+      Res := SysUtils.FindNext(FSr);
       Result := (Res = 0);
     end;
     if not Result then
       exit;
     if (sr.Name = '.') or (sr.Name = '..') then
       Continue;
-    if fMustHaveAttr <> [] then begin
-      Attr := fSr.Attr;
+    if FMustHaveAttr <> [] then begin
+      Attr := FSr.Attr;
       if not AttrOk(faReadonly, SysUtils.faReadOnly) then
         Continue;
       if not AttrOk(faHidden, SysUtils.faHidden) then
@@ -364,7 +457,7 @@ begin
       if not AttrOk(faArchive, SysUtils.faArchive) then
         Continue;
     end;
-    Inc(fMatchCount);
+    Inc(FMatchCount);
     _Filename := sr.Name;
     exit;
   until false;
@@ -379,9 +472,9 @@ end;
 
 procedure TSimpleDirEnumerator.Reset;
 begin
-  if fActive then
-    FindClose(fSr);
-  fActive := false;
+  if FActive then
+    FindClose(FSr);
+  FActive := false;
 end;
 
 { TFileSystem }
@@ -531,6 +624,141 @@ begin
     cfFailIfExists in _Flags,
     cfRaiseException in _Flags,
     cfForceOverwrite in _Flags);
+end;
+
+type
+  TProgressRedir = class(TCopyProgressStatus)
+  strict private
+    FOnProgress: TCopyFileProgressEvt;
+  private
+    CancelFlag: BOOL;
+    function doProgress(): TCopyProgressStatus.TProgressResult;
+  public
+    constructor Create(_OnProgress: TCopyFileProgressEvt);
+  end;
+
+//  PROGRESS_CONTINUE = 0;
+//  PROGRESS_CANCEL = 1;
+//  PROGRESS_STOP = 2;
+//  PROGRESS_QUIET = 3;
+
+//  CALLBACK_CHUNK_FINISHED = $00000000;
+//  CALLBACK_STREAM_SWITCH = $00000001;
+
+function ProgressCallback(
+  _TotalFileSize, _TotalBytesTransferred, _StreamSize, _StreamBytesTransferred: LARGE_INTEGER;
+  _StreamNumber, _CallbackReason: LongWord;
+  _SourceFile, _DestinationFile: THandle; _Data: pointer): LongWord; far; stdcall;
+var
+  Status: TProgressRedir;
+begin
+  Status := TProgressRedir(_Data);
+  Status.FTotalFileSize := _TotalFileSize;
+  Status.FTotalBytesTransferred := _TotalBytesTransferred;
+  Status.FStreamSize := _StreamSize;
+  Status.FStreamBytesTransferred := _StreamBytesTransferred;
+  Status.FStreamNumber := _StreamNumber;
+  case _CallbackReason of
+  CALLBACK_CHUNK_FINISHED: Status.FCallbackReason := prChunkFinished;
+  CALLBACK_STREAM_SWITCH: Status.FCallbackReason := prStreamSwitch;
+  else
+    // Shouldn't happen, assume CALLBACK_CHUNK_FINISHED for now
+    Status.FCallbackReason := prChunkFinished;
+  end;
+  Status.FSourceFile := _SourceFile;
+  Status.FDestinationFile := _DestinationFile;
+  case Status.doProgress() of
+    prContinue: Result := PROGRESS_CONTINUE;
+    prCancel: Result := PROGRESS_CANCEL;
+    prStop: Result := PROGRESS_STOP;
+    prQuiet: Result := PROGRESS_QUIET;
+  else // should not happen, assume prContinue
+    Result := PROGRESS_CONTINUE;
+  end;
+end;
+
+//  COPY_FILE_FAIL_IF_EXISTS = $00000001;
+//  COPY_FILE_RESTARTABLE = $00000002;
+
+class function TFileSystem.CopyFileWithProgress(const _Source, _Dest: string;
+  _Progress: TCopyFileProgressEvt;
+  _Flags: TCopyFileWithProgressFlagSet = [cfwRaiseException]): TCopyFileWithProgressResult;
+var
+  Redir: TProgressRedir;
+  Flags: DWORD;
+  Res: BOOL;
+  LastError: DWORD;
+begin
+  Redir := TProgressRedir.Create(_Progress);
+  try
+    Flags := 0;
+    if cfwFailIfExists in _Flags then
+      Flags := Flags or COPY_FILE_FAIL_IF_EXISTS;
+     if cfwRestartable in _Flags then
+       Flags := Flags or COPY_FILE_RESTARTABLE;
+    Res := Windows.CopyFileEx(PChar(_Source), PChar(_Dest), @ProgressCallback, Redir,
+      @Redir.CancelFlag, Flags);
+    if not Res then begin
+      LastError := GetLastError;
+      if cfwRaiseException in _Flags then
+        RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
+
+      if LastError = ERROR_REQUEST_ABORTED then
+        Result := cfwAborted
+      else
+        Result := cfwError;
+    end else
+      Result := cfwOK;
+  finally
+    Redir.Free;
+  end;
+end;
+
+//  MOVEFILE_REPLACE_EXISTING       = $00000001;
+//  MOVEFILE_COPY_ALLOWED           = $00000002;
+//  MOVEFILE_DELAY_UNTIL_REBOOT     = $00000004;
+//  MOVEFILE_WRITE_THROUGH          = $00000008;
+//  MOVEFILE_CREATE_HARDLINK        = $00000010;
+//  MOVEFILE_FAIL_IF_NOT_TRACKABLE  = $00000020;
+
+class function TFileSystem.MoveFileWithProgress(const _Source, _Dest: string;
+  _Progress: TCopyFileProgressEvt;
+  _Flags: TMoveFileWithProgressFlagSet = [mfwRaiseException]): TCopyFileWithProgressResult;
+var
+  Redir: TProgressRedir;
+  Flags: DWORD;
+  Res: BOOL;
+  LastError: DWORD;
+begin
+  Redir := TProgressRedir.Create(_Progress);
+  try
+    Flags := MOVEFILE_REPLACE_EXISTING;
+    if mfwFailIfExists in _Flags then
+      Flags := Flags - MOVEFILE_COPY_ALLOWED;
+    if mfwAllowCopy in _Flags then
+      Flags := Flags or MOVEFILE_COPY_ALLOWED;
+    if mfwDelayUntilReboot in _Flags then
+      Flags := Flags or MOVEFILE_DELAY_UNTIL_REBOOT;
+    if mfwWriteThrough in _Flags then
+      Flags := Flags or MOVEFILE_WRITE_THROUGH;
+    if mfwFailIfNotTrackable in _Flags then
+      Flags := Flags or MOVEFILE_FAIL_IF_NOT_TRACKABLE;
+    Res := Windows.MoveFileWithProgress(PChar(_Source), PChar(_Dest),
+      @ProgressCallback, Redir, Flags);
+    if not Res then begin
+      LastError := GetLastError;
+      if mfwRaiseException in _Flags then
+        RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
+
+      if LastError = ERROR_REQUEST_ABORTED then
+        Result := cfwAborted
+      else
+        Result := cfwError;
+    end else
+      Result := cfwOK;
+  finally
+    Redir.Free;
+  end;
 end;
 
 class function TFileSystem.DeleteFile(const _Filename: string; _RaiseException: boolean = true;
@@ -706,6 +934,21 @@ var
   ErrPos: integer;
 begin
   Result := IsValidFilename(_s, ErrPos);
+end;
+
+{ TProgressRedir }
+
+constructor TProgressRedir.Create(_OnProgress: TCopyFileProgressEvt);
+begin
+  inherited Create;
+  FOnProgress := _OnProgress;
+end;
+
+function TProgressRedir.doProgress(): TCopyProgressStatus.TProgressResult;
+begin
+  Result := prContinue;
+  if Assigned(FOnProgress) then
+    FOnProgress(Self, Result);
 end;
 
 end.
