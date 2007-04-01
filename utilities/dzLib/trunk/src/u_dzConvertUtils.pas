@@ -11,6 +11,10 @@ interface
 uses
   SysUtils;
 
+var
+  {: contains the User's format setting, but with decimal separator = '.' and no thousands separator }
+  DZ_FORMAT_DECIMAL_POINT: TFormatSettings;
+
 type
   {: Raised by the number conversion functions if a digit is invalid for the
      given base. }
@@ -85,6 +89,13 @@ function SecondsToTimeStr(_Seconds: integer): string;
 {$IFDEF Delphi7up}
 function TimeToSeconds(_Zeit: TDateTime): integer; deprecated;
 {$ENDIF}
+
+{: Converts a floating point number to a string using the given decimal separator
+   in "General number format" with 15 significant digits
+   @param(flt is an extended floating point value)
+   @param(DecSeparator is the decimal separator to use)
+   @returns(a string representation of the floating point value) }
+function Float2Str(_flt: extended; _DecSeparator: char = '.'): string;
 
 implementation
 
@@ -300,5 +311,18 @@ begin
   Result := Result * Sign;
 end;
 
+function Float2Str(_flt: extended; _DecSeparator: char = '.'): string;
+var
+  FormatSettings: TFormatSettings;
+begin
+  FormatSettings := DZ_FORMAT_DECIMAL_POINT;
+  FormatSettings.DecimalSeparator := _DecSeparator;
+  Result := SysUtils.FloatToStr(_Flt, FormatSettings);
+end;
+
+initialization
+  DZ_FORMAT_DECIMAL_POINT := GetUserDefaultLocaleSettings;
+  DZ_FORMAT_DECIMAL_POINT.DecimalSeparator := '.';
+  DZ_FORMAT_DECIMAL_POINT.ThousandSeparator := #0;
 end.
 

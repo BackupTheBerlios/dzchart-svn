@@ -95,6 +95,7 @@ end;
 
 destructor TDefaultMain.Destroy;
 begin
+  FreeAndNil(FCmdLineParser);
   LogInfo('Program finished.');
   inherited;
 end;

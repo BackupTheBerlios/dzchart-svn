@@ -161,7 +161,18 @@ type
        @returns true, if the file could be copied, false otherwise. }
     class function CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = true;
       _RaiseException: boolean = true; _ForceOverwrite: boolean = false): boolean; overload;
-    class function CreateDir(const _DirecoryName: string; _RaiseException: boolean = true): boolean;
+    {: Creates a directory (parent directories must already exist)
+       @param DirectoryName is the name for the new directory
+       @param RaiseException determines whether an exception is raised on error, default = true
+       @returns true, if the directory was created
+       @raises EOSError if there was an error and RaiseException was true }
+    class function CreateDir(const _DirectoryName: string; _RaiseException: boolean = true): boolean;
+    {: Creates a new directory, including the creation of parent directories as needed.
+       @param DirectoryPath is the name for the new directory
+       @param RaiseException determines whether an exception is raised on error, default = true
+       @returns true, if the directory was created
+       @raises EOSError if there was an error and RaiseException was true }
+    class function ForceDir(const _DirectoryPath: string; _RaiseException: boolean = true): boolean;
     {: Sets a file's readonly flag
        @param Filename is the file to change
        @param Set determines whether to set or clear the flag }
@@ -234,6 +245,9 @@ type
     class function IsValidFilename(const _s: string; out _ErrPos: integer): boolean; overload;
   end;
 
+{: This is an abbreviation for IncludeTrailingPathDelimiter }
+function itpd(const _Dirname: string): string; inline;
+
 implementation
 
 uses
@@ -260,7 +274,13 @@ resourcestring
   STR_DELTREE_ERROR_S = '"%s" does not exist or is not a directory';
   // doppelte % zum Durchreichen in Prozedur
   STR_CREATEDIR_ERROR_S = 'Error %%1:s (%%0:d) creating directory "%s"';
-  { TSimpleDirEnumerator }
+
+function itpd(const _Dirname: string): string; inline;
+begin
+  Result := IncludeTrailingPathDelimiter(_Dirname);
+end;
+
+{ TSimpleDirEnumerator }
 
 constructor TSimpleDirEnumerator.Create(const _Mask: string);
 begin
@@ -388,16 +408,16 @@ begin
   SetLength(Result, Res);
 end;
 
-class function TFileSystem.CreateDir(const _DirecoryName: string;
+class function TFileSystem.CreateDir(const _DirectoryName: string;
   _RaiseException: boolean = true): boolean;
 var
   LastError: Cardinal;
 begin
-  Result := SysUtils.CreateDir(_DirecoryName);
+  Result := SysUtils.CreateDir(_DirectoryName);
   if not Result then begin
-    if _RaiseException then     begin
+    if _RaiseException then begin
       LastError := GetLastError;
-      RaiseLastOsErrorEx(LastError, Format(STR_CREATEDIR_ERROR_S, [_DirecoryName]));
+      RaiseLastOsErrorEx(LastError, Format(STR_CREATEDIR_ERROR_S, [_DirectoryName]));
     end;
   end;
 end;
@@ -577,6 +597,17 @@ begin
     finally
       FindClose(sr);
     end;
+end;
+
+class function TFileSystem.ForceDir(const _DirectoryPath: string; _RaiseException: boolean): boolean;
+var
+  LastError: Cardinal;
+begin
+  Result := ForceDirectories(_DirectoryPath);
+  if not Result and _RaiseException then begin
+    LastError := GetLastError;
+    RaiseLastOsErrorEx(LastError, Format(STR_CREATEDIR_ERROR_S, [_DirectoryPath]));
+  end;
 end;
 
 class function TFileSystem.RemoveDir(const _Dirname: string; _RaiseException: boolean = true; _Force: boolean = false): boolean;

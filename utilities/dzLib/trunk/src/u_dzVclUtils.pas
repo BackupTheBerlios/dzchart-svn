@@ -131,6 +131,14 @@ function TStringGrid_CellToDouble(_grid: TStringGrid; _Col, _Row: integer; _Focu
 function TStringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer;
 function StringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer; deprecated; // use TStringGrid_CellToInt instead
 
+{: Deletes the top lines of the memo so it only contains Retain lines
+   @param Memo is the meme to work on
+   @param Retain is the number of lines to retain }
+procedure TMemo_DeleteTopLines(_Memo: TMemo; _Retain: integer);
+
+{: Scrolls the memo to the end }
+procedure TMemo_ScrollToEnd(_Memo: TMemo);
+
 {: Tries to convert the edit control text to a double, if an error occurs, it raises
    an exception and optionally focuses the control.
    @param ed is the edit control
@@ -1358,6 +1366,34 @@ begin
     FileFormats := TFileFormatsList.Create;
   Result := FileFormats;
 end;
+
+procedure TMemo_DeleteTopLines(_Memo: TMemo; _Retain: integer);
+const
+  EmptyStr: PChar = '';
+var
+  Offset: Integer;
+  cnt: Integer;
+begin
+  cnt := _Memo.Lines.Count;
+  if cnt <= _Retain then
+    Exit;
+  Dec(cnt, _Retain);
+
+  Offset := SendMessage(_Memo.Handle, EM_LINEINDEX, cnt - 1, 0);
+  if (Offset < 0) or (cnt = 0) then
+    Offset := SendMessage(_Memo.Handle, EM_LINELENGTH, 0, 0);
+  SendMessage(_Memo.Handle, EM_SETSEL, 0, Offset);
+  SendMessage(_Memo.Handle, EM_REPLACESEL, 0, Longint(EmptyStr));
+end;
+
+procedure TMemo_ScrollToEnd(_Memo: TMemo);
+Var
+  cnt: Integer;
+Begin
+  cnt := SendMessage(_Memo.Handle, EM_GETLINECOUNT, 0, 0);
+  SendMessage(_Memo.Handle, EM_LINESCROLL, 0, cnt);
+End;
+
 
 end.
 

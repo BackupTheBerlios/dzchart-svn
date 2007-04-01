@@ -184,30 +184,51 @@ function HexDecodeControlChars(const _Prefix: char; const _s: string): string;
 function UrlEncodeControlChars(const _s: string; _ControlChars: TCharSet = STANDARD_CONTROL_CHARS): string;
 function UrlDecodeControlChars(const _s: string): string;
 
-{: Returns the WordNo'th word, (counting from 1), using the given Delimiters. }
+{: Returns the WordNo'th word, (counting from 1), using the given Delimiters.
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect) }
 function nthWord(const _s: string; _WordNo: integer; const _Delimiter: string): string; overload;
-{: Returns the WordNo'th word, (counting from 1), using the given Delimiters. }
+{: Returns the WordNo'th word, (counting from 1), using the given Delimiters.
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect) }
 function nthWord(const _s: string; _WordNo: integer; _Delimiter: TCharSet): string; overload;
 
 {: Returns the Nth character of S or ' ' if S has less than N charaters. }
 function nthCharOf(const _s: string; _n: integer): Char;
 
 {: Extract the first word of S using the given delimiters. The word is deleted
-   from S. }
+   from S.
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect) }
 function ExtractFirstWord(var _s: string; const _Delimiter: string): string; overload;
 {: Extract the first word of S using the given delimiters. The word is deleted
-   from S. }
+   from S.
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect) }
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet): string; overload;
 {: Extract the first word of S using the given delimiters. The word is deleted
    from S.
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect)
    @returns true, if a word could be extracted, false otherwise }
 function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWord: string): boolean; overload;
 {: Extract the first word of S using the given delimiters. The word is deleted
    from S.
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect)
    @returns true, if a word could be extracted, false otherwise }
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet; out _FirstWord: string): boolean; overload;
 
 {: Split string s into the list of substrings delimited by delimter
+   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+   into two words (which you would expect), but also 'abc'#9#9'def' is two words
+   (which you might not expect)
    @param sl is the stringlist in which to return the result
    @param s is the string to split
    @param Delimiter is a string containing all delimiter characters
@@ -228,7 +249,6 @@ function UnquoteString(const _s: string; _Quote: char = '"'): string;
 function StringOrNull(_P: PChar): string;
 
 {: returns the default locale settings as read from the system's regional settings }
-function GetDefaultLocaleSettings: TFormatSettings; deprecated; // use one of the functions below!
 function GetUserDefaultLocaleSettings: TFormatSettings;
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 
@@ -911,11 +931,6 @@ begin
     Result := '"' + _P + '"'
   else
     Result := 'NULL';
-end;
-
-function GetDefaultLocaleSettings: TFormatSettings;
-begin
-  Result := GetSystemDefaultLocaleSettings;
 end;
 
 function GetSystemDefaultLocaleSettings: TFormatSettings;
