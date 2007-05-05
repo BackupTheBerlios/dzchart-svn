@@ -1,0 +1,49 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{84384748-3c4f-4431-9a4e-01d4926ac87c}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup />
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="dummzeuchchart">
+    <MSBuild Projects="Packages\Delphi2007\dummzeuchchart.dproj" Targets="" />
+  </Target>
+  <Target Name="dummzeuchchart:Clean">
+    <MSBuild Projects="Packages\Delphi2007\dummzeuchchart.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="dummzeuchchart:Make">
+    <MSBuild Projects="Packages\Delphi2007\dummzeuchchart.dproj" Targets="Make" />
+  </Target>
+  <Target Name="dcldummzeuchchart">
+    <MSBuild Projects="Packages\Delphi2007\dcldummzeuchchart.dproj" Targets="" />
+  </Target>
+  <Target Name="dcldummzeuchchart:Clean">
+    <MSBuild Projects="Packages\Delphi2007\dcldummzeuchchart.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="dcldummzeuchchart:Make">
+    <MSBuild Projects="Packages\Delphi2007\dcldummzeuchchart.dproj" Targets="Make" />
+  </Target>
+  <Target Name="ChartTest">
+    <MSBuild Projects="examples\test-d2007\ChartTest.dproj" Targets="" />
+  </Target>
+  <Target Name="ChartTest:Clean">
+    <MSBuild Projects="examples\test-d2007\ChartTest.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="ChartTest:Make">
+    <MSBuild Projects="examples\test-d2007\ChartTest.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="dummzeuchchart;dcldummzeuchchart;ChartTest" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="dummzeuchchart:Clean;dcldummzeuchchart:Clean;ChartTest:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="dummzeuchchart:Make;dcldummzeuchchart:Make;ChartTest:Make" />
+  </Target>
+</Project>
