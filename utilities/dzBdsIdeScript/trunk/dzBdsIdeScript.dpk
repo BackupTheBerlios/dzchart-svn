@@ -27,11 +27,6 @@ package dzBdsIdeScript;
 {$LIBVERSION '1.0'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
-{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\dummzeuch\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\dummzeuch\experts\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_dzBdsIdeScript\de\dummzeuch\experts\BaseExpert\default.txaPackage'}
 
 requires
   vcl,
