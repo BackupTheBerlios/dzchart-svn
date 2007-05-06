@@ -1,0 +1,49 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{6c147b39-6e78-46ce-a011-b3fd6b0b9dd8}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup />
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="dzBdsIdeScriptInterfaces">
+    <MSBuild Projects="dzBdsIdeScriptInterfaces.dproj" Targets="" />
+  </Target>
+  <Target Name="dzBdsIdeScriptInterfaces:Clean">
+    <MSBuild Projects="dzBdsIdeScriptInterfaces.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="dzBdsIdeScriptInterfaces:Make">
+    <MSBuild Projects="dzBdsIdeScriptInterfaces.dproj" Targets="Make" />
+  </Target>
+  <Target Name="dzBdsIdeScript">
+    <MSBuild Projects="dzBdsIdeScript.dproj" Targets="" />
+  </Target>
+  <Target Name="dzBdsIdeScript:Clean">
+    <MSBuild Projects="dzBdsIdeScript.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="dzBdsIdeScript:Make">
+    <MSBuild Projects="dzBdsIdeScript.dproj" Targets="Make" />
+  </Target>
+  <Target Name="dzBdsIdeScript_DWS2">
+    <MSBuild Projects="dzBdsIdeScript_DWS2.dproj" Targets="" />
+  </Target>
+  <Target Name="dzBdsIdeScript_DWS2:Clean">
+    <MSBuild Projects="dzBdsIdeScript_DWS2.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="dzBdsIdeScript_DWS2:Make">
+    <MSBuild Projects="dzBdsIdeScript_DWS2.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="dzBdsIdeScriptInterfaces;dzBdsIdeScript;dzBdsIdeScript_DWS2" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="dzBdsIdeScriptInterfaces:Clean;dzBdsIdeScript:Clean;dzBdsIdeScript_DWS2:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="dzBdsIdeScriptInterfaces:Make;dzBdsIdeScript:Make;dzBdsIdeScript_DWS2:Make" />
+  </Target>
+</Project>

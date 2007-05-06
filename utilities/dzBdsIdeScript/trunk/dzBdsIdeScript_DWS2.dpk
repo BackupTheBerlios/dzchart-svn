@@ -1,4 +1,4 @@
-package dzBdsIdeScript;
+package dzBdsIdeScript_DWS2;
 
 {$R *.res}
 {$ALIGN 8}
@@ -19,24 +19,23 @@ package dzBdsIdeScript;
 {$STACKFRAMES OFF}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
-{$WRITEABLECONST ON}
+{$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'dummzeuch.de - BDS IDE Scripting Expert'}
+{$DESCRIPTION 'dummzeuch.de - BDS IDE scripting using Delphi Web Script 2'}
 {$LIBSUFFIX '100'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
 requires
-  vcl,
-  designide,
+  rtl,
   dws2VCLRuntime,
   dws2Runtime,
   dws2ClassesLibrary,
   dzBdsIdeScriptInterfaces;
 
 contains
-  de.dummzeuch.experts.BdsIdeScriptExpert.Expert in 'src\de.dummzeuch.experts.BdsIdeScriptExpert.Expert.pas' {dm_dzBdsIdeScriptExpert: TDataModule},
-  de.dummzeuch.experts.BaseExpert in 'src\de.dummzeuch.experts.BaseExpert.pas' {dm_DzBaseExpert: TDataModule};
+  de.dummzeuch.ScriptHandler.DWS2 in 'src\de.dummzeuch.ScriptHandler.DWS2.pas';
 
 end.
+
