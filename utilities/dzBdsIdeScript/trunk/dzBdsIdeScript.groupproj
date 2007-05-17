@@ -28,22 +28,22 @@
   <Target Name="dzBdsIdeScript:Make">
     <MSBuild Projects="dzBdsIdeScript.dproj" Targets="Make" />
   </Target>
-  <Target Name="dzBdsIdeScript_DWS2">
-    <MSBuild Projects="dzBdsIdeScript_DWS2.dproj" Targets="" />
+  <Target Name="DWS2">
+    <MSBuild Projects="DWS2.dproj" Targets="" />
   </Target>
-  <Target Name="dzBdsIdeScript_DWS2:Clean">
-    <MSBuild Projects="dzBdsIdeScript_DWS2.dproj" Targets="Clean" />
+  <Target Name="DWS2:Clean">
+    <MSBuild Projects="DWS2.dproj" Targets="Clean" />
   </Target>
-  <Target Name="dzBdsIdeScript_DWS2:Make">
-    <MSBuild Projects="dzBdsIdeScript_DWS2.dproj" Targets="Make" />
+  <Target Name="DWS2:Make">
+    <MSBuild Projects="DWS2.dproj" Targets="Make" />
   </Target>
   <Target Name="Build">
-    <CallTarget Targets="dzBdsIdeScriptInterfaces;dzBdsIdeScript;dzBdsIdeScript_DWS2" />
+    <CallTarget Targets="dzBdsIdeScriptInterfaces;dzBdsIdeScript;DWS2" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="dzBdsIdeScriptInterfaces:Clean;dzBdsIdeScript:Clean;dzBdsIdeScript_DWS2:Clean" />
+    <CallTarget Targets="dzBdsIdeScriptInterfaces:Clean;dzBdsIdeScript:Clean;DWS2:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="dzBdsIdeScriptInterfaces:Make;dzBdsIdeScript:Make;dzBdsIdeScript_DWS2:Make" />
+    <CallTarget Targets="dzBdsIdeScriptInterfaces:Make;dzBdsIdeScript:Make;DWS2:Make" />
   </Target>
 </Project>

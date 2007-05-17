@@ -1,4 +1,4 @@
-package dzBdsIdeScript_DWS2;
+package DWS2;
 
 {$R *.res}
 {$ALIGN 8}
@@ -24,6 +24,7 @@ package dzBdsIdeScript_DWS2;
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'dummzeuch.de - BDS IDE scripting using Delphi Web Script 2'}
 {$LIBSUFFIX '100'}
+{$LIBVERSION 'script'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 

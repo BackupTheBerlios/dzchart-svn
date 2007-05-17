@@ -24,6 +24,13 @@ type
     function GetDelphiCustomMenu(const _Caption: string): TMenuItem;
     function TryGetDelphiCustomMenu(const _Caption: string; out _Item: TMenuItem): Boolean;
     procedure DeleteDelphiCustomMenu(const _Caption: string);
+    procedure WriteRegistryString(const _SubBranch, _Entry, _Value: string);
+  protected
+    procedure WriteRegistryStringList(const _SubBranch, _ListBranch: string; _Values: TStrings);
+    function ReadRegistryString(const _SubBranch, _Entry: string): string;
+    procedure ReadRegistryStringList(const _SubBranch, _ListBranch: string;
+      _Values: TStrings);
+  protected // methods for accessing the current editor window
     function GetSelectedText: string;
     function GetSourceEditor: IOTASourceEditor;
     procedure InsertText(const _Text: string);
@@ -33,6 +40,13 @@ type
 implementation
 
 {$R *.dfm}
+
+uses
+  Registry;
+
+const
+  REGISTRY_ENGINES_COUNT = 'Count';
+  REGISTRY_ENGINES_ITEMS_D = 'Item%d';
 
 type
   TMsgWindow = class(TInterfacedObject, IMsgWindow)
@@ -119,7 +133,8 @@ var
 begin
   Result := nil;
   CurrMod := (BorlandIDEServices as IOTAModuleServices).CurrentModule;
-  if not Assigned(CurrMod) then Exit;
+  if not Assigned(CurrMod) then
+    Exit;
   for i := 0 to CurrMod.GetModuleFileCount - 1 do
     if CurrMod.GetModuleFileEditor(i).QueryInterface(IOTASourceEditor, Result) = S_OK then
       Exit;
@@ -198,6 +213,80 @@ begin
   MainMenu := NTAServices.MainMenu.Items;
   _Item := MainMenu.Find(_Caption);
   Result := Assigned(_Item);
+end;
+
+function Tdm_DzBaseExpert.ReadRegistryString(const _SubBranch, _Entry: string): string;
+var
+  Reg: TRegistry;
+begin
+  Result := '';
+  Reg := TRegistry.Create;
+  try
+    if not Reg.OpenKeyReadOnly(GetBaseRegistryKey + '\' + _SubBranch) then
+      exit;
+    if Reg.ValueExists(_Entry) then
+      Result := Reg.ReadString(_Entry);
+    Reg.CloseKey;
+  finally
+    Reg.Free;
+  end;
+end;
+
+procedure Tdm_DzBaseExpert.WriteRegistryString(const _SubBranch, _Entry, _Value: string);
+var
+  Reg: TRegistry;
+begin
+  Reg := TRegistry.Create;
+  try
+    if not Reg.OpenKey(GetBaseRegistryKey + '\' + _SubBranch, True) then
+      raise exception.Create('could not open registry branch');
+    Reg.WriteString(_Entry, _Value);
+    Reg.CloseKey;
+  finally
+    Reg.Free;
+  end;
+end;
+
+procedure Tdm_DzBaseExpert.ReadRegistryStringList(const _SubBranch, _ListBranch: string; _Values: TStrings);
+var
+  Reg: TRegistry;
+  i: Integer;
+  cnt: Integer;
+begin
+  _Values.Clear;
+  Reg := TRegistry.Create;
+  try
+    if not Reg.OpenKeyReadOnly(GetBaseRegistryKey + '\' + _SubBranch + '\' + _ListBranch) then
+      exit;
+    if Reg.ValueExists(REGISTRY_ENGINES_COUNT) then begin
+      cnt := Reg.ReadInteger(REGISTRY_ENGINES_COUNT);
+      for i := 0 to cnt - 1 do begin
+        if Reg.ValueExists(Format(REGISTRY_ENGINES_ITEMS_D, [i])) then
+          _Values.Add(Reg.ReadString(Format(REGISTRY_ENGINES_ITEMS_D, [i])));
+      end;
+    end;
+    Reg.CloseKey;
+  finally
+    Reg.Free;
+  end;
+end;
+
+procedure Tdm_DzBaseExpert.WriteRegistryStringList(const _SubBranch, _ListBranch: string; _Values: TStrings);
+var
+  Reg: TRegistry;
+  i: Integer;
+begin
+  Reg := TRegistry.Create;
+  try
+    Reg.OpenKey(GetBaseRegistryKey + '\' + _SubBranch + '\' + _ListBranch, True);
+    Reg.WriteInteger(REGISTRY_ENGINES_COUNT, _Values.Count);
+    for i := 0 to _Values.Count - 1 do begin
+      Reg.WriteString(Format(REGISTRY_ENGINES_ITEMS_D, [i]), _Values[i]);
+    end;
+    Reg.CloseKey;
+  finally
+    Reg.Free;
+  end;
 end;
 
 { TMsgWindow }

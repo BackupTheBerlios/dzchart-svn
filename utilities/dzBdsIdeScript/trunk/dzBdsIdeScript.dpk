@@ -37,6 +37,7 @@ requires
 
 contains
   de.dummzeuch.experts.BdsIdeScriptExpert.Expert in 'src\de.dummzeuch.experts.BdsIdeScriptExpert.Expert.pas' {dm_dzBdsIdeScriptExpert: TDataModule},
-  de.dummzeuch.experts.BaseExpert in 'src\de.dummzeuch.experts.BaseExpert.pas' {dm_DzBaseExpert: TDataModule};
+  de.dummzeuch.experts.BaseExpert in 'src\de.dummzeuch.experts.BaseExpert.pas' {dm_DzBaseExpert: TDataModule},
+  de.dummzeuch.experts.BdsIdeScriptExpert.ConfigForm in 'src\de.dummzeuch.experts.BdsIdeScriptExpert.ConfigForm.pas' {f_ConfigForm};
 
 end.
