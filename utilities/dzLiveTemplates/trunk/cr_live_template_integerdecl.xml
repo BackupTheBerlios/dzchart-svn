@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<codetemplate xmlns="http://schemas.borland.com/Delphi/2005/codetemplates" version="1.0.0">
+  <template name="i:" invoke="auto">
+    <description>
+      AutoComplete i: Integer declaration
+    </description>
+    <author>
+      Sebastian Modersohn / Thomas Mueller
+    </author>
+    <point name="ident" editable="false">
+      <text>i</text>
+    </point>
+    <point name="type" editable="false">
+      <text>Integer</text>
+    </point>
+    <script language="Delphi" onenter="false" onleave="true">
+      DeclareVariable(|ident|, |type|);
+      RemoveTemplate;
+    </script>
+    <code language="Delphi" context="methodbody" delimiter="|">
+      <![CDATA[|ident||type|]]>
+    </code>
+  </template>
+</codetemplate>
+

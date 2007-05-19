@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="propfreadwrite" invoke="none">
+		<description>
+			read write property for field, press Ctrl-Shift-C afterwards to add the fields
+		</description>
+		<author>
+			twm
+		</author>
+		<point name="ident">
+			<text>Name</text>
+			<hint>the name for the property</hint>
+		</point>
+		<point name="type">
+			<text>Integer</text>
+			<hint>the type for the property</hint>
+		</point>
+		<code language="Delphi" delimiter="|">
+		<![CDATA[property |ident|: |type| read F|ident| write F|ident|;
+|end|]]>
+		</code>
+	</template>
+</codetemplate>
+

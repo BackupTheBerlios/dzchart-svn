@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="FormExecute" invoke="manual">
+		<description>
+			creates an Execute class method for a form, press Shift-Ctrl afterwards
+			to add the method declaration.
+		</description>
+		<author>
+			twm
+		</author>
+		<point name="FormClass">
+			<text>TForm</text>
+			<hint>name of the form class</hint>
+		</point>
+		<point name="Value">
+			<text>_Value</text>
+			<hint>value edited with this form</hint>
+		</point>
+		<point name="Type">
+			<text>string</text>
+			<hint>Type of value</hint>
+		</point>
+		<point name="control">
+			<text>Edit1</text>
+			<hint>control that edits the value</hint>
+		</point>
+		<point name="property">
+			<text>Text</text>
+			<hint>property of the control for editing</hint>
+		</point>
+		<code language="Delphi" delimiter="|"><![CDATA[
+class function |FormClass|.Execute(_Owner: TComponent; var |Value|: |Type|): boolean;
+var
+  frm: |FormClass|;
+begin
+  frm := |FormClass|.Create(_Owner);
+  try
+	frm.|control|.|property| := |Value|;|end|
+	Result := (frm.ShowModal = mrOK);
+	if Result then begin
+	  |Value| := frm.|control|.|property|;
+	end;
+  finally
+	frm.Free;
+  end;
+end;
+		]]>
+		</code>
+	</template>
+</codetemplate>
