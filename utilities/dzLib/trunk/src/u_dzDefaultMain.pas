@@ -190,7 +190,10 @@ begin
     end;
   except
     // Exception handling findet im MainObj statt, was bis hierher kommt,
-    // kann man eh nicht mehr behandeln.
+    // kann man eh nicht mehr behandeln - aber evt. Loggen ? AS
+    on e: Exception do begin
+      LogError('Exception in function Main: '+e.Message+' '+e.ClassName);
+    end;
   end;
 end;
 
