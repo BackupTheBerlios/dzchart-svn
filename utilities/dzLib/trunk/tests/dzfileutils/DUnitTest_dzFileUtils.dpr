@@ -24,7 +24,8 @@ uses
   u_dzMiscUtils in '..\..\src\u_dzMiscUtils.pas',
   u_dzStringUtils in '..\..\src\u_dzStringUtils.pas',
   u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
-  u_dzTranslator in '..\..\src\u_dzTranslator.pas';
+  u_dzTranslator in '..\..\src\u_dzTranslator.pas',
+  u_dzDateUtils in '..\..\src\u_dzDateUtils.pas';
 
 {$R *.RES}
 

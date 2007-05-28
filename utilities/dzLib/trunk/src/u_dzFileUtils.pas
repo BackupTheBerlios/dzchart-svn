@@ -17,6 +17,8 @@ type
   {: raised by DelTree if the DirName parameter is not a valid directory name }
   EDirNotFound = class(EFileUtils);
   EPathTooLong = class(EFileUtils);
+  EInvalidPropertyCombination = class(EFileUtils);
+  EFileNotFound = class(EFileUtils);
 
 type
   TFileAttributes = (
@@ -29,6 +31,13 @@ type
     );
 
   TFileAttributeSet = set of TFileAttributes;
+
+  TFileInfoRec = record
+  public
+    Filename: string;
+    Size: Int64;
+    Timestamp: TDateTime;
+  end;
 
 type
   {: a simple wrapper around FindFirst/FindNext which allows to search for
@@ -58,6 +67,8 @@ type
     constructor Create(const _Mask: string);
     {: Destructor, will call FindClose if necessary }
     destructor Destroy; override;
+    {: creates a TSimpleDirEnumerator, calls its FindAll method and frees it }
+    class function Execute(const _Mask: string; _List: TStrings): integer;
     {: Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
        calls.
        @param Filename is the name of the file found, if result is true, if you need
@@ -139,6 +150,51 @@ type
   end;
   TCopyFileProgressEvt = procedure(_Status: TCopyProgressStatus;
     var _Continue: TCopyProgressStatus.TProgressResult) of object;
+
+  {: defines the action to take if a file already exists but has a different content }
+  TFileExistsAction = (feaIgnore, feaOverwrite);
+  TOnSyncing = procedure(_Sender: TObject; const _SrcDir, _DstDir: string) of object;
+  {: called if a destination file already exists
+     @param Action is the action to take, default is feaIgnore }
+  TOnFileExists = procedure(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec; var _Action: TFileExistsAction) of object;
+  {: Synchronizes two directories }
+  TDirectorySync = class
+  private
+    FOnSyncingDir: TOnSyncing;
+    FOnSyncingFile: TOnSyncing;
+    FOnFileExists: TOnFileExists;
+//    FOnDifferentFileExists: TOnDifferentFileExists;
+//    FCheckContent: boolean;
+//    procedure doOnDifferentFileExists(const _Filename: string; var _Action: TFileExistsAction);
+    procedure doOnSyncingDir(const _SrcDir, _DstDir: string);
+    procedure doOnSyncingFile(const _SrcFile, _DstFile: string);
+    function doOnFileExists(const _SrcDir, _DstDir, _Filename: string): TFileExistsAction;
+  public
+    {: Checks if there are files in the source directory that are already in
+       the destination directory, for each file that exists, the OnFileExists
+       event is called. }
+    procedure CheckOneWay(const _SrcDir, _DstDir: string);
+    {: copies all files from DirA to DirB if they don't already exists
+       (not implemented: if CheckContent=true, the content existing files will be checked and if
+                         it doesn't match, OnDifferentFileExists is called ) }
+    procedure SyncOneWay(const _SrcDir, _DstDir: string);
+    {: calls SyncOneWay(DirA, DirB) and SyncOneWay(DirB, DirA)
+       (not implemented: if CheckContent=true, the content existing files will be checked and if
+                         it doesn't match, OnDifferentFileExists is called ) }
+    procedure SyncBothWays(const _DirA, _DirB: string);
+//    {: Not implemented: Called, if the content of an existing file is different }
+//    property OnDifferentFileExists: TOnDifferentFileExists read FOnDifferentFileExists write FOnDifferentFileExists;
+//    {: Not implemented: if true, OnDifferentFileExists will be called }
+//    property CheckContent: boolean read FCheckContent write FCheckContent default false;
+    {: called when a new directory is entered, to abort synchronization,
+       raise an exception (e.g. SysUtils.Abort), and catch it in the calling method }
+    property OnSyncingDir: TOnSyncing read FOnSyncingDir write FOnSyncingDir;
+    {: called when a file is being copied, to abort synchronization,
+      raise an exception (e.g. SysUtils.Abort), and catch it in the calling method }
+    property OnSyncingFile: TOnSyncing read FOnSyncingFile write FOnSyncingFile;
+    {: called from CheckOneWay if a destination file already exists }
+    property OnFileExists: TOnFileExists read FOnFileExists write FOnFileExists;
+  end;
 
   {: This class owns all utility functions as class methods so they don't pollute the name space }
   TFileSystem = class
@@ -336,6 +392,49 @@ type
        @param ErrPos is the first error position, only valid it result = false
        @returns true, if the string is a valid filename, false otherwise }
     class function IsValidFilename(const _s: string; out _ErrPos: integer): boolean; overload;
+    {: creates a backup of the file appending the current date and time to the base
+       file name.
+       @param Filename is the name of the file to back up
+       @param BackupDir is a directory in which to create the backup file, if empty
+                        the same directory as the original file is used }
+    class procedure BackupFile(const _Filename: string; _BackupDir: string = '');
+    class function GetFileInfo(const _Filename: string): TFileInfoRec;
+  end;
+
+type
+  {: callback event for generating a filename for the given generation }
+  TOnGenerateFilename = procedure(_Sender: TObject; _Generation: integer; var _Filename: string) of object;
+type
+  TFileGenerationHandler = class
+  private
+    FBaseName: string;
+    FSuffix: string;
+    FOnGenerateFilename: TOnGenerateFilename;
+    FMaxGenerations: integer;
+    FResultContainsNumber: boolean;
+    FOldestIsHighest: boolean;
+    FPrependZeros: integer;
+    function GenerateFilename(_Generation: integer): string;
+  public
+    {: @param BaseName is the base filename to which by default _<n> followed by
+                       the Suffix will be appended
+       @param Suffix is the suffix for the filename, usually an extension which
+                     must include the dot (.) }
+    constructor Create(const _BaseName, _Suffix: string);
+    {: generates the filename and returns it }
+    function Execute(_KeepOriginal: boolean): string;
+    {: the maximum of file generations that should be kept }
+    property MaxGenerations: integer read FMaxGenerations write FMaxGenerations default 5;
+    {: should the resulting filename contain a number? }
+    property ResultContainsNumber: boolean read FResultContainsNumber write FResultContainsNumber default false;
+    {: does the oldest file have the highest number? }
+    property OldestIsHighest: boolean read FOldestIsHighest write FOldestIsHighest default true;
+    property PrependZeros: integer read FPrependZeros write FPrependZeros default 0;
+    {: allows read access to the file's base name as passed to the constructor }
+    property BaseName: string read FBaseName;
+    property Suffix: string read FSuffix;
+    {: callback event for generating a filename for the given generation }
+    property OnGenerateFilename: TOnGenerateFilename read FOnGenerateFilename write FOnGenerateFilename;
   end;
 
 {: This is an abbreviation for IncludeTrailingPathDelimiter }
@@ -345,7 +444,9 @@ implementation
 
 uses
   FileCtrl,
-  u_dzMiscUtils;
+  u_dzMiscUtils,
+  u_dzStringUtils,
+  u_dzDateUtils;
 
 resourcestring
   STR_GETTEMPPATH_ERROR_DS = 'u_dzFileUtils.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath';
@@ -386,6 +487,18 @@ destructor TSimpleDirEnumerator.Destroy;
 begin
   Reset;
   inherited;
+end;
+
+class function TSimpleDirEnumerator.Execute(const _Mask: string; _List: TStrings): integer;
+var
+  enum: TSimpleDirEnumerator;
+begin
+  enum := TSimpleDirEnumerator.Create(_Mask);
+  try
+    Result := enum.FindAll(_List);
+  finally
+    enum.Free;
+  end;
 end;
 
 function TSimpleDirEnumerator.FindAll(_List: TStrings): integer;
@@ -525,7 +638,7 @@ begin
   if _BaseDir = '' then
     _BaseDir := GetTempPath;
   Pid := GetCurrentProcessId;
-  s := IncludeTrailingPathDelimiter(_BaseDir) + _Prefix + '_' + IntToStr(Pid) + '_';
+  s := itpd(_BaseDir) + _Prefix + '_' + IntToStr(Pid) + '_';
   Counter := 0;
   Ok := false;
   while not OK do begin
@@ -554,6 +667,23 @@ begin
     RaiseLastOsErrorEx(LastError, STR_GETTEMPFILENAME_ERROR_DS);
   end;
   Result := PChar(Result); // remove trailing characters
+end;
+
+class function TFileSystem.GetFileInfo(const _Filename: string): TFileInfoRec;
+var
+  sr: TSearchRec;
+  Res: integer;
+begin
+  Res := FindFirst(_Filename, faAnyFile, sr);
+  if Res <> 0 then
+    raise EFileNotFound.CreateFmt('File not found: "%s"', [_Filename]);
+  try
+    Result.Filename := _Filename;
+    Result.Size := sr.Size;
+    Result.Timestamp := FileDateToDateTime(sr.Time);
+  finally
+    FindClose(sr);
+  end;
 end;
 
 class function TFileSystem.GetShortPathname(const _LongName: string): string;
@@ -618,6 +748,21 @@ begin
   end;
 end;
 
+class procedure TFileSystem.BackupFile(const _Filename: string; _BackupDir: string = '');
+var
+  Ext: string;
+  FilenameOnly: string;
+  Base: string;
+begin
+  if _BackupDir = '' then
+    _BackupDir := ExtractFilePath(_Filename);
+  _BackupDir := itpd(_BackupDir);
+  FilenameOnly := ExtractFileName(_Filename);
+  Ext := ExtractFileExt(FilenameOnly);
+  Base := ChangeFileExt(FilenameOnly, '');
+  CopyFile(_Filename, _BackupDir + Base + '_' + ReplaceChars(DateTime2Iso(now, true), ': ', '-_') + Ext, true);
+end;
+
 class function TFileSystem.CopyFile(const _Source, _Dest: string; _Flags: TCopyFileFlagSet): boolean;
 begin
   Result := CopyFile(_Source, _Dest,
@@ -659,8 +804,8 @@ begin
   Status.FStreamBytesTransferred := _StreamBytesTransferred;
   Status.FStreamNumber := _StreamNumber;
   case _CallbackReason of
-  CALLBACK_CHUNK_FINISHED: Status.FCallbackReason := prChunkFinished;
-  CALLBACK_STREAM_SWITCH: Status.FCallbackReason := prStreamSwitch;
+    CALLBACK_CHUNK_FINISHED: Status.FCallbackReason := prChunkFinished;
+    CALLBACK_STREAM_SWITCH: Status.FCallbackReason := prStreamSwitch;
   else
     // Shouldn't happen, assume CALLBACK_CHUNK_FINISHED for now
     Status.FCallbackReason := prChunkFinished;
@@ -694,19 +839,19 @@ begin
     Flags := 0;
     if cfwFailIfExists in _Flags then
       Flags := Flags or COPY_FILE_FAIL_IF_EXISTS;
-     if cfwRestartable in _Flags then
-       Flags := Flags or COPY_FILE_RESTARTABLE;
+    if cfwRestartable in _Flags then
+      Flags := Flags or COPY_FILE_RESTARTABLE;
     Res := Windows.CopyFileEx(PChar(_Source), PChar(_Dest), @ProgressCallback, Redir,
       @Redir.CancelFlag, Flags);
     if not Res then begin
       LastError := GetLastError;
-      if cfwRaiseException in _Flags then
-        RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
-
       if LastError = ERROR_REQUEST_ABORTED then
         Result := cfwAborted
-      else
+      else begin
+        if cfwRaiseException in _Flags then
+          RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
         Result := cfwError;
+      end;
     end else
       Result := cfwOK;
   finally
@@ -827,7 +972,7 @@ begin
     end;
 end;
 
-class function TFileSystem.ForceDir(const _DirectoryPath: string; _RaiseException: boolean): boolean;
+class function TFileSystem.ForceDir(const _DirectoryPath: string; _RaiseException: boolean = true): boolean;
 var
   LastError: Cardinal;
 begin
@@ -949,6 +1094,261 @@ begin
   Result := prContinue;
   if Assigned(FOnProgress) then
     FOnProgress(Self, Result);
+end;
+
+{ TFileGenerationHandler }
+
+constructor TFileGenerationHandler.Create(const _BaseName, _Suffix: string);
+begin
+  inherited Create;
+  FMaxGenerations := 5;
+  FOldestIsHighest := true;
+  FResultContainsNumber := false;
+  FPrependZeros := 0;
+  FBaseName := _BaseName;
+  FSuffix := _Suffix;
+end;
+
+function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
+
+  function doNoNumberOldIsHighest(): string;
+  var
+    i: Integer;
+    dst: string;
+    src: string;
+    MaxGen: integer;
+  begin
+    MaxGen := FMaxGenerations - 1;
+    for i := MaxGen - 1 downto 1 do begin
+      dst := GenerateFilename(i + 1);
+      if FileExists(dst) then
+        TFileSystem.DeleteFile(dst);
+      src := GenerateFilename(i);
+      if FileExists(src) then
+        TFileSystem.MoveFile(src, dst);
+    end;
+    dst := GenerateFilename(1);
+    Result := GenerateFilename(0);
+    if FileExists(dst) then
+      TFileSystem.DeleteFile(dst);
+    if FileExists(Result) then begin
+      if _KeepOriginal then
+        TFileSystem.CopyFile(Result, dst, true)
+      else
+        TFileSystem.MoveFile(Result, dst);
+    end;
+  end;
+
+  function doNumberOldIsHighest(): string;
+  var
+    i: Integer;
+    dst: string;
+    src: string;
+    MaxGen: integer;
+  begin
+    MaxGen := FMaxGenerations;
+    for i := MaxGen - 1 downto 1 do begin
+      dst := GenerateFilename(i + 1);
+      if FileExists(dst) then
+        TFileSystem.DeleteFile(dst);
+      src := GenerateFilename(i);
+      if FileExists(src) then
+        TFileSystem.MoveFile(src, dst);
+    end;
+    Result := GenerateFilename(1);
+  end;
+
+  function doNoNumberOldIsLowest(): string;
+  var
+    i: Integer;
+    MaxGen: integer;
+    src: string;
+    dst: string;
+    SlotFound: Boolean;
+  begin
+    Result := GenerateFilename(0);
+    if not FileExists(Result) then
+      exit;
+
+    SlotFound := false;
+    MaxGen := FMaxGenerations - 1;
+    for i := 1 to MaxGen do begin
+      dst := GenerateFilename(i);
+      if not FileExists(dst) then begin
+        SlotFound := true;
+        break;
+      end;
+    end;
+
+    if not SlotFound then begin
+      dst := GenerateFilename(1);
+      if FileExists(dst) then
+        TFileSystem.DeleteFile(dst);
+      for i := 2 to MaxGen do begin
+        src := GenerateFilename(i);
+        if FileExists(src) then
+          TFileSystem.MoveFile(src, dst);
+        dst := src;
+      end;
+    end;
+
+    if _KeepOriginal then
+      TFileSystem.CopyFile(Result, dst, true)
+    else
+      TFileSystem.MoveFile(Result, dst);
+  end;
+
+  function doNumberOldIsLowest(): string;
+  var
+    i: Integer;
+    MaxGen: integer;
+  begin
+    MaxGen := FMaxGenerations;
+    for i := 1 to MaxGen do begin
+      Result := GenerateFilename(i);
+      if not FileExists(Result) then
+        exit;
+    end;
+
+    TFileSystem.DeleteFile(GenerateFilename(1));
+    for i := 2 to MaxGen do begin
+      TFileSystem.MoveFile(GenerateFilename(i), GenerateFilename(i - 1));
+    end;
+    Result := GenerateFilename(MaxGen);
+    if _KeepOriginal then
+      TFileSystem.CopyFile(GenerateFilename(MaxGen - 1), Result, true);
+  end;
+
+begin
+  if FResultContainsNumber then begin
+    if _KeepOriginal then
+      raise EInvalidPropertyCombination.Create('Combination of ResultContainsNumber and KeepOriginal is not allowed');
+    if FOldestIsHighest then begin
+      Result := doNumberOldIsHighest();
+    end else begin
+      Result := doNumberOldIsLowest();
+    end;
+  end else begin
+    if FOldestIsHighest then begin
+      Result := doNoNumberOldIsHighest();
+    end else begin
+      Result := doNoNumberOldIsLowest();
+    end;
+  end;
+end;
+
+function TFileGenerationHandler.GenerateFilename(_Generation: integer): string;
+begin
+  if _Generation = 0 then
+    Result := FBaseName + FSuffix
+  else begin
+    if FPrependZeros = 0 then
+      Result := FBaseName + '_' + IntToStr(_Generation) + FSuffix
+    else
+      Result := Format('%s_%.*u%s', [FBaseName, FPrependZeros, _Generation, FSuffix]);
+  end;
+  if Assigned(FOnGenerateFilename) then
+    FOnGenerateFilename(Self, _Generation, Result);
+end;
+
+{ TDirectorySync }
+
+//procedure TDirectorySync.doOnDifferentFileExists(const _Filename: string; var _Action: TFileExistsAction);
+//begin
+//  _Action := feaIgnore;
+//  if Assigned(FOnDifferentFileExists) then
+//    FOnDifferentFileExists(_Filename, _Action);
+//end;
+
+function TDirectorySync.doOnFileExists(const _SrcDir, _DstDir, _Filename: string): TFileExistsAction;
+var
+  Src: TFileInfoRec;
+  Dst: TFileInfoRec;
+begin
+  Result := feaIgnore;
+  if not Assigned(FOnFileExists) then
+    exit;
+
+  Src := TFileSystem.GetFileInfo(_SrcDir + _Filename);
+  Dst := TFileSystem.GetFileInfo(_DstDir + _Filename);
+  FOnFileExists(self, Src, Dst, Result);
+end;
+
+procedure TDirectorySync.doOnSyncingDir(const _SrcDir, _DstDir: string);
+begin
+  if Assigned(FOnSyncingDir) then
+    FOnSyncingDir(Self, _SrcDir, _DstDir);
+end;
+
+procedure TDirectorySync.doOnSyncingFile(const _SrcFile, _DstFile: string);
+begin
+  if Assigned(FOnSyncingFile) then
+    FOnSyncingFile(self, _SrcFile, _DstFile);
+end;
+
+procedure TDirectorySync.CheckOneWay(const _SrcDir, _DstDir: string);
+var
+  Filename: string;
+  EnumA: TSimpleDirEnumerator;
+  DstDirBS: string;
+  SrcDirBS: string;
+begin
+  doOnSyncingDir(_SrcDir, _DstDir);
+  SrcDirBS := itpd(_SrcDir);
+  DstDirBS := itpd(_DstDir);
+  EnumA := TSimpleDirEnumerator.Create(SrcDirBS + '*.*');
+  try
+    while EnumA.FindNext(Filename) do begin
+      if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then begin
+        if DirectoryExists(DstDirBS + Filename) then
+          CheckOneWay(SrcDirBS + Filename, DstDirBS + Filename);
+      end else if FileExists(DstDirBS + Filename) then begin
+        doOnFileExists(SrcDirBS, DstDirBS, Filename);
+      end else begin
+        doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename);
+      end;
+    end;
+  finally
+    EnumA.Free;
+  end;
+end;
+
+procedure TDirectorySync.SyncOneWay(const _SrcDir, _DstDir: string);
+var
+  Filename: string;
+  EnumA: TSimpleDirEnumerator;
+  DstDirBS: string;
+  SrcDirBS: string;
+begin
+  doOnSyncingDir(_SrcDir, _DstDir);
+  SrcDirBS := itpd(_SrcDir);
+  DstDirBS := itpd(_DstDir);
+  EnumA := TSimpleDirEnumerator.Create(SrcDirBS + '*.*');
+  try
+    while EnumA.FindNext(Filename) do begin
+      if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then begin
+        if not DirectoryExists(DstDirBS + Filename) then
+          TFileSystem.CreateDir(DstDirBS + Filename);
+        SyncOneWay(SrcDirBS + Filename, DstDirBS + Filename);
+      end else if FileExists(DstDirBS + Filename) then begin
+        if doOnFileExists(SrcDirBS, DstDirBS, Filename) = feaOverwrite then begin
+          doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename);
+          TFileSystem.CopyFile(SrcDirBS + Filename, DstDirBS + Filename, false, true);
+        end;
+      end else begin
+        doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename);
+        TFileSystem.CopyFile(SrcDirBS + Filename, DstDirBS + Filename, true, true);
+      end;
+    end;
+  finally
+    EnumA.Free;
+  end;
+end;
+
+procedure TDirectorySync.SyncBothWays(const _DirA, _DirB: string);
+begin
+  SyncOneWay(_DirA, _DirB);
+  SyncOneWay(_DirB, _DirA);
 end;
 
 end.
