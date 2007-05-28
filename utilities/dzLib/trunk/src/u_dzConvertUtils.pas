@@ -4,7 +4,7 @@
    which originally was a Delphi conversion of TwmStringFunc. }
 unit u_dzConvertUtils;
 
-{$i jedi.inc}
+{$I jedi.inc}
 
 interface
 
@@ -20,12 +20,18 @@ type
      given base. }
   EdzConvert = class(Exception);
   EDigitOutOfRange = class(EdzConvert);
+  {: raised if there is a conversion error in one of the Str2XxxEx functions }
+  EStringConvertError = class(EdzConvert);
 
 type
   ULong = LongWord;
 
 type
   TBaseN = 2..36;
+
+const
+  MinInt64 = $8000000000000000;
+  MaxInt64 = $7FFFFFFFFFFFFFFF;
 
 const
   {: String containing all characters that can be used as digits }
@@ -90,6 +96,72 @@ function SecondsToTimeStr(_Seconds: integer): string;
 function TimeToSeconds(_Zeit: TDateTime): integer; deprecated;
 {$ENDIF}
 
+{: Converts a string to an integer.
+   If s can not be converted, it returns the Default.
+   @param(s string to convert)
+   @param(Default value to return if s can not be converted)
+   @returns(the integer value of s or Default, if s can not be converted) }
+
+function Str2Int(_s: string; _Default: integer): integer; overload;
+
+{: Converts a string to an integer.
+   If s can not be converted, it raises an exception EStringConvertError.
+   @param(s string to convert)
+   @param(Source string to include in the exception message)
+   @returns(the integer value of s)
+   @raises(EStringConvertError if s can not be converted) }
+
+function Str2Int(_s: string; const _Source: string): integer; overload;
+
+{: Converts a string to an int64.
+   If s can not be converted, it returns the Default.
+   @param(s string to convert)
+   @param(Default value to return if s can not be converted)
+   @returns(the int64 value of s or Default, if s can not be converted) }
+
+function Str2Int64(_s: string; _Default: Int64): Int64; overload;
+
+{: Converts a string to an int64.
+   If s can not be converted, it raises an exception EStringConvertError.
+   @param(s string to convert)
+   @param(Source string to include in the exception message)
+   @returns(the integer value of s)
+   @raises(EStringConvertError if s can not be converted) }
+
+function Str2Int64(_s: string; const _Source: string): Int64; overload;
+
+{: tries to guess the decimal separator }
+function GuessDecimalSeparator(const _s: string): char;
+
+{: Converts a string to a float.
+   If s can not be converted, it returns the Default.
+   @param s string to convert
+   @param Default value to return if s can not be converted
+   @param DecSeparator is the decimal separator, defaults to '.'
+          if passed as #0, GuessDecimalSeparator is called to guess it
+   @returns the float value of s or Default, if s can not be converted }
+function Str2Float(_s: string; _Default: extended; _DecSeparator: char = '.'): extended; overload;
+
+{: Converts a string to a float.
+   If s can not be converted, it raises an exception EStringConvertError.
+   @param(s string to convert)
+   @param(Source string to include in the exception message)
+   @param DecSeparator is the decimal separator, defaults to '.'
+          if passed as #0, GuessDecimalSeparator is called to guess it
+   @returns(the float value of s)
+   @raises(EStringConvertError if s can not be converted) }
+
+function Str2Float(_s: string; const _Source: string; _DecSeparator: char = '.'): extended; overload;
+
+{: tries to convert a string to a float, returns false if it fails
+   @param s is the string to convert
+   @param flt is the float, only valid if the function returns true
+   @param DecSeparator is the decimal separator to use, defaults to '.',
+          if passed as #0, GuessDecimalSeparator is called to guess it
+   @returns true, if s could be converted, false otherwise }
+function TryStr2Float(_s: string; out _flt: extended; _DecSeparator: char = '.'): boolean; overload;
+function TryStr2Float(_s: string; out _flt: double; _DecSeparator: char = '.'): boolean; overload;
+
 {: Converts a floating point number to a string using the given decimal separator
    in "General number format" with 15 significant digits
    @param(flt is an extended floating point value)
@@ -104,6 +176,12 @@ uses
   StrUtils,
   u_dzTranslator,
   u_dzStringUtils;
+
+resourcestring
+  // "%s" ist kein gültiger Fließkomma Wert: %s
+  STR_X_IS_NOT_A_VALID_FLOAT_VALUE_SS = '"%s" is not a valid floating point value: %s';
+  // "%s" ist kein gültiger %s Wert: %s
+  STR_X_IS_NOT_A_VALID_Y_VALUE_SSS = '"%s" is not a valid %s value: %s';
 
 function isDigit(_a: char; _Base: TBaseN): boolean;
 begin
@@ -318,6 +396,104 @@ begin
   FormatSettings := DZ_FORMAT_DECIMAL_POINT;
   FormatSettings.DecimalSeparator := _DecSeparator;
   Result := SysUtils.FloatToStr(_Flt, FormatSettings);
+end;
+
+function Str2Int(_s: string; _Default: integer): integer;
+var
+  e: integer;
+begin
+  Val(_s, Result, e);
+  if e <> 0 then
+    Result := _Default
+end;
+
+function Str2Int(_s: string; const _Source: string): integer;
+var
+  e: integer;
+begin
+  Val(_s, Result, e);
+  if e <> 0 then
+    raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_Y_VALUE_SSS, [_s, 'Integer', _Source]);
+end;
+
+function Str2Int64(_s: string; _Default: Int64): Int64;
+var
+  e: integer;
+begin
+  Val(_s, Result, e);
+  if e <> 0 then
+    Result := _Default
+end;
+
+function Str2Int64(_s: string; const _Source: string): Int64;
+var
+  e: integer;
+begin
+  Val(_s, Result, e);
+  if e <> 0 then
+    raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_Y_VALUE_SSS, [_s, 'Int64', _Source]);
+end;
+
+function GuessDecimalSeparator(const _s: string): char;
+var
+  i: integer;
+  //  DotCnt: integer;
+  CommaCnt: integer;
+begin
+  //  DotCnt := 0;
+  CommaCnt := 0;
+  Result := '.';
+  for i := 1 to length(_s) do begin
+    case _s[i] of
+      '.': begin
+            //            Inc(DotCnt);
+          Result := '.';
+        end;
+      ',': begin
+          Inc(CommaCnt);
+          Result := ',';
+        end;
+    end;
+  end;
+  if (Result = ',') and (CommaCnt = 1) then
+    exit;
+  Result := '.';
+end;
+
+function TryStr2Float(_s: string; out _flt: extended; _DecSeparator: char = '.'): boolean;
+var
+  TmpDecSeparator: char;
+begin
+  if _DecSeparator = #0 then
+    _DecSeparator := GuessDecimalSeparator(_s);
+  TmpDecSeparator := DecimalSeparator;
+  DecimalSeparator := _DecSeparator;
+  try
+    Result := TextToFloat(PChar(_s), _flt, fvExtended);
+  finally
+    DecimalSeparator := TmpDecSeparator;
+  end;
+end;
+
+function TryStr2Float(_s: string; out _flt: double; _DecSeparator: char = '.'): boolean; overload;
+var
+  flt: extended;
+begin
+  Result := TryStr2Float(_s, flt, _DecSeparator);
+  if Result then
+    _flt := flt;
+end;
+
+function Str2Float(_s: string; _Default: extended; _DecSeparator: char = '.'): extended; overload;
+begin
+  if not TryStr2Float(_s, Result, _DecSeparator) then
+    Result := _Default
+end;
+
+function Str2Float(_s: string; const _Source: string; _DecSeparator: char = '.'): extended; overload;
+begin
+  if not TryStr2Float(_s, Result, _DecSeparator) then
+    raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_FLOAT_VALUE_SS, [_s, _Source]);
 end;
 
 initialization
