@@ -6,7 +6,7 @@
    @author Thomas Mueller <http://www.dummzeuch.de> }
 unit u_dzCmdLineParser;
 
-{$i jedi.inc}
+{$I jedi.inc}
 
 interface
 
@@ -315,7 +315,7 @@ var
   c: char;
 begin
   c := _Context.GetNextChar;
-  if c in ALPHANUMERIC_CHARS then begin
+  if c in ALPHANUMERIC_CHARS + ['?'] then begin
     _Context.AddToOption(c);
     Result := TEngineStateShortOption.Create;
   end else if c = '-' then
