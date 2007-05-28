@@ -364,7 +364,7 @@ uses
   rxGif,
 {$ENDIF GIFByRx}
   u_dzTranslator,
-  u_dzMiscUtils,
+  u_dzConvertUtils,
   u_dzStringUtils;
 
 // we need this to access protected methods
