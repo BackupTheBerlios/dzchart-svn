@@ -129,7 +129,6 @@ function TStringGrid_CellToDouble(_grid: TStringGrid; _Col, _Row: integer; _Focu
    @returns the cell's content as an integer
    @raises EConvertError if the cell's content could not be converted }
 function TStringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer;
-function StringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer; deprecated; // use TStringGrid_CellToInt instead
 
 {: Deletes the top lines of the memo so it only contains Retain lines
    @param Memo is the meme to work on
@@ -147,7 +146,6 @@ procedure TMemo_ScrollToEnd(_Memo: TMemo);
    @returns the controls content as a double
    @raises EConvertError if the controls content could not be converted }
 function TEdit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double;
-function Edit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double; deprecated; // use TEdit_TextToDouble instead
 
 {: Tries to convert the edit control text to an integer, if an error occurs, it raises
    an exception and optionally focuses the control.
@@ -157,22 +155,15 @@ function Edit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double; d
    @returns the controls content as an integer
    @raises EConvertError if the controls content could not be converted }
 function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
-function Edit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer; deprecated; // use TEdit_TextToInt instead
 
 {: returns the contents of the tree view as a string with indentations
    @param Tree is the TTreeView to process
    @param Indentation is the number of spaces for indentation
    @param Marker is a marker character to use for each item #0 for no marker }
 function TTreeView_GetAsText(_Tree: TTreeView; _Indentation: integer = 2; _Marker: char = #0): string;
-function TreeView_GetAsText(_Tree: TTreeView; _Indentation: integer = 2; _Marker: char = #0): string; deprecated; // use TTreeView_GetAsText instead
-
-{: Reverses a VclUtils.MergeForm (rxlib)
-   @param Form is the TForm to unmerge }
-procedure UnMergeForm(_Form: TCustomForm); deprecated; // use a frame instead
 
 {: adds a new TTabSheet to the given PageControl with the given Caption and returns it }
 function TPageControl_AddTabSheet(_PageControl: TPageControl; const _Caption: string): TTabSheet;
-function AddTabSheet(_PageControl: TPageControl; const _Caption: string): TTabSheet; deprecated; // use TPageControl_AddTabSheet instead
 
 {: Draws the tab text for a TPageControl as horizontal text, useful, if you
    want to have the tabs on the left or right but don't want vertical text.
@@ -186,8 +177,6 @@ function AddTabSheet(_PageControl: TPageControl; const _Caption: string): TTabSh
    @param Active is a boolean that is true if the Tab is currently active }
 procedure TPageControl_DrawTab(_PageControl: TPageControl; _TabIndex: integer;
   const _Rect: TRect; _Active: boolean);
-procedure DrawPageControlTab(_PageControl: TPageControl; _TabIndex: integer;
-  const _Rect: TRect; _Active: boolean); deprecated; // use TPageControl_DrawTab instead
 
 {: Draws the tab text for a TTabControl as horizontal text, useful, if you
    want to have the tabs on the left or right but don't want vertical text.
@@ -201,13 +190,10 @@ procedure DrawPageControlTab(_PageControl: TPageControl; _TabIndex: integer;
    @param Active is a boolean that is true if the Tab is currently active }
 procedure TTabControl_DrawTab(_TabControl: TTabControl; _TabIndex: integer;
   const _Rect: TRect; _Active: boolean);
-procedure DrawTabControlTab(_TabControl: TTabControl; _TabIndex: integer;
-  const _Rect: TRect; _Active: boolean); deprecated; // use TTabControl_DrawTab instead
 
 {: Sets a TTabControl's tab width based on the text it displays, usefull
    to display horizontal text in tabs on the left or right hand side }
 procedure TTabControl_AdjustTabWidth(_TabControl: TTabControl; _Form: TForm; _MinWidth: integer = 80);
-procedure AdjustTabControlTabWidth(_Form: TForm; _TabControl: TTabControl; _MinWidth: integer = 80); // use TTabControl_AdjustTabWidth instead, note that the parameter order is different!
 
 {: sets the control and all its child controls Enabled property and changes their
    caption to reflect this
@@ -220,7 +206,6 @@ procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
    @param Value is the desired object value
    @returns true, if the value could be found, false otherwise }
 function TComboBox_SelectByObject(_cmb: TCustomCombobox; _Value: pointer): boolean;
-function ComboBox_SelectByObject(_cmb: TCustomCombobox; _Value: pointer): boolean; deprecated; // use TComboBox_SelectByObject instead
 
 {: Gets the string of a combobox entry that has an object pointer matching Obj
    @param cmb is the TCustomCombobox (descendant) to select
@@ -228,7 +213,6 @@ function ComboBox_SelectByObject(_cmb: TCustomCombobox; _Value: pointer): boolea
    @param s is the string of the combobox entry, only valid if the function returns true
    @returns true, if the object could be found, false otherwise }
 function TComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s: string): boolean;
-function ComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s: string): boolean; deprecated; // use TComboBox_GetObjectCaption instead
 
 {: Gets the object pointer of the selected combobox item
    @param cmb is the TCustomCombobox (descendant) to read from
@@ -240,8 +224,6 @@ function ComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s:
    @returns true, if these values are valid }
 function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
   out _Obj: pointer; _FocusControl: boolean = false): boolean;
-function ComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
-  out _Obj: pointer; _FocusControl: boolean = false): boolean; deprecated; // use TComboBox_GetSelectedObject instead
 
 {: Gets the caption of the selected combobox item
    @param cmb is the TCustomCombobox (descendant) to read from
@@ -251,8 +233,6 @@ function ComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
    @returns true, if an item was selected }
 function TComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
   _FocusControl: boolean = false): boolean;
-function ComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
-  _FocusControl: boolean = false): boolean; deprecated; // use TComboBox_GetSelected instead
 
 {: Selects the item if it is in the list and returns the new ItemIndex
    @param cmb is the TCustomCombobox (descendant) to use
@@ -260,7 +240,6 @@ function ComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
    @param DefaultIdx is the ItemIndex to use if no item matches.
    @returns the index of the newly selected item or -1 if it doesn't exist }
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
-function ComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer; deprecated; // use TComboBox_Select instead
 
 {: Gets the object pointer of the selected listbox item
    @param cmb is the TCustomListbox (descendant) to read from
@@ -269,7 +248,6 @@ function ComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx
           if the function returns true
    @returns true, if these values are valid }
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
-function ListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean; deprecated; // use TListBox_GetSelectedObject instead
 
 {: Gets the caption of the given or selected item in the RadioGroup
    @param rg is the TCustomRadioGroup descendant to read
@@ -280,26 +258,28 @@ function ListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out 
    @returns true, if the caption could be read }
 function TRadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
   out _Caption: string; _Idx: integer = -1): boolean;
-function RadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
-  out _Caption: string; _Idx: integer = -1): boolean; deprecated; // use TRadioGroup_GetItemCaption instead
+
+{: Gets the object pointer of the selected RadioGroup item
+   @param cmb is the TCustomListbox (descendant) to read from
+   @param Idx is the listbox's ItemIndex, only valid if the function returns true
+   @param Obj is the value of the object pointer of the selected item, only valid
+          if the function returns true
+   @returns true, if these values are valid }
+function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup;out _Idx: integer; out _Obj: pointer): boolean;
 
 {: Writes a TPicture object to a String. The Format is
    <pictureformat>#26<picturedata> }
 function TPicture_WriteToString(_Pic: TPicture): string;
-function Picture_WriteToString(_Pic: TPicture): string; deprecated; // use TPicture_WriteToString instead
 
 {: Reads a TPicture object from a String which was created using
    Picture_WriteToString }
 procedure TPicture_ReadFromString(_Pic: TPicture; const _S: string);
-procedure Picture_ReadFromString(_Pic: TPicture; const _S: string); deprecated; // use TPicture_ReadFromString instead
 
 {: Writes a TRichEdit to a string including all formatting }
 function TRichEdit_WriteToString(_Re: TRichEdit): string;
-function RichEdit_WriteToString(_Re: TRichEdit): string; deprecated; // use TRichEdit_WriteToString instead
 
 {: Reads a TRichEdit from a string including all formatting }
 procedure TRichEdit_ReadFromString(_Re: TRichEdit; const _S: string);
-procedure RichEdit_ReadFromString(_Re: TRichEdit; const _S: string); deprecated; // use TRichEdit_ReadFromString instead
 
 {: Returns the characater offset of the first character of the given row
    example: RicheEdit1.SelStart := RichEdit_GetRowCharIndex(RichEdit1, 5);
@@ -307,23 +287,18 @@ procedure RichEdit_ReadFromString(_Re: TRichEdit; const _S: string); deprecated;
    @param Row is the row number (0 based)
    @returns the character offset (0 based) of the first character of the row }
 function TRichEdit_RowToCharIndex(_Re: TRichEdit; _Row: integer): integer;
-function RichEdit_RowToCharIndex(_Re: TRichEdit; _Row: integer): integer; deprecated; // use TRichEdit_RowToCharIndex instead
 
 {: Returns the row which contains the given character index }
 function TRichEdit_CharIndexToRow(_Re: TRichEdit; _Idx: integer): integer;
-function RichEdit_CharIndexToRow(_Re: TRichEdit; _Idx: integer): integer; deprecated; // use TRichEdit_CharIndexToRow instead
 
 {: Returns the current row number (0 based) of the RichEdit }
 function TRichEdit_GetCurrentRow(_Re: TRichEdit): integer;
-function RichEdit_GetCurrentRow(_Re: TRichEdit): integer; deprecated; // use TRichEdit_GetCurrentRow instead
 
 {: Scrolls the rich edit to the current caret position }
 procedure TRichEdit_ScrollToCaret(_Re: TRichEdit);
-procedure RichEdit_ScrollToCaret(_Re: TRichEdit); deprecated; // use TRichEdit_ScrollToCaret instead
 
 {: Write a line to a RichEdit, optionally specifying color and font style }
 procedure TRichEdit_WriteLn(_Re: TRichEdit; const _s: string; _Color: TColor = clBlack; _Style: TFontStyles = []);
-procedure RichEdit_WriteLn(_Re: TRichEdit; const _s: string; _Color: TColor = clBlack; _Style: TFontStyles = []); deprecated; // use TRichEdit_WriteLn instead
 
 {: Fuegt ein Control und ein zugehoeriges Label ein, Zeilenabstand ist 24 Punkte
    mit 16 Punkten Abstand vom oberen und 8 vom linken Rand. Es wird angenommen,
@@ -337,14 +312,12 @@ function CalcTextHeight(_Ctrl: TGraphicControl; const _Text: string; _Width: int
 {: I don't quite remember what this is supposed to do and where it is used,
    Please, if you find a call to this function somewhere, tell me. -- twm }
 function TStringGrid_IsScrollBarVisible(_Grid: TCustomGrid; _Code: integer): boolean;
-function ScrollBarVisible(_Grid: TCustomGrid; _Code: integer): boolean; deprecated; // use TStringGrid_IsScrollBarVisible instead
 
 {: Returns the path to the application's executable including the trailing backslash }
 function GetApplicationPath: string;
 
 {: Center the child on the parent}
 procedure TControl_Center(_Child: TControl; _Parent: TControl);
-procedure ControlCenter(_Child: TControl; _Parent: TControl); deprecated; // use TControl_Center instead;
 
 {: switches off "Windows Ghosting" in Win 2000 and XP
   This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
@@ -389,11 +362,6 @@ begin
   end;
 end;
 
-function GetStringGridText(_Grid: TCustomGrid): string;
-begin
-  Result := TGrid_GetText(_Grid);
-end;
-
 procedure TStringGrid_SetRowCount(_Grid: TStringGrid; _RowCount: integer);
 begin
   if _Grid.FixedRows >= _RowCount then
@@ -417,11 +385,6 @@ begin
   _Grid.RowCount := _Grid.FixedRows + 1;
   for c := _Grid.FixedCols to _Grid.ColCount - 1 do
     _Grid.Cells[c, _Grid.FixedRows] := '';
-end;
-
-procedure StringGrid_Clear(_Grid: TStringGrid);
-begin
-  TStringGrid_Clear(_Grid);
 end;
 
 function TStringGrid_DeleteRow(_Grid: TStringGrid; _Row: integer): boolean;
@@ -492,11 +455,6 @@ begin
   end;
 end;
 
-function StringGrid_CellToDouble(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): double;
-begin
-  Result := TStringGrid_CellToDouble(_grid, _Col, _Row, _FocusCell);
-end;
-
 function TStringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer;
 var
   s: string;
@@ -512,11 +470,6 @@ begin
   end;
 end;
 
-function StringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer;
-begin
-  Result := TStringGrid_CellToInt(_grid, _Col, _Row, _FocusCell);
-end;
-
 function TEdit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double;
 var
   s: string;
@@ -530,11 +483,6 @@ begin
   end;
 end;
 
-function Edit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double;
-begin
-  Result := TEdit_TextToDouble(_ed, _FocusControl);
-end;
-
 function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
 var
   s: string;
@@ -546,11 +494,6 @@ begin
     end;
     raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
   end;
-end;
-
-function Edit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
-begin
-  Result := TEdit_TextToInt(_ed, _FocusControl);
 end;
 
 function TTreeView_GetAsText(_Tree: TTreeView; _Indentation: integer = 2; _Marker: char = #0): string;
@@ -584,11 +527,6 @@ begin
   else
     Marker := _Marker;
   Result := GetSubnodes(_Tree.Items.GetFirstNode);
-end;
-
-function TreeView_GetAsText(_Tree: TTreeView; _Indentation: integer = 2; _Marker: char = #0): string;
-begin
-  Result := TTreeView_GetAsText(_Tree, _Indentation, _Marker);
 end;
 
 function ArrayContains(_Element: integer; const _Arr: array of integer): boolean;
@@ -767,32 +705,12 @@ begin
     Grid.Columns[Col].Width := ColWidths[Col];
 end;
 
-procedure ResizeDbGrid(_Grid: TCustomDbGrid; _Options: TResizeOptionSet = []);
-begin
-  TDbGrid_Resize(_Grid, _Options);
-end;
-
-type
-  THack = class(TCustomControl);
-
-procedure UnMergeForm(_Form: TCustomForm);
-begin
-  _Form.Hide;
-  THack(_Form).DestroyHandle;
-  _Form.Parent := nil;
-end;
-
 function TPageControl_AddTabSheet(_PageControl: TPageControl; const _Caption: string): TTabSheet;
 begin
   Result := TTabSheet.Create(_PageControl);
   Result.Parent := _PageControl;
   Result.PageControl := _PageControl;
   Result.Caption := _Caption;
-end;
-
-function AddTabSheet(_PageControl: TPageControl; const _Caption: string): TTabSheet;
-begin
-  Result := TPageControl_AddTabSheet(_PageControl, _Caption);
 end;
 
 procedure DrawTab(_TabControl: TCustomTabControl; const _Caption: string;
@@ -813,20 +731,8 @@ begin
   DrawTab(_PageControl, _PageControl.Pages[_TabIndex].Caption, _Rect, _Active);
 end;
 
-procedure DrawPageControlTab(_PageControl: TPageControl; _TabIndex: integer;
-  const _Rect: TRect; _Active: boolean);
-begin
-  DrawTab(_PageControl, _PageControl.Pages[_TabIndex].Caption, _Rect, _Active);
-end;
-
 procedure TTabControl_DrawTab(_TabControl: TTabControl; _TabIndex: integer;
   const _Rect: TRect; _Active: boolean);
-begin
-  DrawTab(_TabControl, _TabControl.Tabs[_TabIndex], _Rect, _Active);
-end;
-
-procedure DrawTabControlTab(_TabControl: TTabControl; _TabIndex: integer;
-  const _Rect: TRect; _Active: boolean); deprecated; // use TTabControl_DrawTab instead
 begin
   DrawTab(_TabControl, _TabControl.Tabs[_TabIndex], _Rect, _Active);
 end;
@@ -852,11 +758,6 @@ begin
       _TabControl.Width := _TabControl.Width + w;
     _TabControl.TabHeight := MinWidth;
   end;
-end;
-
-procedure AdjustTabControlTabWidth(_Form: TForm; _TabControl: TTabControl; _MinWidth: integer = 80);
-begin
-  TTabControl_AdjustTabWidth(_TabControl, _Form, _MinWidth);
 end;
 
 procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
@@ -889,11 +790,6 @@ begin
   Result := false;
 end;
 
-function ComboBox_SelectByObject(_cmb: TCustomCombobox; _Value: pointer): boolean;
-begin
-  Result := TComboBox_SelectByObject(_cmb, _Value);
-end;
-
 function TComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s: string): boolean;
 var
   i: integer;
@@ -908,11 +804,6 @@ begin
   Result := false;
 end;
 
-function ComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s: string): boolean;
-begin
-  Result := TComboBox_GetObjectCaption(_cmb, _Obj, _s);
-end;
-
 function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
   out _Obj: pointer; _FocusControl: boolean = false): boolean;
 begin
@@ -922,12 +813,6 @@ begin
     _Obj := _cmb.Items.Objects[_Idx]
   else if _FocusControl then
     _cmb.SetFocus;
-end;
-
-function ComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
-  out _Obj: pointer; _FocusControl: boolean = false): boolean;
-begin
-  Result := TComboBox_GetSelectedObject(_cmb, _Idx, _Obj, _FocusControl);
 end;
 
 function TComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
@@ -943,23 +828,12 @@ begin
     _cmb.SetFocus;
 end;
 
-function ComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
-  _FocusControl: boolean = false): boolean;
-begin
-  Result := TComboBox_GetSelected(_cmb, _Item, _FocusControl);
-end;
-
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
 begin
   _Idx := _lst.ItemIndex;
   Result := _Idx <> -1;
-  if REsult then
+  if Result then
     _Obj := _lst.Items.Objects[_Idx];
-end;
-
-function ListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
-begin
-  Result := TListBox_GetSelectedObject(_lst, _Idx, _Obj);
 end;
 
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
@@ -968,11 +842,6 @@ begin
   if Result = -1 then
     Result := _DefaultIdx;
   _Cmb.ItemIndex := Result;
-end;
-
-function ComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
-begin
-  Result := TComboBox_Select(_cmb, _Item, _DefaultIdx);
 end;
 
 type
@@ -991,10 +860,15 @@ begin
     _Caption := StripHotKey(Hack.Items[_Idx]);
 end;
 
-function RadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
-  out _Caption: string; _Idx: integer = -1): boolean;
+function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup;out _Idx: integer; out _Obj: pointer): boolean;
+var
+  Hack: TRadioGroupHack;
 begin
-  Result := TRadioGroup_GetItemCaption(_rg, _Caption, _Idx);
+  Hack := TRadioGroupHack(_rg);
+  _Idx := Hack.ItemIndex;
+  Result := _Idx <> -1;
+  if Result then
+    _Obj := Hack.Items.Objects[_Idx];
 end;
 
 function TRichEdit_WriteToString(_Re: TRichEdit): string;
@@ -1010,11 +884,6 @@ begin
   end;
 end;
 
-function RichEdit_WriteToString(_Re: TRichEdit): string;
-begin
-  Result := TRichEdit_WriteToString(_Re);
-end;
-
 procedure TRichEdit_ReadFromString(_Re: TRichEdit; const _S: string);
 var
   st: TMemoryStream;
@@ -1027,11 +896,6 @@ begin
   finally
     st.Free;
   end;
-end;
-
-procedure RichEdit_ReadFromString(_Re: TRichEdit; const _S: string);
-begin
-  TRichEdit_ReadFromString(_Re, _S);
 end;
 
 function TPicture_WriteToString(_Pic: TPicture): string;
@@ -1049,11 +913,6 @@ begin
   finally
     st.Free;
   end;
-end;
-
-function Picture_WriteToString(_Pic: TPicture): string;
-begin
-  Result := TPicture_WriteToString(_Pic);
 end;
 
 procedure TPicture_ReadFromString(_Pic: TPicture; const _S: string);
@@ -1084,11 +943,6 @@ begin
   finally
     st.Free;
   end;
-end;
-
-procedure Picture_ReadFromString(_Pic: TPicture; const _S: string);
-begin
-  TPicture_ReadFromString(_Pic, _S);
 end;
 
 function AddLabeledControl(_Idx: integer; const _Caption: string; _ctrl: TControl): TLabel;
@@ -1148,11 +1002,6 @@ begin
   end;
 end;
 
-function ScrollBarVisible(_Grid: TCustomGrid; _Code: integer): boolean;
-begin
-  Result := TStringGrid_IsScrollBarVisible(_Grid, _Code);
-end;
-
 function GetApplicationPath: string;
 begin
   Result := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
@@ -1163,19 +1012,9 @@ begin
   Result := _Re.Perform(EM_LINEINDEX, _Row, 0);
 end;
 
-function RichEdit_RowToCharIndex(_Re: TRichEdit; _Row: integer): integer;
-begin
-  Result := TRichEdit_RowToCharIndex(_Re, _Row);
-end;
-
 function TRichEdit_CharIndexToRow(_Re: TRichEdit; _Idx: integer): integer;
 begin
   Result := _Re.Perform(EM_LINEFROMCHAR, _Idx, 0);
-end;
-
-function RichEdit_CharIndexToRow(_Re: TRichEdit; _Idx: integer): integer;
-begin
-  Result := TRichEdit_CharIndexToRow(_Re, _Idx);
 end;
 
 function TRichEdit_GetCurrentRow(_Re: TRichEdit): integer;
@@ -1183,19 +1022,9 @@ begin
   Result := TRichEdit_CharIndexToRow(_Re, _Re.SelStart);
 end;
 
-function RichEdit_GetCurrentRow(_Re: TRichEdit): integer;
-begin
-  Result := TRichEdit_GetCurrentRow(_Re);
-end;
-
 procedure TRichEdit_ScrollToCaret(_Re: TRichEdit);
 begin
   _Re.Perform(EM_SCROLLCARET, 0, 0);
-end;
-
-procedure RichEdit_ScrollToCaret(_Re: TRichEdit);
-begin
-  TRichEdit_ScrollToCaret(_Re);
 end;
 
 procedure TRichEdit_WriteLn(_Re: TRichEdit; const _s: string; _Color: TColor = clBlack; _Style: TFontStyles = []);
@@ -1207,20 +1036,10 @@ begin
   _Re.SelAttributes.Style := [];
 end;
 
-procedure RichEdit_WriteLn(_Re: TRichEdit; const _s: string; _Color: TColor = clBlack; _Style: TFontStyles = []);
-begin
-  TRichEdit_WriteLn(_Re, _s, _Color, _Style);
-end;
-
 procedure TControl_Center(_Child: TControl; _Parent: TControl);
 begin
   _child.left := (_parent.width - _child.width) div 2;
   _child.top := (_parent.height - _child.height) div 2;
-end;
-
-procedure ControlCenter(_Child: TControl; _Parent: TControl);
-begin
-  TControl_Center(_Child, _Parent);
 end;
 
 procedure DisableProcessWindowsGhosting;
