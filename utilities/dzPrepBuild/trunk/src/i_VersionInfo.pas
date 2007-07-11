@@ -9,7 +9,7 @@ type
   ENoVersionInfo = class(Exception);
 
 type
-  IVersionInfo = interface
+  IVersionInfo = interface ['{C228DED6-C3B2-43C0-B061-28EA5D2EB93C}']
     function GetBuild: integer;
     procedure SetBuild(_Build: integer);
     function GetMajorVer: integer;
@@ -43,6 +43,8 @@ type
   //
     procedure Assign(const _VersionInfo: IVersionInfo);
     procedure UpdateFile;
+  //
+    function VerInfoFilename: string;
   //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
     property Build: integer read GetBuild write SetBuild;

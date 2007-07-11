@@ -16,6 +16,7 @@ type
   Tdm_BdsProjVersionInfo = class(TDataModule, IVersionInfo)
     ProjDoc: TXMLDocument;
   private
+    FProjectName: string;
     function GetChildNodeContent(_Parent: IXMLNode; const _NodeName, _AttrName: string): string;
     function GetVersionInfo(const _Name: string): string;
     function GetVersionInfoKey(const _Name: string): string;
@@ -62,6 +63,7 @@ type
   //
     procedure Assign(const _VersionInfo: IVersionInfo); reintroduce;
     procedure UpdateFile;
+    function VerInfoFilename: string;
   //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
     property Build: integer read GetBuild write SetBuild;
@@ -85,6 +87,8 @@ type
   public
     constructor Create(const _Project: string); reintroduce;
     destructor Destroy; override;
+    class function FilenameFor(const _Project: string): string;
+
   end;
 
 implementation
@@ -162,7 +166,8 @@ var
   DelphiPersonality: IXMLNode;
 begin
   inherited Create(nil);
-  FBdsProjFile := _Project + '.bdsproj';
+  FProjectName := _Project;
+  FBdsProjFile := VerInfoFilename;
   ProjDoc.FileName := FBdsProjFile;
   ProjDoc.Active := True;
   BorlandProject := ProjDoc.DocumentElement;
@@ -178,6 +183,11 @@ destructor Tdm_BdsProjVersionInfo.Destroy;
 begin
   FVersionInfo := nil;
   inherited;
+end;
+
+class function Tdm_BdsProjVersionInfo.FilenameFor(const _Project: string): string;
+begin
+  Result := _Project + '.bdsproj';
 end;
 
 function Tdm_BdsProjVersionInfo.GetAutoIncBuild: boolean;
@@ -346,6 +356,11 @@ end;
 procedure Tdm_BdsProjVersionInfo.UpdateFile;
 begin
   ProjDoc.SaveToFile(FBdsProjFile);
+end;
+
+function Tdm_BdsProjVersionInfo.VerInfoFilename: string;
+begin
+  Result := FilenameFor(FProjectName);
 end;
 
 // standard TInterfacedObject implementation of IInterface

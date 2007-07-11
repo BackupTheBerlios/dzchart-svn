@@ -20,7 +20,10 @@ type
      number should be increased for a build of any of these versions. }
   TCentralVersionInfo = class(TIniVersionInfo, IVersionInfo)
   private
+    FProjectName: string;
   protected
+    function VerInfoFilename: string;
+    //
     function ReadString(const _Section, _Ident: string; _Default: string): string; override;
     procedure WriteString(const _Section, _Ident: string; _Value: string); override;
   public
@@ -29,12 +32,14 @@ type
                           The constructor appends "_Version.ini" to this
                           name and tries to open the file }
     constructor Create(const _ProjectName: string);
+    class function FilenameFor(const _ProjectName: string): string;
   end;
 
 implementation
 
 uses
-  IniFiles;
+  IniFiles,
+  u_dzStringUtils;
 
 const
   VERSION_INFO_SECTION = 'Version Info';
@@ -44,25 +49,84 @@ const
 
 constructor TCentralVersionInfo.Create(const _ProjectName: string);
 begin
-  inherited Create(_ProjectName + '_Version.ini', VERSION_INFO_SECTION, VERSION_INFO_KEYS_SECTION);
+  FProjectName := _ProjectName;
+  inherited Create(VerInfoFilename, VERSION_INFO_SECTION, VERSION_INFO_KEYS_SECTION);
+end;
+
+class function TCentralVersionInfo.FilenameFor(const _ProjectName: string): string;
+begin
+  Result := _ProjectName + '_Version.ini';
 end;
 
 function TCentralVersionInfo.ReadString(const _Section, _Ident: string; _Default: string): string;
 var
   Redir: string;
   IniFile: TMemIniFile;
+  Filename: string;
+  Section: string;
 begin
   Redir := FIniFile.ReadString(_Section, 'redirect', '');
-  if Redir = '' then
-    IniFile := FIniFile
-  else begin
-
+  if Redir = '' then begin
+    Result := FIniFile.ReadString(_Section, _Ident, _Default);
+    if UStartsWith('redirect:', Result) then begin
+      Redir := Result;
+      Filename := GetDelStr(Redir, ',');
+      Section := GetDelStr(Redir, ',');
+      IniFile := TMemIniFile.Create(Filename);
+      try
+        Result := IniFile.ReadString(Section, Redir, _Default);
+      finally
+        IniFile.Free;
+      end;
+    end;
+  end else begin
+    Filename := GetDelStr(Redir, ',');
+    Section := Redir;
+    IniFile := TMemIniFile.Create(Filename);
+    try
+      Result := IniFile.ReadString(Section, _Ident, _Default);
+    finally
+      IniFile.Free;
+    end;
   end;
 end;
 
-procedure TCentralVersionInfo.WriteString(const _Section, _Ident: string; _Value: string);
+function TCentralVersionInfo.VerInfoFilename: string;
 begin
+  Result := FilenameFor(FProjectName);
+end;
 
+procedure TCentralVersionInfo.WriteString(const _Section, _Ident: string; _Value: string);
+var
+  Redir: string;
+  IniFile: TMemIniFile;
+  Filename: string;
+  Section: string;
+begin
+  Redir := FIniFile.ReadString(_Section, 'redirect', '');
+  if Redir = '' then begin
+    Redir := FIniFile.ReadString(_Section, _Ident, '');
+    if UStartsWith('redirect:', Redir) then begin
+      Filename := GetDelStr(Redir, ',');
+      Section := GetDelStr(Redir, ',');
+      IniFile := TMemIniFile.Create(Filename);
+      try
+        IniFile.WriteString(Section, Redir, _Value);
+      finally
+        IniFile.Free;
+      end;
+    end else
+      FIniFile.WriteString(_Section, _Ident, _Value);
+  end else begin
+    Filename := GetDelStr(Redir, ',');
+    Section := Redir;
+    IniFile := TMemIniFile.Create(Filename);
+    try
+      IniFile.WriteString(Section, _Ident, _Value);
+    finally
+      IniFile.Free;
+    end;
+  end;
 end;
 
 end.

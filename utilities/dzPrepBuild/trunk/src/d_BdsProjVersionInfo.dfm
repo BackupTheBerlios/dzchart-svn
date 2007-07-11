@@ -1,7 +1,5 @@
 object dm_BdsProjVersionInfo: Tdm_BdsProjVersionInfo
   OldCreateOrder = False
-  Left = 400
-  Top = 48
   Height = 150
   Width = 215
   object ProjDoc: TXMLDocument
