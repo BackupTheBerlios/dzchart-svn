@@ -36,11 +36,15 @@ implementation
 uses
   IniFiles;
 
+const
+  VERSION_INFO_SECTION = 'Version Info';
+  VERSION_INFO_KEYS_SECTION = 'Version Info Keys';
+
 { TCentralVersionInfo }
 
 constructor TCentralVersionInfo.Create(const _ProjectName: string);
 begin
-  inherited Create(_ProjectName + '_Version.ini');
+  inherited Create(_ProjectName + '_Version.ini', VERSION_INFO_SECTION, VERSION_INFO_KEYS_SECTION);
 end;
 
 function TCentralVersionInfo.ReadString(const _Section, _Ident: string; _Default: string): string;
