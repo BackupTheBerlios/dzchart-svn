@@ -9,11 +9,15 @@ uses
   u_IniVersionInfo;
 
 type
-  {: Tries to read a <projectname>.dof file, succeeds, if it exists and IncludeVerInfo is <> 0
-     @param Project is the project name (*.dpr file without extension)
-     @param VersionInfo is a TVersionInfoRec record which will be filled with the version info }
+  {: This is a specialized versoin of TIniVersionInfo which readds a
+     <projectname>.dof file, that was used by Delphi up to version 7. }
   TDofVersionInfo = class(TIniVersionInfo, IVersionInfo)
   public
+    {: Creates a TDofVersionInfo instance. Succeeds, if the file exists
+       and IncludeVerInfo is <> 0
+       @param _Projectname is the project name (*.dpr file without extension)
+       @raises ENoVersionInfo if the file does not exist or
+                              the value of [Version Info] IncludeVerInfo is not 1 }
     constructor Create(const _ProjectName: string);
   end;
 

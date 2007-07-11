@@ -16,6 +16,12 @@ type
     FIniFile: TMemIniFile;
     FInfoSection: string;
     FInfoKeysSection: string;
+    function ReadInteger(const _Section, _Ident: string; _Default: integer): integer; virtual;
+    procedure WriteInteger(const _Section, _Ident: string; _Value: integer); virtual;
+    function ReadString(const _Section, _Ident: string; _Default: string): string; virtual;
+    procedure WriteString(const _Section, _Ident: string; _Value: string); virtual;
+    function ReadBool(const _Section, _Ident: string; _Default: boolean): boolean; virtual;
+    procedure WriteBool(const _Section, _Ident: string; _Value: boolean); virtual;
   protected // implementation of IVersionInfo
     function GetBuild: integer;
     procedure SetBuild(_Build: integer);
@@ -67,6 +73,15 @@ type
     property ProductVersion: string read GetProductVersion write SetProductVersion;
     property Release: integer read GetRelease write SetRelease;
   public
+    {: Creates a TIniVersionInfo instance.
+       @param FullFilename is the full filename including path and extension of
+                           file to use
+       @param InfoSection is the name of the section that contains the general
+                          version info like Major/Minor version, Release etc.
+                          In a Delphi .dof file this section is called [Version Info]
+       @param InfoKeySection is the name of the section that contains the additional
+                             strings of the version information
+                             In a Delphi .dof file this section is called [Version Info Keys] }
     constructor Create(const _FullFilename: string; const _InfoSection: string;
       const _InfoKeysSection: string);
     destructor Destroy; override;
@@ -91,6 +106,40 @@ begin
   inherited;
 end;
 
+function TIniVersionInfo.ReadBool(const _Section, _Ident: string; _Default: boolean): boolean;
+begin
+  Result := 0 <> ReadInteger(_Section, _Ident, Ord(_Default));
+end;
+
+function TIniVersionInfo.ReadInteger(const _Section, _Ident: string; _Default: integer): integer;
+var
+  s: string;
+begin
+  s := ReadString(_Section, _Ident, IntToStr(_Default));
+  if not TryStrToInt(s, Result) then
+    Result := _Default;
+end;
+
+function TIniVersionInfo.ReadString(const _Section, _Ident: string; _Default: string): string;
+begin
+  Result := FIniFile.ReadString(_Section, _Ident, _Default);
+end;
+
+procedure TIniVersionInfo.WriteBool(const _Section, _Ident: string; _Value: boolean);
+begin
+  WriteInteger(_Section, _Ident, Ord(_Value));
+end;
+
+procedure TIniVersionInfo.WriteInteger(const _Section, _Ident: string; _Value: integer);
+begin
+  WriteString(_Section, _Ident, IntToStr(_Value));
+end;
+
+procedure TIniVersionInfo.WriteString(const _Section, _Ident: string; _Value: string);
+begin
+  FIniFile.WriteString(_Section, _Ident, _Value);
+end;
+
 procedure TIniVersionInfo.Assign(const _VersionInfo: IVersionInfo);
 begin
   AutoIncBuild := _VersionInfo.AutoIncBuild;
@@ -112,152 +161,152 @@ end;
 
 function TIniVersionInfo.GetAutoIncBuild: boolean;
 begin
-  Result := FIniFile.ReadInteger(FInfoSection, 'AutoIncBuild', 0) <> 0;
+  Result := ReadInteger(FInfoSection, 'AutoIncBuild', 0) <> 0;
 end;
 
 function TIniVersionInfo.GetBuild: integer;
 begin
-  Result := FIniFile.ReadInteger(FInfoSection, 'Build', 0);
+  Result := ReadInteger(FInfoSection, 'Build', 0);
 end;
 
 function TIniVersionInfo.GetComments: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'Comments', '');
+  Result := ReadString(FInfoKeysSection, 'Comments', '');
 end;
 
 function TIniVersionInfo.GetCompanyName: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'CompanyName', '');
+  Result := ReadString(FInfoKeysSection, 'CompanyName', '');
 end;
 
 function TIniVersionInfo.GetFileDescription: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'FileDescription', '');
+  Result := ReadString(FInfoKeysSection, 'FileDescription', '');
 end;
 
 function TIniVersionInfo.GetFileVersion: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'FileVersion', '');
+  Result := ReadString(FInfoKeysSection, 'FileVersion', '');
 end;
 
 function TIniVersionInfo.GetInternalName: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'InternalName', '');
+  Result := ReadString(FInfoKeysSection, 'InternalName', '');
 end;
 
 function TIniVersionInfo.GetLegalCopyright: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'LegalCopyright', '');
+  Result := ReadString(FInfoKeysSection, 'LegalCopyright', '');
 end;
 
 function TIniVersionInfo.GetLegalTrademarks: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'LegalTrademarks', '');
+  Result := ReadString(FInfoKeysSection, 'LegalTrademarks', '');
 end;
 
 function TIniVersionInfo.GetMajorVer: integer;
 begin
-  Result := FIniFile.ReadInteger(FInfoSection, 'MajorVer', 0);
+  Result := ReadInteger(FInfoSection, 'MajorVer', 0);
 end;
 
 function TIniVersionInfo.GetMinorVer: integer;
 begin
-  Result := FIniFile.ReadInteger(FInfoSection, 'MinorVer', 0);
+  Result := ReadInteger(FInfoSection, 'MinorVer', 0);
 end;
 
 function TIniVersionInfo.GetOriginalFilename: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'OriginalFilename', '');
+  Result := ReadString(FInfoKeysSection, 'OriginalFilename', '');
 end;
 
 function TIniVersionInfo.GetProductName: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'ProductName', '');
+  Result := ReadString(FInfoKeysSection, 'ProductName', '');
 end;
 
 function TIniVersionInfo.GetProductVersion: string;
 begin
-  Result := FIniFile.ReadString(FInfoKeysSection, 'ProductVersion', '');
+  Result := ReadString(FInfoKeysSection, 'ProductVersion', '');
 end;
 
 function TIniVersionInfo.GetRelease: integer;
 begin
-  Result := FIniFile.ReadInteger(FInfoSection, 'Release', 0);
+  Result := ReadInteger(FInfoSection, 'Release', 0);
 end;
 
 procedure TIniVersionInfo.SetAutoIncBuild(_AutoIncBuild: boolean);
 begin
-  FIniFile.WriteBool(FInfoSection, 'AutoIncBuild', _AutoIncBuild);
+  WriteBool(FInfoSection, 'AutoIncBuild', _AutoIncBuild);
 end;
 
 procedure TIniVersionInfo.SetBuild(_Build: integer);
 begin
-  FIniFile.WriteInteger(FInfoSection, 'Build', _Build);
+  WriteInteger(FInfoSection, 'Build', _Build);
 end;
 
 procedure TIniVersionInfo.SetComments(const _Comments: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'Comments', _Comments);
+  WriteString(FInfoKeysSection, 'Comments', _Comments);
 end;
 
 procedure TIniVersionInfo.SetCompanyName(_CompanyName: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'CompanyName', _CompanyName);
+  WriteString(FInfoKeysSection, 'CompanyName', _CompanyName);
 end;
 
 procedure TIniVersionInfo.SetFileDescription(_FileDescription: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'FileDescription', _FileDescription);
+  WriteString(FInfoKeysSection, 'FileDescription', _FileDescription);
 end;
 
 procedure TIniVersionInfo.SetFileVersion(_FileVersion: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'FileVersion', _FileVersion);
+  WriteString(FInfoKeysSection, 'FileVersion', _FileVersion);
 end;
 
 procedure TIniVersionInfo.SetInternalName(_InternalName: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'InternalName', _InternalName);
+  WriteString(FInfoKeysSection, 'InternalName', _InternalName);
 end;
 
 procedure TIniVersionInfo.SetLegalCopyright(_LegalCopyright: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'LegalCopyright', _LegalCopyright);
+  WriteString(FInfoKeysSection, 'LegalCopyright', _LegalCopyright);
 end;
 
 procedure TIniVersionInfo.SetLegalTrademarks(_LegalTrademarks: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'LegalTrademarks', _LegalTrademarks);
+  WriteString(FInfoKeysSection, 'LegalTrademarks', _LegalTrademarks);
 end;
 
 procedure TIniVersionInfo.SetMajorVer(_MajorVer: integer);
 begin
-  FIniFile.WriteInteger(FInfoSection, 'MajorVer', _MajorVer);
+  WriteInteger(FInfoSection, 'MajorVer', _MajorVer);
 end;
 
 procedure TIniVersionInfo.SetMinorVer(_MinorVer: integer);
 begin
-  FIniFile.WriteInteger(FInfoSection, 'MinorVer', _MinorVer);
+  WriteInteger(FInfoSection, 'MinorVer', _MinorVer);
 end;
 
 procedure TIniVersionInfo.SetOriginalFilename(_OriginalFilename: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'OriginalFilename', _OriginalFilename);
+  WriteString(FInfoKeysSection, 'OriginalFilename', _OriginalFilename);
 end;
 
 procedure TIniVersionInfo.SetProductName(_ProductName: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'ProductName', _ProductName);
+  WriteString(FInfoKeysSection, 'ProductName', _ProductName);
 end;
 
 procedure TIniVersionInfo.SetProductVersion(_ProductVersion: string);
 begin
-  FIniFile.WriteString(FInfoKeysSection, 'ProductVersion', _ProductVersion);
+  WriteString(FInfoKeysSection, 'ProductVersion', _ProductVersion);
 end;
 
 procedure TIniVersionInfo.SetRelease(_Release: integer);
 begin
-  FIniFile.WriteInteger(FInfoSection, 'Release', _Release);
+  WriteInteger(FInfoSection, 'Release', _Release);
 end;
 
 procedure TIniVersionInfo.UpdateFile;

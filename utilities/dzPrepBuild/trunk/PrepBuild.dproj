@@ -28,90 +28,7 @@
     <Borland.Personality>Delphi.Personality</Borland.Personality>
     <Borland.ProjectType />
     <BorlandProject>
-<BorlandProject xmlns=""> <Delphi.Personality>   <Parameters>
-      <Parameters Name="RunParams">testproject</Parameters>
-      <Parameters Name="UseLauncher">False</Parameters>
-      <Parameters Name="LoadAllSymbols">True</Parameters>
-      <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-    </Parameters>
-    <VersionInfo>
-      <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
-      <VersionInfo Name="AutoIncBuild">True</VersionInfo>
-      <VersionInfo Name="MajorVer">1</VersionInfo>
-      <VersionInfo Name="MinorVer">1</VersionInfo>
-      <VersionInfo Name="Release">0</VersionInfo>
-      <VersionInfo Name="Build">52</VersionInfo>
-      <VersionInfo Name="Debug">False</VersionInfo>
-      <VersionInfo Name="PreRelease">False</VersionInfo>
-      <VersionInfo Name="Special">False</VersionInfo>
-      <VersionInfo Name="Private">False</VersionInfo>
-      <VersionInfo Name="DLL">False</VersionInfo>
-      <VersionInfo Name="Locale">1033</VersionInfo>
-      <VersionInfo Name="CodePage">1252</VersionInfo>
-    </VersionInfo>
-    <VersionInfoKeys>
-      <VersionInfoKeys Name="FileVersion">1.1.0.52</VersionInfoKeys>
-      <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
-      <VersionInfoKeys Name="CompanyName">dummzeuch.de</VersionInfoKeys>
-      <VersionInfoKeys Name="FileDescription">increment build number and create rc file</VersionInfoKeys>
-      <VersionInfoKeys Name="InternalName">IncBuildNo</VersionInfoKeys>
-      <VersionInfoKeys Name="LegalCopyright">copyright 2005-2006 by Thomas Mueller</VersionInfoKeys>
-      <VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
-      <VersionInfoKeys Name="OriginalFilename">IncBuildNo.exe</VersionInfoKeys>
-      <VersionInfoKeys Name="ProductName">IncBuildNo</VersionInfoKeys>
-      <VersionInfoKeys Name="Comments">this is the comment</VersionInfoKeys>
-    </VersionInfoKeys>
-    <Excluded_Packages>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="RunParams">testproject</Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">True</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">1</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">52</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1033</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.1.0.52</VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="CompanyName">dummzeuch.de</VersionInfoKeys><VersionInfoKeys Name="FileDescription">increment build number and create rc file</VersionInfoKeys><VersionInfoKeys Name="InternalName">IncBuildNo</VersionInfoKeys><VersionInfoKeys Name="LegalCopyright">copyright 2005-2006 by Thomas Mueller</VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename">IncBuildNo.exe</VersionInfoKeys><VersionInfoKeys Name="ProductName">IncBuildNo</VersionInfoKeys><VersionInfoKeys Name="Comments">this is the comment</VersionInfoKeys></VersionInfoKeys><Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dclnet100.bpl">Borland Internet Components</Excluded_Packages>
       <Excluded_Packages Name="C:\Program Files\Borland\BDS\4.0\Bin\dclbde100.bpl">Borland BDE DB Components</Excluded_Packages>
       <Excluded_Packages Name="C:\Program Files\Borland\BDS\4.0\Bin\dbx100.bpl">Borland SQL Explorer UI Package</Excluded_Packages>
@@ -122,11 +39,7 @@
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcltee100.bpl">TeeChart Components</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcldbxcds100.bpl">Borland SimpleDataset Component (DBX)</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dclie100.bpl">Internet Explorer Components</Excluded_Packages>
-    </Excluded_Packages>
-    <Source>
-      <Source Name="MainSource">PrepBuild.dpr</Source>
-    </Source>
-  </Delphi.Personality> </BorlandProject></BorlandProject>
+    </Excluded_Packages><Source><Source Name="MainSource">PrepBuild.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
   </ProjectExtensions>
   <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
   <ItemGroup>
@@ -137,6 +50,7 @@
       <Form>dm_BdsProjVersionInfo</Form>
     </DCCReference>
     <DCCReference Include="i_VersionInfo.pas" />
+    <DCCReference Include="u_CentralIniVersionInfo.pas" />
     <DCCReference Include="u_DofVersionInfo.pas" />
     <DCCReference Include="u_IncBuildNoMain.pas" />
     <DCCReference Include="u_IniVersionInfo.pas" />
