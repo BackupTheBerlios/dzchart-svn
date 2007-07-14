@@ -7,7 +7,7 @@ interface
 
 uses
   u_dzTranslator,
-  u_dzCmdLineParser;
+  u_dzGetOpt;
 
 type
   {: An "application" class for console programs.
@@ -29,7 +29,7 @@ type
     {: stores the exit code }
     FExitCode: integer;
     {: Created in InitCmdLineParser, allows reading the parameters }
-    FCmdLineParser: TCmdlineParser;
+    FGetOpt: TGetOpt;
     {: Initializes FCmdLineParser with a Parser, should be overridden }
     procedure InitCmdLineParser; virtual;
     {: Zeigt eine vom FCmdLineParser generierte Kurzhilfe zum Programm an und
@@ -95,7 +95,7 @@ end;
 
 destructor TDefaultMain.Destroy;
 begin
-  FreeAndNil(FCmdLineParser);
+  FreeAndNil(FGetOpt);
   LogInfo('Program finished.');
   inherited;
 end;
@@ -114,46 +114,35 @@ begin
     s := Format(_('Error: %s') + #13#10#13#10, [_Error]);
     LogError(_Error);
   end;
-//  MessageDlg(s + Format(
-//    _('Synopsis: %s') + #13#10#13#10 +
-//    _('Parameters:') + #13#10 +
-//    '%s'#13#10#13#10 +
-//    _('Options:') + #13#10 +
-//    '%s',
-//    [fCmdLineParser.GetCmdLineDesc, fCmdLineParser.GetParamHelp, fCmdLineParser.GetOptionHelp]),
-//    mtError, [mbOK], 0);
+  MessageDlg(s + Format(
+    _('Synopsis: %s %s') + #13#10#13#10 +
+    _('Parameters:') + #13#10 +
+    '%s'#13#10#13#10 +
+    _('Options:') + #13#10 +
+    '%s',
+    [FGetOpt.ProgName, FGetOpt.GetCmdLineDesc, FGetOpt.GetParamHelp, FGetOpt.GetOptionHelp]),
+    mtError, [mbOK], 0);
   FExitCode := 1;
   SysUtils.Abort;
 end;
 
 procedure TDefaultMain.InitCmdLineParser;
 begin
-  FCmdLineParser := TCmdLineParser.Create();
-//  FCmdLineParser.RegisterHelpOptions;
+  FGetOpt := TGetOpt.Create();
+  FGetOpt.RegisterHelpOptions;
 end;
 
 procedure TDefaultMain.ParseCmdLine;
-var
-  Options: TStringList;
-  Params: TStringList;
 begin
-  Params := nil;
-  Options := TStringList.Create;
+  LogDebug('Cmdline: ' + System.CmdLine);
   try
-    Params := TStringList.Create;
-    LogDebug('Cmdline: ' + System.CmdLine);
-    try
-      FCmdLineParser.Execute(Options, Params);
-    except
-      on e: exception do
-        Usage(e.Message);
-    end;
-//    if FCmdLineParser.HelpOptionFound then
-//      Usage;
-  finally
-    Params.Free;
-    Options.Free;
+    FGetOpt.Parse;
+  except
+    on e: exception do
+      Usage(e.Message);
   end;
+  if FGetOpt.HelpOptionFound then
+    Usage;
 end;
 
 function TDefaultMain.Execute: integer;
@@ -192,7 +181,7 @@ begin
     // Exception handling findet im MainObj statt, was bis hierher kommt,
     // kann man eh nicht mehr behandeln - aber evt. Loggen ? AS
     on e: Exception do begin
-      LogError('Exception in function Main: '+e.Message+' '+e.ClassName);
+      LogError('Exception in function Main: ' + e.Message + ' ' + e.ClassName);
     end;
   end;
 end;
