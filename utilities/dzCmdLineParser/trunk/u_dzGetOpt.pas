@@ -102,6 +102,8 @@ type
     {: the program's name as either passed to the constructor or read from
        ParamStr(0). }
     property ProgName: string read FProgName;
+    property ParamsFoundList: TParamFoundList read FParamsFoundList;
+    property OptionsFoundList: TOptionFoundList read FOptionsFoundList;
   end;
 
 implementation
