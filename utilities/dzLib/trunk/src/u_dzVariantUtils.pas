@@ -120,6 +120,12 @@ function Var2DateTimeEx(const _v: variant; const _Source: string): TDateTime;
    @returns(an ISO format DateTime string of v or NullValue if v can not be converted) }
 function Var2DateTimeStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
+{: Converts a variant to an ISO format Date string (yyyy-mm-dd)
+   @param(v Variant value to convert)
+   @param(NullValue String value to return if v is empty or null)
+   @returns(an ISO format Date string of v or NullValue if v can not be converted) }
+function Var2DateStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
+
 {: Converts a variant to a string
    If v is null or empty, it returns false.
    @param(v Variant value to convert)
@@ -199,19 +205,17 @@ end;
 
 function VarIsInteger(_v: variant): boolean;
 begin
-  Result := FindVarData(_V)^.VType in [varSmallInt, varInteger, varShortInt,
-    varByte, varWord];
+  Result := VarIsType(_V, [varSmallInt, varInteger, varShortInt, varByte, varWord]);
 end;
 
 function VarIsLongWord(_v: variant): boolean;
 begin
-  Result := FindVarData(_V)^.VType in [varByte, varWord, varLongWord];
+  Result := VarIsType(_V, [varByte, varWord, varLongWord]);
 end;
 
 function VarIsInt64(_v: variant): boolean;
 begin
-  Result := FindVarData(_V)^.VType in [varSmallInt, varInteger, varShortInt,
-    varByte, varWord, varLongWord, varInt64];
+  Result := VarIsType(_V, [varSmallInt, varInteger, varShortInt, varByte, varWord, varLongWord, varInt64]);
 end;
 
 function TryVar2Int(const _v: variant; out _Value: integer): boolean;
@@ -280,6 +284,21 @@ begin
     try
       Value := _v;
       Result := FormatDateTime('yyyy-mm-dd hh:nn:ss', Value);
+    except
+      Result := _NullValue;
+    end;
+end;
+
+function Var2DateStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
+var
+  Value: TDateTime;
+begin
+  if VarIsNull(_v) or VarIsEmpty(_v) then
+    Result := _NullValue
+  else
+    try
+      Value := _v;
+      Result := FormatDateTime('yyyy-mm-dd', Value);
     except
       Result := _NullValue;
     end;
