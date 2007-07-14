@@ -5,6 +5,7 @@ interface
 uses
   Windows,
   SysUtils,
+  StrUtils,
   u_dzDefaultMain,
   u_dzGetOpt,
   i_VersionInfo;
@@ -12,7 +13,8 @@ uses
 type
   TPrepBuildMain = class(TDefaultMain)
   private
-    function HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo): integer;
+    function HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo; const _Project: string): integer;
+    procedure WriteRcFile(const _Project: string; _VersionInfo: IVersionInfo; const _Icon: string);
   protected
     procedure InitCmdLineParser; override;
     function doExecute: integer; override;
@@ -37,13 +39,61 @@ begin
   SysUtils.DateTimeToString(Result, _Format, _dt);
 end;
 
-function TPrepBuildMain.HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo): integer;
+procedure TPrepBuildMain.WriteRcFile(const _Project: string; _VersionInfo: IVersionInfo; const _Icon: string);
+var
+  t: TextFile;
+begin
+  Assignfile(t, ChangeFileExt(_Project, '.rc'));
+  Rewrite(t);
+  try
+    WriteLn(t, {    } 'LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US');
+    WriteLn(t);
+    WriteLn(t, {    } '1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE');
+    WriteLn(t, Format('FILEVERSION %d, %d, %d, %d', [_VersionInfo.MajorVer, _VersionInfo.MinorVer, _VersionInfo.Release, _VersionInfo.Build]));
+    WriteLn(t, Format('PRODUCTVERSION %d, %d, %d, %d',
+      [_VersionInfo.MajorVer, _VersionInfo.MinorVer, _VersionInfo.Release, _VersionInfo.Build]));
+    WriteLn(t, {    } 'FILEFLAGSMASK VS_FFI_FILEFLAGSMASK');
+    WriteLn(t, {    } 'FILEOS VOS__WINDOWS32');
+    WriteLn(t, {    } 'FILETYPE VFT_APP');
+    WriteLn(t, {    } '{');
+    WriteLn(t, {    } ' BLOCK "StringFileInfo"');
+    WriteLn(t, {    } ' {');
+    WriteLn(t, {    } '  BLOCK "040904E4"');
+    WriteLn(t, {    } '  {');
+    WriteLn(t, Format('   VALUE "CompanyName", "%s\000"', [_VersionInfo.CompanyName]));
+    WriteLn(t, Format('   VALUE "FileDescription", "%s\000"', [_VersionInfo.FileDescription]));
+    WriteLn(t, Format('   VALUE "FileVersion", "%s\000"', [_VersionInfo.FileVersion]));
+    WriteLn(t, Format('   VALUE "InternalName", "%s\000"', [_VersionInfo.InternalName]));
+    WriteLn(t, Format('   VALUE "LegalCopyright", "%s\000"', [_VersionInfo.LegalCopyright]));
+    WriteLn(t, Format('   VALUE "LegalTrademarks", "%s\000"', [_VersionInfo.LegalTrademarks]));
+    WriteLn(t, Format('   VALUE "OriginalFilename", "%s\000"', [_VersionInfo.OriginalFilename]));
+    WriteLn(t, Format('   VALUE "ProductName", "%s\000"', [_VersionInfo.ProductName]));
+    WriteLn(t, Format('   VALUE "ProductVersion", "%s\000"', [_VersionInfo.ProductVersion]));
+    WriteLn(t, Format('   VALUE "Comments", "%s\000"', [_VersionInfo.Comments]));
+    WriteLn(t, {    } '  }');
+    WriteLn(t, {    } ' }');
+    WriteLn(t, {    } ' BLOCK "VarFileInfo"');
+    WriteLn(t, {    } ' {');
+    WriteLn(t, {    } '  VALUE "Translation", 1033, 1252');
+    WriteLn(t, {    } ' }');
+    WriteLn(t, {    } '}');
+    if _Icon <> '' then begin
+      WriteLn(t);
+      WriteLn(t, Format('MAINICON ICON LOADONCALL MOVEABLE DISCARDABLE IMPURE %s.ico', [_Icon]));
+    end;
+  finally
+    Close(t);
+  end;
+end;
+
+function TPrepBuildMain.HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo; const _Project: string): integer;
 const
   DZ_MY_DOCUMENTS = 'dzMyDocuments';
   DZ_DATE = 'dzDate';
   DZ_TIME = 'dzTime';
   DZ_DATE_TIME = 'dzDateTime';
   DZ_VERSION = 'dzVersion.';
+  DZ_PROJECT = 'dzProject';
 var
   MyDoc: string;
   Executor: TExecutor;
@@ -60,6 +110,9 @@ begin
     Executor.Environment.Values[DZ_DATE] := DateTimeToString('yyyy-mm-dd', dt);
     Executor.Environment.Values[DZ_TIME] := DateTimeToString('hh-nn-ss', dt);
     Executor.Environment.Values[DZ_DATE_TIME] := DateTimeToString('yyyy-mm-dd_hh-nn-ss', dt);
+
+    if _Project <> '' then
+      Executor.Environment.Values[DZ_PROJECT] := _Project;
 
     if Assigned(_VersionInfo) then begin
       Executor.Environment.Values[DZ_VERSION + 'MajorVer'] := IntToStr(_VersionInfo.MajorVer);
@@ -85,6 +138,17 @@ begin
   end;
 end;
 
+function UnquoteStr(const _s: string): string;
+var
+  s: PChar;
+  p: PChar;
+begin
+  s := StrNew(PChar(_s));
+  p := s;
+  Result := AnsiExtractQuotedStr(p, '"');
+  StrDispose(s);
+end;
+
 function TPrepBuildMain.doExecute: integer;
 var
   Param: string;
@@ -92,20 +156,22 @@ var
   VersionInfo: IVersionInfo;
   IntValue: integer;
   IconFile: string;
+  Project: string;
 begin
-  if FGetOpt.OptionPassed('ReadDof', Param) then
-    ParamVersionInfo := TDofVersionInfo.Create(Param);
+  Project := '';
+  if FGetOpt.OptionPassed('ReadDof', Project) then
+    ParamVersionInfo := TDofVersionInfo.Create(Project);
 
-  if FGetOpt.OptionPassed('ReadBdsProj', Param) then begin
+  if FGetOpt.OptionPassed('ReadBdsProj', Project) then begin
     if Assigned(ParamVersionInfo) then
       raise Exception.Create('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni');
-    ParamVersionInfo := Tdm_BdsProjVersionInfo.Create(Param);
+    ParamVersionInfo := Tdm_BdsProjVersionInfo.Create(Project);
   end;
 
-  if FGetOpt.OptionPassed('ReadIni', Param) then begin
+  if FGetOpt.OptionPassed('ReadIni', Project) then begin
     if Assigned(ParamVersionInfo) then
       raise Exception.Create('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni');
-    ParamVersionInfo := TCentralVersionInfo.Create(Param);
+    ParamVersionInfo := TCentralVersionInfo.Create(Project);
   end;
 
   VersionInfo := TDummyVersionInfo.Create;
@@ -139,31 +205,31 @@ begin
   end;
 
   if FGetOpt.OptionPassed('FileDesc', Param) then
-    VersionInfo.FileDescription := Param;
+    VersionInfo.FileDescription := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('InternalName', Param) then
-    VersionInfo.InternalName := Param;
+    VersionInfo.InternalName := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('OriginalName', Param) then
-    VersionInfo.OriginalFilename := Param;
+    VersionInfo.OriginalFilename := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('Product', Param) then
-    VersionInfo.ProductName := Param;
+    VersionInfo.ProductName := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('ProductVersion', Param) then
-    VersionInfo.ProductVersion := Param;
+    VersionInfo.ProductVersion := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('Company', Param) then
-    VersionInfo.CompanyName := Param;
+    VersionInfo.CompanyName := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('Copyright', Param) then
-    VersionInfo.LegalCopyright := Param;
+    VersionInfo.LegalCopyright := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('Trademark', Param) then
-    VersionInfo.LegalTrademarks := Param;
+    VersionInfo.LegalTrademarks := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('Comments', Param) then
-    VersionInfo.Comments := Param;
+    VersionInfo.Comments := UnquoteStr(Param);
 
   if FGetOpt.OptionPassed('IncBuild') then
     VersionInfo.Build := VersionInfo.Build + 1;
@@ -189,12 +255,11 @@ begin
   if not FGetOpt.OptionPassed('Icon', IconFile) then
     IconFile := '';
 
-  if FGetOpt.OptionPassed('WriteRc', Param) then begin
-    //
-  end;
+  if FGetOpt.OptionPassed('WriteRc', Param) then
+    WriteRcFile(Param, VersionInfo, IconFile);
 
   if FGetOpt.OptionPassed('Exec', Param) then
-    HandleExecOption(Param, VersionInfo);
+    HandleExecOption(Param, VersionInfo, Project);
 
   Result := 0;
 end;

@@ -1,8 +1,10 @@
 @echo off
-echo %dzDate%
-echo %dzTime%
-echo %dzDateTime%
-echo %dzMyDocuments%
+echo dzDate=%dzDate%
+echo dzTime=%dzTime%
+echo dzDateTime=%dzDateTime%
+echo dzMyDocuments=%dzMyDocuments%
+
+echo dzProject=%dzProject%
 
 echo NajorVer=%dzVersion.MajorVer%
 echo MinorVer=%dzVersion.MinorVer%
