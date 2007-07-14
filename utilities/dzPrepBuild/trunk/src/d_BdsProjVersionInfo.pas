@@ -187,7 +187,7 @@ end;
 
 class function Tdm_BdsProjVersionInfo.FilenameFor(const _Project: string): string;
 begin
-  Result := _Project + '.bdsproj';
+  Result := ChangeFileExt(_Project, '.bdsproj');
 end;
 
 function Tdm_BdsProjVersionInfo.GetAutoIncBuild: boolean;

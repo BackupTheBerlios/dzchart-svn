@@ -22,7 +22,7 @@ type
   private
     FProjectName: string;
   protected
-    function VerInfoFilename: string;
+    function VerInfoFilename: string; override;
     //
     function ReadString(const _Section, _Ident: string; _Default: string): string; override;
     procedure WriteString(const _Section, _Ident: string; _Value: string); override;
