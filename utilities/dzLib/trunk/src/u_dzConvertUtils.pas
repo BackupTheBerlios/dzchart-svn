@@ -167,7 +167,23 @@ function TryStr2Float(_s: string; out _flt: double; _DecSeparator: char = '.'): 
    @param(flt is an extended floating point value)
    @param(DecSeparator is the decimal separator to use)
    @returns(a string representation of the floating point value) }
-function Float2Str(_flt: extended; _DecSeparator: char = '.'): string;
+function Float2Str(_flt: extended; _DecSeparator: char = '.'): string; overload;
+
+{: Converts a floating point number to a string using the given with, number of decimals
+   and a '.' as decimal separator, if width is too small the smallest representation possible
+   will be used (eg. Float2Str(5.24, 3, 2, '.') = '5.24')
+   @param flt is an extended floating point value
+   @param Width is the total number of digits (including the decimal separator
+   @param Decimals is the number of decimals to use
+   @returns a string representation of the floating point value }
+function Float2Str(_flt: extended; _Width, _Decimals: integer): string; overload;
+
+{: Converts a floating point number to a string using the given number of decimals
+   and a '.' as decimal separator.
+   @param flt is an extended floating point value
+   @param Decimals is the number of decimals to use
+   @returns a string representation of the floating point value }
+function Float2Str(_flt: extended; _Decimals: integer): string; overload;
 
 implementation
 
@@ -396,6 +412,16 @@ begin
   FormatSettings := DZ_FORMAT_DECIMAL_POINT;
   FormatSettings.DecimalSeparator := _DecSeparator;
   Result := SysUtils.FloatToStr(_Flt, FormatSettings);
+end;
+
+function Float2Str(_flt: extended; _Width, _Decimals: integer): string;
+begin
+  Str(_flt: _Width: _Decimals, Result);
+end;
+
+function Float2Str(_flt: extended; _Decimals: integer): string;
+begin
+  Str(_Flt: 0: _Decimals, Result);
 end;
 
 function Str2Int(_s: string; _Default: integer): integer;
