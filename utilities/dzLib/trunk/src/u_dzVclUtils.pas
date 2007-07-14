@@ -265,7 +265,7 @@ function TRadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
    @param Obj is the value of the object pointer of the selected item, only valid
           if the function returns true
    @returns true, if these values are valid }
-function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup;out _Idx: integer; out _Obj: pointer): boolean;
+function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup; out _Idx: integer; out _Obj: pointer): boolean;
 
 {: Writes a TPicture object to a String. The Format is
    <pictureformat>#26<picturedata> }
@@ -318,6 +318,9 @@ function GetApplicationPath: string;
 
 {: Center the child on the parent}
 procedure TControl_Center(_Child: TControl; _Parent: TControl);
+
+{: sets the Checked property without firing an OnClick event }
+procedure TCheckBox_SetCheckedNoOnClick(_Chk: TCustomCheckBox; _Checked: boolean);
 
 {: switches off "Windows Ghosting" in Win 2000 and XP
   This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
@@ -860,7 +863,7 @@ begin
     _Caption := StripHotKey(Hack.Items[_Idx]);
 end;
 
-function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup;out _Idx: integer; out _Obj: pointer): boolean;
+function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup; out _Idx: integer; out _Obj: pointer): boolean;
 var
   Hack: TRadioGroupHack;
 begin
@@ -1042,6 +1045,23 @@ begin
   _child.top := (_parent.height - _child.height) div 2;
 end;
 
+type
+  TCheckBox = class(TCustomCheckBox)
+  end;
+
+procedure TCheckBox_SetCheckedNoOnClick(_Chk: TCustomCheckBox; _Checked: boolean);
+var
+  Chk: TCheckBox;
+begin
+  Chk := TCheckBox(_Chk);
+  Chk.ClicksDisabled := true;
+  try
+    Chk.Checked := _Checked;
+  finally
+    Chk.ClicksDisabled := false;
+  end;
+end;
+
 procedure DisableProcessWindowsGhosting;
 var
   DisableProcessWindowsGhostingProc: procedure;
@@ -1206,13 +1226,12 @@ begin
 end;
 
 procedure TMemo_ScrollToEnd(_Memo: TMemo);
-Var
+var
   cnt: Integer;
-Begin
+begin
   cnt := SendMessage(_Memo.Handle, EM_GETLINECOUNT, 0, 0);
   SendMessage(_Memo.Handle, EM_LINESCROLL, 0, cnt);
-End;
-
+end;
 
 end.
 
