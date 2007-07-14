@@ -399,6 +399,8 @@ type
                         the same directory as the original file is used }
     class procedure BackupFile(const _Filename: string; _BackupDir: string = '');
     class function GetFileInfo(const _Filename: string): TFileInfoRec;
+    {: Returns the free space (in bytes) on the disk with the given drive letter }
+    class function DiskFree(_DriveLetter: char): Int64;
   end;
 
 type
@@ -683,6 +685,29 @@ begin
     Result.Timestamp := FileDateToDateTime(sr.Time);
   finally
     FindClose(sr);
+  end;
+end;
+
+class function TFileSystem.DiskFree(_DriveLetter: char): Int64;
+var
+  ErrorMode: Cardinal;
+begin
+  if _DriveLetter in ['a'..'z'] then
+    _DriveLetter := chr(Ord(_DriveLetter) - Ord('a') + Ord('A'));
+
+  if not (_DriveLetter in ['A'..'Z']) then
+    Result := -1
+  else begin
+    ErrorMode := SetErrorMode(SEM_FAILCRITICALERRORS);
+    try
+      try
+        Result := SysUtils.DiskFree(Ord(_DriveLetter) - Ord('A') + 1);
+      except
+        Result := -1;
+      end;
+    finally
+      SetErrorMode(ErrorMode);
+    end;
   end;
 end;
 
