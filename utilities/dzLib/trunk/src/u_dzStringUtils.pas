@@ -4,7 +4,7 @@
    @author   twm }
 unit u_dzStringUtils;
 
-{$i jedi.inc}
+{$I jedi.inc}
 
 interface
 
@@ -225,6 +225,9 @@ function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWo
    @returns true, if a word could be extracted, false otherwise }
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet; out _FirstWord: string): boolean; overload;
 
+{: extracts the first N characters of a string }
+function ExtractFirstN(var _s: string; _N: integer): string;
+
 {: Split string s into the list of substrings delimited by delimter
    NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
    into two words (which you would expect), but also 'abc'#9#9'def' is two words
@@ -391,6 +394,12 @@ begin
     _FirstWord := Copy(_s, Start, Ende - Start);
     _s := TailStr(_s, Ende + 1);
   end;
+end;
+
+function ExtractFirstN(var _s: string; _N: integer): string;
+begin
+  Result := Copy(_s, 1, _N);
+  _s := Copy(_s, _N + 1);
 end;
 
 function SplitString(_sl: TStrings; _s: string; const _Delimiter: string): TStrings;
