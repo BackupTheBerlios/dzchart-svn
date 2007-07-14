@@ -324,7 +324,7 @@ begin
     TCmdLineParser.Execute(System.CmdLine, Options, Params);
     // delete the first "parameter", it is the executable name
     Params.Delete(0);
-    EvaluateCmdLine(Params, Options);
+    EvaluateCmdLine(Options, Params);
   finally
     Options.Free;
     Params.Free;

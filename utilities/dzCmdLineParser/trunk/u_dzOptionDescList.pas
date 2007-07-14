@@ -100,7 +100,7 @@ begin
   if _Name = '' then
     raise EOptionName.Create('Option name cannot be empty.');
   { TODO -otwm : Maybe '$', '#' and some other chars should be allowed }
-  if not (_Name[1] in ['a'..'z', 'A'..'Z', '0'..'9']) then
+  if not (_Name[1] in ['a'..'z', 'A'..'Z', '0'..'9', '?']) then
     raise EOptionName.Create('Option name must start with an alphanumeric character.');
   for i := 2 to Length(_Name) do
     if not (_Name[i] in ['a'..'z', 'A'..'Z', '0'..'9', '-', '_']) then
