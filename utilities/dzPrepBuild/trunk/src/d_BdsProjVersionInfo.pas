@@ -270,7 +270,7 @@ begin
   if _AutoIncBuild then
     SetVersionInfo('AutoIncBuild', 'True')
   else
-    SetVersionInfo('AutoIncBuild', 'Frue')
+    SetVersionInfo('AutoIncBuild', 'False')
 end;
 
 procedure Tdm_BdsProjVersionInfo.SetBuild(_Build: integer);
