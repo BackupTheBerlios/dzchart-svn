@@ -203,12 +203,12 @@ var
   Option: TOptionFound;
   PrimaryName: string;
 begin
-  if not FOptionNameList.Search(PChar(_Name), Idx) then
+  if not FOptionNameList.Find(PChar(_Name), Idx) then
     raise EUnknownOption.CreateFmt('%s is not a registered option.', [_Name]);
 
   Result := 0;
   PrimaryName := FOptionNameList[Idx].GetPrimaryName;
-  if FOptionsFoundList.Search(PrimaryName, Idx) then begin
+  if FOptionsFoundList.Find(PrimaryName, Idx) then begin
     Option := FOptionsFoundList[Idx];
     while Assigned(Option) and (Option.GetPrimaryName = PrimaryName) do begin
       Inc(Result);
@@ -303,7 +303,7 @@ begin
 
   FoundIdx := 0;
   while FoundIdx < _Options.Count do begin
-    if not FOptionNameList.Search(_Options.Names[FoundIdx], OptName) then
+    if not FOptionNameList.Find(_Options.Names[FoundIdx], OptName) then
       raise EUnknownOption.CreateFmt('Option %s is unknown', [_Options.Names[Foundidx]]);
     s := _Options.ValueFromIndex[FoundIdx];
     OptDesc := OptName.OptionDesc;
