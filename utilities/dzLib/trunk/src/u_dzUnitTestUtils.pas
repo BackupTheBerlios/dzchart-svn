@@ -52,9 +52,6 @@ uses
   DateUtils,
   u_dzVariantUtils;
 
-resourcestring
-  StrSexpectedVariantT = '%sexpected variant type: <%s> but was: <%s>';
-
   { TdzTestCase }
 
 procedure TdzTestCase.CheckVariantIsInt64(_Value: variant; _Msg: string);
@@ -179,7 +176,7 @@ function TdzTestCase.NotVarTypeErrorMessage(const _Expected: string; const _Actu
 begin
   if (_Msg <> '') then
     _Msg := _Msg + ', ';
-  Result := Format(StrSexpectedVariantT, [_Msg, _Expected, _Actual])
+  Result := Format('%sexpected variant type: <%s> but was: <%s>', [_Msg, _Expected, _Actual])
 end;
 
 end.
