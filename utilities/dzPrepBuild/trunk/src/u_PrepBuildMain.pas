@@ -15,6 +15,7 @@ type
   private
     function HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo; const _Project: string): integer;
     procedure WriteRcFile(const _Project: string; _VersionInfo: IVersionInfo; const _Icon: string);
+    procedure DumpCmd;
   protected
     procedure InitCmdLineParser; override;
     function doExecute: integer; override;
@@ -31,7 +32,8 @@ uses
   u_DofVersionInfo,
   d_BdsProjVersionInfo,
   u_CentralIniVersionInfo,
-  u_DummyVersionInfo;
+  u_DummyVersionInfo,
+  Dialogs;
 
 { TPrepBuildMain }
 
@@ -80,7 +82,7 @@ begin
     WriteLn(t, {    } '}');
     if _Icon <> '' then begin
       WriteLn(t);
-      WriteLn(t, Format('MAINICON ICON LOADONCALL MOVEABLE DISCARDABLE IMPURE %s.ico', [_Icon]));
+      WriteLn(t, Format('MAINICON ICON LOADONCALL MOVEABLE DISCARDABLE IMPURE %s', [ChangeFileExt(_Icon, '.ico')]));
     end;
   finally
     Close(t);
@@ -113,7 +115,7 @@ begin
     Executor.Environment.Values[DZ_DATE_TIME] := DateTimeToString('yyyy-mm-dd_hh-nn-ss', dt);
 
     if _Project <> '' then
-      Executor.Environment.Values[DZ_PROJECT] := _Project;
+      Executor.Environment.Values[DZ_PROJECT] := ChangeFileExt(_Project, '');
 
     if Assigned(_VersionInfo) then begin
       Executor.Environment.Values[DZ_VERSION + 'MajorVer'] := IntToStr(_VersionInfo.MajorVer);
@@ -139,6 +141,19 @@ begin
   end;
 end;
 
+procedure TPrepBuildMain.DumpCmd;
+var
+  i: Integer;
+  s: string;
+begin
+  s := GetCurrentDir + #13#10 + ParamStr(0) + #13#10;
+  for i := 0 to FGetOpt.OptionsFoundList.Count - 1 do begin
+    s := s + FGetOpt.OptionsFoundList.Items[i].Name + '=' + FGetOpt.OptionsFoundList.Items[i].Value + #13#10;
+  end;
+  MessageDlg(s, mtInformation, [mbOK], 0);
+  SysUtils.Abort;
+end;
+
 function UnquoteStr(const _s: string): string;
 var
   s: PChar;
@@ -159,6 +174,12 @@ var
   IconFile: string;
   Project: string;
 begin
+  if FGetOpt.OptionsFoundList.Count = 0 then
+    Usage(_('You must supply some options.'));
+
+  if FGetOpt.OptionPassed('dumpcmd') then
+    DumpCmd;
+
   Project := '';
   if FGetOpt.OptionPassed('ReadDof', Project) then
     ParamVersionInfo := TDofVersionInfo.Create(Project);
@@ -201,8 +222,8 @@ begin
 
   if FGetOpt.OptionPassed('Build', Param) then begin
     if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create(_('Parameter to MinorVer must be a number'));
-    VersionInfo.MinorVer := IntValue;
+      raise Exception.Create(_('Parameter to Build must be a number'));
+    VersionInfo.Build := IntValue;
   end;
 
   if FGetOpt.OptionPassed('FileDesc', Param) then
@@ -234,6 +255,8 @@ begin
 
   if FGetOpt.OptionPassed('IncBuild') then
     VersionInfo.Build := VersionInfo.Build + 1;
+
+  VersionInfo.UpdateFileVersion;
 
   if FGetOpt.OptionPassed('UpdateDof', Param) then begin
     ParamVersionInfo := TDofVersionInfo.Create(Param);
@@ -268,6 +291,7 @@ end;
 procedure TPrepBuildMain.InitCmdLineParser;
 begin
   inherited;
+  FGetOpt.RegisterOption('dumpcmd', _('dump the commandline and exit (for debug purposes)'), false);
   FGetOpt.RegisterOption('ReadDof', _('read a .dof file to get the version information'), true);
   FGetOpt.RegisterOption('ReadBdsproj', _('read a .bdsproj file to get the version information'), true);
   FGetOpt.RegisterOption('ReadIni', _('read a .ini file to get the version information'), true);

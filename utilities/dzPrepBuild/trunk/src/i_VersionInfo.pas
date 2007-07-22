@@ -42,6 +42,7 @@ type
     procedure SetComments(const _Comments: string);
   //
     procedure Assign(const _VersionInfo: IVersionInfo);
+    procedure UpdateFileVersion;
     procedure UpdateFile;
   //
     function VerInfoFilename: string;

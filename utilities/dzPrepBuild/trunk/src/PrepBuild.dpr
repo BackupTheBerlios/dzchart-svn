@@ -1,5 +1,9 @@
 program PrepBuild;
 
+{$R *_icon.res}
+{$R *_version.res}
+
+
 {$APPTYPE CONSOLE}
 
 uses
@@ -15,8 +19,6 @@ uses
   u_PrepBuildMain in 'u_PrepBuildMain.pas',
   u_DummyVersionInfo in 'u_DummyVersionInfo.pas',
   u_AbstractVersionInfo in 'u_AbstractVersionInfo.pas';
-
-{$R *.res}
 
 begin
   Application.Initialize;

@@ -63,6 +63,7 @@ type
   //
     procedure Assign(const _VersionInfo: IVersionInfo); reintroduce;
     procedure UpdateFile;
+    procedure UpdateFileVersion;
     function VerInfoFilename: string;
   //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
@@ -357,6 +358,11 @@ end;
 procedure Tdm_BdsProjVersionInfo.UpdateFile;
 begin
   ProjDoc.SaveToFile(FBdsProjFile);
+end;
+
+procedure Tdm_BdsProjVersionInfo.UpdateFileVersion;
+begin
+  FileVersion := Format('%d.%d.%d.%d', [MajorVer, MinorVer, Release, Build]);
 end;
 
 function Tdm_BdsProjVersionInfo.VerInfoFilename: string;

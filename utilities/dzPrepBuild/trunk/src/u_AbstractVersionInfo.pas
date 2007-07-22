@@ -3,6 +3,7 @@ unit u_AbstractVersionInfo;
 interface
 
 uses
+  SysUtils,
   i_VersionInfo;
 
 type
@@ -55,8 +56,10 @@ type
     procedure SetProductName(_ProductName: string); virtual;
     procedure SetProductVersion(_ProductVersion: string); virtual;
     procedure SetRelease(_Release: Integer); virtual;
+    //
     procedure UpdateFile; virtual; abstract;
     function VerInfoFilename: string; virtual; abstract;
+    procedure UpdateFileVersion;
     //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
     property Build: integer read GetBuild write SetBuild;
@@ -244,6 +247,11 @@ end;
 procedure TAbstractVersionInfo.SetRelease(_Release: integer);
 begin
   FRelease := _Release;
+end;
+
+procedure TAbstractVersionInfo.UpdateFileVersion;
+begin
+  FileVersion := Format('%d.%d.%d.%d', [MajorVer, MinorVer, Release, Build]);
 end;
 
 end.
