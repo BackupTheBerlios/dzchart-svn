@@ -111,7 +111,7 @@ type
        This method is called by various other methods to assert that their
        functions are allowed in the current Status.
        @param ValidStatusSet is a set of valid Status values for the check. }
-    procedure AssertStatus(_ValidStatusSet: TExecutorStatusSet; const _Method: string);
+    procedure AssertStatus(_ValidStatusSet: TExecutorStatusSet; const _Method: string = '');
     {: Get method for property GetRedirectStdIn
        @returns true if StdIn is not an empty string }
     function GetRedirectStdIn: boolean;
@@ -264,8 +264,6 @@ begin
 end;
 
 function TExecutor.GetStatus: TExecutorStatus;
-const
-  ROUTINE_ID = '[function TExecutor.GetStatus]';
 begin
   if fStatus = esRunning then begin
     Win32Check(GetExitCodeProcess(fProcessInfo.hProcess, fExitCode));
@@ -278,27 +276,21 @@ begin
 end;
 
 function TExecutor.GetExitCode: DWORD;
-const
-  ROUTINE_ID = '[function TExecutor.GetExitCode]';
 begin
-  AssertStatus([esRunning, esTerminated], ROUTINE_ID);
+  AssertStatus([esRunning, esTerminated]);
   Result := fExitCode;
 end;
 
 function TExecutor.Wait(_Timeout: DWORD): DWORD;
-const
-  ROUTINE_ID = '[function TExecutor.Wait]';
 begin
-  AssertStatus([esRunning, esTerminated], ROUTINE_ID);
+  AssertStatus([esRunning, esTerminated]);
   Result := WaitforSingleObject(ProcessHandle, _Timeout);
 end;
 
 function TExecutor.Kill: boolean;
-const
-  ROUTINE_ID = '[function TExecutor.Kill]';
 begin
   case GetStatus of
-    esInvalid: raise ENoProcess.CreateFmt('Process has not yet been started'#13#10'%s', [ROUTINE_ID]);
+    esInvalid: raise ENoProcess.CreateFmt('Process has not yet been started'#13#10'%s', ['']);
     esRunning: Result := TerminateProcess(fProcessInfo.hProcess, $FFFFFFFF);
   else
     Result := true;
@@ -306,31 +298,23 @@ begin
 end;
 
 function TExecutor.GetProcessHandle: THandle;
-const
-  ROUTINE_ID = '[function TExecutor.GetProcessHandle]';
 begin
-  AssertStatus([esRunning, esTerminated], ROUTINE_ID);
+  AssertStatus([esRunning, esTerminated]);
   Result := fProcessInfo.hProcess;
 end;
 
 function TExecutor.GetThreadHandle: THandle;
-const
-  ROUTINE_ID = '[function TExecutor.GetThreadHandle]';
 begin
-  AssertStatus([esRunning, esTerminated], ROUTINE_ID);
+  AssertStatus([esRunning, esTerminated]);
   Result := fProcessInfo.hThread;
 end;
 
 function TExecutor.GetRedirectStdIn: boolean;
-const
-  ROUTINE_ID = '[function TExecutor.GetRedirectStdIn]';
 begin
   Result := fStdIn <> '';
 end;
 
 function TExecutor.Execute: boolean;
-const
-  ROUTINE_ID = '[function TExecutor.Execute]';
 var
   StartupInfo: TStartupInfo;
   SecurityAttributes: TSecurityAttributes;
@@ -428,12 +412,10 @@ begin
 end;
 
 function TExecutor.GetStdErr: string;
-const
-  ROUTINE_ID = '[function TExecutor.GetStdErr]';
 var
   Size: integer;
 begin
-  AssertStatus([esTerminated], ROUTINE_ID);
+  AssertStatus([esTerminated]);
   if RedirectStdErr then begin
     fErrorFile.Seek(0, soFromBeginning);
     Size := fErrorFile.Size;
@@ -442,16 +424,14 @@ begin
       fErrorFile.Read(Result[1], Size);
     end;
   end else
-    raise ENotRedirected.CreateFmt('StdErr was not redirected'#13#10'%s', [ROUTINE_ID]);
+    raise ENotRedirected.Create('StdErr was not redirected');
 end;
 
 function TExecutor.GetStdOut: string;
-const
-  ROUTINE_ID = '[function TExecutor.GetStdErr]';
 var
   Size: integer;
 begin
-  AssertStatus([esTerminated], ROUTINE_ID);
+  AssertStatus([esTerminated]);
   if RedirectStdOut then begin
     fOutputFile.Seek(0, soFromBeginning);
     Size := fOutputFile.Size;
@@ -460,7 +440,7 @@ begin
       fOutputFile.Read(Result[1], Size);
     end;
   end else
-    raise ENotRedirected.CreateFmt('StdOut was not redirected'#13#10'%s', [ROUTINE_ID]);
+    raise ENotRedirected.Create('StdOut was not redirected');
 end;
 
 end.
