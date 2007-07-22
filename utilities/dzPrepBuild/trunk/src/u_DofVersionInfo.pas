@@ -28,6 +28,9 @@ type
 
 implementation
 
+uses
+  u_dzTranslator;
+
 const
   VERSION_INFO_SECTION = 'Version Info';
   VERSION_INFO_KEYS_SECTION = 'Version Info Keys';
@@ -39,7 +42,7 @@ begin
   FProjectName := _ProjectName;
   inherited Create(VerInfoFilename, VERSION_INFO_SECTION, VERSION_INFO_KEYS_SECTION);
   if FIniFile.ReadInteger(VERSION_INFO_SECTION, 'IncludeVerInfo', 0) <> 1 then
-    raise ENoVersionInfo.Create('.dof file does not contain version info');
+    raise ENoVersionInfo.Create(_('.dof file does not contain version info'));
 end;
 
 class function TDofVersionInfo.FilenameFor(const _ProjectName: string): string;

@@ -38,6 +38,7 @@ type
 implementation
 
 uses
+  SysUtils,
   IniFiles,
   u_dzStringUtils;
 
@@ -55,7 +56,7 @@ end;
 
 class function TCentralVersionInfo.FilenameFor(const _ProjectName: string): string;
 begin
-  Result := _ProjectName + '_Version.ini';
+  Result := ChangeFileExt(_ProjectName, '') + '_Version.ini';
 end;
 
 function TCentralVersionInfo.ReadString(const _Section, _Ident: string; _Default: string): string;

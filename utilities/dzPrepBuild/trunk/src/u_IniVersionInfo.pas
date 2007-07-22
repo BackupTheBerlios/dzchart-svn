@@ -45,6 +45,9 @@ type
 
 implementation
 
+uses
+  u_dzTranslator;
+
 { TIniVersionInfo }
 
 constructor TIniVersionInfo.Create(const _FullFilename: string; const _InfoSection: string;
@@ -52,7 +55,7 @@ constructor TIniVersionInfo.Create(const _FullFilename: string; const _InfoSecti
 begin
   inherited Create;
   if not FileExists(_FullFilename) then
-    raise ENoVersionInfo.CreateFmt('File %s does not exist.', [_FullFilename]);
+    raise ENoVersionInfo.CreateFmt(_('File %s does not exist.'), [_FullFilename]);
   FInfoSection := _InfoSection;
   FInfoKeysSection := _InfoKeysSection;
   FIniFile := TMemIniFile.Create(_FullFilename);

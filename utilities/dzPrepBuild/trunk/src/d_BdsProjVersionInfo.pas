@@ -95,6 +95,10 @@ implementation
 
 {$R *.dfm}
 
+uses
+  StrUtils,
+  u_dzTranslator;
+
 { Tdm_BdsProjVersionInfo }
 
 procedure Tdm_BdsProjVersionInfo.Assign(const _VersionInfo: IVersionInfo);
@@ -176,7 +180,7 @@ begin
   FVersionInfoKeys := DelphiPersonality.childNodes['VersionInfoKeys'];
 
   if not SameText(GetChildNodeContent(FVersionInfo, 'VersionInfo', 'IncludeVerInfo'), 'True') then
-    raise ENoVersionInfo.Create('.bdsproj file does not contain version information');
+    raise ENoVersionInfo.Create(_('.bdsproj file does not contain version information'));
 end;
 
 destructor Tdm_BdsProjVersionInfo.Destroy;
@@ -267,10 +271,7 @@ end;
 
 procedure Tdm_BdsProjVersionInfo.SetAutoIncBuild(_AutoIncBuild: boolean);
 begin
-  if _AutoIncBuild then
-    SetVersionInfo('AutoIncBuild', 'True')
-  else
-    SetVersionInfo('AutoIncBuild', 'False')
+  SetVersionInfo('AutoIncBuild', IfThen(_AutoIncBuild, 'True', 'False'));
 end;
 
 procedure Tdm_BdsProjVersionInfo.SetBuild(_Build: integer);

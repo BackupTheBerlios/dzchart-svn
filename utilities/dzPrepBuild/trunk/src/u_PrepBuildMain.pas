@@ -25,6 +25,7 @@ type
 implementation
 
 uses
+  u_dzTranslator,
   u_dzExecutor,
   u_dzShellApiUtils,
   u_DofVersionInfo,
@@ -164,13 +165,13 @@ begin
 
   if FGetOpt.OptionPassed('ReadBdsProj', Project) then begin
     if Assigned(ParamVersionInfo) then
-      raise Exception.Create('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni');
+      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni'));
     ParamVersionInfo := Tdm_BdsProjVersionInfo.Create(Project);
   end;
 
   if FGetOpt.OptionPassed('ReadIni', Project) then begin
     if Assigned(ParamVersionInfo) then
-      raise Exception.Create('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni');
+      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni'));
     ParamVersionInfo := TCentralVersionInfo.Create(Project);
   end;
 
@@ -182,25 +183,25 @@ begin
 
   if FGetOpt.OptionPassed('MajorVer', Param) then begin
     if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create('Parameter to MajorVer must be a number');
+      raise Exception.Create(_('Parameter to MajorVer must be a number'));
     VersionInfo.MajorVer := IntValue;
   end;
 
   if FGetOpt.OptionPassed('MinorVer', Param) then begin
     if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create('Parameter to MinorVer must be a number');
+      raise Exception.Create(_('Parameter to MinorVer must be a number'));
     VersionInfo.MinorVer := IntValue;
   end;
 
   if FGetOpt.OptionPassed('Release', Param) then begin
     if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create('Parameter to Release must be a number');
+      raise Exception.Create(_('Parameter to Release must be a number'));
     VersionInfo.Release := IntValue;
   end;
 
   if FGetOpt.OptionPassed('Build', Param) then begin
     if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create('Parameter to MinorVer must be a number');
+      raise Exception.Create(_('Parameter to MinorVer must be a number'));
     VersionInfo.MinorVer := IntValue;
   end;
 
@@ -267,29 +268,29 @@ end;
 procedure TPrepBuildMain.InitCmdLineParser;
 begin
   inherited;
-  FGetOpt.RegisterOption('ReadDof', 'read a .dof file to get the version information', true);
-  FGetOpt.RegisterOption('ReadBdsproj', 'read a .bdsproj file to get the version information', true);
-  FGetOpt.RegisterOption('ReadIni', 'read a .ini file to get the version information', true);
-  FGetOpt.RegisterOption('Exec', 'execute the given program or script with extended environment', true);
-  FGetOpt.RegisterOption('UpdateDof', 'update a .dof file with the version information', true);
-  FGetOpt.RegisterOption('UpdateBdsproj', 'update a .bdsproj file with the version information', true);
-  FGetOpt.RegisterOption('UpdateIni', 'update a .ini file with the version information', true);
-  FGetOpt.RegisterOption('WriteRc', 'write version info to a .rc file', true);
-  FGetOpt.RegisterOption('Icon', 'Assign an icon file to add to the .rc file', true);
-  FGetOpt.RegisterOption('IncBuild', 'increment the build number', false);
-  FGetOpt.RegisterOption('MajorVer', 'set the major version number', true);
-  FGetOpt.RegisterOption('MinorVer', 'set the minor version number', true);
-  FGetOpt.RegisterOption('Release', 'set the release number', true);
-  FGetOpt.RegisterOption('Build', 'set the build number', true);
-  FGetOpt.RegisterOption('FileDesc', 'set the file description', true);
-  FGetOpt.RegisterOption('InternalName', 'set the internal name', true);
-  FGetOpt.RegisterOption('OriginalName', 'set the original file name', true);
-  FGetOpt.RegisterOption('Product', 'set the product name', true);
-  FGetOpt.RegisterOption('ProductVersion', 'set the product version', true);
-  FGetOpt.RegisterOption('Company', 'set the company name', true);
-  FGetOpt.RegisterOption('Copyright', 'set the legal copyright', true);
-  FGetOpt.RegisterOption('Trademark', 'set the legal trademark', true);
-  FGetOpt.RegisterOption('Comments', 'set the comments', true);
+  FGetOpt.RegisterOption('ReadDof', _('read a .dof file to get the version information'), true);
+  FGetOpt.RegisterOption('ReadBdsproj', _('read a .bdsproj file to get the version information'), true);
+  FGetOpt.RegisterOption('ReadIni', _('read a .ini file to get the version information'), true);
+  FGetOpt.RegisterOption('Exec', _('execute the given program or script with extended environment'), true);
+  FGetOpt.RegisterOption('UpdateDof', _('update a .dof file with the version information'), true);
+  FGetOpt.RegisterOption('UpdateBdsproj', _('update a .bdsproj file with the version information'), true);
+  FGetOpt.RegisterOption('UpdateIni', _('update a .ini file with the version information'), true);
+  FGetOpt.RegisterOption('WriteRc', _('write version info to a .rc file'), true);
+  FGetOpt.RegisterOption('Icon', _('Assign an icon file to add to the .rc file'), true);
+  FGetOpt.RegisterOption('IncBuild', _('increment the build number'), false);
+  FGetOpt.RegisterOption('MajorVer', _('set the major version number'), true);
+  FGetOpt.RegisterOption('MinorVer', _('set the minor version number'), true);
+  FGetOpt.RegisterOption('Release', _('set the release number'), true);
+  FGetOpt.RegisterOption('Build', _('set the build number'), true);
+  FGetOpt.RegisterOption('FileDesc', _('set the file description'), true);
+  FGetOpt.RegisterOption('InternalName', _('set the internal name'), true);
+  FGetOpt.RegisterOption('OriginalName', _('set the original file name'), true);
+  FGetOpt.RegisterOption('Product', _('set the product name'), true);
+  FGetOpt.RegisterOption('ProductVersion', _('set the product version'), true);
+  FGetOpt.RegisterOption('Company', _('set the company name'), true);
+  FGetOpt.RegisterOption('Copyright', _('set the legal copyright'), true);
+  FGetOpt.RegisterOption('Trademark', _('set the legal trademark'), true);
+  FGetOpt.RegisterOption('Comments', _('set the comments'), true);
 end;
 
 initialization
