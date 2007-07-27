@@ -1,0 +1,39 @@
+#  Ignorierliste. Entfernen Sie die, die Sie übersetzt haben wollen.
+
+#  Seems like a Font.Name extract
+#. f_dzDialog..Font.Name
+#: w_dzDialog.dfm:12
+msgid "MS Sans Serif"
+msgstr ""
+
+#  Seems like a Font.Name extract
+#. f_dzDialog..p_Details..m_Details..Font.Name
+#: w_dzDialog.dfm:76
+msgid "Courier New"
+msgstr ""
+
+#. f_dzDialog..Caption
+#: w_dzDialog.dfm:5 
+msgid "f_dzDialog"
+msgstr ""
+
+#. f_dzDialog..p_Top..l_Message....Caption
+#: w_dzDialog.dfm:36 
+msgid "Mitteilung an den Benutzer, dies ist eine sehr lange Mitteilung und sie wird ein paar mal wiederholt, damit auch ein Umbruch stattfindet. (do not translate)"
+msgstr ""
+
+#. f_dzDialog..p_Top..l_Options..Caption
+#: w_dzDialog.dfm:45 
+msgid "Beschreibung der Optionen (do not translate)"
+msgstr ""
+
+#. f_dzDialog..p_Details..m_Details....Lines.Strings
+#: w_dzDialog.dfm:79 
+msgid "ExcectionClass: (do not translate)"
+msgstr ""
+
+#. f_dzDialog..p_Details..m_Details....Lines.Strings
+#: w_dzDialog.dfm:80 
+msgid "Message der Exception (do not translate)"
+msgstr ""
+
