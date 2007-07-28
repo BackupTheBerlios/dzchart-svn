@@ -302,19 +302,19 @@ begin
   FGetOpt.RegisterOption('WriteRc', _('write version info to a .rc file'), true);
   FGetOpt.RegisterOption('Icon', _('Assign an icon file to add to the .rc file'), true);
   FGetOpt.RegisterOption('IncBuild', _('increment the build number'), false);
-  FGetOpt.RegisterOption('MajorVer', _('set the major version number'), true);
-  FGetOpt.RegisterOption('MinorVer', _('set the minor version number'), true);
-  FGetOpt.RegisterOption('Release', _('set the release number'), true);
-  FGetOpt.RegisterOption('Build', _('set the build number'), true);
-  FGetOpt.RegisterOption('FileDesc', _('set the file description'), true);
-  FGetOpt.RegisterOption('InternalName', _('set the internal name'), true);
-  FGetOpt.RegisterOption('OriginalName', _('set the original file name'), true);
-  FGetOpt.RegisterOption('Product', _('set the product name'), true);
-  FGetOpt.RegisterOption('ProductVersion', _('set the product version'), true);
-  FGetOpt.RegisterOption('Company', _('set the company name'), true);
-  FGetOpt.RegisterOption('Copyright', _('set the legal copyright'), true);
-  FGetOpt.RegisterOption('Trademark', _('set the legal trademark'), true);
-  FGetOpt.RegisterOption('Comments', _('set the comments'), true);
+  FGetOpt.RegisterOption('MajorVer', _('set the major version number (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('MinorVer', _('set the minor version number (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Release', _('set the release number (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Build', _('set the build number (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('FileDesc', _('set the file description (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('InternalName', _('set the internal name (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('OriginalName', _('set the original file name (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Product', _('set the product name (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('ProductVersion', _('set the product version (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Company', _('set the company name (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Copyright', _('set the legal copyright (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Trademark', _('set the legal trademark (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('Comments', _('set the comments (overwrites value from -ReadXxx option)'), true);
 end;
 
 initialization
