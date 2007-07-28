@@ -7,7 +7,9 @@ unit u_dzTranslator;
 // for now uses gnugettext
 {$DEFINE gnugettext}
 {$ELSE}
+{$IFNDEF NO_TRANSLATION_HINT}
 {$MESSAGE HINT 'translation is turned off, remove NO_TRANSLATION define to turn it on'}
+{$ENDIF}
 {$ENDIF}
 
 interface
