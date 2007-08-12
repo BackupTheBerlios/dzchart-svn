@@ -28,10 +28,11 @@ package Delphi7HelpForBdsExpert;
 
 requires
   rtl,
-  designide;
+  designide,
+  vcl;
 
 contains
-  u_Delphi7HelpForBds in 'u_Delphi7HelpForBds.pas',
-  w_Delphi7HelpForBds in 'w_Delphi7HelpForBds.pas' {f_Delphi7HelpForBds};
+  w_Delphi7HelpForBds in '..\..\src\w_Delphi7HelpForBds.pas',
+  u_Delphi7HelpForBds in '..\..\src\u_Delphi7HelpForBds.pas';
 
 end.

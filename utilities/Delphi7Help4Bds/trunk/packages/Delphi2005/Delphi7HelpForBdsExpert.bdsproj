@@ -120,7 +120,7 @@
 		</Linker>
 		<Directories>
 			<Directories Name="OutputDir"></Directories>
-			<Directories Name="UnitOutputDir"></Directories>
+			<Directories Name="UnitOutputDir">..\..\dcu</Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
 			<Directories Name="SearchPath"></Directories>
@@ -138,6 +138,11 @@
 			<Parameters Name="Debug Symbols Search Path"></Parameters>
 			<Parameters Name="LoadAllSymbols">True</Parameters>
 			<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+			<Parameters Name="RemoteHost"></Parameters>
+			<Parameters Name="RemotePath"></Parameters>
+			<Parameters Name="RemoteLauncher"></Parameters>
+			<Parameters Name="RemoteCWD"></Parameters>
+			<Parameters Name="RemoteDebug">False</Parameters>
 		</Parameters>
 		<Language>
 			<Language Name="ActiveLang"></Language>
@@ -164,7 +169,7 @@
 			<VersionInfoKeys Name="FileDescription">Delphi 7 help for BDS expert</VersionInfoKeys>
 			<VersionInfoKeys Name="FileVersion">1.0.0.60</VersionInfoKeys>
 			<VersionInfoKeys Name="InternalName">Delphi 7 help for BDS expert</VersionInfoKeys>
-			<VersionInfoKeys Name="LegalCopyright">copyright 2006 Thomas Mueller</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalCopyright">copyright 2006-2007 by Thomas Mueller</VersionInfoKeys>
 			<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename">Delphi7HelpForBdsExpert.bpl</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName">Delphi 7 help for BDS</VersionInfoKeys>
