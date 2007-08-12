@@ -11,6 +11,7 @@ uses
   StrUtils,
   Windows,
   Classes,
+  Forms,
   ShellApi,
   ToolsAPI,
   Menus,
@@ -62,7 +63,7 @@ end;
 
 function TCtrlF1Help.GetDisplayName: string;
 begin
-  Result := 'twm''s Delphi 7 help for BDS expert';
+  Result := 'dummzeuch.de Delphi 7 help for BDS expert';
 end;
 
 function TCtrlF1Help.GetName: string;
@@ -91,6 +92,8 @@ begin
             if LeftStr(_Url, 5) = 'http:' then
               exit;
             if LeftStr(_Url, 8) = 'winhelp:' then
+              exit;
+            if LeftStr(_Url, 8) = 'chmhelp:' then
               exit;
             _Url := 'winhelp:' + _Url;
             Reg.WriteString('HelpFile' + _Which, _Url);
@@ -195,6 +198,11 @@ begin
   end else if LeftStr(Url, 5) = 'http:' then begin
     ShellExecute(0, 'open', PChar(Url + Keyword), nil, nil, SW_SHOWNORMAL);
     BindingResult := krHandled;
+  end else if LeftStr(Url, 8) = 'chmhelp:' then begin
+    Url := Copy(Url, 9);
+    UniqueString(Url);
+    UniqueString(Keyword);
+    HtmlHelp(Application.Handle, PChar(Url), HH_DISPLAY_INDEX, DWord(PChar(Keyword)));
   end;
 end;
 
