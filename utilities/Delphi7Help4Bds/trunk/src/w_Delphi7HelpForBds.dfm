@@ -1,9 +1,11 @@
 object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   Left = 354
   Top = 151
-  Width = 473
-  Height = 313
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'Delphi 7 help for BDS Wizard'
+  ClientHeight = 297
+  ClientWidth = 467
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,15 +14,16 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   Font.Style = []
   OldCreateOrder = False
   DesignSize = (
-    465
-    289)
+    467
+    297)
   PixelsPerInch = 96
   TextHeight = 13
   object l_Blurb: TLabel
     Left = 8
     Top = 8
-    Width = 437
+    Width = 439
     Height = 25
+    Margins.Bottom = 0
     Anchors = [akLeft, akTop, akRight]
     AutoSize = False
     Caption = 
@@ -28,11 +31,12 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
       'wizard. Please specify below  the action you want to execute wit' +
       'h this shortcut.'
     WordWrap = True
+    ExplicitWidth = 437
   end
   object ed_Helpfile: TEdit
     Left = 24
-    Top = 72
-    Width = 405
+    Top = 80
+    Width = 407
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 4
@@ -40,9 +44,9 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object b_SelectHlp: TButton
     Left = 432
-    Top = 72
+    Top = 80
     Width = 25
-    Height = 25
+    Height = 21
     Anchors = [akTop, akRight]
     Caption = '...'
     TabOrder = 5
@@ -50,7 +54,7 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object b_OK: TButton
     Left = 304
-    Top = 256
+    Top = 264
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -61,7 +65,7 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object b_Cancel: TButton
     Left = 384
-    Top = 256
+    Top = 264
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -72,8 +76,8 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object rb_Winhelp: TRadioButton
     Left = 8
-    Top = 48
-    Width = 397
+    Top = 56
+    Width = 420
     Height = 17
     Caption = 'Open a *.&HLP file'
     Checked = True
@@ -83,7 +87,7 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object rb_WebUrl: TRadioButton
     Left = 8
-    Top = 160
+    Top = 176
     Width = 397
     Height = 17
     Caption = 
@@ -103,8 +107,8 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object cmb_WebUrl: TComboBox
     Left = 24
-    Top = 184
-    Width = 401
+    Top = 192
+    Width = 407
     Height = 21
     ItemHeight = 13
     TabOrder = 8
@@ -113,12 +117,15 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
     OnEnter = cmb_WebUrlEnter
     Items.Strings = (
       'http://www.google.com/search?q=delphi+'
-      'http://groups.google.com/groups/search?q=delphi+')
+      'http://groups.google.com/groups/search?q=delphi+'
+      
+        'http://search.msdn.microsoft.com/search/Default.aspx?brand=msdn&' +
+        'refinement=117&lang=en-us&query=')
   end
   object rb_ChmHelp: TRadioButton
     Left = 8
-    Top = 104
-    Width = 397
+    Top = 112
+    Width = 420
     Height = 17
     Caption = 'Open a *.&CHM file'
     TabOrder = 1
@@ -126,8 +133,8 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object ed_ChmFile: TEdit
     Left = 24
-    Top = 128
-    Width = 405
+    Top = 136
+    Width = 407
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 6
@@ -135,9 +142,9 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
   end
   object b_SelectChm: TButton
     Left = 432
-    Top = 128
+    Top = 136
     Width = 25
-    Height = 25
+    Height = 21
     Anchors = [akTop, akRight]
     Caption = '...'
     TabOrder = 7
@@ -148,15 +155,15 @@ object f_Delphi7HelpForBds: Tf_Delphi7HelpForBds
     Filter = 'help files (*.hlp)|*.hlp|all files|*.*'
     FilterIndex = 0
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 168
-    Top = 80
+    Left = 360
+    Top = 120
   end
   object od_ChmFile: TOpenDialog
     DefaultExt = 'hlp'
     Filter = 'HTML help files (*.chm)|*.chm|all files|*.*'
     FilterIndex = 0
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 168
-    Top = 136
+    Left = 360
+    Top = 63
   end
 end

@@ -28,6 +28,8 @@ type
       var BindingResult: TKeyBindingResult);
     procedure CallAltF1(const Context: IOTAKeyContext; KeyCode: TShortCut;
       var BindingResult: TKeyBindingResult);
+    procedure CallCtrlAltF1(const Context: IOTAKeyContext; KeyCode: TShortCut;
+      var BindingResult: TKeyBindingResult);
     function GetAction(const _Which: string; out _Url: string): boolean;
   public
     procedure CallHelp(_Which: string; const Context: IOTAKeyContext;
@@ -54,6 +56,7 @@ begin
   BindingServices.AddKeyBinding([Shortcut(VK_F1, [ssCtrl])], CallCtrlF1, nil);
   BindingServices.AddKeyBinding([Shortcut(VK_F1, [ssShift])], CallShiftF1, nil);
   BindingServices.AddKeyBinding([Shortcut(VK_F1, [ssAlt])], CallAltF1, nil);
+  BindingServices.AddKeyBinding([Shortcut(VK_F1, [ssCtrl, ssAlt])], CallCtrlAltF1, nil);
 end;
 
 function TCtrlF1Help.GetBindingType: TBindingType;
@@ -75,26 +78,26 @@ function TCtrlF1Help.GetAction(const _Which: string; out _Url: string): boolean;
 var
   Reg: TRegistry;
 begin
-  Result := false;
+  Result := False;
   Reg := TRegistry.Create;
   try
     Reg.RootKey := HKEY_CURRENT_USER;
-    if Reg.OpenKey('software\dummzeuch\Delphi7HelpForBds', true) then
+    if Reg.OpenKey('Software\dummzeuch\Delphi7HelpForBds', true) then
       try
         try
           _Url := Reg.ReadString('HelpFile' + _Which);
           if _Url = '-' then begin
-            Result := false;
-            exit;
+            Result := False;
+            Exit;
           end;
           Result := (_Url <> '');
           if Result then begin
             if LeftStr(_Url, 5) = 'http:' then
-              exit;
+              Exit;
             if LeftStr(_Url, 8) = 'winhelp:' then
-              exit;
+              Exit;
             if LeftStr(_Url, 8) = 'chmhelp:' then
-              exit;
+              Exit;
             _Url := 'winhelp:' + _Url;
             Reg.WriteString('HelpFile' + _Which, _Url);
             exit;
@@ -107,7 +110,7 @@ begin
         if Result then
           Reg.WriteString('HelpFile' + _Which, _Url)
         else
-          Result := false;
+          Result := False;
       finally
         Reg.CloseKey;
       end;
@@ -120,6 +123,12 @@ procedure TCtrlF1Help.CallAltF1(const Context: IOTAKeyContext;
   KeyCode: TShortCut; var BindingResult: TKeyBindingResult);
 begin
   CallHelp('AltF1', Context, KeyCode, BindingResult);
+end;
+
+procedure TCtrlF1Help.CallCtrlAltF1(const Context: IOTAKeyContext;
+  KeyCode: TShortCut; var BindingResult: TKeyBindingResult);
+begin
+  CallHelp('CtrlAltF1', Context, KeyCode, BindingResult);
 end;
 
 procedure TCtrlF1Help.CallCtrlF1(
@@ -142,51 +151,63 @@ var
 begin
   if not GetAction(_Which, Url) then begin
     BindingResult := krUnhandled;
-    exit;
+    Exit;
   end;
 
   EditView := Context.EditBuffer.TopView;
   ep := EditView.Position;
   CursorPos := EditView.CursorPos;
   EditView.GetAttributeAtPos(CursorPos, True, Element, LineFlag);
-  if (Element = atWhiteSpace) or (Element = atSymbol) then begin
-    Dec(CursorPos.Col);
-    EditView.GetAttributeAtPos(CursorPos, True, Element, LineFlag);
-    if Element = atWhiteSpace then begin
-      Inc(CursorPos.Col, 2);
+
+  if EditView.Block.Size > 0 then begin
+    // Check for selected text as Keyword :)
+    Keyword:= EditView.Block.Text;
+  end else begin
+    if (Element = atWhiteSpace) or (Element = atSymbol) then begin
+      Dec(CursorPos.Col);
       EditView.GetAttributeAtPos(CursorPos, True, Element, LineFlag);
+      if Element = atWhiteSpace then begin
+        Inc(CursorPos.Col, 2);
+        EditView.GetAttributeAtPos(CursorPos, True, Element, LineFlag);
+      end;
     end;
-  end;
-  if Element in [atIdentifier, atReservedWord] then begin
-    // The cursor can be anywhere on the word, or at the end of a word
-    // If cursor is at the middle of a word, then extract the word
-    if ep.IsWordCharacter then begin
-      ep.Save;
-      try
-        EndCol := CursorPos.Col;
-        while (ep.IsWordCharacter) and (ep.Column > 1) do
-          ep.MoveRelative(0, -1);
-        if ep.IsWordCharacter then
-          StartCol := ep.Column // Start of a line...
-        else
-          StartCol := ep.Column + 1;
-        WordLen := EndCol - StartCol;
-        ep.Move(ep.Row, EndCol);
-        while ep.IsWordCharacter do begin
-          ep.MoveRelative(0, 1);
-          Inc(WordLen);
+  
+    if Element in [atIdentifier, atReservedWord] then begin
+      // The cursor can be anywhere on the word, or at the end of a word
+      // If cursor is at the middle of a word, then extract the word
+      if ep.IsWordCharacter then begin
+        ep.Save;
+        try
+          EndCol := CursorPos.Col;
+          while (ep.IsWordCharacter) and (ep.Column > 1) do
+            ep.MoveRelative(0, -1);
+          if ep.IsWordCharacter then
+            StartCol := ep.Column // Start of a line...
+          else
+            StartCol := ep.Column + 1;
+          WordLen := EndCol - StartCol;
+          ep.Move(ep.Row, EndCol);
+          while ep.IsWordCharacter do begin
+            ep.MoveRelative(0, 1);
+            Inc(WordLen);
+          end;
+          ep.MoveRelative(0, -WordLen);
+          Keyword := ep.Read(WordLen);
+        finally
+          ep.Restore;
         end;
-        ep.MoveRelative(0, -WordLen);
-        Keyword := ep.Read(WordLen);
-      finally
-        ep.Restore;
+      end else begin
+        // If cursor is at the end of a word, then extract it
+        Keyword := ep.RipText('_', rfBackward or rfIncludeAlphaChars or rfIncludeNumericChars);
       end;
     end else begin
-      // If cursor is at the end of a word, then extract it
-      Keyword := ep.RipText('_', rfBackward or rfIncludeAlphaChars or rfIncludeNumericChars);
+      // Cannot extract keyword :(
+    
+      //Keyword := '';
+      BindingResult := krUnhandled;
+      Exit;
     end;
-  end else
-    Keyword := '';
+  end;
 
   if LeftStr(Url, 8) = 'winhelp:' then begin
     Url := Copy(Url, 9);

@@ -41,7 +41,7 @@ type
     procedure ed_ChmFileChange(Sender: TObject);
   private
   public
-    class function Execute(out _Url: string): boolean;
+    class function Execute(out _Url: string): Boolean;
   end;
 
 implementation
@@ -80,26 +80,26 @@ begin
   rb_Winhelp.Checked := true;
 end;
 
-class function Tf_Delphi7HelpForBds.Execute(out _Url: string): boolean;
+class function Tf_Delphi7HelpForBds.Execute(out _Url: string): Boolean;
 var
   frm: Tf_Delphi7HelpForBds;
 begin
   frm := Tf_Delphi7HelpForBds.Create(nil);
   try
     if mrOk = frm.ShowModal then begin
-      Result := true;
+      Result := True;
       if frm.rb_Winhelp.Checked then begin
         _Url := 'winhelp:' + frm.ed_Helpfile.Text;
       end else if frm.rb_WebUrl.Checked then begin
         _Url := frm.cmb_WebUrl.Text;
       end else if frm.rb_ChmHelp.Checked then
         _Url := 'chmhelp:' + frm.ed_ChmFile.Text
-      else
+      else          
         _Url := '-';
     end else
-      Result := false;
+      Result := False;
   finally
-    frm.free
+    frm.Free;
   end;
 end;
 
