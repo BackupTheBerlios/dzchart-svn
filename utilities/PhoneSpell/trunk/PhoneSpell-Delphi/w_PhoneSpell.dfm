@@ -11,6 +11,10 @@ object f_PhoneSpell: Tf_PhoneSpell
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  DesignSize = (
+    209
+    273)
   PixelsPerInch = 96
   TextHeight = 13
   object l_What: TLabel
@@ -32,6 +36,7 @@ object f_PhoneSpell: Tf_PhoneSpell
     Top = 24
     Width = 193
     Height = 21
+    Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
     Text = 'type it here ...'
     OnChange = ed_WhatChange
@@ -42,6 +47,7 @@ object f_PhoneSpell: Tf_PhoneSpell
     Width = 193
     Height = 21
     Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 1
     OnChange = cmb_WhichChange
@@ -51,6 +57,7 @@ object f_PhoneSpell: Tf_PhoneSpell
     Top = 112
     Width = 193
     Height = 153
+    Anchors = [akLeft, akTop, akRight, akBottom]
     ItemHeight = 13
     TabOrder = 2
   end
