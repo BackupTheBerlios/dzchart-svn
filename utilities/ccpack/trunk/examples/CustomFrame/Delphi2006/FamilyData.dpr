@@ -2,7 +2,7 @@ program FamilyData;
 
 uses
   Forms,
-  w_Family in '..\w_Family.pas' {f_Family};
+  w_Family in '..\src\w_Family.pas' {f_Family};
 
 {$R *.res}
 
