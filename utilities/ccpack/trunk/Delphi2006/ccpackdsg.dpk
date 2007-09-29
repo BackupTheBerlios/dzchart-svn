@@ -34,9 +34,9 @@ requires
   designide;
 
 contains
-  ccwizres in '..\ccwizres.pas',
-  ccwdlg in '..\ccwdlg.pas' {CCWDialog},
-  ccwiz in '..\ccwiz.pas',
-  ccregprc in '..\ccregprc.pas';
+  ccwizres in '..\src\ccwizres.pas',
+  ccwdlg in '..\src\ccwdlg.pas' {CCWDialog},
+  ccwiz in '..\src\ccwiz.pas',
+  ccregprc in '..\src\ccregprc.pas';
 
 end.

@@ -32,7 +32,7 @@ requires
   rtl;
 
 contains
-  ccBoxes in '..\ccBoxes.pas',
-  ccreg in '..\ccreg.pas';
+  ccBoxes in '..\src\ccBoxes.pas',
+  ccreg in '..\src\ccreg.pas';
 
 end.
