@@ -39,13 +39,9 @@ resourcestring
     'type'+#13#10+
     '  %ClassName% = class(T%AncestorName%)'+#13#10+
     '  private'+#13#10+
-    '    { Private declarations }'+#13#10+
     '  protected'+#13#10+
-    '    { Protected declarations }'+#13#10+
     '  public'+#13#10+
-    '    { Public declarations }'+#13#10+
     '  published'+#13#10+
-    '    { Published declarations }'+#13#10+
     '  end;'+#13#10+
     #13#10+
     'procedure Register;'+#13#10+
@@ -74,13 +70,9 @@ resourcestring
     'type'+#13#10+
     '  %ClassName% = class(T%AncestorName%)'+#13#10+
     '  private'+#13#10+
-    '    { Private declarations }'+#13#10+
     '  protected'+#13#10+
-    '    { Protected declarations }'+#13#10+
     '  public'+#13#10+
-    '    { Public declarations }'+#13#10+
     '  published'+#13#10+
-    '    { Published declarations }'+#13#10+
     '  end;'+#13#10+
     #13#10+
     'var'+#13#10+
@@ -104,13 +96,9 @@ resourcestring
     'type'+#13#10+
     '  %ClassName% = class(T%AncestorName%)'+#13#10+
     '  private'+#13#10+
-    '    { Private declarations }'+#13#10+
     '  protected'+#13#10+
-    '    { Protected declarations }'+#13#10+
     '  public'+#13#10+
-    '    { Public declarations }'+#13#10+
     '  published'+#13#10+
-    '    { Published declarations }'+#13#10+
     '  end;'+#13#10+
     #13#10+
     'procedure Register;'+#13#10+
