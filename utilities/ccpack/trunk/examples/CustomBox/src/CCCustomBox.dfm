@@ -9,10 +9,8 @@ object CustomBox: TCustomBox
     Top = 1
     Width = 318
     Height = 13
-    Margins.Bottom = 0
     Align = alTop
     Caption = 'TheLabelCtrl'
-    ExplicitWidth = 60
   end
   object TheListBoxCtrl: TListBox
     Left = 1

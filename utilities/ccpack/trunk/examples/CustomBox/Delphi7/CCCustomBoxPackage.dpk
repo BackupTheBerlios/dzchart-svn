@@ -1,4 +1,4 @@
-package CCCustomFrameExample;
+package CCCustomBoxPackage;
 
 {$R *.res}
 {$ALIGN 8}
@@ -22,8 +22,8 @@ package CCCustomFrameExample;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$LIBSUFFIX '70'}
-{$IMPLICITBUILD OFF}
+{$DESCRIPTION 'Custom Box example'}
+{$IMPLICITBUILD ON}
 
 requires
   rtl,
@@ -31,6 +31,6 @@ requires
   ccpack;
 
 contains
-  CustomFrameExample in '..\src\CustomFrameExample.pas';
+  CCCustomBox in '..\src\CCCustomBox.pas' {CustomBox};
 
 end.

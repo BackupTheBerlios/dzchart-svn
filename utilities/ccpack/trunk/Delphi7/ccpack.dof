@@ -91,7 +91,7 @@ ImageBase=4194304
 ExeDescription=Custom Container Pack - runtime
 [Directories]
 OutputDir=
-UnitOutputDir=
+UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
@@ -147,6 +147,11 @@ c:\program files\borland\delphi7\Bin\dclaxserver70.bpl=Microsoft Office 97 Sampl
 c:\program files\borland\delphi7\Bin\DBWEBXPRT.BPL=Borland Web Wizard Package
 C:\Program Files\Borland\Delphi7\Bin\dclclxstd70.bpl=Borland CLX Standard Components
 c:\program files\borland\delphi7\Bin\dclclxdb70.bpl=Borland CLX Database Components
+D:\out\bpl\HkIdeExpert7.bpl=iCD. IDE Expert
+D:\out\bpl\ccpackdsg70.bpl=Custom Container Pack - designtime
+D:\out\bpl\CCCustomFrameExample70.bpl=(untitled)
+D:\out\bpl\dcldummzeuchchart70.bpl=dummzeuch.de Charts - designtime package
+D:\out\bpl\dzAutoSave70.bpl=dummzeuch.de Auto Save Wizard
 q:\bpl\UnicodeConvDelphi7.bpl=Unicode Converter Library (UCL)
 Q:\bpl\AutoSave6.bpl=Auto Save Wizard
 Q:\bpl\Xdom_3_1Delphi7.bpl=Extended Document Object Model (XDOM 3.1)
@@ -163,12 +168,14 @@ Q:\bpl\JclDebugIde70.bpl=JCL Debug IDE extension for Delphi 7
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlUnitOutputDirectory]
-Count=2
-Item0=Q:\bpl\dcu\ccpack\dcl
-Item1=Q:\bpl\dcu\ccpack\rtl
+Count=3
+Item0=..\dcu
+Item1=Q:\bpl\dcu\ccpack\dcl
+Item2=Q:\bpl\dcu\ccpack\rtl
 [HistoryLists\hlBPLOutput]
-Count=1
-Item0=Q:\bpl
+Count=2
+Item0=..
+Item1=Q:\bpl
 [HistoryLists\hlDCPOutput]
 Count=1
 Item0=Q:\bpl\dcp

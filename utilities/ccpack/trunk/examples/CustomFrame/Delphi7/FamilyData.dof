@@ -90,8 +90,8 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=
-UnitOutputDir=
+OutputDir=..
+UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
@@ -134,3 +134,20 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
+[Excluded Packages]
+D:\out\bpl\HkIdeExpert7.bpl=iCD. IDE Expert
+D:\out\bpl\dcldummzeuchchart70.bpl=dummzeuch.de Charts - designtime package
+D:\out\bpl\dzAutoSave70.bpl=dummzeuch.de Auto Save Wizard
+q:\bpl\UnicodeConvDelphi7.bpl=Unicode Converter Library (UCL)
+Q:\bpl\Xdom_3_1Delphi7.bpl=Extended Document Object Model (XDOM 3.1)
+Q:\bpl\CompBAR7.bpl=Component Bar Expert 1.0.4
+Q:\bpl\dclusr70.bpl=Borland User Components
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=..\dcu
+[HistoryLists\hlOutputDirectorry]
+Count=1
+Item0=..
