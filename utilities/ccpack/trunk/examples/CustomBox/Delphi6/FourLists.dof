@@ -9,8 +9,8 @@ E=0
 F=0
 G=1
 H=1
-I=1
-J=0
+I=0
+J=1
 K=0
 L=1
 M=0
@@ -31,7 +31,7 @@ ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [Linker]
-MapFile=0
+MapFile=3
 OutputObjs=0
 ConsoleApp=1
 DebugInfo=0
@@ -46,38 +46,40 @@ UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
-Packages=rtl;vcl;vclx;VclSmp;vclshlctrls;dbrtl;adortl;vcldb;qrpt;bdertl;vcldbx;dsnap;cds;bdecds;teeui;teedb;tee;teeqr;ibxpress;visualclx;visualdbclx;vclie;xmlrtl;inet;inetdbbde;inetdbxpress;inetdb;nmfast;dbexpress;dbxcds;indy;dclaxserver;soaprtl;rxctl;rxdb;ccpack;CCCustomFrameExample
+Packages=vcl;rtl;vclx;vcldb;dbrtl;bdertl;vcldbx;ccpack;CCCustomBoxPackage
 Conditionals=
 DebugSourceDirs=
 UsePackages=1
 [Parameters]
 RunParams=
-HostApplication=
+HostApplication=C:\Program Files\Borland\Delphi7\Bin\delphi32.exe
 Launcher=
 UseLauncher=0
 DebugCWD=
+RemoteHost=cerity
+RemotePath=q:\software\makroedittest.exe
 [Language]
 ActiveLang=
 ProjectLang=
 RootDir=
 [Version Info]
-IncludeVerInfo=0
+IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=1
 MinorVer=0
-Release=0
+Release=4
 Build=0
 Debug=0
 PreRelease=0
 Special=0
 Private=0
 DLL=0
-Locale=2057
+Locale=1033
 CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.0.0
+FileVersion=1.0.4.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
@@ -85,6 +87,7 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
+Compilation Time=19/05/2002 00:22:43
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

@@ -1,4 +1,4 @@
-package ccpackdsg;
+package CCCustomBoxPackage;
 
 {$R *.res}
 {$ALIGN 8}
@@ -22,21 +22,15 @@ package ccpackdsg;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'Custom Container Pack - designtime'}
-{$LIBSUFFIX '60'}
-{$DESIGNONLY}
-{$IMPLICITBUILD OFF}
+{$DESCRIPTION 'Custom Box example'}
+{$IMPLICITBUILD ON}
 
 requires
   rtl,
-  ccpack,
   vcl,
-  designide;
+  ccpack;
 
 contains
-  ccwizres in '..\src\ccwizres.pas',
-  ccwdlg in '..\src\ccwdlg.pas' {CCWDialog},
-  ccwiz in '..\src\ccwiz.pas',
-  ccregprc in '..\src\ccregprc.pas';
+  CCCustomBox in '..\src\CCCustomBox.pas' {CustomBox};
 
 end.
