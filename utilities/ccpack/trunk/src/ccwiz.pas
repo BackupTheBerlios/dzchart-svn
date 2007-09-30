@@ -66,6 +66,8 @@ type
     FClassName: string;
     FUnitIdent: string;
     FFileName: string;
+    procedure ReplaceWildcards(var Source: string;
+      const _ModuleIdent, _FormIdent, _AncestorIdent, AddUnit: string);
   public
     constructor Create(ABaseClassName: string);
     { IOTACreator }
@@ -207,7 +209,7 @@ begin
   s := ABaseClassName;
   System.Delete(s, 1, 1); // delete 'T' from the class name
   FBaseClassName := s;
-  (BorlandIDEServices as IOTAModuleServices).GetNewModuleAndClassName(ABaseClassName, FUnitIdent, FClassName, FFileName);
+  (BorlandIDEServices as IOTAModuleServices).GetNewModuleAndClassName(s, FUnitIdent, FClassName, FFileName);
   if (Length(CCWDialog.CCeditClassName.Text) > 2) and (CCWDialog.CCeditClassName.Text <> '') then
     FClassName := CCWDialog.CCeditClassName.Text;
 end;
@@ -281,47 +283,48 @@ begin
   Result := True;
 end;
 
-function TCCModuleCreator.NewFormFile(const FormIdent,
-  AncestorIdent: string): IOTAFile;
+procedure TCCModuleCreator.ReplaceWildcards(var Source: string;
+  const _ModuleIdent, _FormIdent, _AncestorIdent, AddUnit: string);
+begin
+  Source := StringReplace(Source, '%UnitIdent%', _ModuleIdent, [rfReplaceAll]);
+  Source := StringReplace(Source, '%AddUnit%', AddUnit, [rfReplaceAll]);
+  Source := StringReplace(Source, '%ClassName%', FClassName, [rfReplaceAll]);
+  Source := StringReplace(Source, '%FormName%', _FormIdent, [rfReplaceAll]);
+  Source := StringReplace(Source, '%AncestorName%', _AncestorIdent, [rfReplaceAll]);
+end;
+
+function TCCModuleCreator.NewFormFile(const FormIdent, AncestorIdent: string): IOTAFile;
 begin
   Result := nil;
 end;
 
-function TCCModuleCreator.NewImplSource(const ModuleIdent, FormIdent,
-  AncestorIdent: string): IOTAFile;
+function TCCModuleCreator.NewImplSource(const ModuleIdent, FormIdent, AncestorIdent: string): IOTAFile;
 var
   Source: string;
   AddUnit: string;
 begin
-  if GetBaseContainer(FindCustomContainerClass('T' + GetAncestorName)) > 1 then // XxxBox
+  if GetBaseContainer(FindCustomContainerClass('T' + AncestorIdent)) > 1 then // XxxBox
     AddUnit := ', ccBoxes'
   else
     AddUnit := '';
 
-  if IsBaseContainer(FindCustomContainerClass('T' + GetAncestorName)) = -1 then
-    AddUnit := AddUnit + ', ' + GetCustomContainerUnit('T' + GetAncestorName)
-  else
-    AddUnit := AddUnit + '';
+  if IsBaseContainer(FindCustomContainerClass('T' + AncestorIdent)) = -1 then
+    AddUnit := AddUnit + ', ' + GetCustomContainerUnit('T' + AncestorIdent);
 
   if CCWDialog.CCradio.ItemIndex = 1 then
     Source := sCCSourceContainerReg
   else
-    if GetBaseContainer(FindCustomContainerClass('T' + GetAncestorName)) < 2 then // Form or DataModule
+    if GetBaseContainer(FindCustomContainerClass('T' + AncestorIdent)) < 2 then // Form or DataModule
       Source := sCCSourceForm
     else
       Source := sCCSourceContainer;
 
-  Source := StringReplace(Source, '%UnitIdent%', FUnitIdent, [rfReplaceAll]);
-  Source := StringReplace(Source, '%AddUnit%', AddUnit, [rfReplaceAll]);
-  Source := StringReplace(Source, '%ClassName%', FClassName, [rfReplaceAll]);
-  Source := StringReplace(Source, '%FormName%', GetFormName, [rfReplaceAll]);
-  Source := StringReplace(Source, '%AncestorName%', GetAncestorName, [rfReplaceAll]);
+  ReplaceWildcards(Source, ModuleIdent, FormIdent, AncestorIdent, AddUnit);
 
   Result := TOTAFile.Create(Source);
 end;
 
-function TCCModuleCreator.NewIntfSource(const ModuleIdent, FormIdent,
-  AncestorIdent: string): IOTAFile;
+function TCCModuleCreator.NewIntfSource(const ModuleIdent, FormIdent, AncestorIdent: string): IOTAFile;
 begin
   Result := nil;
 end;
