@@ -21,7 +21,15 @@
 //======================================
 // VCL Version Define
 
+{$IFDEF VER185}  // Delphi 2007 (not really necessary since Delphi 2006 also defines VER180)
+      {$DEFINE VER_VCL5}
+{$ENDIF}
+
 {$IFDEF VER180}  // Delphi 2006
+      {$DEFINE VER_VCL5}
+{$ENDIF}
+
+{$IFDEF VER170}  // Delphi 2005
       {$DEFINE VER_VCL5}
 {$ENDIF}
 
