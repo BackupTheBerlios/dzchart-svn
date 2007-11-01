@@ -7,11 +7,10 @@ uses
   Classes,
   SysUtils,
   TestFramework,
-  u_dzFileUtils,
-  u_dzUnitTestUtils;
+  u_dzFileUtils;
 
 type
-  TFileSystemTestCase = class(TdzTestCase)
+  TFileSystemTestCase = class(TTestCase)
   protected
     FTestDir: string;
     procedure SetUp; override;
@@ -42,7 +41,6 @@ type
 
   TestTDirectorySync = class(TFileSystemTestCase)
   private
-    FLargeContent: string;
     FDirA: string;
     FDirB: string;
     FSync: TDirectorySync;
@@ -57,9 +55,8 @@ type
     FCallbacks: TStringList;
     FExistingFiles: TStringList;
     procedure OnSyncDirAbort(_Sender: TObject; const _Src, _Dst: string);
-    procedure OnDirSyncCallback(_Sender: TObject; const _Src, _Dst: string);
-    procedure OnFileSyncCallback(_Sender: TObject; const _Src, _Dst: string; _Total, _Done: Int64);
-    procedure OnFileExistsCallback(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec; var _Action: TFileExistsAction);
+    procedure OnSyncCallback(_Sender: TObject; const _Src, _Dst: string);
+    procedure OnFileExistsCallback(_Sender: TObject; const _Src, _Dst: TFileInfoRec);
     procedure CheckSameText(const _Expected, _Actual, _Msg: string);
   protected
     procedure SetUp; override;
@@ -575,11 +572,9 @@ begin
   TFileSystem.CreateDir(FDirA);
   TFileSystem.CreateDir(FDirB);
 
-  FLargeContent := StringOfChar('a', 5 * 1024 * 1024);
-
   FFile1 := CreateTestfile('a\file1.txt', 'File1');
   FFile2 := CreateTestfile('a\.txt', 'File2');
-  FFile3 := CreateTestfile('a\file3', FLargeContent);
+  FFile3 := CreateTestfile('a\file3', 'File3');
   TFileSystem.CreateDir(FDirA + '\Sub1');
   TFileSystem.CreateDir(FDirA + '\Sub2');
   FFile4 := CreateTestfile('a\Sub2\file4.txt', 'File4');
@@ -627,7 +622,7 @@ begin
   CheckEquals(10, cnt, 'number of files and subdirs');
   CheckTestfile('b\' + ExtractFileName(FFile1), 'File1');
   CheckTestfile('b\' + ExtractFileName(FFile2), 'File2');
-  CheckTestfile('b\' + ExtractFileName(FFile3), FLargeContent);
+  CheckTestfile('b\' + ExtractFileName(FFile3), 'File3');
   CheckSubdirExists('b\Sub1');
   CheckSubdirExists('b\Sub2');
   CheckTestfile('b\Sub2\' + ExtractFileName(FFile4), 'File4');
@@ -642,44 +637,25 @@ begin
 end;
 
 procedure TestTDirectorySync.TestSyncOneWayCallback;
-var
-  Expected: TStringList;
-  i: Integer;
 begin
-  FSync.OnSyncingDir := OnDirSyncCallback;
-  FSync.OnSyncingFile := OnFileSyncCallback;
+  FSync.OnSyncingDir := OnSyncCallback;
+  FSync.OnSyncingFile := OnSyncCallback;
   FSync.SyncOneWay(FDirA, FDirB);
-
-  Expected := TStringList.Create;
-  try
-    Expected.Add(FDirA + ' -> ' + FDirB);
-    Expected.Add(FDirA + '.txt -> ' + FDirB + '.txt (0 of 7)');
-    Expected.Add(FDirA + '.txt -> ' + FDirB + '.txt (7 of 7)');
-    Expected.Add(FDirA + 'file1.txt -> ' + FDirB + 'file1.txt (0 of 7)');
-    Expected.Add(FDirA + 'file1.txt -> ' + FDirB + 'file1.txt (7 of 7)');
-    for i := 0 to 80 do
-      Expected.Add(FDirA + 'file3 -> ' + FDirB + Format('file3 (%d of 5242882)', [i * 65536]));
-    Expected.Add(FDirA + 'file3 -> ' + FDirB + 'file3 (5242882 of 5242882)');
-    Expected.Add(FDirA + 'Sub1 -> ' + FDirB + 'Sub1');
-    Expected.Add(FDirA + 'Sub2 -> ' + FDirB + 'Sub2');
-    Expected.Add(FDirA + 'Sub2\file4.txt -> ' + FDirB + 'Sub2\file4.txt (0 of 7)');
-    Expected.Add(FDirA + 'Sub2\file4.txt -> ' + FDirB + 'Sub2\file4.txt (7 of 7)');
-    Expected.Add(FDirA + 'Sub5 -> ' + FDirB + 'Sub5');
-    Expected.Add(FDirA + 'Sub6 -> ' + FDirB + 'Sub6');
-    CheckEqualsMultiline(Expected.Text, FCallbacks.Text);
-  finally
-    Expected.Free;
-  end;
+  CheckEquals(9, FCallbacks.Count, 'callback count');
+  CheckEquals(FDirA + ' -> ' + FDirB, FCallbacks[0], 'callback 0');
+  CheckEquals(FDirA + '.txt -> ' + FDirB + '.txt', FCallbacks[1], 'callback 1');
+  CheckEquals(FDirA + 'file1.txt -> ' + FDirB + 'file1.txt', FCallbacks[2], 'callback 2');
+  CheckEquals(FDirA + 'file3 -> ' + FDirB + 'file3', FCallbacks[3], 'callback 3');
+  CheckEquals(FDirA + 'Sub1 -> ' + FDirB + 'Sub1', FCallbacks[4], 'callback 4');
+  CheckEquals(FDirA + 'Sub2 -> ' + FDirB + 'Sub2', FCallbacks[5], 'callback 5');
+  CheckEquals(FDirA + 'Sub2\file4.txt -> ' + FDirB + 'Sub2\file4.txt', FCallbacks[6], 'callback 6');
+  CheckEquals(FDirA + 'Sub5 -> ' + FDirB + 'Sub5', FCallbacks[7], 'callback 7');
+  CheckEquals(FDirA + 'Sub6 -> ' + FDirB + 'Sub6', FCallbacks[8], 'callback 8');
 end;
 
-procedure TestTDirectorySync.OnDirSyncCallback(_Sender: TObject; const _Src, _Dst: string);
+procedure TestTDirectorySync.OnSyncCallback(_Sender: TObject; const _Src, _Dst: string);
 begin
   FCallbacks.Add(_Src + ' -> ' + _Dst);
-end;
-
-procedure TestTDirectorySync.OnFileSyncCallback(_Sender: TObject; const _Src, _Dst: string; _Total, _Done: Int64);
-begin
-  FCallbacks.Add(_Src + ' -> ' + _Dst + ' (' + IntToStr(_Done) + ' of ' + IntToStr(_Total) + ')');
 end;
 
 procedure TestTDirectorySync.OnSyncDirAbort(_Sender: TObject; const _Src, _Dst: string);
@@ -693,11 +669,11 @@ begin
     FailNotEquals(_Expected, _Actual, _Msg);
 end;
 
-procedure TestTDirectorySync.OnFileExistsCallback(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec; var _Action: TFileExistsAction);
+procedure TestTDirectorySync.OnFileExistsCallback(_Sender: TObject; const _Src, _Dst: TFileInfoRec);
 begin
-  FExistingFiles.Add(_SrcFile.Filename + ' <> ' + _DstFile.Filename);
-  CheckEquals(_SrcFile.Size, _DstFile.Size, 'Size');
-  CheckEquals(_SrcFile.Timestamp, _DstFile.Timestamp, 'Timestamp');
+  FExistingFiles.Add(_Src.Filename + ' <> ' + _Dst.Filename);
+  CheckEquals(_Src.Size, _Dst.Size, 'Size');
+  CheckEquals(_Src.Timestamp, _Dst.Timestamp, 'Timestamp');
 end;
 
 procedure TestTDirectorySync.TestCheckOneWay;
@@ -755,7 +731,7 @@ begin
   CheckEquals(10, cnt, 'number of files and subdirs');
   CheckTestfile('b\' + ExtractFileName(FFile1), 'File1');
   CheckTestfile('b\' + ExtractFileName(FFile2), 'File2');
-  CheckTestfile('b\' + ExtractFileName(FFile3), FLargeContent);
+  CheckTestfile('b\' + ExtractFileName(FFile3), 'File3');
   CheckSubdirExists('b\Sub1');
   CheckSubdirExists('b\Sub2');
   CheckTestfile('b\Sub2\' + ExtractFileName(FFile4), 'File4');
@@ -779,7 +755,7 @@ begin
   CheckEquals(10, cnt, 'number of files and subdirs');
   CheckTestfile('a\' + ExtractFileName(FFile1), 'File1');
   CheckTestfile('a\' + ExtractFileName(FFile2), 'File2');
-  CheckTestfile('a\' + ExtractFileName(FFile3), FLargeContent);
+  CheckTestfile('a\' + ExtractFileName(FFile3), 'File3');
   CheckSubdirExists('a\Sub1');
   CheckSubdirExists('a\Sub2');
   CheckTestfile('a\Sub2\' + ExtractFileName(FFile4), 'File4');

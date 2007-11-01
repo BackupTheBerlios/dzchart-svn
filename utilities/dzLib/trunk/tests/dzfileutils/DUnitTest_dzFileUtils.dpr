@@ -25,9 +25,7 @@ uses
   u_dzStringUtils in '..\..\src\u_dzStringUtils.pas',
   u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
   u_dzTranslator in '..\..\src\u_dzTranslator.pas',
-  u_dzDateUtils in '..\..\src\u_dzDateUtils.pas',
-  u_dzUnitTestUtils in '..\..\src\u_dzUnitTestUtils.pas',
-  u_dzVariantUtils in '..\..\src\u_dzVariantUtils.pas';
+  u_dzDateUtils in '..\..\src\u_dzDateUtils.pas';
 
 {$R *.RES}
 
