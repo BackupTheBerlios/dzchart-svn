@@ -154,25 +154,21 @@ type
   {: defines the action to take if a file already exists but has a different content }
   TFileExistsAction = (feaIgnore, feaOverwrite);
   TOnSyncing = procedure(_Sender: TObject; const _SrcDir, _DstDir: string) of object;
-  TOnSyncingFile = procedure(_Sender: TObject; const _SrcDir, _DstDir: string; _Total, _Done: Int64) of object;
   {: called if a destination file already exists
      @param Action is the action to take, default is feaIgnore }
   TOnFileExists = procedure(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec; var _Action: TFileExistsAction) of object;
   {: Synchronizes two directories }
   TDirectorySync = class
   private
-    FCurrentSource: string;
-    FCurrentDest: string;
     FOnSyncingDir: TOnSyncing;
-    FOnSyncingFile: TOnSyncingFile;
+    FOnSyncingFile: TOnSyncing;
     FOnFileExists: TOnFileExists;
 //    FOnDifferentFileExists: TOnDifferentFileExists;
 //    FCheckContent: boolean;
 //    procedure doOnDifferentFileExists(const _Filename: string; var _Action: TFileExistsAction);
     procedure doOnSyncingDir(const _SrcDir, _DstDir: string);
-    procedure doOnSyncingFile(const _SrcFile, _DstFile: string; _Total, _Done: Int64);
+    procedure doOnSyncingFile(const _SrcFile, _DstFile: string);
     function doOnFileExists(const _SrcDir, _DstDir, _Filename: string): TFileExistsAction;
-    procedure ProgressStatusCallback(_Status: TCopyProgressStatus; var _Continue: TCopyProgressStatus.TProgressResult);
   public
     {: Checks if there are files in the source directory that are already in
        the destination directory, for each file that exists, the OnFileExists
@@ -180,11 +176,8 @@ type
     procedure CheckOneWay(const _SrcDir, _DstDir: string);
     {: copies all files from DirA to DirB if they don't already exists
        (not implemented: if CheckContent=true, the content existing files will be checked and if
-                         it doesn't match, OnDifferentFileExists is called )
-       @param FlattenDirHierarchy determines whether all files should be copied
-                                  directly DstDir or if subdirectories should
-                                  be created, default is false }
-    procedure SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = false);
+                         it doesn't match, OnDifferentFileExists is called ) }
+    procedure SyncOneWay(const _SrcDir, _DstDir: string);
     {: calls SyncOneWay(DirA, DirB) and SyncOneWay(DirB, DirA)
        (not implemented: if CheckContent=true, the content existing files will be checked and if
                          it doesn't match, OnDifferentFileExists is called ) }
@@ -198,7 +191,7 @@ type
     property OnSyncingDir: TOnSyncing read FOnSyncingDir write FOnSyncingDir;
     {: called when a file is being copied, to abort synchronization,
       raise an exception (e.g. SysUtils.Abort), and catch it in the calling method }
-    property OnSyncingFile: TOnSyncingFile read FOnSyncingFile write FOnSyncingFile;
+    property OnSyncingFile: TOnSyncing read FOnSyncingFile write FOnSyncingFile;
     {: called from CheckOneWay if a destination file already exists }
     property OnFileExists: TOnFileExists read FOnFileExists write FOnFileExists;
   end;
@@ -1312,21 +1305,10 @@ begin
     FOnSyncingDir(Self, _SrcDir, _DstDir);
 end;
 
-procedure TDirectorySync.doOnSyncingFile(const _SrcFile, _DstFile: string; _Total, _Done: Int64);
+procedure TDirectorySync.doOnSyncingFile(const _SrcFile, _DstFile: string);
 begin
   if Assigned(FOnSyncingFile) then
-    FOnSyncingFile(self, _SrcFile, _DstFile, _Total, _Done);
-end;
-
-procedure TDirectorySync.ProgressStatusCallback(_Status: TCopyProgressStatus;
-  var _Continue: TCopyProgressStatus.TProgressResult);
-begin
-  try
-    doOnSyncingFile(FCurrentSource, FCurrentDest, _Status.TotalFileSize.QuadPart, _Status.TotalBytesTransferred.QuadPart);
-  except
-    on e: EAbort do
-      _Continue := prCancel;
-  end;
+    FOnSyncingFile(self, _SrcFile, _DstFile);
 end;
 
 procedure TDirectorySync.CheckOneWay(const _SrcDir, _DstDir: string);
@@ -1343,11 +1325,12 @@ begin
   try
     while EnumA.FindNext(Filename) do begin
       if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then begin
-        CheckOneWay(SrcDirBS + Filename, DstDirBS + Filename);
+        if DirectoryExists(DstDirBS + Filename) then
+          CheckOneWay(SrcDirBS + Filename, DstDirBS + Filename);
       end else if FileExists(DstDirBS + Filename) then begin
         doOnFileExists(SrcDirBS, DstDirBS, Filename);
       end else begin
-        doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename, EnumA.Sr.Size, 0);
+        doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename);
       end;
     end;
   finally
@@ -1355,7 +1338,7 @@ begin
   end;
 end;
 
-procedure TDirectorySync.SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = false);
+procedure TDirectorySync.SyncOneWay(const _SrcDir, _DstDir: string);
 var
   Filename: string;
   EnumA: TSimpleDirEnumerator;
@@ -1368,27 +1351,18 @@ begin
   EnumA := TSimpleDirEnumerator.Create(SrcDirBS + '*.*');
   try
     while EnumA.FindNext(Filename) do begin
-      FCurrentSource := SrcDirBS + Filename;
       if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then begin
-        if _FlattenDirHierarchy then
-          FCurrentDest := _DstDir
-        else begin
-          FCurrentDest := DstDirBS + Filename;
-          if not DirectoryExists(FCurrentDest) then
-            TFileSystem.CreateDir(FCurrentDest);
+        if not DirectoryExists(DstDirBS + Filename) then
+          TFileSystem.CreateDir(DstDirBS + Filename);
+        SyncOneWay(SrcDirBS + Filename, DstDirBS + Filename);
+      end else if FileExists(DstDirBS + Filename) then begin
+        if doOnFileExists(SrcDirBS, DstDirBS, Filename) = feaOverwrite then begin
+          doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename);
+          TFileSystem.CopyFile(SrcDirBS + Filename, DstDirBS + Filename, false, true);
         end;
-        SyncOneWay(FCurrentSource, FCurrentDest, _FlattenDirHierarchy);
       end else begin
-        FCurrentDest := DstDirBS + Filename;
-        if FileExists(FCurrentDest) then begin
-          if doOnFileExists(SrcDirBS, DstDirBS, Filename) = feaOverwrite then begin
-            if cfwOK <> TFileSystem.CopyFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, [cfwRaiseException]) then
-              SysUtils.Abort;
-          end;
-        end else begin
-          if cfwOK <> TFileSystem.CopyFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, [cfwRaiseException, cfwFailIfExists]) then
-            SysUtils.Abort;
-        end;
+        doOnSyncingFile(SrcDirBS + Filename, DstDirBS + Filename);
+        TFileSystem.CopyFile(SrcDirBS + Filename, DstDirBS + Filename, true, true);
       end;
     end;
   finally

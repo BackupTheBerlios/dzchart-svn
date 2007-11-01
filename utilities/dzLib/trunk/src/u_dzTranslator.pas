@@ -7,9 +7,7 @@ unit u_dzTranslator;
 // for now uses gnugettext
 {$DEFINE gnugettext}
 {$ELSE}
-{$IFNDEF NO_TRANSLATION_HINT}
 {$MESSAGE HINT 'translation is turned off, remove NO_TRANSLATION define to turn it on'}
-{$ENDIF}
 {$ENDIF}
 
 interface
@@ -141,21 +139,7 @@ end;
 {$IFDEF gnugettext}
 initialization
   // translate runtime library
-{$IFDEF DELPHI6}
-  AddDomainForResourceString('delphi6');
-{$ELSE}{$IFDEF DELPHI7}
-  AddDomainForResourceString('delphi7');
-{$ELSE}{$IFDEF DELPHI10}
-  AddDomainForResourceString('delphi2006');
-{$ELSE}{$IFDEF DELPHI11}
-  // currently we don't have translations for Delphi2007, so we use the ones from Delphi2006 and pray... ;-)
-  AddDomainForResourceString('delphi2006');
-{$ELSE}
-  'unknown Delphi version!'
-{$ENDIF}
-{$ENDIF}
-{$ENDIF}
-{$ENDIF}
+  AddDomainForResourceString('delphi');
 
   // ignore these VCL properties / classes
   TP_GlobalIgnoreClassProperty(TControl, 'ImeName');

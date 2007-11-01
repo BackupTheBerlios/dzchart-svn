@@ -242,21 +242,12 @@ function TComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
 
 {: Gets the object pointer of the selected listbox item
-   @param lst is the TCustomListbox (descendant) to read from
+   @param cmb is the TCustomListbox (descendant) to read from
    @param Idx is the listbox's ItemIndex, only valid if the function returns true
    @param Obj is the value of the object pointer of the selected item, only valid
           if the function returns true
    @returns true, if these values are valid }
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
-
-{: Deletes the selected listbox item
-   @param lst is the TCustomListbox (descendant) to read from
-   @param Idx is the listbox's ItemIndex, only valid if the function returns true
-          if the function returns true
-   @returns true, if these values are valid }
-function TListBox_DeleteSelected(_lst: TCustomListbox; out _Idx: integer): boolean; overload;
-function TListBox_DeleteSelected(_lst: TCustomListbox): boolean; overload;
-function TListBox_DeleteSelected(_lst: TCustomListBox; out _s: string): boolean; overload;
 
 {: Gets the caption of the given or selected item in the RadioGroup
    @param rg is the TCustomRadioGroup descendant to read
@@ -846,33 +837,6 @@ begin
   Result := _Idx <> -1;
   if Result then
     _Obj := _lst.Items.Objects[_Idx];
-end;
-
-function TListBox_DeleteSelected(_lst: TCustomListbox; out _Idx: integer): boolean;
-begin
-  _Idx := _lst.ItemIndex;
-  Result := _Idx <> -1;
-  if Result then
-    _lst.Items.Delete(_Idx);
-end;
-
-function TListBox_DeleteSelected(_lst: TCustomListBox; out _s: string): boolean; overload;
-var
-  Idx: Integer;
-begin
-  Idx := _lst.ItemIndex;
-  Result := Idx <> -1;
-  if Result then begin
-    _s := _lst.Items[Idx];
-    _lst.Items.Delete(Idx);
-  end;
-end;
-
-function TListBox_DeleteSelected(_lst: TCustomListbox): boolean;
-var
-  Idx: integer;
-begin
-  Result := TListBox_DeleteSelected(_lst, Idx);
 end;
 
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
