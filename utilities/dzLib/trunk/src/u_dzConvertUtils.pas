@@ -185,6 +185,31 @@ function Float2Str(_flt: extended; _Width, _Decimals: integer): string; overload
    @returns a string representation of the floating point value }
 function Float2Str(_flt: extended; _Decimals: integer): string; overload;
 
+// these contants refer to the "Xx binary byte" units as defined by the
+// International Electronical Commission (IEC) and endorsed by the
+// IEE and CiPM
+const
+  OneKibiByte = Int64(1024);
+  OneMebiByte = Int64(1024) * OneKibiByte;
+  OneGibiByte = Int64(1024) * OneMebiByte;
+  OneTebiByte = Int64(1024) * OneGibiByte;
+  OnePebiByte = Int64(1024) * OneTebiByte;
+  OneExbiByte = Int64(1024) * OnePebiByte;
+
+{: Converts a file size to a human readable string, e.g. 536870912000 = 5.00 GiB (gibibyte) }
+function FileSizeToHumanReadableString(_FileSize: Int64): string;
+
+const
+  SecondsPerMinute = 60;
+  MinutesPerHour = 60;
+  SecondsPerHour = SecondsPerMinute * MinutesPerHour;
+  HoursPerDay = 24;
+  MinutesPerDay = HoursPerDay * MinutesPerHour;
+  SecondsPerDay = MinutesPerDay * SecondsPerMinute;
+
+{: returns a human readable string of the form '5d 23h' or '25h 15m' or '20m 21s' }
+function SecondsToHumanReadableString(_Seconds: Int64): string;
+
 implementation
 
 uses
@@ -520,6 +545,36 @@ function Str2Float(_s: string; const _Source: string; _DecSeparator: char = '.')
 begin
   if not TryStr2Float(_s, Result, _DecSeparator) then
     raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_FLOAT_VALUE_SS, [_s, _Source]);
+end;
+
+function FileSizeToHumanReadableString(_FileSize: Int64): string;
+begin
+  if _FileSize > 5 * OneExbiByte then
+    Result := Format(_('%.2f EiB'), [_FileSize / OneExbiByte])
+  else if _FileSize > 5 * OnePebiByte then
+    Result := Format(_('%.2f PiB'), [_FileSize / OnePebiByte])
+  else if _FileSize > 5 * OneTebiByte then
+    Result := Format(_('%.2f TiB'), [_FileSize / OneTebiByte])
+  else if _FileSize > 5 * OneGibiByte then
+    Result := Format(_('%.2f GiB'), [_FileSize / OneGibiByte])
+  else if _FileSize > 5 * OneMebiByte then
+    Result := Format(_('%.2f MiB'), [_FileSize / OneMebiByte])
+  else if _FileSize > 5 * OneKibiByte then
+    Result := Format(_('%.2f KiB'), [_FileSize / OneKibiByte])
+  else
+    Result := Format(_('%d Bytes'), [_FileSize]);
+end;
+
+function SecondsToHumanReadableString(_Seconds: Int64): string;
+begin
+  if _Seconds > SecondsPerDay then
+    Result := Format('%dd %dh', [_Seconds div SecondsPerDay, (_Seconds div SecondsPerHour) mod HoursPerDay])
+  else if _Seconds > Round(1.5 * SecondsPerHour) then
+    Result := Format('%dh %dm', [_Seconds div SecondsPerHour, (_Seconds div SecondsPerMinute) mod MinutesPerHour])
+  else if _Seconds > Round(1.5 * SecondsPerMinute) then
+    Result := Format('%dm %ds', [_Seconds div SecondsPerMinute, _Seconds mod SecondsPerMinute])
+  else
+    Result := Format('%ds', [_Seconds]);
 end;
 
 initialization
