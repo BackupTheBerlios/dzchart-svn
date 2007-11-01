@@ -290,7 +290,7 @@ end;
 function TExecutor.Kill: boolean;
 begin
   case GetStatus of
-    esInvalid: raise ENoProcess.CreateFmt('Process has not yet been started'#13#10'%s', ['']);
+    esInvalid: raise ENoProcess.Create('Process has not yet been started');
     esRunning: Result := TerminateProcess(fProcessInfo.hProcess, $FFFFFFFF);
   else
     Result := true;
