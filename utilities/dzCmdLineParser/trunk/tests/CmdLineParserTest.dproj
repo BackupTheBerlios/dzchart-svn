@@ -63,25 +63,6 @@
       
       
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcldb100.bpl">Borland Database Components</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\bin\dclado100.bpl">Borland ADO DB Components</Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcldbx100.bpl">Borland dbExpress Components</Excluded_Packages>
@@ -108,14 +89,14 @@
     <DelphiCompile Include="CmdLineParserTest.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="u_dzCmdLineParser.pas" />
+    <DCCReference Include="..\src\u_dzCmdLineParser.pas" />
+    <DCCReference Include="..\src\u_dzGetOpt.pas" />
+    <DCCReference Include="..\src\u_dzOptionDescList.pas" />
+    <DCCReference Include="..\src\u_dzOptionFoundList.pas" />
+    <DCCReference Include="..\src\u_dzOptionNameList.pas" />
+    <DCCReference Include="..\src\u_dzParamDescList.pas" />
+    <DCCReference Include="..\src\u_dzParamFoundList.pas" />
     <DCCReference Include="u_dzCmdLineParser_UnitTest.pas" />
-    <DCCReference Include="u_dzGetOpt.pas" />
     <DCCReference Include="u_dzGetOpt_UnitTest.pas" />
-    <DCCReference Include="u_dzOptionDescList.pas" />
-    <DCCReference Include="u_dzOptionFoundList.pas" />
-    <DCCReference Include="u_dzOptionNameList.pas" />
-    <DCCReference Include="u_dzParamDescList.pas" />
-    <DCCReference Include="u_dzParamFoundList.pas" />
   </ItemGroup>
 </Project>

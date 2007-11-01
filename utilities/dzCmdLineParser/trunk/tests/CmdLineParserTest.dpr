@@ -20,13 +20,13 @@ uses
   GUITestRunner,
   TextTestRunner,
   u_dzCmdLineParser_UnitTest in 'u_dzCmdLineParser_UnitTest.pas',
-  u_dzCmdLineParser in 'u_dzCmdLineParser.pas',
-  u_dzGetOpt in 'u_dzGetOpt.pas',
-  u_dzOptionDescList in 'u_dzOptionDescList.pas',
-  u_dzParamDescList in 'u_dzParamDescList.pas',
-  u_dzParamFoundList in 'u_dzParamFoundList.pas',
-  u_dzOptionNameList in 'u_dzOptionNameList.pas',
-  u_dzOptionFoundList in 'u_dzOptionFoundList.pas',
+  u_dzCmdLineParser in '..\src\u_dzCmdLineParser.pas',
+  u_dzGetOpt in '..\src\u_dzGetOpt.pas',
+  u_dzOptionDescList in '..\src\u_dzOptionDescList.pas',
+  u_dzParamDescList in '..\src\u_dzParamDescList.pas',
+  u_dzParamFoundList in '..\src\u_dzParamFoundList.pas',
+  u_dzOptionNameList in '..\src\u_dzOptionNameList.pas',
+  u_dzOptionFoundList in '..\src\u_dzOptionFoundList.pas',
   u_dzGetOpt_UnitTest in 'u_dzGetOpt_UnitTest.pas';
 
 {$R *.RES}
