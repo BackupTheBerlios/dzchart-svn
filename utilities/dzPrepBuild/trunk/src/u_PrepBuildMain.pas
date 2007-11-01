@@ -174,6 +174,8 @@ var
   IconFile: string;
   Project: string;
 begin
+  WriteLn('dzPrepBuild');
+
   if FGetOpt.OptionsFoundList.Count = 0 then
     Usage(_('You must supply some options.'));
 
