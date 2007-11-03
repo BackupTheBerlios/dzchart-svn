@@ -140,7 +140,7 @@ type
 type
   TCmdLineParser = class
   public
-    {: parses the CmdLine string and returns the options and paramteters
+    {: parses the CmdLine string and returns the options and parameters
        @param CmdLine is a string with the commandline to parse
        @param Options is a TStrings instance which returns all options found as
               name=value pairs,
