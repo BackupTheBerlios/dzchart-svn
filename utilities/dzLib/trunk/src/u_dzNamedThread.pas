@@ -16,10 +16,10 @@ uses
 type
   {: This record must be filled to set the name of a thread }
   TThreadNameInfo = record
-    FType: LongWord;     // must be 0x1000
-    FName: PChar;        // pointer to name (in user address space)
+    FType: LongWord; // must be 0x1000
+    FName: PChar; // pointer to name (in user address space)
     FThreadID: LongWord; // thread ID (-1 indicates caller thread)
-    FFlags: LongWord;    // reserved for future use, must be zero
+    FFlags: LongWord; // reserved for future use, must be zero
   end;
 
 {: Set the name for the current thread to
@@ -31,11 +31,13 @@ type
      inherited Execute in descendants! }
   TNamedThread = class(TThread)
   protected
+    FThreadName: string;
     {: Calls SetThreadName with the given name or the class name if empty
        @param Name is the name to use, if empty, the class name will be used }
-    procedure SetName(_Name: string = ''); virtual;
+    procedure SetName(const _Name: string = ''); virtual;
     {: Calls SetName }
     procedure Execute; override;
+    function GetThreadName: string;
   end;
 
 implementation
@@ -44,12 +46,12 @@ procedure SetThreadName(const _Name: string);
 var
   ThreadNameInfo: TThreadNameInfo;
 begin
-  ThreadNameInfo.FType:= $1000;
-  ThreadNameInfo.FName:= PChar(_Name);
-  ThreadNameInfo.FThreadID:= $FFFFFFFF;
-  ThreadNameInfo.FFlags:= 0;
+  ThreadNameInfo.FType := $1000;
+  ThreadNameInfo.FName := PChar(_Name);
+  ThreadNameInfo.FThreadID := $FFFFFFFF;
+  ThreadNameInfo.FFlags := 0;
   try
-    RaiseException($406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord), @ThreadNameInfo );
+    RaiseException($406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord), @ThreadNameInfo);
   except
     // ignore
   end;
@@ -62,11 +64,18 @@ begin
   SetName();
 end;
 
-procedure TNamedThread.SetName(_Name: string = '');
+function TNamedThread.GetThreadName: string;
+begin
+  Result := FThreadName;
+end;
+
+procedure TNamedThread.SetName(const _Name: string = '');
 begin
   if _Name = '' then
-    _Name := ClassName;
-  SetThreadName(_Name);
+    FThreadName := ClassName
+  else
+    FThreadName := _Name;
+  SetThreadName(FThreadName);
 end;
 
 initialization

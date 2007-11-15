@@ -255,6 +255,40 @@ function StringOrNull(_P: PChar): string;
 function GetUserDefaultLocaleSettings: TFormatSettings;
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 
+type
+  {: Helper class for building a text line }
+  TLineBuilder = class
+  private
+    FSeparator: string;
+    FContent: string;
+  public
+    {: Creates a TLineBuilder instance with the given separator
+       @param Separator is the separator string to use, defaults to TAB (#9) }
+    constructor Create(const _Separator: string = #9);
+    {: Assigns the contents of another TLineBuilder instance }
+    procedure Assign(_Source: TLineBuilder);
+    {: Adds a string column }
+    procedure Add(const _Column: string); overload;
+    {: Adds an integer value column }
+    procedure Add(_IntValue: integer); overload;
+    {: Adds a floating point value column with the given number of decimals }
+    procedure Add(_FloatValue: extended; _Decimals: integer); overload;
+    {: Adds a column with a time in hh:mm:ss format }
+    procedure Add(_Hours, _Minutes, _Seconds: integer); overload;
+    {: Adds a boolean column, with 'Y' for true and 'N' for false }
+    procedure Add(_b: Boolean); overload;
+    {: Clears the line }
+    procedure Clear;
+    {: Appends the contents of the given line }
+    procedure Append(_Line: TLineBuilder);
+    {: Prepends the contents of the given line }
+    procedure Prepend(_Line: TLineBuilder);
+    {: Extracts the first column from the line, returns false when empty }
+    function ExtractFirst(out _Column: string): boolean;
+    {: allows read access to the content that has been built }
+    property Content: string read FContent;
+  end;
+
 implementation
 
 uses
@@ -950,6 +984,97 @@ end;
 function GetUserDefaultLocaleSettings: TFormatSettings;
 begin
   GetLocaleFormatSettings(GetUserDefaultLCID, Result);
+end;
+
+{ TLineBuilder }
+
+constructor TLineBuilder.Create(const _Separator: string);
+begin
+  inherited Create;
+  FSeparator := _Separator;
+end;
+
+procedure TLineBuilder.Add(_IntValue: integer);
+begin
+  Add(IntToStr(_IntValue));
+end;
+
+procedure TLineBuilder.Add(_FloatValue: extended; _Decimals: integer);
+begin
+  Add(Float2Str(_FloatValue, _Decimals));
+end;
+
+procedure TLineBuilder.Add(const _Column: string);
+begin
+  if FContent <> '' then
+    FContent := FContent + FSeparator;
+  FContent := FContent + _Column;
+end;
+
+procedure TLineBuilder.Add(_Hours, _Minutes, _Seconds: integer);
+
+  function ZeroPadLeft(_Value: Integer; _Len: Integer): string;
+  begin
+    Str(_Value, Result);
+    while Length(Result) < _Len do
+      Result := '0' + Result;
+  end;
+
+begin
+  Add(ZeroPadLeft(_Hours, 2) + ':' + ZeroPadLeft(_Minutes, 2) + ':' + ZeroPadLeft(_Seconds, 2));
+end;
+
+procedure TLineBuilder.Add(_b: Boolean);
+begin
+  Add(IfThen(_B, 'Y', 'N'));
+end;
+
+procedure TLineBuilder.Append(_Line: TLineBuilder);
+var
+  s: string;
+begin
+  s := _Line.Content;
+  if s = '' then
+    exit;
+  if FContent <> '' then
+    FContent := FContent + FSeparator + s
+  else
+    FContent := s;
+end;
+
+procedure TLineBuilder.Assign(_Source: TLineBuilder);
+begin
+  FContent := _Source.Content;
+end;
+
+procedure TLineBuilder.Clear;
+begin
+  FContent := '';
+end;
+
+function TLineBuilder.ExtractFirst(out _Column: string): boolean;
+var
+  p: Integer;
+begin
+  p := Pos(FSeparator, FContent);
+  Result := p <> 0;
+  if Result then begin
+    _Column := LeftStr(FContent, p - 1);
+    FContent := Copy(FContent, p + 1);
+  end;
+end;
+
+procedure TLineBuilder.Prepend(_Line: TLineBuilder);
+var
+  s: string;
+begin
+  s := _Line.Content;
+  if s = '' then
+    exit;
+  if FContent <> '' then
+    FContent := s + FSeparator + FContent
+  else
+    FContent := s;
 end;
 
 end.

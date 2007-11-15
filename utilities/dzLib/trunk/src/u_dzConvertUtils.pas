@@ -185,6 +185,8 @@ function Float2Str(_flt: extended; _Width, _Decimals: integer): string; overload
    @returns a string representation of the floating point value }
 function Float2Str(_flt: extended; _Decimals: integer): string; overload;
 
+function TryRound(_flt: extended; out _wrd: word): boolean;
+
 // these contants refer to the "Xx binary byte" units as defined by the
 // International Electronical Commission (IEC) and endorsed by the
 // IEE and CiPM
@@ -447,6 +449,17 @@ end;
 function Float2Str(_flt: extended; _Decimals: integer): string;
 begin
   Str(_Flt: 0: _Decimals, Result);
+end;
+
+function TryRound(_flt: extended; out _wrd: word): boolean;
+begin
+  Result := (_flt >= 0) and (_flt <= $FFFF);
+  if Result then
+    try
+      _wrd := Round(_flt);
+    except
+      Result := false;
+    end;
 end;
 
 function Str2Int(_s: string; _Default: integer): integer;

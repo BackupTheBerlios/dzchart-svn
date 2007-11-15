@@ -57,47 +57,47 @@ const
 
 {: Emulates this infamous Visual Basic function of which nobody actually knows
    what it does.}
-
 function TwipsPerPixelX(_Handle: hdc): Extended;
 
 {: Emulates this infamous Visual Basic function of which nobody actually knows
    what it does.}
-
 function TwipsPerPixelY(_Handle: hdc): Extended;
 
 {: Returns the name for the HKey constant. }
-
 function HKeyToString(_HKey: HKey): string;
 
 {: Returns the name for the TRegDataType Value. }
-
 function RegDataTypeToString(_DataType: TRegDataType): string;
 
 {: returns a hex dump of the buffer (no spaces added)
    @param(Buffer is the memory block to dump)
    @param(Len is the length of the block)
    @returns(a string containing the hex dump of the buffer) }
-
 function HexDump(const _Buffer; _Len: integer): string;
 
-{: returns a hex dump of the zero terminated string s }
+{: hex dumps a double value }
+function HexDumpDouble(const _dbl: Double): string;
 
+{: hex dumps an extended value }
+function HexDumpExtended(const _ext: Extended): string;
+
+{: returns a hex dump of the zero terminated string s }
 function HexDumpString(const _s: string): string;
 
 {: converts a hexdump of a double back to a double value }
-
 procedure HexDumpToDbl(const _s: string; var _Value: double);
+
+{: converts a hexdump of an extended back to an extended value }
+procedure HexDumpToExtended(const _s: string; var _Value: Extended);
 
 {: Converts an integer to a boolean.
    @param(Int is the integer to convert)
    @returns(false, if the integer is 0, true otherwise) }
-
 function IntToBool(_Int: integer): boolean;
 
 {: Converts a boolean to an integer.
    @param(B is the boolean to convert)
    @returns(0 if the boolean is false, 1 if it is true) }
-
 function BoolToInt(_B: boolean): integer;
 
 // Variant to other type conversion functions
@@ -114,7 +114,6 @@ function BoolToInt(_B: boolean): integer;
    @param(Value is the variants integer value, only valid if the function
           returns true.)
    @returns(true, if the variant could be converted to integer, false if not.) }
-
 function Var2IntConditional(const _v: variant; out _Value: integer): boolean;
 
 {: Converts a variant to an integer.
@@ -122,7 +121,6 @@ function Var2IntConditional(const _v: variant; out _Value: integer): boolean;
    @param(v Variant value to convert)
    @param(Default Value to return if v is empty or null)
    @returns(the integer value of v or the Default if v can not be converted) }
-
 function Var2Int(const _v: variant; _Default: integer): integer;
 
 {: Converts a variant to an integer.
@@ -133,7 +131,6 @@ function Var2Int(const _v: variant; _Default: integer): integer;
    @raises(EVarIsNull if v is null)
    @raises(EVarIsEmpty if v is empty)
    @raises(EVariantConvertError if there is some other conversion error) }
-
 function Var2IntEx(const _v: variant; const _Source: string): integer;
 
 {: Converts a variant to the string representation of an integer.
@@ -142,7 +139,6 @@ function Var2IntEx(const _v: variant; const _Source: string): integer;
    @param(NullValue String value to return if v is empty or null)
    @returns(the string representation of the integer value of v or the
             NullValue if v can not be converted) }
-
 function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
 {: Converts a variant to a double.
@@ -151,7 +147,6 @@ function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): str
    @param(Value is the variant's double value, only valid if the function
                 returns true.)
    @returns(true, if the varian could be converted to double, false if not) }
-
 function TryVar2Dbl(const _v: variant; out _Value: double): boolean;
 function Var2DblConditional(const _v: variant; out _Value: double): boolean; deprecated; // use TryVar2Dbl
 
@@ -160,7 +155,6 @@ function Var2DblConditional(const _v: variant; out _Value: double): boolean; dep
    @param(v Variant value to convert)
    @param(Default Value to return if v is empty or null)
    @returns(the double value of v or the Default if v can not be converted) }
-
 function Var2Dbl(const _v: variant; const _Default: double): double;
 
 {: Converts a variant to a double.
@@ -171,7 +165,6 @@ function Var2Dbl(const _v: variant; const _Default: double): double;
    @raises(EVarIsNull if v is null)
    @raises(EVarIsEmpty if v is empty)
    @raises(EVariantConvertError if there is some other conversion error) }
-
 function Var2DblEx(const _v: variant; const _Source: string): double;
 
 {: Converts a variant to the string representation of a double.
@@ -181,7 +174,6 @@ function Var2DblEx(const _v: variant; const _Source: string): double;
    @param(NullValue String value to return if v is empty or null)
    @returns(the string representation of the double value of v or the
             NullValue if v can not be converted) }
-
 function Var2DblStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
 {: Converts a variant to a TDateTime.
@@ -192,14 +184,12 @@ function Var2DblStr(const _v: variant; const _NullValue: string = '*NULL*'): str
    @raises(EVarIsNull if v is null)
    @raises(EVarIsEmpty if v is empty)
    @raises(EVariantConvertError if there is some other conversion error) }
-
 function Var2DateTimeEx(const _v: variant; const _Source: string): TDateTime;
 
 {: Converts a variant to an ISO format DateTime string (yyyy-mm-dd hh:mm:ss)
    @param(v Variant value to convert)
    @param(NullValue String value to return if v is empty or null)
    @returns(an ISO format DateTime string of v or NullValue if v can not be converted) }
-
 function Var2DateTimeStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
 {: Converts a variant to a string.
@@ -207,7 +197,6 @@ function Var2DateTimeStr(const _v: variant; const _NullValue: string = '*NULL*')
    @param(v Variant value to convert)
    @param(Default Value to return if v is empty or null)
    @returns(the string value of v or the Default if v can not be converted) }
-
 function Var2Str(const _v: variant; const _Default: string = '*NULL*'): string;
 
 {: Converts a variant to a string.
@@ -218,7 +207,6 @@ function Var2Str(const _v: variant; const _Default: string = '*NULL*'): string;
    @raises(EVarIsNull if v is null)
    @raises(EVarIsEmpty if v is empty)
    @raises(EVariantConvertError if there is some other conversion error) }
-
 function Var2StrEx(_v: variant; const _Source: string): string;
 
 {: Uses GetLastError to get the last WinAPI error code, then
@@ -775,17 +763,43 @@ begin
   end;
 end;
 
+function HexDumpDouble(const _dbl: Double): string;
+begin
+  Result := HexDump(_dbl, SizeOf(Double));
+end;
+
+function HexDumpExtended(const _ext: Extended): string;
+begin
+  Result := HexDump(_Ext, SizeOf(Extended));
+end;
+
 procedure HexDumpToDbl(const _s: string; var _Value: double);
 type
-  TDblMem = array[0..SizeOf(double)] of byte;
+  TBuffer = array[0..SizeOf(_Value)] of byte;
 var
   i: integer;
   dec: LongWord;
-  p: ^TDblMem;
+  p: ^TBuffer;
 begin
-  Assert(Length(_s) = SizeOf(double) * 2);
+  Assert(Length(_s) = SizeOf(_Value) * 2);
   p := @_Value;
-  for i := 0 to SizeOf(Double) - 1 do begin
+  for i := 0 to SizeOf(_Value) - 1 do begin
+    Dec := Hex2Long(Copy(_s, i * 2 + 1, 2));
+    p^[i] := Dec;
+  end;
+end;
+
+procedure HexDumpToExtended(const _s: string; var _Value: Extended);
+type
+  TBuffer = array[0..SizeOf(_Value)] of byte;
+var
+  i: integer;
+  dec: LongWord;
+  p: ^TBuffer;
+begin
+  Assert(Length(_s) = SizeOf(_Value) * 2);
+  p := @_Value;
+  for i := 0 to SizeOf(_Value) - 1 do begin
     Dec := Hex2Long(Copy(_s, i * 2 + 1, 2));
     p^[i] := Dec;
   end;

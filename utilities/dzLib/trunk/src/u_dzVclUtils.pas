@@ -90,6 +90,19 @@ function TGrid_GetText(_Grid: TCustomGrid): string;
 {: sets the row count to FixedRows + 1 and clears all non-fixed cells }
 procedure TStringGrid_Clear(_Grid: TStringGrid);
 
+function TStringGrid_AddColumn(_Grid: TStringGrid; const _Caption: string): integer;
+
+{: exports the contents of the string grid to a tab separated text file
+   @param Grid is the string grid to export
+   @param Filename is the name of the text file to create }
+procedure TStringGrid_ExportToFile(_Grid: TStringGrid; const _Filename: string);
+
+{: scrolls up the lines of a string grid
+   @param Grid is the TStringGrid to scroll
+   @param Top is the topmost row to scroll, if passed as -1 defaults to the first non-fixed row
+   @param Bottom is the bottommost row to scroll, if passed as -1 defaults to RowCount-1 }
+procedure TStringGrid_ScrollUp(_Grid: TStringGrid; _Top: integer = -1; _Bottom: integer = -1);
+
 {: sets the row count, taking the fixed rows into account }
 procedure TStringGrid_SetRowCount(_Grid: TStringGrid; _RowCount: integer);
 
@@ -397,6 +410,67 @@ begin
   _Grid.RowCount := _Grid.FixedRows + 1;
   for c := _Grid.FixedCols to _Grid.ColCount - 1 do
     _Grid.Cells[c, _Grid.FixedRows] := '';
+end;
+
+function TStringGrid_AddColumn(_Grid: TStringGrid; const _Caption: string): integer;
+var
+  i: Integer;
+begin
+  Result := _Grid.ColCount;
+  for i := _Grid.ColCount - 1 downto 0 do begin
+    if _Grid.Cells[i, 0] = '' then begin
+      Result := i;
+    end;
+  end;
+
+  if Result >= _Grid.ColCount then
+    TStringGrid_SetColCount(_Grid, Result + 1);
+  _Grid.Cells[Result, 0] := _Caption;
+end;
+
+procedure TStringGrid_ExportToFile(_Grid: TStringGrid; const _Filename: string);
+var
+  Line: TLineBuilder;
+  r: Integer;
+  t: Text;
+  c: Integer;
+begin
+  AssignFile(t, _FileName);
+  Rewrite(t);
+  try
+    Line := TLineBuilder.Create;
+    try
+      for r := 0 to _Grid.RowCount - 1 do begin
+        Line.Clear;
+        for c := 0 to _Grid.ColCount - 1 do begin
+          Line.Add(_Grid.Cells[c, r]);
+        end;
+        WriteLn(t, Line.Content);
+      end;
+    finally
+      Line.Free;
+    end;
+  finally
+    CloseFile(t);
+  end;
+end;
+
+procedure TStringGrid_ScrollUp(_Grid: TStringGrid; _Top: integer = -1; _Bottom: integer = -1);
+var
+  r: Integer;
+  c: Integer;
+begin
+  if _Top = -1 then
+    _Top := _Grid.FixedRows;
+  if _Bottom = -1 then
+    _Bottom := _Grid.RowCount - 1;
+  for r := _Top to _Bottom - 1 do begin
+    for c := _Grid.FixedCols to _Grid.ColCount - 1 do
+      _Grid.Cells[c, r] := _Grid.Cells[c, r + 1];
+  end;
+  if _Bottom > _Top then
+    for c := _Grid.FixedCols to _Grid.ColCount - 1 do
+      _Grid.Cells[c, _Bottom] := '';
 end;
 
 function TStringGrid_DeleteRow(_Grid: TStringGrid; _Row: integer): boolean;

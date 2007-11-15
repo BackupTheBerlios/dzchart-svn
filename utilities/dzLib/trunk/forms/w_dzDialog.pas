@@ -221,6 +221,8 @@ type
     class function ShowException(_e: Exception; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = '';
       _Parent: TComponent = nil): integer; overload;
+    class function ShowError(const _ErrorMsg, _Details: string; const _Buttons: array of TDialogButtonEnum;
+      const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
     {: Simple function to display a message.
        This will display a dialog with the icon indicated by DialogType, the
        Message given, containing the Buttons specified and optionally an
@@ -229,14 +231,14 @@ type
        @param Message is the message text to display
        @param Buttons is an array of buttons to show (Note: This is an array of
                       buttons, not a set, so the order is important!)
+       @param Owner is the owner component to be used in the constructor, defaults
+                     to nil
        @param OptionDesc gives the description for the Buttons, if not given,
                          defaults to an empty string
-       @param Parent is the parent component to be used in the constructor, defaults
-                     to nil
        @returns one of the mrXxxx values }
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
-      const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = '';
-      _Parent: TComponent = nil): integer; overload;
+      const _Buttons: array of TDialogButtonEnum; _Owner: TComponent = nil;
+      const _OptionDesc: string = ''): integer; overload;
     {: Complex function to display a message.
        This will display a dialog with the icon indicated by DialogType, the
        Message given, containing the Buttons specified and optionally an
@@ -252,15 +254,16 @@ type
                            the custom buttons, the number of entries must
                            correspond to the number of dbeCustom entries in the
                            Buttons array
+       @param Owner is the owner component to be used in the constructor, defaults
+                     to nil
        @param OptionDesc gives the description for the Buttons, if not given,
                          defaults to an empty string
-       @param Parent is the parent component to be used in the constructor, defaults
-                     to nil
        @returns one of the mrXxxx values }
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer;
-      const _OptionDesc: string = ''; _Parent: TComponent = nil): integer; overload;
+      _Owner: TComponent = nil;
+      const _OptionDesc: string = ''): integer; overload;
     {: Creates a Tf_dzDialog instance, shows it and returns it. The created
        dialog instance must be freed by the caller
        @param DialogType gives the icon to display
@@ -313,12 +316,12 @@ end;
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType;
   const _Message: string; const _Buttons: array of TDialogButtonEnum;
   const _CustomButtons: array of string; const _CustomResults: array of integer;
-  const _OptionDesc: string; _Parent: TComponent): integer;
+  _Owner: TComponent = nil;  const _OptionDesc: string=''): integer;
 var
   frm: Tf_dzDialog;
   i: Integer;
 begin
-  frm := Tf_dzDialog.Create(_Parent);
+  frm := Tf_dzDialog.Create(_Owner);
   try
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
@@ -338,11 +341,11 @@ begin
 end;
 
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
-  const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
+  const _Buttons: array of TDialogButtonEnum; _Owner: TComponent = nil; const _OptionDesc: string = ''): integer;
 var
   frm: Tf_dzDialog;
 begin
-  frm := Tf_dzDialog.Create(_Parent);
+  frm := Tf_dzDialog.Create(_Owner);
   try
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
@@ -415,6 +418,24 @@ end;
 class function Tf_dzDialog.ShowException(_e: Exception; _Parent: TComponent = nil): integer;
 begin
   Result := ShowException(_e, '', [dbeOk], '', _Parent);
+end;
+
+class function Tf_dzDialog.ShowError(const _ErrorMsg, _Details: string; const _Buttons: array of TDialogButtonEnum;
+  const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
+var
+  frm: Tf_dzDialog;
+begin
+  frm := Tf_dzDialog.Create(_Parent);
+  try
+    frm.UserMessage := _ErrorMsg;
+    frm.Details := _Details;
+    frm.ShowDetailButton := true;
+    frm.SetVisibleButtons(_Buttons);
+    frm.OptionDescription := _OptionDesc;
+    Result := frm.ShowModal;
+  finally
+    frm.Free;
+  end;
 end;
 
 { Copied from Dialogs.pas }
