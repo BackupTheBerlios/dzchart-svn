@@ -53,9 +53,8 @@ function TOptionNameList.Compare(const _Key1, _Key2: string): integer;
 begin
   // Note: This compares 1 character options case sensitively ( eg. -A <> -a )
   //       but long options case insensitively (e.g. --hallo = --Hallo )
-  if (Length(_Key1) <> 1) or (Length(_Key2) <> 1) then
-    Result := CompareText(_Key1, _Key2)
-  else
+  Result := CompareText(_Key1, _Key2);
+  if (Result = 0) and (Length(_Key1) = 1) then
     Result := CompareStr(_Key1, _Key2);
 end;
 

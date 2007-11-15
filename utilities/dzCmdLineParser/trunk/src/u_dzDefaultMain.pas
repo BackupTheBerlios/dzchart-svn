@@ -159,7 +159,9 @@ begin
       s := 'Exception ' + e.ClassName + ': ' + e.Message;
       LogError(s);
       if IsConsole then
-        WriteLn(s);
+        WriteLn(s)
+      else
+        ShowException(e, nil);
       FExitCode := 1;
     end;
   end;
@@ -186,7 +188,7 @@ begin
       LogError('Exception in function Main: ' + e.Message + ' ' + e.ClassName);
     end;
   end;
-  if DebugHook <> 0 then begin
+  if (DebugHook <> 0) and IsConsole then begin
     Write('Exit Code: ', Result, ' -- press Enter');
     Readln;
   end;
