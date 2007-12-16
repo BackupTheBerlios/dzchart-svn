@@ -1,11 +1,12 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{9732bdc0-39a6-4dbb-817c-3fb77772e288}</ProjectGuid>
     <MainSource>DUnitTests_dzLib.dpr</MainSource>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-    <DCC_DependencyCheckOutputName>DUnitTests_dzLib.exe</DCC_DependencyCheckOutputName>
+    <DCC_DependencyCheckOutputName>..\DUnitTests_dzLib.exe</DCC_DependencyCheckOutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Version>7.0</Version>
@@ -17,18 +18,19 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
     <DCC_Define>DEBUG;_CONSOLE_TESTRUNNER;no_translation</DCC_Define>
-    <DCC_UnitSearchPath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\jedi_inc</DCC_UnitSearchPath>
-    <DCC_ResourcePath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\jedi_inc</DCC_ResourcePath>
-    <DCC_ObjPath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\jedi_inc</DCC_ObjPath>
-    <DCC_IncludePath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\jedi_inc</DCC_IncludePath>
-    <DCC_DcuOutput>dcu</DCC_DcuOutput>
-    <DCC_ObjOutput>dcu</DCC_ObjOutput>
-    <DCC_HppOutput>dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\..\jedi_inc</DCC_UnitSearchPath>
+    <DCC_ResourcePath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\..\jedi_inc</DCC_ResourcePath>
+    <DCC_ObjPath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\..\jedi_inc</DCC_ObjPath>
+    <DCC_IncludePath>$(BDS)\lib\Debug;$(BDS)\Lib\Debug\Indy10;$(BDS)\Source\DUnit\src;..\..\jedi_inc</DCC_IncludePath>
+    <DCC_DcuOutput>..\dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>..\dcu</DCC_ObjOutput>
+    <DCC_HppOutput>..\dcu</DCC_HppOutput>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
     <DCC_Optimize>False</DCC_Optimize>
     <DCC_IntegerOverflowCheck>True</DCC_IntegerOverflowCheck>
     <DCC_RangeChecking>True</DCC_RangeChecking>
+    <DCC_ExeOutput>..</DCC_ExeOutput>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
@@ -41,15 +43,17 @@
     <DelphiCompile Include="DUnitTests_dzLib.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\src\u_dzConvertUtils.pas" />
-    <DCCReference Include="..\src\u_dzDateUtils.pas" />
-    <DCCReference Include="..\src\u_dzFileUtils.pas" />
-    <DCCReference Include="..\src\u_dzMiscUtils.pas" />
-    <DCCReference Include="..\src\u_dzStringUtils.pas" />
-    <DCCReference Include="..\src\u_dzTranslator.pas" />
-    <DCCReference Include="..\src\u_dzUnitTestUtils.pas" />
-    <DCCReference Include="..\src\u_dzVariantUtils.pas" />
-    <DCCReference Include="dzconvertutils\Testu_dzConvertUtils.pas" />
-    <DCCReference Include="dzfileutils\Testu_dzFileUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzClassUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzConvertUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzDateUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzFileUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzMiscUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzStringUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzTranslator.pas" />
+    <DCCReference Include="..\..\src\u_dzUnitTestUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzVariantUtils.pas" />
+    <DCCReference Include="Testu_dzClassUtils.pas" />
+    <DCCReference Include="Testu_dzConvertUtils.pas" />
+    <DCCReference Include="Testu_dzFileUtils.pas" />
   </ItemGroup>
 </Project>
