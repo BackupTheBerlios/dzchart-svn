@@ -1,7 +1,9 @@
 {GXFormatter.config=twm}
-{: Integer to string and string to integer conversion functions for decimal
-   hexadecimal and custom number bases. This was taken from u_dzStringUtils
-   which originally was a Delphi conversion of TwmStringFunc. }
+/// <summary>
+/// Integer to string and string to integer conversion functions for decimal
+/// hexadecimal and custom number bases. This was taken from u_dzStringUtils
+/// which originally was a Delphi conversion of TwmStringFunc.
+/// </summary>
 unit u_dzConvertUtils;
 
 {$I jedi.inc}
@@ -12,15 +14,21 @@ uses
   SysUtils;
 
 var
-  {: contains the User's format setting, but with decimal separator = '.' and no thousands separator }
+  /// <summary>
+  /// contains the User's format setting, but with decimal separator = '.' and no thousands separator
+  /// </summary>
   DZ_FORMAT_DECIMAL_POINT: TFormatSettings;
 
 type
-  {: Raised by the number conversion functions if a digit is invalid for the
-     given base. }
+  /// <summary>
+  /// Raised by the number conversion functions if a digit is invalid for the
+  /// given base.
+  /// </summary>
   EdzConvert = class(Exception);
   EDigitOutOfRange = class(EdzConvert);
-  {: raised if there is a conversion error in one of the Str2XxxEx functions }
+  /// <summary>
+  /// raised if there is a conversion error in one of the Str2XxxEx functions
+  /// </summary>
   EStringConvertError = class(EdzConvert);
 
 type
@@ -30,63 +38,105 @@ type
   TBaseN = 2..36;
 
 const
-  MinInt64 = $8000000000000000;
-  MaxInt64 = $7FFFFFFFFFFFFFFF;
+  MinInt64 = Int64($8000000000000000);
+  MaxInt64 = Int64($7FFFFFFFFFFFFFFF);
 
 const
-  {: String containing all characters that can be used as digits }
+  /// <summary>
+  /// String containing all characters that can be used as digits
+  /// </summary>
   DIGIT_CHARS: string[36] = '0123456789ABCDEFGHIJKlMNOPQRSTUVWXYZ';
 
 // Str <-> Decimal conversion
-{: Returns true if A is a valid decimal digit }
+/// <summary>
+/// Returns true if A is a valid decimal digit
+/// </summary>
 function isDecDigit(_a: char): boolean;
-{: Returns true if S is a valid decimal number }
+/// <summary>
+/// Returns true if S is a valid positive decimal number
+/// </summary>
 function isDec(const _s: string): boolean;
-{: Converts a decimal digit to its number equivalent
-   Raises EDigitOutOfRange if there is an invalid digit. }
+/// <summary>
+/// Converts a decimal digit to its number equivalent
+/// Raises EDigitOutOfRange if there is an invalid digit.
+/// </summary>
 function DecDigit2Long(_a: char): LongInt;
-{: Converts a string representing a decimal number to a number
-   Raises EDigitOutOfRange if there is an invalid digit. }
+/// <summary>
+/// Converts a string representing a positive decimal number to a number
+///   Raises EDigitOutOfRange if there is an invalid digit.
+/// </summary>
 function Dec2Long(const _s: string): ULong;
-{: Converts a number to its 2 digit decimal representation (left pads with '0') }
+/// <summary>
+/// Converts a positive number to its 2 digit decimal representation (left pads with '0')
+/// </summary>
 function Long2Dec2(_l: ULong): string;
-{: Converts a number to its 4 digit decimal representation (left pads with '0') }
+/// <summary>
+/// Converts a positive number to its 4 digit decimal representation (left pads with '0')
+/// </summary>
 function Long2Dec4(_l: ULong): string;
-{: Converts a number to its N digit decimal representation (left pads with '0') }
+/// <summary>
+/// Converts a positive number to its N digit decimal representation (left pads with '0')
+/// </summary>
 function Long2DecN(_l: ULong; _n: ULong): string;
-{: Converts a number to its decimal representation }
+/// <summary>
+/// Converts a positive number to its decimal representation
+/// </summary>
 function Long2Dec(_l: ULong): string;
 
 // Str <-> Hex conversion
-{: Returns true if A is a valid hexadecimal (base 16) digit }
+/// <summary>
+/// Returns true if A is a valid hexadecimal (base 16) digit 
+/// </summary>
 function isHexDigit(_a: char): boolean;
-{: Returns true if S is a valid hexadecimal (base 16) number }
+/// <summary>
+/// Returns true if S is a valid hexadecimal (base 16) number
+/// </summary>
 function isHex(const _s: string): boolean;
-{: Converts a hexadecimal digit to its number equivalent
-   Raises EDigitOutOfRange if there is an invalid digit. }
+/// <summary>
+/// Converts a hexadecimal digit to its number equivalent
+/// Raises EDigitOutOfRange if there is an invalid digit.
+/// </summary>
 function HexDigit2Long(_a: char): LongInt;
-{: Converts a string representing a hexadecimal number to a number
-   Raises EDigitOutOfRange if there is an invalid digit. }
+/// <summary>
+/// Converts a string representing a hexadecimal number to a number
+/// @Raises EDigitOutOfRange if there is an invalid digit. }
+/// </summary>
 function Hex2Long(const _s: string): ULong;
-{: Converts a number to its hexadecimal representation }
+/// <summary>
+/// Converts a number to its hexadecimal representation }
+/// </summary>
 function Long2Hex(_l: ULong): string;
-{: converts a number to its hexadecimal representation left padding with 0 to a length of 2 }
+/// <summary>
+/// converts a number to its hexadecimal representation left padding with 0 to a length of 2 }
+/// </summary>
 function Long2Hex2(_l: ULong): string;
 
 // Str <-> any numeric system conversion
-{: Returns true if A is a valid digit in the given Base. }
+/// <summary>
+/// Returns true if A is a valid digit in the given Base. }
+/// </summary>
 function isDigit(_a: char; _Base: TBaseN): boolean;
-{: Returns true if S is a valid number in the given Base. }
+/// <summary>
+/// Returns true if S is a valid number in the given Base. }
+/// </summary>
 function isNumber(const _s: string; _Base: TBaseN): boolean;
-{: Converts a Base digit to its number equivalent.
-   Raises EDigitOutOfRange if there is an invalid digit. }
+/// <summary>
+/// Converts a Base digit to its number equivalent.
+/// @Raises EDigitOutOfRange if there is an invalid digit. }
+/// </summary>
 function Digit2Long(_a: char; _Base: TBaseN): LongInt;
-{: Converts a string representing a number in Base to a number.
-   Raises EDigitOutOfRange if there is an invalid digit. }
+/// <summary>
+/// Converts a string representing a number in Base to a number.
+/// @Raises EDigitOutOfRange if there is an invalid digit. }
+/// </summary>
 function Num2Long(const _s: string; _Base: TBaseN): ULong;
-{: Converts a number to its Base representation. }
+/// <summary>
+/// Converts a number to its Base representation. }
+/// </summary>
 function Long2Num(_l: ULong; _Base: byte): string;
-{: Returns the number of characters in S that are valid digits in the given Base. }
+/// <summary>
+/// Returns the number of characters in S that are valid digits in the given Base. }
+/// </summary>
 function isNumberN(const _s: string; _Base: TBaseN): integer;
 
 function TimeStrToSeconds(const _Zeit: string): integer;
@@ -96,100 +146,119 @@ function SecondsToTimeStr(_Seconds: integer): string;
 function TimeToSeconds(_Zeit: TDateTime): integer; deprecated;
 {$ENDIF}
 
-{: Converts a string to an integer.
-   If s can not be converted, it returns the Default.
-   @param(s string to convert)
-   @param(Default value to return if s can not be converted)
-   @returns(the integer value of s or Default, if s can not be converted) }
-
+/// <summary>
+/// Converts a string to an integer.
+/// If s can not be converted, it returns the Default.
+/// @param(s string to convert)
+/// @param(Default value to return if s can not be converted)
+/// @returns(the integer value of s or Default, if s can not be converted) }
+/// </summary>
 function Str2Int(_s: string; _Default: integer): integer; overload;
 
-{: Converts a string to an integer.
-   If s can not be converted, it raises an exception EStringConvertError.
-   @param(s string to convert)
-   @param(Source string to include in the exception message)
-   @returns(the integer value of s)
-   @raises(EStringConvertError if s can not be converted) }
-
+/// <summary>
+/// Converts a string to an integer.
+/// If s can not be converted, it raises an exception EStringConvertError.
+/// @param(s string to convert)
+/// @param(Source string to include in the exception message)
+/// @returns(the integer value of s)
+/// @raises(EStringConvertError if s can not be converted) }
+/// </summary>
 function Str2Int(_s: string; const _Source: string): integer; overload;
 
-{: Converts a string to an int64.
-   If s can not be converted, it returns the Default.
-   @param(s string to convert)
-   @param(Default value to return if s can not be converted)
-   @returns(the int64 value of s or Default, if s can not be converted) }
-
+/// <summary>
+/// Converts a string to an int64.
+/// If s can not be converted, it returns the Default.
+/// @param(s string to convert)
+/// @param(Default value to return if s can not be converted)
+/// @returns(the int64 value of s or Default, if s can not be converted) }
+/// </summary>
 function Str2Int64(_s: string; _Default: Int64): Int64; overload;
 
-{: Converts a string to an int64.
-   If s can not be converted, it raises an exception EStringConvertError.
-   @param(s string to convert)
-   @param(Source string to include in the exception message)
-   @returns(the integer value of s)
-   @raises(EStringConvertError if s can not be converted) }
-
+/// <summary>
+/// Converts a string to an int64.
+/// If s can not be converted, it raises an exception EStringConvertError.
+/// @param(s string to convert)
+/// @param(Source string to include in the exception message)
+/// @returns(the integer value of s)
+/// @raises(EStringConvertError if s can not be converted) }
+/// </summary>
 function Str2Int64(_s: string; const _Source: string): Int64; overload;
 
-{: tries to guess the decimal separator }
+/// <summary>
+/// tries to guess the decimal separator }
+/// </summary>
 function GuessDecimalSeparator(const _s: string): char;
 
-{: Converts a string to a float.
-   If s can not be converted, it returns the Default.
-   @param s string to convert
-   @param Default value to return if s can not be converted
-   @param DecSeparator is the decimal separator, defaults to '.'
-          if passed as #0, GuessDecimalSeparator is called to guess it
-   @returns the float value of s or Default, if s can not be converted }
+/// <summary>
+/// Converts a string to a float.
+/// If s can not be converted, it returns the Default.
+/// @param s string to convert
+/// @param Default value to return if s can not be converted
+/// @param DecSeparator is the decimal separator, defaults to '.'
+///        if passed as #0, GuessDecimalSeparator is called to guess it
+/// @returns the float value of s or Default, if s can not be converted }
+/// </summary>
 function Str2Float(_s: string; _Default: extended; _DecSeparator: char = '.'): extended; overload;
 
-{: Converts a string to a float.
-   If s can not be converted, it raises an exception EStringConvertError.
-   @param(s string to convert)
-   @param(Source string to include in the exception message)
-   @param DecSeparator is the decimal separator, defaults to '.'
-          if passed as #0, GuessDecimalSeparator is called to guess it
-   @returns(the float value of s)
-   @raises(EStringConvertError if s can not be converted) }
-
+/// <summary>
+/// Converts a string to a float.
+/// If s can not be converted, it raises an exception EStringConvertError.
+/// @param(s string to convert)
+/// @param(Source string to include in the exception message)
+/// @param DecSeparator is the decimal separator, defaults to '.'
+///        if passed as #0, GuessDecimalSeparator is called to guess it
+/// @returns(the float value of s)
+/// @raises(EStringConvertError if s can not be converted) }
+/// </summary>
 function Str2Float(_s: string; const _Source: string; _DecSeparator: char = '.'): extended; overload;
 
-{: tries to convert a string to a float, returns false if it fails
-   @param s is the string to convert
-   @param flt is the float, only valid if the function returns true
-   @param DecSeparator is the decimal separator to use, defaults to '.',
-          if passed as #0, GuessDecimalSeparator is called to guess it
-   @returns true, if s could be converted, false otherwise }
+/// <summary>
+/// tries to convert a string to a float, returns false if it fails
+/// @param s is the string to convert
+/// @param flt is the float, only valid if the function returns true
+/// @param DecSeparator is the decimal separator to use, defaults to '.',
+///        if passed as #0, GuessDecimalSeparator is called to guess it
+/// @returns true, if s could be converted, false otherwise }
+/// </summary>
 function TryStr2Float(_s: string; out _flt: extended; _DecSeparator: char = '.'): boolean; overload;
 function TryStr2Float(_s: string; out _flt: double; _DecSeparator: char = '.'): boolean; overload;
 
-{: Converts a floating point number to a string using the given decimal separator
-   in "General number format" with 15 significant digits
-   @param(flt is an extended floating point value)
-   @param(DecSeparator is the decimal separator to use)
-   @returns(a string representation of the floating point value) }
+/// <summary>
+/// Converts a floating point number to a string using the given decimal separator
+/// in "General number format" with 15 significant digits
+/// @param(flt is an extended floating point value)
+/// @param(DecSeparator is the decimal separator to use)
+/// @returns(a string representation of the floating point value) }
+/// </summary>
 function Float2Str(_flt: extended; _DecSeparator: char = '.'): string; overload;
 
-{: Converts a floating point number to a string using the given with, number of decimals
-   and a '.' as decimal separator, if width is too small the smallest representation possible
-   will be used (eg. Float2Str(5.24, 3, 2, '.') = '5.24')
-   @param flt is an extended floating point value
-   @param Width is the total number of digits (including the decimal separator
-   @param Decimals is the number of decimals to use
-   @returns a string representation of the floating point value }
+/// <summary>
+/// Converts a floating point number to a string using the given with, number of decimals
+/// and a '.' as decimal separator, if width is too small the smallest representation possible
+/// will be used (eg. Float2Str(5.24, 3, 2, '.') = '5.24')
+/// @param flt is an extended floating point value
+/// @param Width is the total number of digits (including the decimal separator
+/// @param Decimals is the number of decimals to use
+/// @returns a string representation of the floating point value }
+/// </summary>
 function Float2Str(_flt: extended; _Width, _Decimals: integer): string; overload;
 
-{: Converts a floating point number to a string using the given number of decimals
-   and a '.' as decimal separator.
-   @param flt is an extended floating point value
-   @param Decimals is the number of decimals to use
-   @returns a string representation of the floating point value }
+/// <summary>
+/// Converts a floating point number to a string using the given number of decimals
+/// and a '.' as decimal separator.
+/// @param flt is an extended floating point value
+/// @param Decimals is the number of decimals to use
+/// @returns a string representation of the floating point value }
+/// </summary>
 function Float2Str(_flt: extended; _Decimals: integer): string; overload;
 
 function TryRound(_flt: extended; out _wrd: word): boolean;
 
-// these contants refer to the "Xx binary byte" units as defined by the
-// International Electronical Commission (IEC) and endorsed by the
-// IEE and CiPM
+/// <summary>
+/// these contants refer to the "Xx binary byte" units as defined by the
+/// International Electronical Commission (IEC) and endorsed by the
+/// IEE and CiPM
+/// </summary>
 const
   OneKibiByte = Int64(1024);
   OneMebiByte = Int64(1024) * OneKibiByte;
@@ -198,7 +267,9 @@ const
   OnePebiByte = Int64(1024) * OneTebiByte;
   OneExbiByte = Int64(1024) * OnePebiByte;
 
-{: Converts a file size to a human readable string, e.g. 536870912000 = 5.00 GiB (gibibyte) }
+/// <summary>
+/// Converts a file size to a human readable string, e.g. 536870912000 = 5.00 GiB (gibibyte) }
+/// </summary>
 function FileSizeToHumanReadableString(_FileSize: Int64): string;
 
 const
@@ -209,10 +280,14 @@ const
   MinutesPerDay = HoursPerDay * MinutesPerHour;
   SecondsPerDay = MinutesPerDay * SecondsPerMinute;
 
-{: returns a human readable string of the form '5d 23h' or '25h 15m' or '20m 21s' }
+/// <summary>
+/// returns a human readable string of the form '5d 23h' or '25h 15m' or '20m 21s' }
+/// </summary>
 function SecondsToHumanReadableString(_Seconds: Int64): string;
 
-{: returns the default locale settings as read from the system's regional settings }
+/// <summary>
+/// returns the default locale settings as read from the system's regional settings }
+/// </summary>
 function GetUserDefaultLocaleSettings: TFormatSettings;
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 
@@ -586,13 +661,17 @@ end;
 function SecondsToHumanReadableString(_Seconds: Int64): string;
 begin
   if _Seconds > SecondsPerDay then
-    Result := Format('%dd %dh', [_Seconds div SecondsPerDay, (_Seconds div SecondsPerHour) mod HoursPerDay])
+    // Days and hours, ignore minutes and seconds
+    Result := Format(_('%dd %dh'), [_Seconds div SecondsPerDay, (_Seconds div SecondsPerHour) mod HoursPerDay])
   else if _Seconds > Round(1.5 * SecondsPerHour) then
-    Result := Format('%dh %dm', [_Seconds div SecondsPerHour, (_Seconds div SecondsPerMinute) mod MinutesPerHour])
+    // Hours and minutes, ignore seconds
+    Result := Format(_('%dh %dm'), [_Seconds div SecondsPerHour, (_Seconds div SecondsPerMinute) mod MinutesPerHour])
   else if _Seconds > Round(1.5 * SecondsPerMinute) then
-    Result := Format('%dm %ds', [_Seconds div SecondsPerMinute, _Seconds mod SecondsPerMinute])
+    // Minutes and seconds
+    Result := Format(_('%dm %ds'), [_Seconds div SecondsPerMinute, _Seconds mod SecondsPerMinute])
   else
-    Result := Format('%ds', [_Seconds]);
+    // Seconds only
+    Result := Format(_('%ds'), [_Seconds]);
 end;
 
 function GetSystemDefaultLocaleSettings: TFormatSettings;

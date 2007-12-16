@@ -1,3 +1,6 @@
+/// <summary>
+/// implements an extended TTextCase class
+/// </summary>
 unit u_dzUnitTestUtils;
 
 interface
@@ -9,39 +12,71 @@ uses
 
 {$M+}
 type
-  {: implements some additional CheckXxx procedures, for now mainly for checking variants }
+  /// <summary>
+  /// implements some additional CheckXxx procedures
+  /// </summary>
   TdzTestCase = class(TTestcase)
   protected
   public
-    {: Checks whether the value is a variant of a floating point type (includes integer) }
+    /// <summary>
+    /// Checks whether the value is a variant of a floating point type (includes integer)
+    /// </summary>
     procedure CheckVariantIsFloat(_Value: variant; _Msg: string);
-    {: Checks whether the value is a variant of an (signed) integer type (excludes LongWord and Int64) }
+    /// <summary>
+    /// Checks whether the value is a variant of an (signed) integer type (excludes LongWord and Int64)
+    /// </summary>
     procedure CheckVariantIsInteger(_Value: variant; _Msg: string);
-    {: Checks whether the value is a variant of an (signed) int64 type (includes LongWord and Int64) }
+    /// <summary>
+    /// Checks whether the value is a variant of an (signed) int64 type (includes LongWord and Int64)
+    /// </summary>
     procedure CheckVariantIsInt64(_Value: variant; _Msg: string);
-    {: Checks whether the value is a variant of an (unsigned) integer type (excludes all signed integer types) }
+    /// <summary>
+    /// Checks whether the value is a variant of an (unsigned) integer type (excludes all signed integer types)
+    /// </summary>
     procedure CheckVariantIsLongWord(_Value: variant; _Msg: string);
-    {: Checks whether the value is a non Null variant }
+    /// <summary>
+    /// Checks whether the value is a non Null variant
+    /// </summary>
     procedure CheckVariantIsNotNull(_Value: variant; _Msg: string); overload;
-    {: Checks whether the value is a Null variant }
+    /// <summary>
+    /// Checks whether the value is a Null variant
+    /// </summary>
     procedure CheckVariantIsNull(_Value: variant; _Msg: string); overload;
-    {: Checks whether the value is a variant of a string type }
+    /// <summary>
+    /// Checks whether the value is a variant of a string type
+    /// </summary>
     procedure CheckVariantIsString(_Value: variant; _Msg: string); overload;
-    {: Called by the CheckVAriantIsXxxx functions to show errors }
+    /// <summary>
+    /// Called by the CheckVAriantIsXxxx functions to show errors
+    /// </summary>
     procedure FailNotVarType(const _Expected, _Actual, _Msg: string; _ErrorAddr: pointer);
-    {: Called by the FailNotVarType function to generate the error message }
+    /// <summary>
+    /// Called by the FailNotVarType function to generate the error message
+    /// </summary>
     function NotVarTypeErrorMessage(const _Expected: string; const _Actual: string; _Msg: string): string;
-    {: Checks whether the date part of two TDateTime values is equal }
+    /// <summary>
+    /// Checks whether the date part of two TDateTime values is equal
+    /// </summary>
     procedure CheckEqualsDate(_Expected, _Actual: TDateTime; const _Message: string);
-    {: Checks whether two TDateTime values are equal }
+    /// <summary>
+    /// Checks whether two TDateTime values are equal
+    /// </summary>
     procedure CheckEqualsDateTime(_Expected, _Actual: TDateTime; const _Message: string);
-    {: Checks whether the time part of two TDateTime values is equal }
+    /// <summary>
+    /// Checks whether the time part of two TDateTime values is equal
+    /// </summary>
     procedure CheckEqualsTime(_Expected, _Actual: TDateTime; const _Message: string);
-    {: Checks multiline strings for equality }
+    /// <summary>
+    /// Checks multiline strings for equality
+    /// </summary>
     procedure CheckEqualsMultiline(_Expected, _Actual: string; const _Message: string = '');
-    {: Checks a multiline string against the content of a file }
+    /// <summary>
+    /// Checks a multiline string against the content of a file
+    /// </summary>
     procedure CheckEqualsFile(const _Filename: string; _Actual: string; const _Message: string = '');
-    {: checks whether two files have got the same contents, content is treated as a multiline string }
+    /// <summary>
+    /// checks whether two files have got the same contents, content is treated as a multiline string
+    /// </summary>
     procedure CheckEqualsFiles(const _ExpectedFile, _ActualFile: string; const _Message: string = '');
   end;
 
