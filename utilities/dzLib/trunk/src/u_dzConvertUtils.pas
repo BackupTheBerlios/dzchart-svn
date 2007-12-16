@@ -212,9 +212,14 @@ const
 {: returns a human readable string of the form '5d 23h' or '25h 15m' or '20m 21s' }
 function SecondsToHumanReadableString(_Seconds: Int64): string;
 
+{: returns the default locale settings as read from the system's regional settings }
+function GetUserDefaultLocaleSettings: TFormatSettings;
+function GetSystemDefaultLocaleSettings: TFormatSettings;
+
 implementation
 
 uses
+  Windows,
   DateUtils,
   StrUtils,
   u_dzTranslator,
@@ -588,6 +593,16 @@ begin
     Result := Format('%dm %ds', [_Seconds div SecondsPerMinute, _Seconds mod SecondsPerMinute])
   else
     Result := Format('%ds', [_Seconds]);
+end;
+
+function GetSystemDefaultLocaleSettings: TFormatSettings;
+begin
+  GetLocaleFormatSettings(GetSystemDefaultLCID, Result);
+end;
+
+function GetUserDefaultLocaleSettings: TFormatSettings;
+begin
+  GetLocaleFormatSettings(GetUserDefaultLCID, Result);
 end;
 
 initialization
