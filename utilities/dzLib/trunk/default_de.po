@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2007-07-18 15:13\n"
-"PO-Revision-Date: 2007-07-18 15:14+0100\n"
-"Last-Translator: Schniering Ingenieursgesellschaft <info@schniering.com>\n"
+"POT-Creation-Date: 2007-12-16 15:56\n"
+"PO-Revision-Date: 2007-12-16 16:04+0100\n"
+"Last-Translator: twm <nospam@dummzeuch.de>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,136 +19,140 @@ msgstr ""
 
 #. "%s" ist kein gültiger Fließkomma Wert: %s
 #. Programmer's name for it: STR_X_IS_NOT_A_VALID_FLOAT_VALUE_SS
-#: u_dzConvertUtils.pas:223
+#: u_dzConvertUtils.pas:305
 msgid "\"%s\" is not a valid floating point value: %s"
 msgstr "\"%s\" ist kein gültiger Fließkommawert: %s"
 
 #. "%s" ist kein gültiger %s Wert: %s
 #. Programmer's name for it: STR_X_IS_NOT_A_VALID_Y_VALUE_SSS
-#: u_dzConvertUtils.pas:225
+#: u_dzConvertUtils.pas:307
 msgid "\"%s\" is not a valid %s value: %s"
 msgstr "\"%s\" ist kein gültiger %s Wert: %s"
 
-#: u_dzConvertUtils.pas:256
+#: u_dzConvertUtils.pas:338
 msgid "Digit out of range %s"
 msgstr "ungültige Ziffer %s"
 
-#: u_dzConvertUtils.pas:269
+#: u_dzConvertUtils.pas:351
 msgid "Digit #%d (%s) out of range"
 msgstr "Ungültige Ziffer #%d (%s)"
 
-#: u_dzConvertUtils.pas:553
+#: u_dzConvertUtils.pas:646
 msgid "%.2f EiB"
 msgstr "%.2f EiB"
 
-#: u_dzConvertUtils.pas:555
+#: u_dzConvertUtils.pas:648
 msgid "%.2f PiB"
 msgstr "%.2f PiB"
 
-#: u_dzConvertUtils.pas:557
+#: u_dzConvertUtils.pas:650
 msgid "%.2f TiB"
 msgstr "%.2f TiB"
 
-#: u_dzConvertUtils.pas:559
+#: u_dzConvertUtils.pas:652
 msgid "%.2f GiB"
 msgstr "%.2f GiB"
 
-#: u_dzConvertUtils.pas:561
+#: u_dzConvertUtils.pas:654
 msgid "%.2f MiB"
 msgstr "%.2f MiB"
 
-#: u_dzConvertUtils.pas:563
+#: u_dzConvertUtils.pas:656
 msgid "%.2f KiB"
 msgstr "%.2f KiB"
 
-#: u_dzConvertUtils.pas:565
+#: u_dzConvertUtils.pas:658
 msgid "%d Bytes"
 msgstr "%d Bytes"
 
-#: u_dzDefaultMain.pas:115
-msgid "Error: %s"
-msgstr "Fehler: %s"
+#. Days and hours, ignore minutes and seconds
+#: u_dzConvertUtils.pas:665
+msgid "%dd %dh"
+msgstr "%dd %dh"
 
-#: u_dzDefaultMain.pas:119
-msgid "Synopsis: %s %s"
-msgstr "Aufruf: %s %s"
+#. Hours and minutes, ignore seconds
+#: u_dzConvertUtils.pas:668
+msgid "%dh %dm"
+msgstr "%dh %dm"
 
-#: u_dzDefaultMain.pas:120
-msgid "Parameters:"
-msgstr "Parameter:"
+#. Minutes and seconds
+#: u_dzConvertUtils.pas:671
+msgid "%dm %ds"
+msgstr "%dm %ds"
 
-#: u_dzDefaultMain.pas:122
-msgid "Options:"
-msgstr "Optionen:"
+#. Seconds only
+#: u_dzConvertUtils.pas:674
+msgid "%ds"
+msgstr "%ds"
 
 #. Programmer's name for it: STR_GETTEMPPATH_ERROR_DS
-#: u_dzFileUtils.pas:458
+#: u_dzFileUtils.pas:606
 msgid "u_dzFileUtils.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 msgstr "u_dzFileUtils.GetTempPath: %1:s (code: %0:d) beim Aufruf von Windows.GetTempPath"
 
 #. Programmer's name for it: STR_GETTEMPPATH_ERROR2_DS
-#: u_dzFileUtils.pas:459
+#: u_dzFileUtils.pas:607
 msgid "u_dzFileUtils.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 msgstr "u_dzFileUtils.GetTempPath: %1:s (code: %0:d) beim Aufruf von Windows.GetTempPath (zweiter)"
 
 #. Programmer's name for it: STR_CREATEUNIQUEDIR_ERROR_S
-#: u_dzFileUtils.pas:460
+#: u_dzFileUtils.pas:608
 msgid "could not find a unique directory name based on \"%s\""
 msgstr "Konnte keinen eindeutigen Verzeichnisnamen basierend auf \"%s\" finden."
 
 #. Programmer's name for it: STR_GETTEMPFILENAME_ERROR_DS
-#: u_dzFileUtils.pas:461
+#: u_dzFileUtils.pas:609
 msgid "u_dzFileUtils.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 msgstr "u_dzFileUtils.GetTempFilename: %1:s (Code: %0:d) beim Aufruf von Windows.GetTempFileName"
 
 #. Programmer's name for it: STR_GETSHORTPATHNAME_ERROR_DS
-#: u_dzFileUtils.pas:462
+#: u_dzFileUtils.pas:610
 msgid "u_dzFileUtils.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 msgstr "u_dzFileUtils.GetShortPathname: %1:s (Code: %0:d) beim Aufruf von Windows.GetShortPathname"
 
 #. Programmer's name for it: STR_GETSHORTPATHNAME_TOO_LONG_D
-#: u_dzFileUtils.pas:463
+#: u_dzFileUtils.pas:611
 msgid "Short pathname is longer than MAX_PATH (%d) characters"
 msgstr "Kurzer Pfad ist länger als MAX_PATH (%d) Zeichen"
 
-#. doppelte % zum Durchreichen in Prozedur
+#. duplicate % so they get passed through the format function
 #. Programmer's name for it: STR_MOVEFILE_ERROR_SS
-#: u_dzFileUtils.pas:465
+#: u_dzFileUtils.pas:613
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to \"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Verschieben von \"%s\" nach \"%s\"."
 
-#. doppelte % zum Durchreichen in Prozedur
+#. duplicate % so they get passed through the format function
 #. Programmer's name for it: STR_SETREADONLY_ERROR_S
-#: u_dzFileUtils.pas:467
+#: u_dzFileUtils.pas:615
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Ändern des Schreibschutz-Flags von \"%s\""
 
-#. doppelte % zum Durchreichen in Prozedur
+#. duplicate % so they get passed through the format function
 #. Programmer's name for it: STR_COPYFILE_ERROR_SS
-#: u_dzFileUtils.pas:469
+#: u_dzFileUtils.pas:617
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to \"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Kopieren von \"%s\" nach \"%s\"."
 
-#. doppelte % zum Durchreichen in Prozedur
+#. duplicate % so they get passed through the format function
 #. Programmer's name for it: STR_DELETEFILE_ERROR_S
-#: u_dzFileUtils.pas:471
+#: u_dzFileUtils.pas:619
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen der Datei \"%s\""
 
-#. doppelte % zum Durchreichen in Prozedur
+#. duplicate % so they get passed through the format function
 #. Programmer's name for it: STR_REMOVEDIR_ERROR_S
-#: u_dzFileUtils.pas:473
+#: u_dzFileUtils.pas:621
 msgid "Error %%1:s (%%0:d) deleting directory \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen des Verzeichnisses \"%s\""
 
 #. Programmer's name for it: STR_DELTREE_ERROR_S
-#: u_dzFileUtils.pas:474
+#: u_dzFileUtils.pas:622
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" existiert nicht oder ist kein Verzeichnis"
 
-#. doppelte % zum Durchreichen in Prozedur
+#. duplicate % so they get passed through the format function
 #. Programmer's name for it: STR_CREATEDIR_ERROR_S
-#: u_dzFileUtils.pas:476
+#: u_dzFileUtils.pas:624
 msgid "Error %%1:s (%%0:d) creating directory \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Erstellen des Verzeichnisses \"%s\""
 
@@ -156,7 +160,7 @@ msgstr "Fehler %%1:s (%%0:d) beim Erstellen des Verzeichnisses \"%s\""
 #. Programmer's name for it: STR_VARIANT_IS_NULL_SHOULD_BE_SS
 #. Variant ist Null, sollte %s sein: %s
 #. Programmer's name for it: STR_VARIANT_IS_NULL_SHOULD_BE_SS
-#: u_dzMiscUtils.pas:350
+#: u_dzMiscUtils.pas:338
 msgid "Variant is Null, should be %s: %s"
 msgstr "Variant ist Null, sollte %s sein: %s"
 
@@ -164,44 +168,44 @@ msgstr "Variant ist Null, sollte %s sein: %s"
 #. Programmer's name for it: STR_VARIANT_IS_EMPTY_SHOULD_BE_SS
 #. Variant ist Empty, sollte %s sein: %s
 #. Programmer's name for it: STR_VARIANT_IS_EMPTY_SHOULD_BE_SS
-#: u_dzMiscUtils.pas:352
+#: u_dzMiscUtils.pas:340
 msgid "Variant is Empty, should be %s: %s"
 msgstr "Variant ist leer, sollte %s sein: %s"
 
 #. Variant kann nicht nach %s konvertiert werden: %s
 #. Programmer's name for it: STR_VARAINT_CAN_NOT_BE_CONVERTED_TO_SS
 #. Programmer's name for it: STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS
-#: u_dzMiscUtils.pas:354
+#: u_dzMiscUtils.pas:342
 msgid "Variant can not be converted to %s: %s"
 msgstr "Variant kann nicht nach %s konvertiert werden: %s"
 
 #. Unbekannter Betriebssystem Fehler
 #. Programmer's name for it: STR_UNKNOWN_WIN32_ERROR
-#: u_dzMiscUtils.pas:357
+#: u_dzMiscUtils.pas:345
 msgid "unknown OS error"
 msgstr "Unbekannter Betriebssystemfehler"
 
 #. Unbekannter Win32 Fehler
 #. Programmer's name for it: STR_UNKNOWN_WIN32_ERROR
-#: u_dzMiscUtils.pas:360
+#: u_dzMiscUtils.pas:348
 msgid "unknown Win32 error"
 msgstr "Unbekannter Windows Fehler"
 
 #. nthWord: Nulltes Wort nicht verfügbar
 #. Programmer's name for it: STR_NO_0TH_WORD
-#: u_dzStringUtils.pas:265
+#: u_dzStringUtils.pas:299
 msgid "nthWord: 0th word not available"
 msgstr "nthWord: 0tes Wort ist nicht verfügbar"
 
 #. Zu zentrierender String ist länger als die Maximallänge und kann nicht zentriert werden.
 #. Programmer's name for it: STR_STRING_TOO_LONG_TO_CENTER
-#: u_dzStringUtils.pas:268
+#: u_dzStringUtils.pas:302
 msgid "Cannot center string that is larger than the maximum length."
 msgstr "Kann keinen String zentrieren, der länger als die maximale Länge ist."
 
 #. Strings haben kein nulltes Zeichen.
 #. Programmer's name for it: STR_CHAR_INDEX_OUT_OF_RANGE
-#: u_dzStringUtils.pas:271
+#: u_dzStringUtils.pas:305
 msgid "Strings do not have a 0th character."
 msgstr "Strings haben kein 0tes Zeichen."
 
@@ -211,33 +215,33 @@ msgstr "Strings haben kein 0tes Zeichen."
 msgid "Variant can not be converted to %s"
 msgstr "Variant kann nicht nach %s konvertiert werden"
 
-#: u_dzVclUtils.pas:465
+#: u_dzVclUtils.pas:553
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" ist kein gültiger Fließkommawert."
 
-#: u_dzVclUtils.pas:480
+#: u_dzVclUtils.pas:568
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" ist kein gültiger Integerwert."
 
 #. Programmer's name for it: STR_SHOW_DETAILS
-#: w_dzDialog.pas:298
+#: w_dzDialog.pas:301
 msgid "&Details >>"
 msgstr "&Details >>"
 
 #. Programmer's name for it: STR_HIDE_DETAILS
-#: w_dzDialog.pas:299
+#: w_dzDialog.pas:302
 msgid "&Details <<"
 msgstr "&Details <<"
 
-#: w_dzDialog.pas:310
+#: w_dzDialog.pas:313
 msgid "Invalid modal result %d."
 msgstr "Ungültiger modaler Rückgabewert %d."
 
-#: w_dzDialog.pas:453
+#: w_dzDialog.pas:474
 msgid "Do not show again."
 msgstr "Nicht nochmal anzeigen."
 
-#: w_dzDialog.pas:534
+#: w_dzDialog.pas:555
 msgid ""
 "An error occurred:\n"
 "%s"
@@ -246,7 +250,16 @@ msgstr ""
 "%s"
 
 #. 400;
-#: w_dzDialog.pas:558
+#: w_dzDialog.pas:579
 msgid "Additional information:"
 msgstr "Erweiterte Informationen:"
+
+#~ msgid "Error: %s"
+#~ msgstr "Fehler: %s"
+#~ msgid "Synopsis: %s %s"
+#~ msgstr "Aufruf: %s %s"
+#~ msgid "Parameters:"
+#~ msgstr "Parameter:"
+#~ msgid "Options:"
+#~ msgstr "Optionen:"
 
