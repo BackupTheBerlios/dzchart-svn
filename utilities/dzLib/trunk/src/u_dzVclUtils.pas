@@ -1,6 +1,6 @@
 {GXFormatter.config=twm}
 {: Implements functions which work on components but are not methods.
-   @autor        twm }
+   @author        twm }
 unit u_dzVclUtils;
 
 interface
@@ -13,6 +13,7 @@ uses
   Forms,
   Controls,
   ComCtrls,
+  CheckLst,
   StdCtrls,
   ExtCtrls,
   Grids,
@@ -271,6 +272,13 @@ function TListBox_DeleteSelected(_lst: TCustomListbox; out _Idx: integer): boole
 function TListBox_DeleteSelected(_lst: TCustomListbox): boolean; overload;
 function TListBox_DeleteSelected(_lst: TCustomListBox; out _s: string): boolean; overload;
 
+function TCheckListBox_GetCheckedCount(_clb: TCheckListBox): integer;
+procedure TCheckListBox_DeleteDisabled(_clb: TCheckListBox);
+procedure TCheckListBox_InvertCheckmarks(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+procedure TCheckListBox_UncheckAll(_clb: TCheckListBox);
+procedure TCheckListBox_CheckAll(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer;
+
 {: Gets the caption of the given or selected item in the RadioGroup
    @param rg is the TCustomRadioGroup descendant to read
    @param Caption returns a string with the requested caption with
@@ -343,6 +351,11 @@ procedure TControl_Center(_Child: TControl; _Parent: TControl);
 
 {: sets the Checked property without firing an OnClick event }
 procedure TCheckBox_SetCheckedNoOnClick(_Chk: TCustomCheckBox; _Checked: boolean);
+
+{: centers a form on the given point, but makes sure the form is fully visible }
+procedure TForm_CenterOn(_frm: TForm; _Center: TPoint); overload;
+{: centers a form on the given component, but makes sure the form is fully visible }
+procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
 
 {: switches off "Windows Ghosting" in Win 2000 and XP
   This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
@@ -949,6 +962,59 @@ begin
   Result := TListBox_DeleteSelected(_lst, Idx);
 end;
 
+function TCheckListBox_GetCheckedCount(_clb: TCheckListBox): integer;
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := 0 to _clb.Items.Count - 1 do
+    if _clb.Checked[i] then
+      Inc(Result);
+end;
+
+procedure TCheckListBox_CheckAll(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+var
+  i: Integer;
+begin
+  for i := 0 to _clb.Items.Count - 1 do
+    _clb.Checked[i] := _IncludeDisabled or _clb.ItemEnabled[i];
+end;
+
+procedure TCheckListBox_UncheckAll(_clb: TCheckListBox);
+var
+  i: Integer;
+begin
+  for i := 0 to _clb.Items.Count - 1 do
+    _clb.Checked[i] := False;
+end;
+
+procedure TCheckListBox_InvertCheckmarks(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+var
+  i: Integer;
+begin
+  for i := 0 to _clb.Items.Count - 1 do
+    _clb.Checked[i] := not _clb.Checked[i] and (_IncludeDisabled or _clb.ItemEnabled[i]);
+end;
+
+procedure TCheckListBox_DeleteDisabled(_clb: TCheckListBox);
+var
+  i: integer;
+begin
+  for i := _clb.Items.Count - 1 downto 0 do
+    if not _clb.ItemEnabled[i] then
+      _clb.Items.Delete(i);
+end;
+
+function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer;
+var
+  i: Integer;
+begin
+  for i := 0 to _clb.Items.Count - 1 do
+    if _clb.Checked[i] and (_IncludeDisabled or _clb.ItemEnabled[i]) then
+      _Checked.Add(_clb.Items[i]);
+  Result := _Checked.Count;
+end;
+
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
 begin
   Result := _Cmb.Items.IndexOf(_Item);
@@ -1170,6 +1236,23 @@ begin
   finally
     Chk.ClicksDisabled := false;
   end;
+end;
+
+procedure TForm_CenterOn(_frm: TForm; _Center: TPoint);
+var
+  Monitor: TMonitor;
+begin
+  _frm.Position := poDesigned;
+  _frm.DefaultMonitor := dmDesktop;
+  _frm.Left := _Center.X - _frm.Width div 2;
+  _frm.Top := _Center.Y - _frm.Height div 2;
+  Monitor := Screen.MonitorFromPoint(_Center);
+  _frm.MakeFullyVisible(Monitor);
+end;
+
+procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
+begin
+  TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)));
 end;
 
 procedure DisableProcessWindowsGhosting;
