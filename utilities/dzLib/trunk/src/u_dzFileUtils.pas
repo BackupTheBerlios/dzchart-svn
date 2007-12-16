@@ -1,5 +1,7 @@
 {GXFormatter.config=twm}
-{! implements utility functions for file accesss }
+/// <summary>
+/// implements utility functions for file accesss
+/// </summary>
 unit u_dzFileUtils;
 
 {$I jedi.inc}
@@ -14,7 +16,9 @@ uses
 type
   EFileUtils = class(Exception);
   ECreateUniqueDir = class(EFileUtils);
-  {! raised by DelTree if the DirName parameter is not a valid directory name }
+  /// <summary>
+  /// raised by DelTree if the DirName parameter is not a valid directory name
+  /// </summary>
   EDirNotFound = class(EFileUtils);
   EPathTooLong = class(EFileUtils);
   EInvalidPropertyCombination = class(EFileUtils);
@@ -40,86 +44,117 @@ type
   end;
 
 type
-  {! a simple wrapper around FindFirst/FindNext which allows to search for
-     specified attributes only (e.g. only directories), it automatically
-     ignores the special '.' and '..' directories. }
+  /// <summary>
+  /// a simple wrapper around FindFirst/FindNext which allows to search for
+  /// specified attributes only (e.g. only directories), it automatically
+  /// ignores the special '.' and '..' directories.
+  /// </summary>
   TSimpleDirEnumerator = class
   protected
-    {! stores the search mask ('c:\windows\*.exe') }
+    /// stores the search mask ('c:\windows\*.exe')
     FMask: string;
-    {! set of attributes a file must match }
+    /// set of attributes a file must match
     FMustHaveAttr: TFileAttributeSet;
-    {! set of attributes a file may have }
+    /// set of attributes a file may have
     FMayHaveAttr: TFileAttributeSet;
-    {! internally used TSearchRec structure }
+    /// internally used TSearchRec structure
     FSr: TSearchRec;
-    {! true if FindFirst was called and returned no error code }
+    /// true if FindFirst was called and returned no error code
     FActive: boolean;
-    {! number of matching files found }
+    /// number of matching files found
     FMatchCount: integer;
   public
-    {! creates a TSimpleDirEnumerator, sets the Mask, MustHaveAttr and MayHaveAttr
-       properties.
-       MustHaveAttr is set to [] and MayHaveAttr is set to include all possible
-       attributes, so calling FindNext will find any files or subdirectories,
-       but the special '.' and '..' directories
-       @param(Mask is the file search mask) }
+    /// <summary>
+    /// Creates a TSimpleDirEnumerator, sets the Mask, MustHaveAttr and MayHaveAttr
+    /// properties.
+    /// MustHaveAttr is set to [] and MayHaveAttr is set to include all possible
+    /// attributes, so calling FindNext will find any files or subdirectories,
+    /// but the special '.' and '..' directories
+    /// @param(Mask is the file search mask)
+    /// </summary>
     constructor Create(const _Mask: string);
-    {! Destructor, will call FindClose if necessary }
+    /// <summary>
+    /// Destructor, will call FindClose if necessary
+    /// </summary>
     destructor Destroy; override;
-    {! creates a TSimpleDirEnumerator, calls its FindAll method and frees it }
+    /// <summary>
+    /// creates a TSimpleDirEnumerator, calls its FindAll method and frees it
+    /// </summary>
     class function Execute(const _Mask: string; _List: TStrings): integer;
-    {! Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
-       calls.
-       @param Filename is the name of the file found, if result is true, if you need
-              more information about it, use the SR property
-       @Returns true, if a matching file was found, false otherwise }
+    /// <summary>
+    /// Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
+    /// calls.
+    /// @param Filename is the name of the file found, if result is true, if you need
+    ///       more information about it, use the SR property
+    /// @Returns true, if a matching file was found, false otherwise
+    /// </summary>
     function FindNext(out _Filename: string): boolean; overload;
-    {! Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
-       calls. If it returns true, use the SR property to get information about
-       the file. See the overloaded @link(FindNext) version if you need only
-       the filename.
-       @Returns(true, if a matching file was found, false otherwise) }
+    /// <summary>
+    /// Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
+    /// calls. If it returns true, use the SR property to get information about
+    /// the file. See the overloaded @link(FindNext) version if you need only
+    /// the filename.
+    /// @Returns(true, if a matching file was found, false otherwise)
+    /// </summary>
     function FindNext: boolean; overload;
-    {! Calls FindNext until it returns false, stores all filenames in List and
-       returns the number of files found.
-       @param List is a TStrings object which will be filled with the filenames
-              of matching files, may be nil.
-       @returns the number of mathing files }
+    /// <summary>
+    /// Calls FindNext until it returns false, stores all filenames in List and
+    /// returns the number of files found.
+    /// @param List is a TStrings object which will be filled with the filenames
+    ///        of matching files, may be nil.
+    /// @returns the number of matching files
+    /// </summary>
     function FindAll(_List: TStrings = nil): integer;
-    {! Calls FindClose so FindNext will start again. Reset does not change any
-       properties (e.g. Mask, MustHaveAttr, MayHaveAttr) }
+    /// <summary>
+    /// Calls FindClose so FindNext will start again. Reset does not change any
+    /// properties (e.g. Mask, MustHaveAttr, MayHaveAttr)
+    /// </summary>
     procedure Reset;
-    {! Returns the number of matches so far, that is the number of successful
-       calls to FindNext }
+    /// Returns the number of matches so far, that is the number of successful
+    /// calls to FindNext
+    /// </summary>
     property MatchCount: integer read FMatchCount;
-    {! Returns the search mask }
+    /// <summary>
+    /// Returns the search mask
+    /// </summary>
     property Mask: string read FMask; // write fMask;
-    {! the set of attributes a file must have to be found by FindNext }
+    /// <summary>
+    /// the set of attributes a file must have to be found by FindNext
+    /// </summary>
     property MustHaveAttr: TFileAttributeSet read FMustHaveAttr write FMustHaveAttr;
-    {! the set of allowed attributes for a file to be found by FindNext }
+    /// <summary>
+    /// the set of allowed attributes for a file to be found by FindNext
+    /// </summary>
     property MayHaveAttr: TFileAttributeSet read FMayHaveAttr write FMayHaveAttr;
-    {! the search rec containing additional information about the file }
+    /// <summary>
+    /// the search rec containing additional information about the file
+    /// </summary>
     property Sr: TSearchRec read FSr;
   end;
 
 type
-  {! represents the status of a CopyFile/MoveFileWithProgress operation, passed
-     as parameter to the callback function. }
+  /// <summary>
+  /// Represents the status of a CopyFile/MoveFileWithProgress operation, passed
+  /// as parameter to the callback function.
+  /// </summary>
   TCopyProgressStatus = class
   public
   {(*}
   type
-    {! possible return values for the callback function }
+    /// <summary>
+    /// possible return values for the callback function
+    /// </summary>
     TProgressResult = (
-      prContinue, {!< continue with the copy/move operation }
-      prCancel,   {!< cancel the operation, cannot be resumed }
-      prStop,     {!< stop the operation, can be resumed, if cfwRestartable was passed }
-      prQuiet);   {!< continue the operation, do not call the callback }
-    {! reason for calling the callback function }
+      prContinue, /// < continue with the copy/move operation
+      prCancel,   /// < cancel the operation, cannot be resumed
+      prStop,     /// < stop the operation, can be resumed, if cfwRestartable was passed
+      prQuiet);   /// < continue the operation, do not call the callback
+    /// <summary>
+    /// reason for calling the callback function
+    /// </summary>
     TProgressReason = (
-      prChunkFinished, {!< a chunk of the file has been copied }
-      prStreamSwitch); {!< started to copy a new stream (set in the first callback) }
+      prChunkFinished, /// < a chunk of the file has been copied
+      prStreamSwitch); /// < started to copy a new stream (set in the first callback)
   {*)}
   protected
     FTotalFileSize: LARGE_INTEGER;
@@ -131,34 +166,65 @@ type
     FSourceFile: THandle;
     FDestinationFile: THandle;
   public
-    {! total size of the file }
+    /// <summary>
+    /// total size of the file
+    /// </summary>
     property TotalFileSize: LARGE_INTEGER read FTotalFileSize;
-    {! total bytes that have been transferred so far }
+    /// <summary>
+    /// total bytes that have been transferred so far
+    /// </summary>
     property TotalBytesTransferred: LARGE_INTEGER read FTotalBytesTransferred;
-    {! size of the stream that is currently being transferred }
+    /// <summary>
+    /// size of the stream that is currently being transferred
+    /// </summary>
     property StreamSize: LARGE_INTEGER read FStreamSize;
-    {! bytes of the current stream taht have been transferred so far }
+    /// <summary>
+    /// bytes of the current stream taht have been transferred so far
+    /// </summary>
     property StreamBytesTransferred: LARGE_INTEGER read FStreamBytesTransferred;
-    {! Number of the current stream, starts with 1 (usually always 1) }
+    /// <summary>
+    /// Number of the current stream, starts with 1 (usually always 1)
+    /// </summary>
     property StreamNumber: LongWord read FStreamNumber;
-    {! reason for callback }
+    /// <summary>
+    /// reason for callback
+    /// </summary>
     property CallbackReason: TProgressReason read FCallbackReason;
-    {! Handle of source file }
+    /// <summary>
+    /// Handle of source file
+    /// </summary>
     property SourceFile: THandle read FSourceFile;
-    {! Handle of destination file }
+    /// <summary>
+    /// Handle of destination file
+    /// </summary>
     property DestinationFile: THandle read FDestinationFile;
   end;
+
+  ///<summary>
+  /// Type for OnCopyFileProgress event
+  ///  @param Status is the currenct status of the operation
+  ///  @param Continue determines whether to continue copying or aborting, defaults
+  ///         to prContinue
+  /// </summary>
   TCopyFileProgressEvt = procedure(_Status: TCopyProgressStatus;
     var _Continue: TCopyProgressStatus.TProgressResult) of object;
 
-  {! defines the action to take if a file already exists but has a different content }
+  /// <summary>
+  /// defines the action to take if a file already exists but has a different content
+  /// </summary>
   TFileExistsAction = (feaIgnore, feaOverwrite);
   TOnSyncing = procedure(_Sender: TObject; const _SrcDir, _DstDir: string) of object;
   TOnSyncingFile = procedure(_Sender: TObject; const _SrcDir, _DstDir: string; _Total, _Done: Int64) of object;
-  {! called if a destination file already exists
-     @param Action is the action to take, default is feaIgnore }
+
+  /// <summary>
+  /// called if a destination file already exists
+  /// @param Action is the action to take, default is feaIgnore
+  /// </summary>
   TOnFileExists = procedure(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec; var _Action: TFileExistsAction) of object;
-  {! Synchronizes two directories }
+
+  /// <summary>
+  /// Synchronizes two directories
+  /// </summary>
   TDirectorySync = class
   private
     FCurrentSource: string;
@@ -174,36 +240,50 @@ type
     function doOnFileExists(const _SrcDir, _DstDir, _Filename: string): TFileExistsAction;
     procedure ProgressStatusCallback(_Status: TCopyProgressStatus; var _Continue: TCopyProgressStatus.TProgressResult);
   public
-    {! Checks if there are files in the source directory that are already in
-       the destination directory, for each file that exists, the OnFileExists
-       event is called. }
+    /// <summary>
+    /// Checks if there are files in the source directory that are already in
+    /// the destination directory, for each file that exists, the OnFileExists
+    /// event is called.
+    /// </summary>
     procedure CheckOneWay(const _SrcDir, _DstDir: string);
-    {! copies all files from DirA to DirB if they don't already exists
-       (not implemented: if CheckContent=true, the content existing files will be checked and if
-                         it doesn't match, OnDifferentFileExists is called )
-       @param FlattenDirHierarchy determines whether all files should be copied
-                                  directly DstDir or if subdirectories should
-                                  be created, default is false }
+    /// <summary>
+    /// copies all files from DirA to DirB if they don't already exists
+    /// (not implemented: if CheckContent=true, the content existing files will be checked and if
+    ///                   it doesn't match, OnDifferentFileExists is called)
+    /// @param FlattenDirHierarchy determines whether all files should be copied
+    ///                            directly DstDir or if subdirectories should
+    ///                            be created, default is false
+    /// </summary>
     procedure SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = false);
-    {! calls SyncOneWay(DirA, DirB) and SyncOneWay(DirB, DirA)
-       (not implemented: if CheckContent=true, the content existing files will be checked and if
-                         it doesn't match, OnDifferentFileExists is called ) }
+    /// <summary>
+    /// calls SyncOneWay(DirA, DirB) and SyncOneWay(DirB, DirA)
+    /// (not implemented: if CheckContent=true, the content existing files will be checked and if
+    ///                   it doesn't match, OnDifferentFileExists is called)
+    /// </summary>
     procedure SyncBothWays(const _DirA, _DirB: string);
 //    {! Not implemented: Called, if the content of an existing file is different }
 //    property OnDifferentFileExists: TOnDifferentFileExists read FOnDifferentFileExists write FOnDifferentFileExists;
 //    {! Not implemented: if true, OnDifferentFileExists will be called }
 //    property CheckContent: boolean read FCheckContent write FCheckContent default false;
-    {! called when a new directory is entered, to abort synchronization,
-       raise an exception (e.g. SysUtils.Abort), and catch it in the calling method }
+    /// <summary>
+    /// called when a new directory is entered, to abort synchronization,
+    /// raise an exception (e.g. SysUtils.Abort), and catch it in the calling method
+    /// </summary>
     property OnSyncingDir: TOnSyncing read FOnSyncingDir write FOnSyncingDir;
-    {! called when a file is being copied, to abort synchronization,
-      raise an exception (e.g. SysUtils.Abort), and catch it in the calling method }
+    /// <summary>
+    /// called when a file is being copied, to abort synchronization,
+    /// raise an exception (e.g. SysUtils.Abort), and catch it in the calling method
+    /// </summary>
     property OnSyncingFile: TOnSyncingFile read FOnSyncingFile write FOnSyncingFile;
-    {! called from CheckOneWay if a destination file already exists }
+    /// <summary>
+    /// called from CheckOneWay if a destination file already exists
+    /// </summary>
     property OnFileExists: TOnFileExists read FOnFileExists write FOnFileExists;
   end;
 
-  {! This class owns all utility functions as class methods so they don't pollute the name space }
+  /// <summary>
+  /// This class owns all utility functions as class methods so they don't pollute the name space
+  /// </summary>
   TFileSystem = class
   public
   {(*}
@@ -215,205 +295,254 @@ type
     TCopyFileWithProgressFlagSet = set of TCopyFileWithProgressFlags;
     TCopyFileWithProgressResult = (cfwOK, cfwAborted, cfwError);
     TMoveFileWithProgressFlags = (
-      mfwFailIfExists, {!< fail if the destination file already exists }
-      mfwAllowCopy,    {!< allow using copy and delete if necessary }
-      mfwDelayUntilReboot, {!< wait until next reboot for moving the file }
-      mfwWriteThrough, {!< Setting this value guarantees that a move performed as a copy and delete operation is flushed to disk before the function returns. }
-      mfwFailIfNotTrackable, {!< The function fails if the source file is a link source, but the file cannot be tracked after the move. }
-      mfwRaiseException); {!< raise an exception if there is an error }
+      mfwFailIfExists, /// < fail if the destination file already exists
+      mfwAllowCopy,    /// < allow using copy and delete if necessary
+      mfwDelayUntilReboot, /// < wait until next reboot for moving the file
+      mfwWriteThrough, /// < Setting this value guarantees that a move performed as a copy and delete operation is flushed to disk before the function returns.
+      mfwFailIfNotTrackable, /// < The function fails if the source file is a link source, but the file cannot be tracked after the move.
+      mfwRaiseException); /// < raise an exception if there is an error
     TMoveFileWithProgressFlagSet = set of TMoveFileWithProgressFlags;
   const
-  {! set of char constant containing all characters that are invalid in a filename }
+    /// <summary>
+    /// set of char constant containing all characters that are invalid in a filename
+    /// </summary>
     INVALID_FILENAME_CHARS: set of Char = ['\', '/', ':', '*', '?', '"', '<', '>', '|'];
   {*)}
-    {! Returns a temporary filename.
-       @param Directory is a string with the directory to create the file in, defaults
-                        to the TEMP directory.
-       @param Prefix is a string with a prefix for the filename, defaults to 'dz'.)
-       @param Unique is an word that the function converts to a hexadecimal string
-       for use in creating the temporary filename.)
-       <ul>
-         <li>If Unique is nonzero, the function appends the hexadecimal string to
-             <b>Prefix</b>
-             to form the temporary filename. In this case, the function does not create
-             the specified file, and does not test whether the filename is unique.</li>
-         <li>If Unique is zero, the function uses a hexadecimal string derived
-             from the current system time. In this case, the function uses different
-             values until it finds a unique filename, and then it creates the file
-             in the <b>Directory</b>.</li>
-       </ul>
-       @returns a filename to use for a temporary file. }
+    /// <summary>
+    /// Returns a temporary filename.
+    /// @param Directory is a string with the directory to create the file in, defaults
+    ///                  to the TEMP directory.
+    /// @param Prefix is a string with a prefix for the filename, defaults to 'dz'.)
+    /// @param Unique is an word that the function converts to a hexadecimal string
+    /// for use in creating the temporary filename.)
+    /// <ul>
+    ///   <li>If Unique is nonzero, the function appends the hexadecimal string to
+    ///       <b>Prefix</b>
+    ///       to form the temporary filename. In this case, the function does not create
+    ///       the specified file, and does not test whether the filename is unique.</li>
+    ///   <li>If Unique is zero, the function uses a hexadecimal string derived
+    ///       from the current system time. In this case, the function uses different
+    ///       values until it finds a unique filename, and then it creates the file
+    ///       in the <b>Directory</b>.</li>
+    /// </ul>
+    /// @returns a filename to use for a temporary file.
+    /// </summary>
     class function GetTempFileName(_Directory: string = ''; const _Prefix: string = 'dz';
       _Unique: word = 0): string;
 
-    {! Calls the corresponding Windows function and returns the short path name
-       for an *existing* file or directory. }
+    /// <summary>
+    /// Calls the corresponding Windows function and returns the short path name
+    /// for an *existing* file or directory.
+    /// </summary>
     class function GetShortPathname(const _LongName: string): string;
 
-    {! Creates a unique subdirectory under BaseDir with the given Prefix
-       if Basedir is an empty string the system's %TEMP% directory is used.
-       @returns the name of the created directory }
+    /// <summary>
+    /// Creates a unique subdirectory under BaseDir with the given Prefix
+    /// if Basedir is an empty string the system's %TEMP% directory is used.
+    /// @returns the name of the created directory
+    /// </summary>
     class function CreateUniqueDirectory(_BaseDir: string = ''; const _Prefix: string = 'dz'): string;
 
-    {! Calls the Win32Api function GetTempPath but returns a string rather than
-       a PChar.
-       @returns(a string with the TEMP directory) }
+    /// <summary>
+    /// Calls the Win32Api function GetTempPath but returns a string rather than
+    /// a PChar.
+    /// @returns a string with the TEMP directory
+    /// </summary>
     class function GetTempPath: string;
-    {! Moves the file Source to Dest using the Windows MoveFile function.
-       @param Source is a string containing the name of the existing file
-       @param Dest is a string containing the destination file name
-       @param RaiseException is a boolean which controls whether the function
-              retrieves the Windows error and raises an exception
-              if it fails. If false, it will not raise an exception
-              but just return false if moving the file fails.
-       @returns true, if the file could be moved, false otherwise. }
+    /// <summary>
+    /// Moves the file Source to Dest using the Windows MoveFile function.
+    /// @param Source is a string containing the name of the existing file
+    /// @param Dest is a string containing the destination file name
+    /// @param RaiseException is a boolean which controls whether the function
+    ///        retrieves the Windows error and raises an exception
+    ///        if it fails. If false, it will not raise an exception
+    ///        but just return false if moving the file fails.
+    /// @returns true, if the file could be moved, false otherwise.
+    /// </summary>
     class function MoveFile(const _Source, _Dest: string; _RaiseException: boolean = true): boolean;
-    {! Copies the file Source to Dest using the Windows CopyFile function.
-       @param Source is a string containing the name of the existing file
-       @param Dest is a string containing the destination file name
-       @param FailIfExists is a boolean specifying whether the copy operation
-              should fail if the destination file already exists.
-       @param RaiseException is a boolean which controls whether the function
-              retrieves the Windows error and raises an exception
-              if it fails. If false, it will not raise an exception
-              but just return false if copying the file fails.
-       @param ForceOverwrite is a boolean which controls whether the function removes
-              a read-only flag from the destination file if necessary.
-       @returns true, if the file could be copied, false otherwise. }
+    /// <summary>
+    /// Copies the file Source to Dest using the Windows CopyFile function.
+    /// @param Source is a string containing the name of the existing file
+    /// @param Dest is a string containing the destination file name
+    /// @param FailIfExists is a boolean specifying whether the copy operation
+    ///        should fail if the destination file already exists.
+    /// @param RaiseException is a boolean which controls whether the function
+    ///        retrieves the Windows error and raises an exception
+    ///        if it fails. If false, it will not raise an exception
+    ///        but just return false if copying the file fails.
+    /// @param ForceOverwrite is a boolean which controls whether the function removes
+    ///        a read-only flag from the destination file if necessary.
+    /// @returns true, if the file could be copied, false otherwise.
+    /// </summary>
     class function CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = true;
       _RaiseException: boolean = true; _ForceOverwrite: boolean = false): boolean; overload;
-    {! Copies the file Source to Dest using the Windows CopyFile function.
-       @param(Source is a string containing the name of the existing file)
-       @param(Dest is a string containing the destination file name)
-       @param(Flags is a set of TCopyFileFlags specifying whether the copy operation
-              cfFailIfExists: fail if the destination file already exists.
-              cfForceOverwrite: remove a read-only flag from the destination file if necessary.
-              cfRaiseException: retrieve the Windows error and raise an exception if it fails.
-                If not set, it will not raise an exception but just return false if
-                copying the file fails.)
-       @returns(true, if the file could be copied, false otherwise.) }
+    /// <summary>
+    /// Copies the file Source to Dest using the Windows CopyFile function.
+    /// @param(Source is a string containing the name of the existing file)
+    /// @param(Dest is a string containing the destination file name)
+    /// @param(Flags is a set of TCopyFileFlags specifying whether the copy operation
+    ///        cfFailIfExists: fail if the destination file already exists.
+    ///        cfForceOverwrite: remove a read-only flag from the destination file if necessary.
+    ///        cfRaiseException: retrieve the Windows error and raise an exception if it fails.
+    ///          If not set, it will not raise an exception but just return false if
+    ///          copying the file fails.)
+    /// @returns(true, if the file could be copied, false otherwise.)
+    /// </summary>
     class function CopyFile(const _Source, _Dest: string;
       _Flags: TCopyFileFlagSet = [cfRaiseException]): boolean; overload;
-    {! Copies the file Source to Dest using the Windows CopyFileEx function which
-       allows for a progress callback
-       @param(Source is a string containing the name of the existing file)
-       @param(Dest is a string containing the destination file name)
-       @param(Flags is a set of TCopyFileWithProgressFlags specifying whether the copy operation
-              cfwFailIfExists: fail if the destination file already exists.
-              cfwRestartable: stores information in the destination file that allows
-                to restart a stopped copy operation
-              cfwRaiseException: retrieve the Windows error and raise an exception if it fails.
-                If not set, it will not raise an exception but just return cfwAborted
-                or cfwError if copying the file fails. (set by default))
-       @returns cfeOK, if the copying succeeds, cfeAborted if the copying was aborted or
-                stopped in the callback function and cfeError on any other error.
-       @raises  EOSError if an error occurs and cfwRaiseException was passed }
+    /// <summary>
+    /// Copies the file Source to Dest using the Windows CopyFileEx function which
+    /// allows for a progress callback
+    /// @param(Source is a string containing the name of the existing file)
+    /// @param(Dest is a string containing the destination file name)
+    /// @param(Flags is a set of TCopyFileWithProgressFlags specifying whether the copy operation
+    ///        cfwFailIfExists: fail if the destination file already exists.
+    ///        cfwRestartable: stores information in the destination file that allows
+    ///          to restart a stopped copy operation
+    ///        cfwRaiseException: retrieve the Windows error and raise an exception if it fails.
+    ///          If not set, it will not raise an exception but just return cfwAborted
+    ///          or cfwError if copying the file fails. (set by default))
+    /// @returns cfeOK, if the copying succeeds, cfeAborted if the copying was aborted or
+    ///          stopped in the callback function and cfeError on any other error.
+    /// @raises  EOSError if an error occurs and cfwRaiseException was passed
+    /// </summary>
     class function CopyFileWithProgress(const _Source, _Dest: string; _Progress: TCopyFileProgressEvt;
       _Flags: TCopyFileWithProgressFlagSet = [cfwRaiseException]): TCopyFileWithProgressResult;
-    {! Copies the file Source to Dest using the Windows MoveFileWithProgress function which
-       allows for a progress callback
-       NOTE: If the file can be moved rather than copied, no call to the callback
-             function will occur!
-       @param(Source is a string containing the name of the existing file)
-       @param(Dest is a string containing the destination file name)
-       @param(Flags is a set of TCopyFileWithProgressFlags specifying whether the copy operation
-              cfwFailIfExists: fail if the destination file already exists.
-              cfwRestartable: stores information in the destination file that allows
-                to restart a stopped copy operation
-              cfwRaiseException: retrieve the Windows error and raise an exception if it fails.
-                If not set, it will not raise an exception but just return cfwAborted
-                or cfwError if copying the file fails. (set by default))
-       @returns cfeOK, if the copying succeeds, cfeAborted if the copying was aborted or
-                stopped in the callback function and cfeError on any other error.
-       @raises  EOSError if an error occurs and cfwRaiseException was passed }
+    /// <summary>
+    /// Copies the file Source to Dest using the Windows MoveFileWithProgress function which
+    /// allows for a progress callback
+    /// NOTE: If the file can be moved rather than copied, no call to the callback
+    ///       function will occur!
+    /// @param(Source is a string containing the name of the existing file)
+    /// @param(Dest is a string containing the destination file name)
+    /// @param(Flags is a set of TCopyFileWithProgressFlags specifying whether the copy operation
+    ///        cfwFailIfExists: fail if the destination file already exists.
+    ///        cfwRestartable: stores information in the destination file that allows
+    ///          to restart a stopped copy operation
+    ///        cfwRaiseException: retrieve the Windows error and raise an exception if it fails.
+    ///          If not set, it will not raise an exception but just return cfwAborted
+    ///          or cfwError if copying the file fails. (set by default))
+    /// @returns cfeOK, if the copying succeeds, cfeAborted if the copying was aborted or
+    ///          stopped in the callback function and cfeError on any other error.
+    /// @raises  EOSError if an error occurs and cfwRaiseException was passed
+    /// </summary>
     class function MoveFileWithProgress(const _Source, _Dest: string; _Progress: TCopyFileProgressEvt;
       _Flags: TMoveFileWithProgressFlagSet = [mfwRaiseException]): TCopyFileWithProgressResult;
-    {! Creates a directory (parent directories must already exist)
-       @param DirectoryName is the name for the new directory
-       @param RaiseException determines whether an exception is raised on error, default = true
-       @returns true, if the directory was created
-       @raises EOSError if there was an error and RaiseException was true }
+    /// <summary>
+    /// Creates a directory (parent directories must already exist)
+    /// @param DirectoryName is the name for the new directory
+    /// @param RaiseException determines whether an exception is raised on error, default = true
+    /// @returns true, if the directory was created
+    /// @raises EOSError if there was an error and RaiseException was true
+    /// </summary>
     class function CreateDir(const _DirectoryName: string; _RaiseException: boolean = true): boolean;
-    {! Creates a new directory, including the creation of parent directories as needed.
-       @param DirectoryPath is the name for the new directory
-       @param RaiseException determines whether an exception is raised on error, default = true
-       @returns true, if the directory was created
-       @raises EOSError if there was an error and RaiseException was true }
+    /// <summary>
+    /// Creates a new directory, including the creation of parent directories as needed.
+    /// @param DirectoryPath is the name for the new directory
+    /// @param RaiseException determines whether an exception is raised on error, default = true
+    /// @returns true, if the directory was created
+    /// @raises EOSError if there was an error and RaiseException was true
+    /// </summary>
     class function ForceDir(const _DirectoryPath: string; _RaiseException: boolean = true): boolean;
-    {! Sets a file's readonly flag
-       @param Filename is the file to change
-       @param Set determines whether to set or clear the flag }
+    /// <summary>
+    /// Sets a file's readonly flag
+    /// @param Filename is the file to change
+    /// @param Set determines whether to set or clear the flag
+    /// </summary>
     class function SetReadonly(const _Filename: string; _Set: boolean; _RaiseException: boolean = true): boolean;
-    {! Deletes the file using the SysUtils.DeleteFile function.
-       @param(Filename is a string containing the name of the file)
-       @param(RaiseException is a boolean which controls whether the function
-              retrieves the Windows error and raises an exception
-              if it fails. If false, it will not raise an exception
-              but just return false if moving the file fails. )
-       @param(Force is a boolean which controls whether this function will try to delete
-              readonly files, If true, it will use SetFileAttr to reset the
-              readonly attribut and try to delete the file again.)
-       @returns(true, if the file could be deleted, false otherwise.) }
+    /// <summary>
+    /// Deletes the file using the SysUtils.DeleteFile function.
+    /// @param Filename is a string containing the name of the file
+    /// @param RaiseException is a boolean which controls whether the function
+    ///        retrieves the Windows error and raises an exception
+    ///        if it fails. If false, it will not raise an exception
+    ///        but just return false if moving the file fails. 
+    /// @param Force is a boolean which controls whether this function will try to delete
+    ///        readonly files, If true, it will use SetFileAttr to reset the
+    ///        readonly attribut and try to delete the file again.
+    /// @returns true, if the file could be deleted, false otherwise.
+    /// </summary>
     class function DeleteFile(const _Filename: string; _RaiseException: boolean = true; _Force: boolean = false): boolean;
-    {! Deletes all files in a directory matching a given filemask (non-recursive)
-       @param Dir is a string containting the directory in which the files are to be
-                  deleted, must NOT be empty
-       @param Mask is a string containting the file search mask, all files matching
-                   this mask will be deleted
-       @param RaiseException is a boolean which controls whether the function
-                             retrieves the Windows error and raises an exception
-                             if it fails. If false, it will not raise an exception
-                             but just return false if moving the file fails.
-       @param Force is a boolean which controls whether this function will try to delete
-                    readonly files, If true, it will use SetFileAttr to reset the
-                    readonly attribut and try to delete the file again.
-       @returns the number of files that could not be deleted. }
+    /// <summary>
+    /// Deletes all files in a directory matching a given filemask (non-recursive)
+    /// @param Dir is a string containting the directory in which the files are to be
+    ///            deleted, must NOT be empty
+    /// @param Mask is a string containting the file search mask, all files matching
+    ///             this mask will be deleted
+    /// @param RaiseException is a boolean which controls whether the function
+    ///                       retrieves the Windows error and raises an exception
+    ///                       if it fails. If false, it will not raise an exception
+    ///                       but just return false if moving the file fails.
+    /// @param Force is a boolean which controls whether this function will try to delete
+    ///              readonly files, If true, it will use SetFileAttr to reset the
+    ///              readonly attribut and try to delete the file again.
+    /// @returns the number of files that could not be deleted.
+    /// </summary>
     class function DeleteMatchingFiles(const _Dir, _Mask: string;
       _RaiseException: boolean = true; _Force: boolean = false): integer;
-    {! tries to find a matching file
-       @param Mask is the filename mask to match
-       @param Filename is the name of the file which has been found, only valid if result <> mfNotFound
-       @returns mfNotFound, if no file was found, or mfDirectory, mfFile or mfSpecial
-                describing the type of the file which has been found }
+    /// <summary>
+    /// tries to find a matching file
+    /// @param Mask is the filename mask to match
+    /// @param Filename is the name of the file which has been found, only valid if result <> mfNotFound
+    /// @returns mfNotFound, if no file was found, or mfDirectory, mfFile or mfSpecial
+    ///          describing the type of the file which has been found
+    /// </summary>
     class function FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
     class function RemoveDir(const _Dirname: string; _RaiseException: boolean = true;
       _Force: boolean = false): boolean;
-    {! Deletes a directory with all files and subdirectories.
-       @param(Dirname is the name of the directory to delete)
-       @param(Force specifies whether it should also delete readonly files) }
+    /// <summary>
+    /// Deletes a directory with all files and subdirectories.
+    /// @param(Dirname is the name of the directory to delete)
+    /// @param(Force specifies whether it should also delete readonly files)
+    /// </summary>
     class function DelTree(const _Dirname: string; _Force: boolean = false; _RaiseException: boolean = true): boolean;
-    {! reads a text file and returns its content as a string
-       @param Filename is the name of the file to read
-       @returns the file's content as a string }
+    /// <summary>
+    /// reads a text file and returns its content as a string
+    /// @param Filename is the name of the file to read
+    /// @returns the file's content as a string
+    /// </summary>
     class function ReadTextFile(const _Filename: string): string;
-
-    {! checks whether the given string is a valid filename (without path), that is
-       does not contain one of the characters defined in INVALID_FILENAME_CHARS
-       @param s is the string to check
-       @returns true, if the string is a valid filename, false otherwise }
+    /// <summary>
+    /// checks whether the given string is a valid filename (without path), that is
+    /// does not contain one of the characters defined in INVALID_FILENAME_CHARS
+    /// @param s is the string to check
+    /// @returns true, if the string is a valid filename, false otherwise
+    /// </summary>
     class function IsValidFilename(const _s: string): boolean; overload;
-    {! checks whether the given string is a valid filename (without path), that is
-       does not contain one of the characters defined in INVALID_FILENAME_CHARS and
-       returns the first error position.
-       @param s is the string to check
-       @param ErrPos is the first error position, only valid it result = false
-       @returns true, if the string is a valid filename, false otherwise }
+    /// <summary>
+    /// checks whether the given string is a valid filename (without path), that is
+    /// does not contain one of the characters defined in INVALID_FILENAME_CHARS and
+    /// returns the first error position.
+    /// @param s is the string to check
+    /// @param ErrPos is the first error position, only valid it result = false
+    /// @returns true, if the string is a valid filename, false otherwise
+    /// </summary>
     class function IsValidFilename(const _s: string; out _ErrPos: integer): boolean; overload;
-    {! creates a backup of the file appending the current date and time to the base
-       file name.
-       @param Filename is the name of the file to back up
-       @param BackupDir is a directory in which to create the backup file, if empty
-                        the same directory as the original file is used }
+    /// <summary>
+    /// creates a backup of the file appending the current date and time to the base
+    /// file name.
+    /// @param Filename is the name of the file to back up
+    /// @param BackupDir is a directory in which to create the backup file, if empty
+    ///                  the same directory as the original file is used
+    /// </summary>
     class procedure BackupFile(const _Filename: string; _BackupDir: string = '');
     class function GetFileInfo(const _Filename: string): TFileInfoRec;
-    {! Returns the free space (in bytes) on the disk with the given drive letter }
+    /// <summary>
+    /// Returns the free space (in bytes) on the disk with the given drive letter
+    /// </summary>
     class function DiskFree(_DriveLetter: char): Int64;
   end;
 
 type
-  {! callback event for generating a filename for the given generation }
+  /// <summary>
+  /// callback event for generating a filename for the given generation
+  ///  </summary>
   TOnGenerateFilename = procedure(_Sender: TObject; _Generation: integer; var _Filename: string) of object;
 type
+  /// <summary>
+  /// This class handles keeping gernations of files, e.g. log files. The default
+  /// is to keep 10 generations
+  /// </summary>
   TFileGenerationHandler = class
   private
     FBaseName: string;
@@ -425,28 +554,44 @@ type
     FPrependZeros: integer;
     function GenerateFilename(_Generation: integer): string;
   public
-    {! @param BaseName is the base filename to which by default _<n> followed by
-                       the Suffix will be appended
-       @param Suffix is the suffix for the filename, usually an extension which
-                     must include the dot (.) }
+    /// <summary>
+    /// @param BaseName is the base filename to which by default _<n> followed by
+    ///                 the Suffix will be appended
+    /// @param Suffix is the suffix for the filename, usually an extension which
+    ///               must include the dot (.)
+    /// </summary>
     constructor Create(const _BaseName, _Suffix: string);
-    {! generates the filename and returns it }
+    /// <summary>
+    /// generates the filename and returns it
+    /// </summary>
     function Execute(_KeepOriginal: boolean): string;
-    {! the maximum of file generations that should be kept }
+    /// <summary>
+    /// the maximum of file generations that should be kept
+    /// </summary>
     property MaxGenerations: integer read FMaxGenerations write FMaxGenerations default 5;
-    {! should the resulting filename contain a number? }
+    /// <summary>
+    /// should the resulting filename contain a number?
+    /// </summary>
     property ResultContainsNumber: boolean read FResultContainsNumber write FResultContainsNumber default false;
-    {! does the oldest file have the highest number? }
+    /// <summary>
+    /// does the oldest file have the highest number?
+    /// </summary>
     property OldestIsHighest: boolean read FOldestIsHighest write FOldestIsHighest default true;
     property PrependZeros: integer read FPrependZeros write FPrependZeros default 0;
-    {! allows read access to the file's base name as passed to the constructor }
+    /// <summary>
+    /// allows read access to the file's base name as passed to the constructor
+    /// </summary>
     property BaseName: string read FBaseName;
     property Suffix: string read FSuffix;
-    {! callback event for generating a filename for the given generation }
+    /// <summary>
+    /// callback event for generating a filename for the given generation
+    /// </summary>
     property OnGenerateFilename: TOnGenerateFilename read FOnGenerateFilename write FOnGenerateFilename;
   end;
 
-{! This is an abbreviation for IncludeTrailingPathDelimiter }
+/// <summary>
+/// This is an abbreviation for IncludeTrailingPathDelimiter
+/// </summary>
 function itpd(const _Dirname: string): string; inline;
 
 implementation
@@ -464,18 +609,18 @@ resourcestring
   STR_GETTEMPFILENAME_ERROR_DS = 'u_dzFileUtils.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName';
   STR_GETSHORTPATHNAME_ERROR_DS = 'u_dzFileUtils.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname';
   STR_GETSHORTPATHNAME_TOO_LONG_D = 'Short pathname is longer than MAX_PATH (%d) characters';
-  // doppelte % zum Durchreichen in Prozedur
+  // duplicate % so they get passed through the format function
   STR_MOVEFILE_ERROR_SS = 'Error %%1:s (%%0:d) while trying to move "%s" to "%s".';
-  // doppelte % zum Durchreichen in Prozedur
+  // duplicate % so they get passed through the format function
   STR_SETREADONLY_ERROR_S = 'Error %%1:s (%%0:d) while changing the readonly flag of "%s"';
-  // doppelte % zum Durchreichen in Prozedur
+  // duplicate % so they get passed through the format function
   STR_COPYFILE_ERROR_SS = 'Error %%1:s (%%0:d) while trying to copy "%s" to "%s".';
-  // doppelte % zum Durchreichen in Prozedur
+  // duplicate % so they get passed through the format function
   STR_DELETEFILE_ERROR_S = 'Error %%1:s (%%0:d) deleting file "%s"';
-  // doppelte % zum Durchreichen in Prozedur
+  // duplicate % so they get passed through the format function
   STR_REMOVEDIR_ERROR_S = 'Error %%1:s (%%0:d) deleting directory "%s"';
   STR_DELTREE_ERROR_S = '"%s" does not exist or is not a directory';
-  // doppelte % zum Durchreichen in Prozedur
+  // duplicate % so they get passed through the format function
   STR_CREATEDIR_ERROR_S = 'Error %%1:s (%%0:d) creating directory "%s"';
 
 function itpd(const _Dirname: string): string; inline;
