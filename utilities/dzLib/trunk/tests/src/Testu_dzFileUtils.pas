@@ -173,7 +173,7 @@ end;
 
 procedure TFileSystemTestCase.TearDown;
 begin
-  TFileSystem.DelTree(FTestDir);
+  TFileSystem.DelDirTree(FTestDir);
   inherited;
 end;
 
@@ -232,8 +232,11 @@ var
   Res: TFileSystem.TCopyFileWithProgressResult;
 begin
   Res := TFileSystem.MoveFileWithProgress(FSourceFile, FDestFile, ProgressCancel, []);
-  Check(Res = cfwOK, 'aborted expected');
-  CheckFalse(FileExists(FDestFile), 'destination file exists');
+  // Note: This move operation does not get cancelled because the file can be
+  // renamed rather than copied and deleted. In that case the callback function
+  // is never being called.
+  Check(Res = cfwOK, 'OK expected');
+  CheckTrue(FileExists(FDestFile), 'destination file exists');
 end;
 
 procedure TestTFileSystem.TestCopyFileWithProgressCancel;

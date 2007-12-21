@@ -139,8 +139,20 @@ function Long2Num(_l: ULong; _Base: byte): string;
 /// </summary>
 function isNumberN(const _s: string; _Base: TBaseN): integer;
 
+/// <summary>
+/// Converts a string of the form '-hh:mm:ss', 'hh:mm:ss',
+/// '+hh:mm:ss', 'mm:ss' or 'ss' to a number of seconds.
+/// </summary>
 function TimeStrToSeconds(const _Zeit: string): integer;
+/// <summary>
+/// deprecated, use SecondsToTimeStr instead
+/// </summary>
 function SecondsToStr(_Seconds: integer): string; deprecated;
+/// <summary>
+/// Converts a number of seconds to a string of the form
+/// 'hh:mm:ss'. The string will always contain hours and minutes
+/// even if Seconds < 60.
+/// </summary>
 function SecondsToTimeStr(_Seconds: integer): string;
 {$IFDEF Delphi7up}
 function TimeToSeconds(_Zeit: TDateTime): integer; deprecated;
@@ -221,6 +233,14 @@ function Str2Float(_s: string; const _Source: string; _DecSeparator: char = '.')
 /// @returns true, if s could be converted, false otherwise }
 /// </summary>
 function TryStr2Float(_s: string; out _flt: extended; _DecSeparator: char = '.'): boolean; overload;
+/// <summary>
+/// tries to convert a string to a float, returns false if it fails
+/// @param s is the string to convert
+/// @param flt is the float, only valid if the function returns true
+/// @param DecSeparator is the decimal separator to use, defaults to '.',
+///        if passed as #0, GuessDecimalSeparator is called to guess it
+/// @returns true, if s could be converted, false otherwise }
+/// </summary>
 function TryStr2Float(_s: string; out _flt: double; _DecSeparator: char = '.'): boolean; overload;
 
 /// <summary>
@@ -252,6 +272,12 @@ function Float2Str(_flt: extended; _Width, _Decimals: integer): string; overload
 /// </summary>
 function Float2Str(_flt: extended; _Decimals: integer): string; overload;
 
+/// <summary>
+/// Tries to round a floating point value to a word value
+/// @param flt is the value to convert
+/// @param wrd returns the word value, only valid if result = true
+/// @returns true, if the result can be stored i a word, false otherwise.
+/// </summary>
 function TryRound(_flt: extended; out _wrd: word): boolean;
 
 /// <summary>
@@ -286,9 +312,12 @@ const
 function SecondsToHumanReadableString(_Seconds: Int64): string;
 
 /// <summary>
-/// returns the default locale settings as read from the system's regional settings }
+/// returns the default locale settings as read from the user's regional settings }
 /// </summary>
 function GetUserDefaultLocaleSettings: TFormatSettings;
+/// <summary>
+/// returns the default locale settings as read from the system's regional settings }
+/// </summary>
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 
 implementation
