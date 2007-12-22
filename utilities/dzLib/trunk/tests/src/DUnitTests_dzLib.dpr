@@ -30,7 +30,8 @@ uses
   Testu_dzConvertUtils in 'Testu_dzConvertUtils.pas',
   Testu_dzDateUtils in 'Testu_dzDateUtils.pas',
   u_dzClassUtils in '..\..\src\u_dzClassUtils.pas',
-  u_dzDateUtils in '..\..\src\u_dzDateUtils.pas';
+  u_dzDateUtils in '..\..\src\u_dzDateUtils.pas',
+  Testu_dzStringUtils in 'Testu_dzStringUtils.pas';
 
 {$R *.RES}
 

@@ -36,62 +36,132 @@ const
     '0'..'9', 'ö', 'Ö', 'ä', 'Ä', 'ü', 'Ü', 'ß'];
   STANDARD_CONTROL_CHARS = [#0..' '];
 
-function GetDelStr(var _Zeile: string; _Del: char): string;
+/// <summary>
+/// function is deprecated, use ExtractStr instead
+/// </summary>
+function GetDelStr(var _Zeile: string; _Del: char): string; deprecated;
 
-{: extracts a substring from the start of Source up to the Delimiter, returns
-   true, if a substring (even an empty one) was found. }
+/// <summary>
+/// extracts the substring from the start of Source up to the Delimiter
+/// </summary>
+function ExtractStr(var _Source: string; _Delimiter: char): string; overload;
+/// <summary>
+/// extracts a substring from the start of Source up to the Delimiter
+/// @returns true, if a substring (even an empty one) was found.
+/// </summary>
 function ExtractStr(var _Source: string; _Delimiters: TCharSet; out _Substr: string): boolean; overload;
+/// <summary>
+/// extracts a substring from the start of Source up to the Delimiter
+/// @returns true, if a substring (even an empty one) was found.
+/// </summary>
 function ExtractStr(var _Source: string; _Delimiter: char; out _Substr: string): boolean; overload;
+/// <summary>
+/// extracts a substring from the start of Source up to the delimiter
+/// @param LastWasDelimiter is a boolean that is to be used in repeated calls
+///                         to the function to tell the next call that the
+///                         last call returned an empty string because there
+///                         was a double delimiter.
+/// Use like this:
+/// b := false;
+/// while ExtractStr(Source, [' ', #9], s, b) do
+///   HandleSubstring(s);
+/// </summary>
 function ExtractStr(var _Source: string; _Delimiters: TCharSet; out _Substr: string; var _LastWasDelimiter: boolean): boolean; overload;
+/// <summary>
+/// extracts a substring from the start of Source up to the delimiter
+/// @param LastWasDelimiter is a boolean that is to be used in repeated calls
+///                         to the function to tell the next call that the
+///                         last call returned an empty string because there
+///                         was a double delimiter.
+/// Use like this:
+/// b := false;
+/// while ExtractStr(Source, [' ', #9], s, b) do
+///   HandleSubstring(s);
+/// </summary>
 function ExtractStr(var _Source: string; _Delimiter: char; out _Substr: string; var _LastWasDelimiter: boolean): boolean; overload;
 
-{: Converts A to lower case. }
+/// <summary>
+/// Converts a char to lower case.
+/// </summary>
 function LoCase(_c: char): char;
+
 // function UpStr(const _s: string): string; // use SysUtils.(Ansi)UpperCase instead
 // function LoStr(const _s: string): string; // use SysUtils.(Ansi)LowerCase instead
 
-{: Entfernt im Gegensatz zu Sysutils.Trim nur Spaces und keine Sonderzeichen }
+/// <summary>
+/// like SysUtils.Trim but only removes spaces, no special characters
+/// </summary>
 function TrimSpaces(const _s: string): string;
-{: Entfernt im Gegensatz zu SysUtils.TrimRight nur Spaces, keine Sonderzeichen }
+/// <summary>
+/// like SysUtils.TrimRight but only removes spaces, no special characters
+/// </summary>
 function RTrimSpaces(const _s: string): string;
-{: Entfernt im Gegensatz zu SysUtils.TrimLeft nur Spaces, keine Sonderzeichen }
+/// <summary>
+/// like SysUtils.TrimLeft but only removes spaces, no special characters
+/// </summary>
 function LTrimSpaces(const _s: string): string;
+type
+  TTrimStr = function(const _s: string): string;
+const
+/// <summary>
+/// function is deprcated, use RTrimSpaces instead, or possibily SysUtils.TrimRight
+/// </summary>
+  RTrimStr: TTrimStr = RTrimSpaces deprecated;
+/// <summary>
+/// function is deprcated, use LTrimSpaces instead, or possibly SysUtils.TrimLeft
+/// </summary>
+  LTrimStr: TTrimStr = LTrimSpaces deprecated;
+/// <summary>
+/// function is deprcated, use TrimSpaces instead, or possibly SysUtils.Trim
+/// </summary>
+  TrimStr: TTrimStr = TrimSpaces deprecated;
 
-{: Creates a string with Anz spaces. }
-function SpaceStr(_Anz: integer): string;
+/// <summary>
+/// Creates a string with Anz spaces.
+/// </summary>
+function SpaceStr(_Cnt: integer): string;
 
-function StringOf(_c: char; _Anz: integer): string;
-{$IFDEF Delphi7up}
-deprecated; // use StrUtils.DupeString
-{$ENDIF}
+/// <summary>
+/// function is deprecated, use StrUtils.DupeString instead
+/// </summary>
+function StringOf(_c: char; _Cnt: integer): string; deprecated;
 
-{: Prepend a backslash to the string if there isn't one already. }
+/// <summary>
+/// Prepend a backslash to the string if there isn't one already.
+/// </summary>
 function PrependBackslash(const _s: string): string;
-{$IFDEF Delphi7up}
 type
   TXxxBackslash = function(const _s: string): string;
 const
+/// <summary>
+/// function is deprecated, use IncludeTrailingPathDelimiter instead
+/// </summary>
   AddBackslash: TXxxBackslash = IncludeTrailingPathDelimiter deprecated;
+/// <summary>
+/// function is deprecated, use ExcludeTrailingPathDelimiter instead
+/// </summary>
   StripBackslash: TXxxBackslash = ExcludeTrailingPathDelimiter deprecated;
-{$ELSE}
-{: Append a backslash to the string if there isn't one already. }
-function AddBackslash(const _s: string): string;
-{: Remove a trailing backslash if there is one. Note that this does also
-   remove a trailing backlash from the root directory ('c:\') which might
-   not be what you want. }
-function StripBackslash(const _s: string): string;
-{$ENDIF}
 
-{: Replaces an existing extension in Name with Ext or adds Ext to Name if
-   it does not have an extension. }
+/// <summary>
+/// Replaces an existing extension in Name with Ext or adds Ext to Name if
+/// it does not have an extension.
+/// </summary>
 function ForceExtension(const _Name, _Ext: string): string;
 {: Returns only the filename (incl. extension) portion of Name. }
 function JustFilename(const _Name: string): string;
-{: removes an extension if it matches the given one
-   @param Filename is the input filename
-   @param Extension is the extension to remove, if the file has it (comparison is case insensitive)
-   @returns the filename without the extension, if it matched, the unchanged filename otherwise }
-function RemoveFileExtIfMatching(const _Filename: string; const _Extension: string): string;
+/// <summary>
+/// function is deprecated (because it did a different thing than the name said)
+/// use RemoveSuffixIfMatching instead
+/// </summary>
+function RemoveFileExtIfMatching(const _s, _Suffix: string): string; deprecated;
+/// <summary>
+/// removes a suffix (can be a file extension, but can also be any arbitrary string)
+/// from a string if it matches the given one
+/// @param s is the input string
+/// @param Suffix is the suffix to remove, if the string has it (comparison is case insensitive)
+/// @returns the string without the suffix, if it matched, the unchanged string otherwise }
+/// </summary>
+function RemoveSuffixIfMatching(const _s, _Suffix: string): string;
 
 {: Appends spaces to the string S to bring it to the given length. If S is
    too long it is truncated, thus the result is guaranteed to be Len characters
@@ -102,15 +172,8 @@ function RPadStr(const _s: string; _Len: integer): string;
    long. }
 function LPadStr(const _s: string; _Len: integer): string;
 
-type
-  TTrimStr = function(const _s: string): string;
-const
-  RTrimStr: TTrimStr = RTrimSpaces deprecated; // or possibily SysUtils.TrimRight
-  LTrimStr: TTrimStr = LTrimSpaces deprecated; // or possibly SysUtils.TrimLeft
-  TrimStr: TTrimStr = TrimSpaces deprecated; // or possibly SysUtils.Trim
-
-  {: Returns true, if SubStr is found in Str and sets Head to the text before
-     and Tail to the text after SubStr. Otherwise Head and Tail are undefined. }
+{: Returns true, if SubStr is found in Str and sets Head to the text before
+   and Tail to the text after SubStr. Otherwise Head and Tail are undefined. }
 function FindString(const _Substr, _Str: string; var _Head, _Tail: string): boolean;
 
 {: Returns the rightmost position of Sub in S or 0 if Sub is not found in S. }
@@ -326,12 +389,17 @@ begin
     result := TailStr(_Name, p + 1);
 end;
 
-function RemoveFileExtIfMatching(const _Filename: string; const _Extension: string): string;
+function RemoveFileExtIfMatching(const _s, _Suffix: string): string;
 begin
-  if UEndsWith(_Extension, _Filename) then
-    Result := LeftStr(_Filename, Length(_Filename) - Length(_Extension))
+  Result := RemoveSuffixIfMatching(_s, _Suffix);
+end;
+
+function RemoveSuffixIfMatching(const _s, _Suffix: string): string;
+begin
+  if UEndsWith(_Suffix, _s) then
+    Result := LeftStr(_s, Length(_s) - Length(_Suffix))
   else
-    Result := _Filename;
+    Result := _s;
 end;
 
 function nthWordStartAndEnd(const _s: string; _WordNo: integer;
@@ -570,19 +638,9 @@ begin
   (Result + Size)^ := #0;
 end;
 
-{$IFOPT h-}
-var
-  Pas2StrTempStr: string;
-{$ENDIF}
-
 function Pas2Str(var _s: string): PChar;
 begin
-{$IFOPT h+}
-  result := PChar(_s);
-{$ELSE}
-  Pas2StrTempStr := _s + #0;
-  result := @Pas2StrTempStr[1];
-{$ENDIF}
+  Result := PChar(_s);
 end;
 
 function Str2Pas(_p: PChar): string;
@@ -612,7 +670,7 @@ end;
 function RTrimSpaces(const _s: string): string;
 begin
   Result := _s;
-  while NthCharOf(Result, Length(Result)) = ' ' do
+  while (Length(Result) > 0) and  (NthCharOf(Result, Length(Result)) = ' ') do
     System.Delete(Result, Length(Result), 1);
 end;
 
@@ -646,42 +704,17 @@ begin
     Result := '\' + _s;
 end;
 
-{$IFNDEF delphi7up}
-
-function AddBackslash(const _s: string): string;
+function StringOf(_c: char; _Cnt: integer): string;
 begin
-  if RightStr(_s, 1) = '\' then
-    Result := _s
-  else
-    Result := _s + '\';
+  Result := StrUtils.DupeString(_c, _cnt);
 end;
 
-function StripBackslash(const _s: string): string;
-begin
-  if RightStr(_s, 1) = '\' then
-    Result := LeftStr(_s, Length(_s) - 1)
-  else
-    Result := _s;
-end;
-{$ENDIF}
-
-function StringOf(_c: char; _Anz: integer): string;
-var
-  i: integer;
-begin
-  //  SetLength(Result, _Anz);
-  //  FillChar(Result[1], _Anz, _c);
-  Result := '';
-  for i := 1 to _Anz do
-    Result := Result + _c;
-end;
-
-function SpaceStr(_Anz: integer): string;
+function SpaceStr(_Cnt: integer): string;
 begin
 {$IFDEF Delphi7up}
   Result := DupeString(' ', _Anz);
 {$ELSE}
-  Result := StringOf(' ', _Anz);
+  Result := StringOf(' ', _Cnt);
 {$ENDIF}
 end;
 
@@ -754,6 +787,20 @@ begin
   _p^ := #0
 end;
 
+function ExtractStr(var _Source: string; _Delimiter: char): string;
+var
+  p: integer;
+begin
+  p := Pos(_Delimiter, _Source);
+  if p = 0 then begin
+    Result := _Source;
+    _Source := '';
+  end else begin
+    Result := LeftStr(_Source, p - 1);
+    _Source := TailStr(_Source, p + 1);
+  end;
+end;
+
 function ExtractStr(var _Source: string; _Delimiters: TCharSet; out _Substr: string; var _LastWasDelimiter: boolean): boolean;
 var
   p: integer;
@@ -807,17 +854,8 @@ begin
 end;
 
 function GetDelStr(var _Zeile: string; _Del: char): string;
-var
-  p: integer;
 begin
-  p := Pos(_Del, _Zeile);
-  if p = 0 then begin
-    Result := _Zeile;
-    _Zeile := '';
-  end else begin
-    Result := LeftStr(_Zeile, p - 1);
-    _Zeile := TailStr(_Zeile, p + 1);
-  end;
+  Result := ExtractStr(_Zeile, _Del);
 end;
 
 function CenterStr(const _s: string; _MaxLen: integer): string;

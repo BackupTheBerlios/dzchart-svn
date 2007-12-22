@@ -55,5 +55,6 @@
     <DCCReference Include="Testu_dzConvertUtils.pas" />
     <DCCReference Include="Testu_dzDateUtils.pas" />
     <DCCReference Include="Testu_dzFileUtils.pas" />
+    <DCCReference Include="Testu_dzStringUtils.pas" />
   </ItemGroup>
 </Project>
