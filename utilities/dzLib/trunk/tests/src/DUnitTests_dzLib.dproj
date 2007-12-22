@@ -52,8 +52,8 @@
     <DCCReference Include="..\..\src\u_dzTranslator.pas" />
     <DCCReference Include="..\..\src\u_dzUnitTestUtils.pas" />
     <DCCReference Include="..\..\src\u_dzVariantUtils.pas" />
-    <DCCReference Include="Testu_dzClassUtils.pas" />
     <DCCReference Include="Testu_dzConvertUtils.pas" />
+    <DCCReference Include="Testu_dzDateUtils.pas" />
     <DCCReference Include="Testu_dzFileUtils.pas" />
   </ItemGroup>
 </Project>

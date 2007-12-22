@@ -797,13 +797,13 @@ begin
 end;
 
 initialization
-  RegisterTest(TestTFileSystem.Suite);
-  RegisterTest(TestTFileGenerationHandler_OldestIsHighest_NotResultContainsNumber_NotKeep.Suite);
-  RegisterTest(TestTFileGenerationHandler_OldestIsHighest_NotResultContainsNumber_Keep.Suite);
-  RegisterTest(TestTFileGenerationHandler_NotOldestIsHighest_NotResultContainsNumber_NotKeep.Suite);
-  RegisterTest(TestTFileGenerationHandler_NotOldestIsHighest_NotResultContainsNumber_Keep.Suite);
-  RegisterTest(TestTFileGenerationHandler_OldestIsHighest_ResultContainsNumber_NotKeep.Suite);
-  RegisterTest(TestTFileGenerationHandler_NotOldestIsHighest_ResultContainsNumber_NotKeep.Suite);
-  RegisterTest(TestTDirectorySync.Suite);
+  RegisterTest('FileUtils', TestTFileSystem.Suite);
+  RegisterTest('FileUtils\Generations', TestTFileGenerationHandler_OldestIsHighest_NotResultContainsNumber_NotKeep.Suite);
+  RegisterTest('FileUtils\Generations', TestTFileGenerationHandler_OldestIsHighest_NotResultContainsNumber_Keep.Suite);
+  RegisterTest('FileUtils\Generations', TestTFileGenerationHandler_NotOldestIsHighest_NotResultContainsNumber_NotKeep.Suite);
+  RegisterTest('FileUtils\Generations', TestTFileGenerationHandler_NotOldestIsHighest_NotResultContainsNumber_Keep.Suite);
+  RegisterTest('FileUtils\Generations', TestTFileGenerationHandler_OldestIsHighest_ResultContainsNumber_NotKeep.Suite);
+  RegisterTest('FileUtils\Generations', TestTFileGenerationHandler_NotOldestIsHighest_ResultContainsNumber_NotKeep.Suite);
+  RegisterTest('FileUtils', TestTDirectorySync.Suite);
 end.
 

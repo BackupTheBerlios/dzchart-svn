@@ -1265,7 +1265,7 @@ begin
         end else begin
           Filename := IncludeTrailingPathDelimiter(_Dirname) + sr.Name;
           if (sr.Attr and SysUtils.faDirectory) <> 0 then begin
-            Result := DelTree(Filename, _Force, _RaiseException);
+            Result := DelDirTree(Filename, _RaiseException, _Force);
             if not Result then
               exit;
           end else begin

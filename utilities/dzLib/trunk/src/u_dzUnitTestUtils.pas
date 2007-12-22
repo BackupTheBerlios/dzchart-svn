@@ -21,31 +21,31 @@ type
     /// <summary>
     /// Checks whether the value is a variant of a floating point type (includes integer)
     /// </summary>
-    procedure CheckVariantIsFloat(_Value: variant; _Msg: string);
+    procedure CheckVariantIsFloat(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Checks whether the value is a variant of an (signed) integer type (excludes LongWord and Int64)
     /// </summary>
-    procedure CheckVariantIsInteger(_Value: variant; _Msg: string);
+    procedure CheckVariantIsInteger(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Checks whether the value is a variant of an (signed) int64 type (includes LongWord and Int64)
     /// </summary>
-    procedure CheckVariantIsInt64(_Value: variant; _Msg: string);
+    procedure CheckVariantIsInt64(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Checks whether the value is a variant of an (unsigned) integer type (excludes all signed integer types)
     /// </summary>
-    procedure CheckVariantIsLongWord(_Value: variant; _Msg: string);
+    procedure CheckVariantIsLongWord(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Checks whether the value is a non Null variant
     /// </summary>
-    procedure CheckVariantIsNotNull(_Value: variant; _Msg: string); overload;
+    procedure CheckVariantIsNotNull(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Checks whether the value is a Null variant
     /// </summary>
-    procedure CheckVariantIsNull(_Value: variant; _Msg: string); overload;
+    procedure CheckVariantIsNull(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Checks whether the value is a variant of a string type
     /// </summary>
-    procedure CheckVariantIsString(_Value: variant; _Msg: string); overload;
+    procedure CheckVariantIsString(_Value: variant; _Msg: string='');
     /// <summary>
     /// Called by the CheckVAriantIsXxxx functions to show errors
     /// </summary>
@@ -57,15 +57,15 @@ type
     /// <summary>
     /// Checks whether the date part of two TDateTime values is equal
     /// </summary>
-    procedure CheckEqualsDate(_Expected, _Actual: TDateTime; const _Message: string);
+    procedure CheckEqualsDate(_Expected, _Actual: TDateTime; const _Message: string = '');
     /// <summary>
     /// Checks whether two TDateTime values are equal
     /// </summary>
-    procedure CheckEqualsDateTime(_Expected, _Actual: TDateTime; const _Message: string);
+    procedure CheckEqualsDateTime(_Expected, _Actual: TDateTime; const _Message: string = '');
     /// <summary>
     /// Checks whether the time part of two TDateTime values is equal
     /// </summary>
-    procedure CheckEqualsTime(_Expected, _Actual: TDateTime; const _Message: string);
+    procedure CheckEqualsTime(_Expected, _Actual: TDateTime; const _Message: string = '');
     /// <summary>
     /// Checks multiline strings for equality
     /// </summary>
