@@ -469,20 +469,13 @@ function Long2DecN(_l: ULong; _n: ULong): string;
 begin
   Result := Long2Dec(_l);
   if ULong(Length(Result)) < _n then
-{$IFDEF delphi7up}
     Insert(DupeString('0', _n - ULong(Length(Result))), Result, 1);
-{$ELSE}
-    Insert(StringOf('0', _n - ULong(Length(Result))), Result, 1);
-{$ENDIF}
 end;
-
-{$IFDEF Delphi7up}
 
 function TimeToSeconds(_Zeit: TDateTime): integer;
 begin
   Result := SecondOfTheDay(_Zeit);
 end;
-{$ENDIF}
 
 function SecondsToTimeStr(_Seconds: integer): string;
 begin

@@ -711,11 +711,7 @@ end;
 
 function SpaceStr(_Cnt: integer): string;
 begin
-{$IFDEF Delphi7up}
-  Result := DupeString(' ', _Anz);
-{$ELSE}
-  Result := StringOf(' ', _Cnt);
-{$ENDIF}
+  Result := DupeString(' ', _Cnt);
 end;
 
 function TrimSpaces(const _s: string): string;
