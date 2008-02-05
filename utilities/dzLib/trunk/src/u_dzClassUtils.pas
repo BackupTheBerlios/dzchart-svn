@@ -9,7 +9,8 @@ interface
 
 uses
   SysUtils,
-  Classes;
+  Classes,
+  IniFiles;
 
 // NOTE: The naming convention is <extended-class>_<Methodname>
 
@@ -107,6 +108,12 @@ function TStrings_StringByObj(_Strings: TStrings; _Obj: pointer; _RaiseException
 /// @returns true, if a matching object was found, false otherwise
 /// </summary>
 function TStrings_TryStringByObj(_Strings: TStrings; _Obj: pointer; out _Value: string): boolean;
+
+/// <summary>
+/// reads a char from an ini file, if the value is longer than one char, it returns
+/// the first char, if it is empty, it returns the default
+/// </summary>
+function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
 
 implementation
 
@@ -249,6 +256,16 @@ begin
       raise EObjectNotFound.Create('no matching object found');
     Result := '';
   end;
+end;
+
+function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
+var
+  s: string;
+begin
+  s:=_Ini.ReadString(_Section, _Ident, _Default);
+  if s = '' then
+    s:= _Default;
+  Result := s[1];
 end;
 
 end.
