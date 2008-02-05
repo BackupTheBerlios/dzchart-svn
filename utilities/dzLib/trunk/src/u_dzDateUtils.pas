@@ -17,7 +17,7 @@ interface
 ///          'yyyy-mm-dd hh:mm:ss'
 /// </summary>
 function DateTime2Iso(_dt: TDateTime; _IncludeTime: boolean = false): string; inline;
-
+function Time2Iso(_dt: TDateTime): string;
 /// <summary>
 /// converts a string that contains a time in ISO 8601 format to a TDateTime value
 /// @param s is the string to convert, it must be in the form 'hh:mm:ss' or 'hh:mm'
@@ -45,6 +45,11 @@ begin
     DateTimeToString(Result, 'yyyy-mm-dd hh:nn:ss', _dt)
   else
     DateTimeToString(Result, 'yyyy-mm-dd', _dt);
+end;
+
+function Time2Iso(_dt: TDateTime): string;
+begin
+  DateTimeToString(Result, 'hh:nn:ss', _dt)
 end;
 
 function Iso2Time(_s: string): TDateTime;
