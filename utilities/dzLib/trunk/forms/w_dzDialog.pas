@@ -250,7 +250,7 @@ type
        @param CustomButtons is an array of strings for the custom button captions,
                             the number of entries must correspond to the number
                             of dbeCustom entries in the Buttons array
-       param CustomResults is an array of integers with the modal results for
+       @param CustomResults is an array of integers with the modal results for
                            the custom buttons, the number of entries must
                            correspond to the number of dbeCustom entries in the
                            Buttons array
@@ -265,11 +265,23 @@ type
       _Owner: TComponent = nil;
       const _OptionDesc: string = ''): integer; overload;
     {: Creates a Tf_dzDialog instance, shows it and returns it. The created
-       dialog instance must be freed by the caller
+       dialog instance must be freed by the caller. Nonmodal in this context
+       means that the call returns to the caller rather than waiting for the
+       dialog to be dismissed by the user, so processing can continue. But note
+       that the dialog is displayed on top of all application windows and
+       works just like a modal dialog by blocking input to all other windows.
+       You must free the dialog so is removed.
        @param DialogType gives the icon to display
        @param Message is the message text to display
        @param Buttons is an array of buttons to show (Note: This is an array of
                       buttons, not a set, so the order is important!)
+       @param CustomButton is an array of strings for the custom button captions,
+                           the number of entries must correspond to the number
+                           of debCustom entries in the Buttons array
+       @param CustomResults is an array of integers with the modal results for
+                           the custom buttons, the number of entries must
+                           correspond to the number of dbeCustom entries in the
+                           Buttons array
        @param OnButtonClick is an event handler that will be called if one of the
                             buttons is clicked
        @param OptionDesc gives the description for the Buttons, if not given,
@@ -279,9 +291,9 @@ type
        @returns the created Tf_dzDialog instance, the caller is responsible
                 for closing and freeing this instance. }
     class function ShowNonModalMessage(_DialogType: TMsgDlgType; const _Message: string;
-      const _Buttons: array of TDialogButtonEnum; _OnButtonClick: TOnButtonClick;
+      const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
+      const _CustomResults: array of integer; _OnButtonClick: TOnButtonClick;
       const _OptionDesc: string = ''; _Parent: TComponent = nil): Tf_dzDialog;
-
   end;
 
 implementation
@@ -359,12 +371,21 @@ begin
 end;
 
 class function Tf_dzDialog.ShowNonModalMessage(_DialogType: TMsgDlgType; const _Message: string;
-  const _Buttons: array of TDialogButtonEnum; _OnButtonClick: TOnButtonClick;
+  const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
+  const _CustomResults: array of integer; _OnButtonClick: TOnButtonClick;
   const _OptionDesc: string = ''; _Parent: TComponent = nil): Tf_dzDialog;
+var
+  i: Integer;
 begin
   Result := Tf_dzDialog.Create(_Parent);
   Result.ShowDetailButton := false;
   Result.SetVisibleButtons(_Buttons);
+    Assert(Length(_CustomButtons) = Length(Result.CustomButtonCaptions));
+    for i := Low(_CustomButtons) to High(_CustomButtons) do
+      Result.CustomButtonCaptions[i] := _CustomButtons[i];
+    Assert(Length(_CustomResults) = Length(Result.CustomModalResults));
+    for i := Low(_CustomResults) to High(_CustomResults) do
+      Result.CustomModalResults[i] := _CustomResults[i];
   Result.UserMessage := _Message;
   Result.OptionDescription := _OptionDesc;
   Result.DialogType := _DialogType;
