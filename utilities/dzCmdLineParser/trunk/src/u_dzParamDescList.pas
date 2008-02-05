@@ -25,8 +25,8 @@ type
 {$DEFINE __DZ_OBJECT_LIST_TEMPLATE__}
 type
   _LIST_ANCESTOR_ = TObject;
-  _LIST_CONTAINER_ = TList;
-  _LIST_CONTAINER_ITEM_TYPE_ = pointer;
+//  _LIST_CONTAINER_ = TList;
+//  _LIST_CONTAINER_ITEM_TYPE_ = pointer;
   _ITEM_TYPE_ = TParamDesc;
 {$INCLUDE 't_dzObjectListTemplate.tpl'}
 

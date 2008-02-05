@@ -238,6 +238,9 @@ type
 
 implementation
 
+uses
+  u_dzCmdLineParserStates;
+
 { TTestContext }
 
 constructor TTestContext.Create(const _Input: string);
