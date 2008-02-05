@@ -155,13 +155,20 @@ begin
   try
     FExitCode := DoExecute;
   except
+    on e: EAbort do begin
+      // we do not want to show an error if the code called Abort because this
+      // is supposed to be a silent exception. So we log it and terminate with
+      // an exit code of 1
+      LogError(e.Message + '(' + e.ClassName +')');
+      FExitCode := 1;
+    end;
     on e: Exception do begin
       s := 'Exception ' + e.ClassName + ': ' + e.Message;
       LogError(s);
       if IsConsole then
         WriteLn(s)
       else
-        ShowException(e, nil);
+        ShowException(e, ExceptAddr);
       FExitCode := 1;
     end;
   end;
