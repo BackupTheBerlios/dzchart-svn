@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="template_template">
+		<description>
+			code template template
+		</description>
+		<author>
+			CodeGear
+		</author>
+		<point name="templatename">
+			<hint>
+				Shortcut name for the template
+			</hint>
+		</point>
+		<point name="description">
+			<hint>
+				Text description of the template
+			</hint>
+		</point>
+		<point name="author">
+			<hint>
+				Name of the author
+			</hint>
+		</point>
+		<point name="language">
+			<text>
+			  Delphi
+			</text>
+			<hint>
+				Language that the template targets
+			</hint>
+		</point>
+		<point name="CDATAEND" editable="false">
+			<text>
+				]]&gt;
+			</text>
+		</point>
+		<code language="IDE"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="$templatename$" invoke="manual">
+		<description>
+			$description$
+		</description>
+		<author>
+			$author$
+		</author>
+		<code language="$language$"><![CDATA[$selected$$CDATAEND$
+		</code>
+	</template>
+</codetemplate>
+]]>
+		</code>
+	</template>
+</codetemplate>
