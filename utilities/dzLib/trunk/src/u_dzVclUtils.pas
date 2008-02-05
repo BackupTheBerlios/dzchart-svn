@@ -357,6 +357,13 @@ procedure TForm_CenterOn(_frm: TForm; _Center: TPoint); overload;
 {: centers a form on the given component, but makes sure the form is fully visible }
 procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
 
+{: tries to focus the given control, returns false if that's not possible }
+function TWinControl_SetFocus(_Ctrl: TWinControl): boolean;
+
+{: returns the full path of the executable (without the filename but including
+   a backslash }
+function TApplication_GetExePath: string;
+
 {: switches off "Windows Ghosting" in Win 2000 and XP
   This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
   Call in application startup. }
@@ -1255,6 +1262,17 @@ begin
   TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)));
 end;
 
+function TWinControl_SetFocus(_Ctrl: TWinControl): boolean;
+begin
+  Result := _Ctrl.CanFocus;
+  if Result then
+    try
+      _Ctrl.SetFocus;
+    except
+      Result := False;
+    end;
+end;
+
 procedure DisableProcessWindowsGhosting;
 var
   DisableProcessWindowsGhostingProc: procedure;
@@ -1424,6 +1442,11 @@ var
 begin
   cnt := SendMessage(_Memo.Handle, EM_GETLINECOUNT, 0, 0);
   SendMessage(_Memo.Handle, EM_LINESCROLL, 0, cnt);
+end;
+
+function TApplication_GetExePath: string;
+begin
+  Result := ExtractFilePath(Application.ExeName);
 end;
 
 end.
