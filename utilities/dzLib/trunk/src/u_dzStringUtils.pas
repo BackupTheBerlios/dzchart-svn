@@ -117,7 +117,7 @@ const
   TrimStr: TTrimStr = TrimSpaces deprecated;
 
 /// <summary>
-/// Creates a string with Anz spaces.
+/// Creates a string with Cnt spaces.
 /// </summary>
 function SpaceStr(_Cnt: integer): string;
 
@@ -261,31 +261,31 @@ function nthWord(const _s: string; _WordNo: integer; _Delimiter: TCharSet): stri
 {: Returns the Nth character of S or ' ' if S has less than N charaters. }
 function nthCharOf(const _s: string; _n: integer): Char;
 
-{: Extract the first word of S using the given delimiters. The word is deleted
-   from S.
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect) }
+///<summary> Extract the first word of S using the given delimiters. The word is deleted
+///          from S.
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///          (which you might not expect) </summary>
 function ExtractFirstWord(var _s: string; const _Delimiter: string): string; overload;
-{: Extract the first word of S using the given delimiters. The word is deleted
-   from S.
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect) }
+///<summary> Extract the first word of S using the given delimiters. The word is deleted
+///          from S.
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///          (which you might not expect) </summary>
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet): string; overload;
-{: Extract the first word of S using the given delimiters. The word is deleted
-   from S.
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect)
-   @returns true, if a word could be extracted, false otherwise }
+///<summary> Extract the first word of S using the given delimiters. The word is deleted
+///          from S.
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///          (which you might not expect)
+///          @returns true, if a word could be extracted, false otherwise </summary>
 function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWord: string): boolean; overload;
-{: Extract the first word of S using the given delimiters. The word is deleted
-   from S.
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect)
-   @returns true, if a word could be extracted, false otherwise }
+///<summary> Extract the first word of S using the given delimiters. The word is deleted
+///          from S.
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///          (which you might not expect)
+///          @returns true, if a word could be extracted, false otherwise </summary>
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet; out _FirstWord: string): boolean; overload;
 
 {: extracts the first N characters of a string }
@@ -322,12 +322,15 @@ type
   {: Helper class for building a text line }
   TLineBuilder = class
   private
-    FSeparator: string;
+    FListSeparator: string;
     FContent: string;
+    FFormatSettings: TFormatSettings;
   public
     {: Creates a TLineBuilder instance with the given separator
-       @param Separator is the separator string to use, defaults to TAB (#9) }
-    constructor Create(const _Separator: string = #9);
+       @param ListSeparator is the separator string to use, defaults to TAB (#9)
+       @param DecimalSeparator is the decimal separator to use for floating point
+              values, defaults to a dot (.). }
+    constructor Create(const _ListSeparator: string = #9; const _DecimalSeparator: char = '.');
     {: Assigns the contents of another TLineBuilder instance }
     procedure Assign(_Source: TLineBuilder);
     {: Adds a string column }
@@ -350,6 +353,8 @@ type
     function ExtractFirst(out _Column: string): boolean;
     {: allows read access to the content that has been built }
     property Content: string read FContent;
+    property DecimalSeparator: char read FFormatSettings.DecimalSeparator write FFormatSettings.DecimalSeparator default '.';
+    property ListSeparator: string read FListSeparator write FListSeparator;
   end;
 
 implementation
@@ -1022,10 +1027,13 @@ end;
 
 { TLineBuilder }
 
-constructor TLineBuilder.Create(const _Separator: string);
+constructor TLineBuilder.Create(const _ListSeparator: string = #9; const _DecimalSeparator: char = '.');
 begin
   inherited Create;
-  FSeparator := _Separator;
+  FListSeparator := _ListSeparator;
+  FFormatSettings := GetUserDefaultLocaleSettings;
+  FFormatSettings.DecimalSeparator := _DecimalSeparator;
+  FFormatSettings.ThousandSeparator := #0;
 end;
 
 procedure TLineBuilder.Add(_IntValue: integer);
@@ -1035,13 +1043,13 @@ end;
 
 procedure TLineBuilder.Add(_FloatValue: extended; _Decimals: integer);
 begin
-  Add(Float2Str(_FloatValue, _Decimals));
+  Add(FloatToStrF(_FloatValue, ffFixed, 18, _Decimals, FFormatSettings));
 end;
 
 procedure TLineBuilder.Add(const _Column: string);
 begin
   if FContent <> '' then
-    FContent := FContent + FSeparator;
+    FContent := FContent + FListSeparator;
   FContent := FContent + _Column;
 end;
 
@@ -1071,7 +1079,7 @@ begin
   if s = '' then
     exit;
   if FContent <> '' then
-    FContent := FContent + FSeparator + s
+    FContent := FContent + FListSeparator + s
   else
     FContent := s;
 end;
@@ -1090,7 +1098,7 @@ function TLineBuilder.ExtractFirst(out _Column: string): boolean;
 var
   p: Integer;
 begin
-  p := Pos(FSeparator, FContent);
+  p := Pos(FListSeparator, FContent);
   Result := p <> 0;
   if Result then begin
     _Column := LeftStr(FContent, p - 1);
@@ -1106,7 +1114,7 @@ begin
   if s = '' then
     exit;
   if FContent <> '' then
-    FContent := s + FSeparator + FContent
+    FContent := s + FListSeparator + FContent
   else
     FContent := s;
 end;
