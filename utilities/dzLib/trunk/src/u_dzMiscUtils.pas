@@ -90,6 +90,12 @@ procedure HexDumpToDbl(const _s: string; var _Value: double);
 {: converts a hexdump of an extended back to an extended value }
 procedure HexDumpToExtended(const _s: string; var _Value: Extended);
 
+///<summary> converts an integer to a 8 digit hex string </summary>
+function IntToHex(_Value: integer): string; overload;
+
+///<summary> converts an In64 to a 16 digit hex string </summary>
+function IntToHex(_Value: Int64): string; overload;
+
 {: Converts an integer to a boolean.
    @param(Int is the integer to convert)
    @returns(false, if the integer is 0, true otherwise) }
@@ -803,6 +809,16 @@ begin
     Dec := Hex2Long(Copy(_s, i * 2 + 1, 2));
     p^[i] := Dec;
   end;
+end;
+
+function IntToHex(_Value: integer): string;
+begin
+  Result := IntToHex(_Value, SizeOf(_Value) * 2);
+end;
+
+function IntToHex(_Value: Int64): string;
+begin
+  Result := IntToHex(_Value, SizeOf(_Value) * 2);
 end;
 
 type
