@@ -25,6 +25,8 @@ type
      * InitCmdLineParser
      * doExecute }
   TDefaultMain = class
+  private
+    function GetProgName: string;
   protected
     {: stores the exit code }
     FExitCode: integer;
@@ -48,6 +50,7 @@ type
        the parameters are OK.
        @returns the exit code for the program }
     function doExecute: integer; virtual;
+  published
   public
     {: Creates a TDefaultMain instance, sets the exit code to 1 (=error) and
        initializes logging }
@@ -62,6 +65,7 @@ type
        it uses the result as exit code.
        @returns the exit code for the program }
     function Execute: integer;
+    property ProgName: string read GetProgName;
   end;
 
 type
@@ -173,6 +177,11 @@ begin
     end;
   end;
   Result := FExitCode;
+end;
+
+function TDefaultMain.GetProgName: string;
+begin
+  FGetOpt.ProgName;
 end;
 
 function Main: integer;
