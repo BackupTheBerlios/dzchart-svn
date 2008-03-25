@@ -97,6 +97,7 @@ const
   DZ_DATE_TIME = 'dzDateTime';
   DZ_VERSION = 'dzVersion.';
   DZ_PROJECT = 'dzProject';
+  DZ_PREPBUILD = 'dzPrepBuild';
 var
   MyDoc: string;
   Executor: TExecutor;
@@ -113,6 +114,7 @@ begin
     Executor.Environment.Values[DZ_DATE] := DateTimeToString('yyyy-mm-dd', dt);
     Executor.Environment.Values[DZ_TIME] := DateTimeToString('hh-nn-ss', dt);
     Executor.Environment.Values[DZ_DATE_TIME] := DateTimeToString('yyyy-mm-dd_hh-nn-ss', dt);
+    Executor.Environment.Values[DZ_PREPBUILD] := ExeName;
 
     if _Project <> '' then
       Executor.Environment.Values[DZ_PROJECT] := ChangeFileExt(_Project, '');

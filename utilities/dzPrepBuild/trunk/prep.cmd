@@ -3,6 +3,7 @@ echo dzDate=%dzDate%
 echo dzTime=%dzTime%
 echo dzDateTime=%dzDateTime%
 echo dzMyDocuments=%dzMyDocuments%
+echo dzPrepBuild=%dzPrepBuild%
 
 echo dzProject=%dzProject%
 
