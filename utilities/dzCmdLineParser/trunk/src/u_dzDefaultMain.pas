@@ -27,6 +27,7 @@ type
   TDefaultMain = class
   private
     function GetProgName: string;
+    function GetExeName: string;
   protected
     {: stores the exit code }
     FExitCode: integer;
@@ -50,7 +51,6 @@ type
        the parameters are OK.
        @returns the exit code for the program }
     function doExecute: integer; virtual;
-  published
   public
     {: Creates a TDefaultMain instance, sets the exit code to 1 (=error) and
        initializes logging }
@@ -66,6 +66,7 @@ type
        @returns the exit code for the program }
     function Execute: integer;
     property ProgName: string read GetProgName;
+    property ExeName: string read GetExeName;
   end;
 
 type
@@ -177,6 +178,16 @@ begin
     end;
   end;
   Result := FExitCode;
+end;
+
+function TDefaultMain.GetExeName: string;
+var
+  ModuleName: AnsiString;
+begin
+  SetLength(ModuleName, 255);
+  GetModuleFileNameA(MainInstance, PChar(ModuleName), Length(ModuleName));
+  OemToAnsi(PChar(ModuleName), PChar(ModuleName));
+  Result := Pchar(ModuleName);
 end;
 
 function TDefaultMain.GetProgName: string;
