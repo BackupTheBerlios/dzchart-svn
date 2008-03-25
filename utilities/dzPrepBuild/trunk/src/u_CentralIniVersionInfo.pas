@@ -75,7 +75,7 @@ end;
 
 procedure TCentralVersionInfo.GetRedirSectionInfo(_Redir: string; out _Filename, _Section: string);
 begin
-  _Filename := GetDelStr(_Redir, ',');
+  _Filename := ExtractStr(_Redir, ',');
   _Section := _Redir;
   AdjustFilename(_Filename);
 end;
@@ -86,8 +86,8 @@ var
   Redir: string;
 begin
   Redir := Copy(_RedirString, Length('redirect:') + 1);
-  _Filename := GetDelStr(Redir, ',');
-  _Section := GetDelStr(Redir, ',');
+  _Filename := ExtractStr(Redir, ',');
+  _Section := ExtractStr(Redir, ',');
   _Ident := Redir;
   AdjustFilename(_Filename);
 end;
