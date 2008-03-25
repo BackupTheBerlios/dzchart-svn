@@ -14,7 +14,7 @@ in this case I suggest using an .ini file instead.
 If you call the programm with the --help or -? option, it will display
 usage information.
 
-EXample 1:
+Example 1:
 
 Let's assume you are using Delphi 7, so you probably store the version
 in the <projectname>.dof file and let the IDE autoincrement the build
@@ -55,7 +55,7 @@ not exist.
 PrepBuild to the rescue. It does any of the following for you:
 1. Read the .dof file
 2. increment the build number
-3. call a batch file that again call prepbuild to
+3. call a batch file that again calls prepbuild to
   3.1 change the .dof file
   3.2 create a .rc file containing the version info
   3.3 add a .ico file to the .rc file so the icon is back
