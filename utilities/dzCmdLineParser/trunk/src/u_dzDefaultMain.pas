@@ -181,7 +181,7 @@ end;
 
 function TDefaultMain.GetProgName: string;
 begin
-  FGetOpt.ProgName;
+  Result := FGetOpt.ProgName;
 end;
 
 function Main: integer;
