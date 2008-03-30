@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 /// <summary>
 /// implements utility functions for file accesss
 /// </summary>
@@ -70,7 +70,7 @@ type
     /// MustHaveAttr is set to [] and MayHaveAttr is set to include all possible
     /// attributes, so calling FindNext will find any files or subdirectories,
     /// but the special '.' and '..' directories
-    /// @param Mask is the file search mask
+    /// @param Mask is the file search mask and should include a path
     /// </summary>
     constructor Create(const _Mask: string);
     /// <summary>
@@ -85,7 +85,8 @@ type
     /// Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
     /// calls.
     /// @param Filename is the name of the file found, if result is true, if you need
-    ///       more information about it, use the SR property
+    ///       more information about it, use the SR property, note that it
+    ///       does not include the path
     /// @Returns true, if a matching file was found, false otherwise
     /// </summary>
     function FindNext(out _Filename: string): boolean; overload;
@@ -416,6 +417,24 @@ type
     class function CopyFileWithProgress(const _Source, _Dest: string; _Progress: TCopyFileProgressEvt;
       _Flags: TCopyFileWithProgressFlagSet = [cfwRaiseException]): TCopyFileWithProgressResult;
 
+    ///<summary>
+    /// Copies all files that match the given Mask from SrcDir to DestDir and
+    /// returns the number of files that were copied.
+    /// If cfRaiseException is set in Flags, any error will raise an EOsError exception
+    /// and the copying process will be aborted, otherwise errors will be silently
+    /// ignored.
+    /// If a destination file exists depending on the other Flag values the following
+    /// happens:
+    /// * If cfFailIfExists is set, the file is skipped or an exception is raised
+    /// * If cfFailIfExists is not set, the file will be overwritten. If that fails
+    ///   the file is skipped or an exception is raised
+    /// * If cfFailIfExists is not set and cfForceOverwrite is set, the function
+    ///   will also try to overwrite readonly files.
+    /// if FilesSkipped is given, all skipped files will be added to that list
+    ///</summary>
+    class function CopyMatchingFiles(const _Mask, _SrcDir, _DestDir: string; _Flags: TCopyFileFlagset;
+      _FilesSkipped: TStrings): integer;
+
     /// <summary>
     /// Copies the file Source to Dest using the Windows MoveFileWithProgress function which
     /// allows for a progress callback
@@ -558,18 +577,22 @@ type
     /// checks whether the given string is a valid filename (without path), that is
     /// does not contain one of the characters defined in INVALID_FILENAME_CHARS
     /// @param s is the string to check
+    /// @param AllowDot determines whether a dot ('.') is allowed in the filename
+    ///        the default is true, but you might not want that
     /// @returns true, if the string is a valid filename, false otherwise
     /// </summary>
-    class function IsValidFilename(const _s: string): boolean; overload;
+    class function IsValidFilename(const _s: string; _AllowDot: boolean = true): boolean; overload;
     /// <summary>
     /// checks whether the given string is a valid filename (without path), that is
     /// does not contain one of the characters defined in INVALID_FILENAME_CHARS and
     /// returns the first error position.
     /// @param s is the string to check
     /// @param ErrPos is the first error position, only valid it result = false
+    /// @param AllowDot determines whether a dot ('.') is allowed in the filename
+    ///        the default is true, but you might not want that
     /// @returns true, if the string is a valid filename, false otherwise
     /// </summary>
-    class function IsValidFilename(const _s: string; out _ErrPos: integer): boolean; overload;
+    class function IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean; overload;
 
     /// <summary>
     /// creates a backup of the file appending the current date and time to the base
@@ -586,6 +609,12 @@ type
     ///          timestamp of the file
     /// </summary>
     class function GetFileInfo(const _Filename: string): TFileInfoRec;
+    /// <summary> tries to get the file information containing filename, filesize
+    ///           and last access timestamp of the file.
+    ///           @param Info will contain these values, only valid if result = true
+    /// </summary>
+    class function TryGetFileInfo(const _Filename: string; out _Info: TFileInfoRec): boolean;
+    class function TryGetFileSize(const _Filename: string; out _Size: Int64): boolean;
 
     /// <summary>
     /// Returns the free space (in bytes) on the disk with the given drive letter
@@ -658,7 +687,6 @@ function itpd(const _Dirname: string): string; inline;
 implementation
 
 uses
-  FileCtrl,
   u_dzMiscUtils,
   u_dzStringUtils,
   u_dzDateUtils;
@@ -683,6 +711,7 @@ resourcestring
   STR_DELTREE_ERROR_S = '"%s" does not exist or is not a directory';
   // duplicate % so they get passed through the format function
   STR_CREATEDIR_ERROR_S = 'Error %%1:s (%%0:d) creating directory "%s"';
+  STR_CREATEDIR_EXCEPTION_SSS = 'Error creating directory "%s": %s (%s)';
 
 function itpd(const _Dirname: string): string; inline;
 begin
@@ -884,21 +913,39 @@ begin
   Result := PChar(Result); // remove trailing characters
 end;
 
-class function TFileSystem.GetFileInfo(const _Filename: string): TFileInfoRec;
+class function TFileSystem.TryGetFileInfo(const _Filename: string;
+  out _Info: TFileInfoRec): boolean;
 var
   sr: TSearchRec;
   Res: integer;
 begin
   Res := FindFirst(_Filename, faAnyFile, sr);
-  if Res <> 0 then
-    raise EFileNotFound.CreateFmt('File not found: "%s"', [_Filename]);
-  try
-    Result.Filename := _Filename;
-    Result.Size := sr.Size;
-    Result.Timestamp := FileDateToDateTime(sr.Time);
-  finally
-    FindClose(sr);
+  Result := (Res = 0);
+  if Result then begin
+    try
+      _Info.Filename := _Filename;
+      _Info.Size := sr.Size;
+      _Info.Timestamp := FileDateToDateTime(sr.Time);
+    finally
+      FindClose(sr);
+    end;
   end;
+end;
+
+class function TFileSystem.GetFileInfo(const _Filename: string): TFileInfoRec;
+begin
+  if not TryGetFileInfo(_Filename, Result) then
+    raise EFileNotFound.CreateFmt('File not found: "%s"', [_Filename]);
+end;
+
+class function TFileSystem.TryGetFileSize(const _Filename: string;
+  out _Size: Int64): boolean;
+var
+  Info: TFileInfoRec;
+begin
+  Result := TryGetFileInfo(_Filename, Info);
+  if Result then
+    _Size := Info.Size;
 end;
 
 class function TFileSystem.DiskFree(_DriveLetter: char): Int64;
@@ -1098,6 +1145,33 @@ begin
   end;
 end;
 
+class function TFileSystem.CopyMatchingFiles(const _Mask, _SrcDir, _DestDir: string;
+  _Flags: TCopyFileFlagset; _FilesSkipped: TStrings): integer;
+var
+  Files: TStringList;
+  s: string;
+  SrcDirBs: string;
+  DestDirBs: string;
+begin
+  Result := 0;
+  SrcDirBs := itpd(_SrcDir);
+  DestDirBs := itpd(_DestDir);
+  Files := TStringList.Create;
+  try
+    TSimpleDirEnumerator.Execute(SrcDirBs + _Mask, Files);
+    for s in Files do begin
+      if CopyFile(SrcDirBs + s, DestDirBs + s, _Flags) then
+        Inc(Result)
+      else begin
+        if Assigned(_FilesSkipped) then
+          _FilesSkipped.Add(s);
+      end;
+    end;
+  finally
+    Files.Free;
+  end;
+end;
+
 //  MOVEFILE_REPLACE_EXISTING       = $00000001;
 //  MOVEFILE_COPY_ALLOWED           = $00000002;
 //  MOVEFILE_DELAY_UNTIL_REBOOT     = $00000004;
@@ -1215,7 +1289,17 @@ class function TFileSystem.ForceDir(const _DirectoryPath: string; _RaiseExceptio
 var
   LastError: Cardinal;
 begin
-  Result := ForceDirectories(_DirectoryPath);
+  try
+    Result := SysUtils.ForceDirectories(_DirectoryPath);
+  except
+    on e: Exception do begin
+      // ForceDirectories can raise EInOutError if the directory path contains empty parts
+      if _RaiseException then
+        raise Exception.CreateFmt(STR_CREATEDIR_EXCEPTION_SSS, [_DirectoryPath, e.Message, e.ClassName]);
+      Result := false;
+      exit;
+    end;
+  end;
   if not Result and _RaiseException then begin
     LastError := GetLastError;
     RaiseLastOsErrorEx(LastError, Format(STR_CREATEDIR_ERROR_S, [_DirectoryPath]));
@@ -1294,9 +1378,10 @@ begin
   end;
 end;
 
-class function TFileSystem.IsValidFilename(const _s: string; out _ErrPos: integer): boolean;
+class function TFileSystem.IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean;
 var
   i: Integer;
+  NotAllowed: TCharSet;
 begin
   Result := False;
 
@@ -1310,8 +1395,11 @@ begin
     exit;
   end;
 
+  NotAllowed := INVALID_FILENAME_CHARS;
+  if not _AllowDot then
+    Include(NotAllowed, '.');
   for i := 1 to Length(_s) do begin
-    if _s[i] in INVALID_FILENAME_CHARS then begin
+    if _s[i] in NotAllowed then begin
       _ErrPos := i;
       Exit;
     end;
@@ -1319,11 +1407,11 @@ begin
   Result := True;
 end;
 
-class function TFileSystem.IsValidFilename(const _s: string): boolean;
+class function TFileSystem.IsValidFilename(const _s: string; _AllowDot: boolean = true): boolean;
 var
   ErrPos: integer;
 begin
-  Result := IsValidFilename(_s, ErrPos);
+  Result := IsValidFilename(_s, ErrPos, _AllowDot);
 end;
 
 { TProgressRedir }
