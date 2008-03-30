@@ -31,11 +31,14 @@ uses
   Testu_dzDateUtils in 'Testu_dzDateUtils.pas',
   u_dzClassUtils in '..\..\src\u_dzClassUtils.pas',
   u_dzDateUtils in '..\..\src\u_dzDateUtils.pas',
-  Testu_dzStringUtils in 'Testu_dzStringUtils.pas';
+  Testu_dzStringUtils in 'Testu_dzStringUtils.pas',
+  Testu_dzMultiWriteSingleReadLockFreeQueue in 'Testu_dzMultiWriteSingleReadLockFreeQueue.pas',
+  u_dzMultiWriteSingleReadLockFreeQueue in '..\..\lockfree\u_dzMultiWriteSingleReadLockFreeQueue.pas';
 
 {$R *.RES}
 
 begin
+  IsMultithread := true;
   Application.Initialize;
   if IsConsole then
     TextTestRunner.RunRegisteredTests
