@@ -183,7 +183,7 @@ initialization
 {$ENDIF TranslateReporting}
 
 {$IFDEF DXGETTEXTDEBUG}
-  gnugettext.DefaultInstance.DebugLogToFile(ExtractFilePath(GetModuleFilename) + 'dxgettext.log');
+  gnugettext.DefaultInstance.DebugLogToFile(ExtractFilePath(GetModuleName(HInstance)) + 'dxgettext.log');
 {$ENDIF DXGETTEXTDEBUG}
 
 {$ENDIF gnugettext}
