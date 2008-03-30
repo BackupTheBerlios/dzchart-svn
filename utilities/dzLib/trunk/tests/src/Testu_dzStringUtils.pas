@@ -339,12 +339,15 @@ begin
   CheckEquals('     ', SpaceStr(5));
 end;
 
+{$WARNINGS off}
+
 procedure TestMisc.TestStringOf;
 begin
   CheckEquals('', StringOf(' ', 0));
   CheckEquals(' ', StringOf(' ', 1));
   CheckEquals('     ', StringOf(' ', 5));
 end;
+{$WARNINGS on}
 
 { TestFileExt }
 
