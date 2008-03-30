@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 {: Implements functions which work on components but are not methods.
    @author        twm }
 unit u_dzVclUtils;
@@ -28,6 +28,9 @@ type
 
   {: raised if the Listbox passed to SetOwnerDrawListboxItemCount is not ownder drawn. }
   EdzListBoxNotOwnerDraw = class(EdzVclUtils);
+
+  EdzComboBoxNoSelection = class(EdzVclUtils);
+  EdzListBoxNoSelection = class(EdzVclUtils);
 
 type
   {: This is a copy of the TFileFormatsList class from Graphics which
@@ -152,6 +155,9 @@ procedure TMemo_DeleteTopLines(_Memo: TMemo; _Retain: integer);
 {: Scrolls the memo to the end }
 procedure TMemo_ScrollToEnd(_Memo: TMemo);
 
+///<summary> sets the Text property of a TEdit without triggering an OnChange event </summary>
+procedure TEdit_SetTextNoChange(_ed: TCustomEdit; const _Text: string);
+
 {: Tries to convert the edit control text to a double, if an error occurs, it raises
    an exception and optionally focuses the control.
    @param ed is the edit control
@@ -246,7 +252,8 @@ function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
           if it does not contain a valid value or not, default = false
    @returns true, if an item was selected }
 function TComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
-  _FocusControl: boolean = false): boolean;
+  _FocusControl: boolean = false): boolean; overload;
+function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
 
 {: Selects the item if it is in the list and returns the new ItemIndex
    @param cmb is the TCustomCombobox (descendant) to use
@@ -262,6 +269,16 @@ function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultId
           if the function returns true
    @returns true, if these values are valid }
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
+
+{: Gets the caption of the selected listbox item
+   @param cmb is the TCustomListbox (descendant) to read from
+   @param Item is the selected item, only valid if the function returns true
+   @param FocusControl is a boolean which determines whether to focus the control
+          if it does not contain a valid value or not, default = false
+   @returns true, if an item was selected }
+function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
+  _FocusControl: boolean = false): boolean; overload;
+function TListBox_GetSelected(_lb: TCustomListBox): string; overload;
 
 {: Deletes the selected listbox item
    @param lst is the TCustomListbox (descendant) to read from
@@ -288,6 +305,11 @@ function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _Incl
    @returns true, if the caption could be read }
 function TRadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
   out _Caption: string; _Idx: integer = -1): boolean;
+
+///<summary> Selects the item in the radio group with the given caption,
+///          returns the item's index or -1 if no item matched.
+///          Comparison is case insensitive </summary>
+function TRadioGroup_Select(_rg: TCustomRadioGroup; const _Item: string; _DefaultIdx: integer = -1): integer;
 
 {: Gets the object pointer of the selected RadioGroup item
    @param cmb is the TCustomListbox (descendant) to read from
@@ -573,6 +595,25 @@ begin
       _grid.SetFocus;
     end;
     raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
+  end;
+end;
+
+type
+  THackEdit = class(TCustomEdit)
+  end;
+
+procedure TEdit_SetTextNoChange(_ed: TCustomEdit; const _Text: string);
+var
+  Event: TNotifyEvent;
+  ed: THackEdit;
+begin
+  ed := THackEdit(_ed);
+  Event := ed.OnChange;
+  ed.OnChange := nil;
+  try
+    ed.Text := _Text;
+  finally
+    ed.OnChange := Event;
   end;
 end;
 
@@ -934,6 +975,31 @@ begin
     _cmb.SetFocus;
 end;
 
+function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
+begin
+  if not TComboBox_GetSelected(_cmb, Result) then
+    raise EdzComboBoxNoSelection.Create(_('No item selected in combobox'));
+end;
+
+function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
+  _FocusControl: boolean = false): boolean;
+var
+  Idx: integer;
+begin
+  Idx := _lb.ItemIndex;
+  Result := Idx <> -1;
+  if Result then
+    _Item := _lb.Items[Idx]
+  else if _FocusControl then
+    _lb.SetFocus;
+end;
+
+function TListBox_GetSelected(_lb: TCustomListBox): string;
+begin
+  if not TListBox_GetSelected(_lb, Result) then
+    raise EdzListBoxNoSelection(_('No item selected in listbox'));
+end;
+
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
 begin
   _Idx := _lst.ItemIndex;
@@ -1044,6 +1110,22 @@ begin
   Result := (_Idx <> -1) and (_Idx < Hack.Items.Count);
   if Result then
     _Caption := StripHotKey(Hack.Items[_Idx]);
+end;
+
+function TRadioGroup_Select(_rg: TCustomRadioGroup; const _Item: string; _DefaultIdx: integer = -1): integer;
+var
+  Hack: TRadioGroupHack;
+  i: Integer;
+begin
+  Hack := TRadioGroupHack(_rg);
+  for i := 0 to Hack.Items.Count - 1 do
+    if AnsiSameText(Hack.Items[i], _Item) then begin
+      Hack.ItemIndex := i;
+      Result := Hack.ItemIndex;
+      exit;
+    end;
+  Hack.ItemIndex := _DefaultIdx;
+  Result := Hack.ItemIndex;
 end;
 
 function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup; out _Idx: integer; out _Obj: pointer): boolean;
@@ -1229,14 +1311,14 @@ begin
 end;
 
 type
-  TCheckBox = class(TCustomCheckBox)
+  THackCheckBox = class(TCustomCheckBox)
   end;
 
 procedure TCheckBox_SetCheckedNoOnClick(_Chk: TCustomCheckBox; _Checked: boolean);
 var
-  Chk: TCheckBox;
+  Chk: THackCheckBox;
 begin
-  Chk := TCheckBox(_Chk);
+  Chk := THackCheckBox(_Chk);
   Chk.ClicksDisabled := true;
   try
     Chk.Checked := _Checked;
