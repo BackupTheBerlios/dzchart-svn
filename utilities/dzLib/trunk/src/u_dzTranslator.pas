@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 unit u_dzTranslator;
 
 {$I jedi.inc}
@@ -19,17 +19,22 @@ uses
 {$IFDEF gnugettext}
   // NOTE: If you don't want any translations, define "NO_TRANSLATION" for your project
   gnugettext, // libs\dxgettext
+  languagecodes,
 {$ENDIF}
   Classes;
 
 function _(const _s: string): string;
 function GetText(const _s: string): string;
+function DGetText(const _s: string; const _TextDomain: string = ''): string;
 procedure TranslateComponent(_Object: TComponent; const _TextDomain: string = '');
+procedure RetranslateComponent(_Object: TComponent; const _TextDomain: string = '');
 procedure AddDomainForResourceString(const _Domain: string);
 procedure SelectTextDomain(const _Domain: string);
 procedure TP_GlobalIgnoreClass(_IgnClass: TClass);
 procedure TP_GlobalIgnoreClassProperty(_IgnClass: TClass; const _PropertyName: string);
 procedure UseLanguage(_LanguageCode: string);
+function GetCurrentLanguage: string;
+procedure GetListOfLanguages(const _Domain: string; _Codes: TStrings; _Languages: TStrings = nil);
 
 type
   {: use this for translation of special strings that might not be in the same language
@@ -61,10 +66,26 @@ begin
   Result := u_dzTranslator._(_s);
 end;
 
+function DGetText(const _s: string; const _TextDomain: string = ''): string;
+begin
+{$IFDEF gnugettext}
+  Result := gnugettext.DGetText(_TextDomain, _s);
+{$ELSE}
+  Result := _s;
+{$ENDIF}
+end;
+
 procedure TranslateComponent(_Object: TComponent; const _TextDomain: string = '');
 begin
 {$IFDEF gnugettext}
   gnugettext.TranslateComponent(_Object, _TextDomain);
+{$ENDIF}
+end;
+
+procedure RetranslateComponent(_Object: TComponent; const _TextDomain: string = '');
+begin
+{$IFDEF gnugettext}
+  gnugettext.RetranslateComponent(_Object, _TextDomain);
 {$ENDIF}
 end;
 
@@ -103,6 +124,30 @@ begin
 {$ENDIF}
 end;
 
+procedure GetListOfLanguages(const _Domain: string; _Codes: TStrings; _Languages: TStrings = nil);
+{$IFDEF gnugettext}
+var
+  i: integer;
+{$ENDIF}
+begin
+{$IFDEF gnugettext}
+  _Codes.Clear;
+  gnugettext.DefaultInstance.GetListOfLanguages(_Domain, _Codes);
+  if Assigned(_Languages) then begin
+    _Languages.Clear;
+    for i := 0 to _Codes.Count - 1 do begin
+      _Languages.Add(languagecodes.getlanguagename(_Codes[i]));
+    end;
+  end;
+{$ENDIF}
+end;
+
+function GetCurrentLanguage: string;
+begin
+{$IFDEF gnugettext}
+  Result := gnugettext.GetCurrentLanguage;
+{$ENDIF}
+end;
 type
   TdzTranslator = class(TInterfacedObject, IdzTranslator)
   protected
@@ -151,11 +196,13 @@ initialization
   // currently we don't have translations for Delphi2007, so we use the ones from Delphi2006 and pray... ;-)
   AddDomainForResourceString('delphi2006');
 {$ELSE}
-  'unknown Delphi version!'
+  'unknown Delphi version!';
 {$ENDIF}
 {$ENDIF}
 {$ENDIF}
 {$ENDIF}
+
+  AddDomainForResourceString('dzlib');
 
   // ignore these VCL properties / classes
   TP_GlobalIgnoreClassProperty(TControl, 'ImeName');

@@ -12,7 +12,6 @@ object f_dzProgress: Tf_dzProgress
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poOwnerFormCenter
   PixelsPerInch = 96

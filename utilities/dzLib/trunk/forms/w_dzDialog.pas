@@ -237,7 +237,7 @@ type
                          defaults to an empty string
        @returns one of the mrXxxx values }
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
-      const _Buttons: array of TDialogButtonEnum; _Owner: TComponent = nil;
+      const _Buttons: array of TDialogButtonEnum; _Owner: TWinControl = nil;
       const _OptionDesc: string = ''): integer; overload;
     {: Complex function to display a message.
        This will display a dialog with the icon indicated by DialogType, the
@@ -262,7 +262,7 @@ type
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer;
-      _Owner: TComponent = nil;
+      _Owner: TWinControl = nil;
       const _OptionDesc: string = ''): integer; overload;
     {: Creates a Tf_dzDialog instance, shows it and returns it. The created
        dialog instance must be freed by the caller. Nonmodal in this context
@@ -304,14 +304,16 @@ uses
   Consts,
   Math,
   ShellApi,
+  u_dzVclUtils,
   u_dzTranslator;
 
 const
   CHECKBOX_WIDTH = 24;
 
-resourcestring
-  STR_SHOW_DETAILS = '&Details >>';
-  STR_HIDE_DETAILS = '&Details <<';
+function _(const _s: string): string; inline;
+begin
+  Result := DGetText(_s, 'dzlib');
+end;  
 
 function ModalResultToButton(_Result: integer): TDialogButtonEnum;
 var
@@ -328,13 +330,15 @@ end;
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType;
   const _Message: string; const _Buttons: array of TDialogButtonEnum;
   const _CustomButtons: array of string; const _CustomResults: array of integer;
-  _Owner: TComponent = nil;  const _OptionDesc: string=''): integer;
+  _Owner: TWinControl = nil;  const _OptionDesc: string=''): integer;
 var
   frm: Tf_dzDialog;
   i: Integer;
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
+    if Assigned(_Owner) then
+      TForm_CenterOn(frm, _Owner);
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
     Assert(Length(_CustomButtons) = Length(frm.CustomButtonCaptions));
@@ -353,12 +357,14 @@ begin
 end;
 
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
-  const _Buttons: array of TDialogButtonEnum; _Owner: TComponent = nil; const _OptionDesc: string = ''): integer;
+  const _Buttons: array of TDialogButtonEnum; _Owner: TWinControl = nil; const _OptionDesc: string = ''): integer;
 var
   frm: Tf_dzDialog;
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
+    if Assigned(_Owner) then
+      TForm_CenterOn(frm, _Owner);
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
     frm.UserMessage := _Message;
@@ -617,7 +623,7 @@ begin
   DialogUnits := GetAveCharSize(Canvas);
   ButtonWidth := MulDiv(mcButtonWidth, DialogUnits.X, 4);
   if FShowDetailButton then
-    ButtonWidth := CalcMinButtonWidth(Canvas.Handle, STR_SHOW_DETAILS);
+    ButtonWidth := CalcMinButtonWidth(Canvas.Handle, _('&Details >>'));
   CustomCount := 0;
   for i := Low(FVisibleButtons) to High(FVisibleButtons) do begin
     b := FVisibleButtons[i];
@@ -722,7 +728,7 @@ begin
     b_Details := TButton.Create(self);
     b_Details.Name := 'b_Details';
     b_Details.Parent := p_Top;
-    b_Details.Caption := STR_SHOW_DETAILS;
+    b_Details.Caption := _('&Details >>');
     b_Details.SetBounds(X, ButtonTop, ButtonWidth, ButtonHeight);
     b_Details.Anchors := [akTop, akRight];
     b_Details.OnClick := b_DetailsClick;
@@ -769,10 +775,10 @@ procedure Tf_dzDialog.b_DetailsClick(Sender: TObject);
 begin
   if p_Details.Visible then begin
     HideDetails;
-    b_Details.Caption := STR_SHOW_DETAILS;
+    b_Details.Caption := _('&Details >>');
   end else begin
     ShowDetails;
-    b_Details.Caption := STR_HIDE_DETAILS;
+    b_Details.Caption := _('&Details <<');
   end;
 end;
 

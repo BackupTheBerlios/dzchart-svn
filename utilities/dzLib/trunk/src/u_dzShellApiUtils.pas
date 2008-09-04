@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 {: implements an object with utility functions regarding the ShellAPI }
 unit u_dzShellApiUtils;
 

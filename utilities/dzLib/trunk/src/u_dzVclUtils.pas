@@ -89,7 +89,19 @@ procedure TDbGrid_Resize(_Grid: TCustomDbGrid; _Options: TResizeOptionSet = []);
    @param Grid is the TCustomGrid to read from.
    @returns a string containing the contents of the grid columns separated by TAB
             rows sepearated by CRLF. }
-function TGrid_GetText(_Grid: TCustomGrid): string;
+function TGrid_GetText(_Grid: TCustomGrid; _IncludeFixed: boolean = false): string; overload;
+function TGrid_GetText(_Grid: TCustomGrid; _Selection: TGridRect): string; overload;
+
+{: sets the row count, taking the fixed rows into account }
+procedure TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
+
+{: sets the column count, taking the fixed columns into account }
+procedure TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
+
+{: exports the contents of the string grid to a tab separated text file
+   @param Grid is the string grid to export
+   @param Filename is the name of the text file to create }
+procedure TGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string; _IncludeFixed: boolean = false);
 
 {: sets the row count to FixedRows + 1 and clears all non-fixed cells }
 procedure TStringGrid_Clear(_Grid: TStringGrid);
@@ -99,7 +111,7 @@ function TStringGrid_AddColumn(_Grid: TStringGrid; const _Caption: string): inte
 {: exports the contents of the string grid to a tab separated text file
    @param Grid is the string grid to export
    @param Filename is the name of the text file to create }
-procedure TStringGrid_ExportToFile(_Grid: TStringGrid; const _Filename: string);
+procedure TStringGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string); deprecated; inline; // use TGrid_ExportTofile instead
 
 {: scrolls up the lines of a string grid
    @param Grid is the TStringGrid to scroll
@@ -108,10 +120,10 @@ procedure TStringGrid_ExportToFile(_Grid: TStringGrid; const _Filename: string);
 procedure TStringGrid_ScrollUp(_Grid: TStringGrid; _Top: integer = -1; _Bottom: integer = -1);
 
 {: sets the row count, taking the fixed rows into account }
-procedure TStringGrid_SetRowCount(_Grid: TStringGrid; _RowCount: integer);
+procedure TStringGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer); deprecated; inline; // use TGrid_SetRowCount instead
 
 {: sets the column count, taking the fixed columns into account }
-procedure TStringGrid_SetColCount(_Grid: TStringGrid; _ColCount: integer);
+procedure TStringGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer); deprecated; inline; // use TGrid_SetColCount instead
 
 {: deletes the given row from the string grid and moves all rows below it up by one,
    if there is only one non-fixed row left, this row is cleared but not deleted.
@@ -122,8 +134,9 @@ function TStringGrid_DeleteRow(_Grid: TStringGrid; _Row: integer = -1): boolean;
 
 {: inserts a row at the given index into the string grid and moves all rows below it down by one.
    @param Grid is the StringGrid to change
-   @param Row is the index of the row to insert, or -1 to insert at the current row }
-procedure TStringGrid_InsertRow(_Grid: TStringGrid; _Row: integer = -1);
+   @param Row is the index of the row to insert, or -1 to insert at the current row
+   @returns the inserted row index or -1 if the row cannot be inserted }
+function TStringGrid_InsertRow(_Grid: TStringGrid; _Row: integer = -1): integer;
 
 {: Tries to convert the grid cell to a double, if an error occurs, it raises
    an exception and optionally focuses the cell.
@@ -221,6 +234,8 @@ procedure TTabControl_AdjustTabWidth(_TabControl: TTabControl; _Form: TForm; _Mi
    @param Enabled is a boolean with the new value for the Enabled property. }
 procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
 
+procedure TComboBox_SetDropdownWidth(_cmb: TCustomCombobox; _Pixels: integer);
+
 {: Selects the entry in a combobox that has an object pointer matching Value
    @param cmb is the TCustomCombobox (descendant) to select
    @param Value is the desired object value
@@ -280,6 +295,13 @@ function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
   _FocusControl: boolean = false): boolean; overload;
 function TListBox_GetSelected(_lb: TCustomListBox): string; overload;
 
+{: Selects the item if it is in the list and returns the new ItemIndex
+   @param lb is the TCustomListbox (descendant) to use
+   @param Item is the item to select
+   @param DefaultIdx is the ItemIndex to use if no item matches.
+   @returns the index of the newly selected item or -1 if it doesn't exist }
+function TListBox_Select(_lb: TCustomListBox; const _Item: string; _DefaultIdx: integer = -1): integer;
+
 {: Deletes the selected listbox item
    @param lst is the TCustomListbox (descendant) to read from
    @param Idx is the listbox's ItemIndex, only valid if the function returns true
@@ -295,6 +317,15 @@ procedure TCheckListBox_InvertCheckmarks(_clb: TCheckListBox; _IncludeDisabled: 
 procedure TCheckListBox_UncheckAll(_clb: TCheckListBox);
 procedure TCheckListBox_CheckAll(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
 function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer;
+///<summary> Checks all items contained in the Checked string list
+///          @param clb is the TCheckListBox to modify
+///          @param Checked is a string list containing the items to be checked
+///          @param UnchekOthers determines whether any items not in the list should
+///                 be unchecked (defaults to true).
+///          @returns the number of items that have been checked. </summary>
+function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings; _UncheckOthers: boolean = true): integer;
+procedure TCheckListBox_CheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+procedure TCheckListBox_UncheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
 
 {: Gets the caption of the given or selected item in the RadioGroup
    @param rg is the TCustomRadioGroup descendant to read
@@ -386,10 +417,17 @@ function TWinControl_SetFocus(_Ctrl: TWinControl): boolean;
    a backslash }
 function TApplication_GetExePath: string;
 
+function TApplication_HasVersionInfo: boolean;
+
 {: switches off "Windows Ghosting" in Win 2000 and XP
   This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
   Call in application startup. }
 procedure DisableProcessWindowsGhosting;
+
+{: Reverses a VclUtils.MergeForm (rxlib)
+   @param Form is the TForm to unmerge }
+procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign; Show: Boolean);
+procedure UnMergeForm(_Form: TCustomForm); deprecated; // use a frame instead
 
 implementation
 
@@ -403,46 +441,119 @@ uses
   RxGConst,
   rxGif,
 {$ENDIF GIFByRx}
-  u_dzTranslator,
   u_dzConvertUtils,
   u_dzStringUtils;
+
+resourcestring
+  RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S = '"%s" is not a valid floating point value.';
+  RS_IS_NOT_A_VALID_INTEGER_VALUE_S = '"%s" is not a valid integer value.';
+  RS_NO_ITEM_SELECTED_IN_COMBOBOX = 'No item selected in combobox';
+  RS_NO_ITEM_SELECTED_IN_LISTBOX = 'No item selected in listbox';
+  RS_JPEG_FILES = 'JPEG Files';
 
 // we need this to access protected methods
 type
   TGridHack = class(TCustomGrid);
   TDbGridHack = class(TCustomDbGrid);
 
-function TGrid_GetText(_Grid: TCustomGrid): string;
+function TGrid_GetText(_Grid: TCustomGrid; _IncludeFixed: boolean = false): string;
+var
+  Selection: TGridRect;
+  Grid: TGridHack;
+begin
+  Grid := TGridHack(_Grid);
+  if _IncludeFixed then begin
+    Selection.Left := 0;
+    Selection.Top := 0;
+  end else begin
+    Selection.Left := Grid.FixedCols;
+    Selection.Top := Grid.FixedRows;
+  end;
+  Selection.Right := Grid.ColCount - 1;
+  Selection.Bottom := Grid.RowCount - 1;
+  Result := TGrid_GetText(_Grid, Selection);
+end;
+
+function TGrid_GetText(_Grid: TCustomGrid; _Selection: TGridRect): string;
 var
   Grid: TGridHack;
-  Row, Col: integer;
+  Line: TLineBuilder;
+  Content: TLineBuilder;
+  r: Integer;
+  c: Integer;
 begin
   Grid := TGridHack(_Grid);
   Result := '';
-  for Row := 0 to Grid.RowCount - 1 do begin
-    for Col := 0 to Grid.ColCount - 1 do begin
-      if Col > 0 then
-        Result := Result + #9;
-      Result := Result + Grid.GetEditText(Col, Row);
+  Content := TLineBuilder.Create(#13#10);
+  try
+    Line := TLineBuilder.Create;
+    try
+      for r := _Selection.Top to _Selection.Bottom do begin
+        Line.Clear;
+        for c := _Selection.Left to _Selection.Right do begin
+          Line.Add(Grid.GetEditText(c, r));
+        end;
+        Content.Add(Line.Content);
+      end;
+    finally
+      Line.Free;
     end;
-    Result := Result + #13#10;
+    Result := Content.Content;
+  finally
+    Content.Free;
   end;
 end;
 
-procedure TStringGrid_SetRowCount(_Grid: TStringGrid; _RowCount: integer);
+procedure TGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string; _IncludeFixed: boolean = false);
+var
+  t: Text;
+  s: string;
 begin
-  if _Grid.FixedRows >= _RowCount then
-    _Grid.RowCount := _Grid.FixedRows + 1
-  else
-    _Grid.RowCount := _RowCount;
+  s := TGrid_GetText(_Grid, _IncludeFixed);
+  AssignFile(t, _FileName);
+  Rewrite(t);
+  try
+    Write(t, s);
+  finally
+    CloseFile(t);
+  end;
 end;
 
-procedure TStringGrid_SetColCount(_Grid: TStringGrid; _ColCount: integer);
+procedure TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
+var
+  Grid: TGridHack;
 begin
-  if _Grid.FixedCols >= _ColCount then
-    _Grid.ColCount := _Grid.FixedCols + 1
+  Grid := TGridHack(_Grid);
+  if Grid.FixedRows >= _RowCount then
+    Grid.RowCount := Grid.FixedRows + 1
   else
-    _Grid.ColCount := _ColCount;
+    Grid.RowCount := _RowCount;
+end;
+
+procedure TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
+var
+  Grid: TGridHack;
+begin
+  Grid := TGridHack(_Grid);
+  if Grid.FixedCols >= _ColCount then
+    Grid.ColCount := Grid.FixedCols + 1
+  else
+    Grid.ColCount := _ColCount;
+end;
+
+procedure TStringGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
+begin
+  TGrid_SetRowCount(_Grid, _RowCount);
+end;
+
+procedure TStringGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
+begin
+  TGrid_SetColCount(_Grid, _ColCount);
+end;
+
+procedure TStringGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string);
+begin
+  TGrid_ExportToFile(_Grid, _Filename, true);
 end;
 
 procedure TStringGrid_Clear(_Grid: TStringGrid);
@@ -466,35 +577,8 @@ begin
   end;
 
   if Result >= _Grid.ColCount then
-    TStringGrid_SetColCount(_Grid, Result + 1);
+    TGrid_SetColCount(_Grid, Result + 1);
   _Grid.Cells[Result, 0] := _Caption;
-end;
-
-procedure TStringGrid_ExportToFile(_Grid: TStringGrid; const _Filename: string);
-var
-  Line: TLineBuilder;
-  r: Integer;
-  t: Text;
-  c: Integer;
-begin
-  AssignFile(t, _FileName);
-  Rewrite(t);
-  try
-    Line := TLineBuilder.Create;
-    try
-      for r := 0 to _Grid.RowCount - 1 do begin
-        Line.Clear;
-        for c := 0 to _Grid.ColCount - 1 do begin
-          Line.Add(_Grid.Cells[c, r]);
-        end;
-        WriteLn(t, Line.Content);
-      end;
-    finally
-      Line.Free;
-    end;
-  finally
-    CloseFile(t);
-  end;
 end;
 
 procedure TStringGrid_ScrollUp(_Grid: TStringGrid; _Top: integer = -1; _Bottom: integer = -1);
@@ -547,7 +631,7 @@ begin
   Result := true;
 end;
 
-procedure TStringGrid_InsertRow(_Grid: TStringGrid; _Row: integer = -1);
+function TStringGrid_InsertRow(_Grid: TStringGrid; _Row: integer = -1): integer;
 var
   r: Integer;
   c: Integer;
@@ -556,8 +640,10 @@ begin
 
   if _Row = -1 then
     _Row := _Grid.Row;
-  if (_Row < _Grid.FixedRows) or (_Row >= _Grid.RowCount) then
+  if (_Row < _Grid.FixedRows) or (_Row >= _Grid.RowCount) then begin
+    Result := -1;
     exit;
+  end;
 
   _Grid.RowCount := _Grid.RowCount + 1;
   for r := _Grid.RowCount - 1 downto _Row + 1 do begin
@@ -566,6 +652,7 @@ begin
   end;
   for c := 0 to _Grid.ColCount - 1 do
     _Grid.Cells[c, _Row] := '';
+  Result := _Row;
 end;
 
 function TStringGrid_CellToDouble(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): double;
@@ -579,7 +666,7 @@ begin
       _grid.Col := _Col;
       _grid.SetFocus;
     end;
-    raise EConvertError.CreateFmt(_('"%s" is not a valid floating point value.'), [s]);
+    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S, [s]);
   end;
 end;
 
@@ -594,7 +681,7 @@ begin
       _grid.Col := _Col;
       _grid.SetFocus;
     end;
-    raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
+    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_INTEGER_VALUE_S, [s]);
   end;
 end;
 
@@ -626,7 +713,7 @@ begin
     if _FocusControl then begin
       _ed.SetFocus;
     end;
-    raise EConvertError.CreateFmt(_('"%s" is not a valid floating point value.'), [s]);
+    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S, [s]);
   end;
 end;
 
@@ -639,7 +726,7 @@ begin
     if _FocusControl then begin
       _ed.SetFocus;
     end;
-    raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
+    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_INTEGER_VALUE_S, [s]);
   end;
 end;
 
@@ -923,6 +1010,12 @@ begin
   _Control.Enabled := _Enabled;
 end;
 
+procedure TComboBox_SetDropdownWidth(_cmb: TCustomCombobox; _Pixels: integer);
+begin
+  _cmb.HandleNeeded;
+  _cmb.Perform(CB_SETDROPPEDWIDTH, _Pixels, 0);
+end;
+
 function TComboBox_SelectByObject(_cmb: TCustomCombobox; _Value: pointer): boolean;
 var
   i: integer;
@@ -978,7 +1071,7 @@ end;
 function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
 begin
   if not TComboBox_GetSelected(_cmb, Result) then
-    raise EdzComboBoxNoSelection.Create(_('No item selected in combobox'));
+    raise EdzComboBoxNoSelection.Create(RS_NO_ITEM_SELECTED_IN_COMBOBOX);
 end;
 
 function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
@@ -997,7 +1090,7 @@ end;
 function TListBox_GetSelected(_lb: TCustomListBox): string;
 begin
   if not TListBox_GetSelected(_lb, Result) then
-    raise EdzListBoxNoSelection(_('No item selected in listbox'));
+    raise EdzListBoxNoSelection(RS_NO_ITEM_SELECTED_IN_LISTBOX);
 end;
 
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
@@ -1069,6 +1162,24 @@ begin
     _clb.Checked[i] := not _clb.Checked[i] and (_IncludeDisabled or _clb.ItemEnabled[i]);
 end;
 
+procedure TCheckListBox_CheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+var
+  i: Integer;
+begin
+  for i := 0 to _clb.Items.Count - 1 do
+    if _clb.Selected[i] and (_IncludeDisabled or _clb.ItemEnabled[i]) then
+      _clb.Checked[i] := true;
+end;
+
+procedure TCheckListBox_UncheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+var
+  i: Integer;
+begin
+  for i := 0 to _clb.Items.Count - 1 do
+    if _clb.Selected[i] and (_IncludeDisabled or _clb.ItemEnabled[i]) then
+      _clb.Checked[i] := false;
+end;
+
 procedure TCheckListBox_DeleteDisabled(_clb: TCheckListBox);
 var
   i: integer;
@@ -1076,6 +1187,22 @@ begin
   for i := _clb.Items.Count - 1 downto 0 do
     if not _clb.ItemEnabled[i] then
       _clb.Items.Delete(i);
+end;
+
+function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings; _UncheckOthers: boolean = true): integer;
+var
+  i: integer;
+  Idx: integer;
+begin
+  Result := 0;
+  for i := 0 to _clb.Items.Count - 1 do begin
+    Idx := _Checked.IndexOf(_clb.Items[i]);
+    if Idx <> -1 then begin
+      Inc(Result);
+      _clb.Checked[i] := True;
+    end else if _UncheckOthers then
+      _clb.Checked[i] := False;
+  end;
 end;
 
 function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer;
@@ -1094,6 +1221,14 @@ begin
   if Result = -1 then
     Result := _DefaultIdx;
   _Cmb.ItemIndex := Result;
+end;
+
+function TListBox_Select(_lb: TCustomListBox; const _Item: string; _DefaultIdx: integer = -1): integer;
+begin
+  Result := _lb.Items.IndexOf(_Item);
+  if Result = -1 then
+    Result := _DefaultIdx;
+  _lb.ItemIndex := Result;
 end;
 
 type
@@ -1341,6 +1476,8 @@ end;
 
 procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
 begin
+  Assert(Assigned(_Center), 'Center is not assigned'); // do not translate
+
   TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)));
 end;
 
@@ -1385,7 +1522,7 @@ begin
 {$IFDEF GIFByRx}
   Add('gif', LoadStr(SGIFImage), 0, TGIFImage);
 {$ENDIF GIFByRx}
-  Add('jpg', 'JPEG Files', 0, TJPEGImage);
+  Add('jpg', RS_JPEG_FILES, 0, TJPEGImage);
 end;
 
 destructor TFileFormatsList.Destroy;
@@ -1480,13 +1617,13 @@ begin
         end;
         if (Description = '') and (DescResID <> 0) then
           Description := LoadStr(DescResID);
-        FmtStr(Descriptions, '%s%s (*.%s)|*.%2:s', [Descriptions, Description, Extension]);
-        FmtStr(Filters, '%s*.%s', [Filters, Extension]);
+        FmtStr(Descriptions, '%s%s (*.%s)|*.%2:s', [Descriptions, Description, Extension]); // do not translate
+        FmtStr(Filters, '%s*.%s', [Filters, Extension]); // do not translate
         Inc(C);
       end;
   end;
   if C > 1 then
-    FmtStr(Descriptions, '%s (%s)|%1:s|%s', [sAllFilter, Filters, Descriptions]);
+    FmtStr(Descriptions, '%s (%s)|%1:s|%s', [sAllFilter, Filters, Descriptions]); // do not translate
 end;
 
 var
@@ -1529,6 +1666,54 @@ end;
 function TApplication_GetExePath: string;
 begin
   Result := ExtractFilePath(Application.ExeName);
+end;
+
+function TApplication_HasVersionInfo: boolean;
+var
+  Handle: THandle;
+  Size: DWORD;
+begin
+  Size := GetFileVersionInfoSize(PChar(Application.ExeName), Handle);
+  Result := Size <> 0;
+end;
+
+type
+  TControlHack = class(TCustomControl);
+
+procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign; Show: Boolean);
+var
+  R: TRect;
+  AutoScroll: Boolean;
+begin
+  AutoScroll := AForm.AutoScroll;
+  AForm.Hide;
+  TControlHack(AForm).DestroyHandle;
+  with AForm do begin
+    BorderStyle := bsNone;
+    BorderIcons := [];
+    Parent := AControl;
+  end;
+  AControl.DisableAlign;
+  try
+    if Align <> alNone then
+      AForm.Align := Align
+    else begin
+      R := AControl.ClientRect;
+      AForm.SetBounds(R.Left + AForm.Left, R.Top + AForm.Top, AForm.Width,
+        AForm.Height);
+    end;
+    AForm.AutoScroll := AutoScroll;
+    AForm.Visible := Show;
+  finally
+    AControl.EnableAlign;
+  end;
+end;
+
+procedure UnMergeForm(_Form: TCustomForm);
+begin
+  _Form.Hide;
+  TControlHack(_Form).DestroyHandle;
+  _Form.Parent := nil;
 end;
 
 end.

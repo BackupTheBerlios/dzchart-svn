@@ -31,9 +31,13 @@ object f_dzDialog: Tf_dzDialog
       Height = 81
       AutoSize = False
       Caption = 
-        'Mitteilung an den Benutzer, dies ist eine sehr lange Mitteilung ' +
-        'und sie wird ein paar mal wiederholt, damit auch ein Umbruch sta' +
-        'ttfindet. (do not translate)'
+        'Message to the user (do not translate), this is a very long mess' +
+        'age repeated several times to force a word wrap Message to the u' +
+        'ser (do not translate), this is a very long message repeated sev' +
+        'eral times to force a word wrap Message to the user (do not tran' +
+        'slate), this is a very long message repeated several times to fo' +
+        'rce a word wrap Message to the user (do not translate), this is ' +
+        'a very long message repeated several times to force a word wrap'
       WordWrap = True
     end
     object l_Options: TLabel
@@ -42,7 +46,7 @@ object f_dzDialog: Tf_dzDialog
       Width = 385
       Height = 73
       AutoSize = False
-      Caption = 'Beschreibung der Optionen (do not translate)'
+      Caption = 'Option descriptions (do not translate)'
       WordWrap = True
     end
     object im_Icon: TImage
@@ -77,7 +81,7 @@ object f_dzDialog: Tf_dzDialog
       Font.Style = []
       Lines.Strings = (
         'ExcectionClass: (do not translate)'
-        'Message der Exception (do not translate)')
+        'Message of Exception (do not translate)')
       ParentFont = False
       ReadOnly = True
       ScrollBars = ssVertical

@@ -109,6 +109,9 @@ implementation
 uses
   SysUtils;
 
+resourcestring
+  RS_INVALID_CHARACTER_S = 'Invalid character "%s".';
+
 { TEngineStateAbstract }
 
 function TEngineStateAbstract.GetClassName: string;
@@ -188,7 +191,7 @@ begin
         Result := TEngineStateParam.Create;
       end;
     #0:
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+      Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
   else
     _Context.AddToParameter(c);
     Result := self;
@@ -208,7 +211,7 @@ begin
   end else if c = '-' then
     Result := TEngineStateDoubleDash.Create
   else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+    Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
 end;
 
 { TEngineStateDoubleDash }
@@ -222,7 +225,7 @@ begin
     _Context.AddToOption(c);
     Result := TEngineStateLongOption.Create;
   end else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+    Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
 end;
 
 { TEngineStateShortOption }
@@ -245,7 +248,7 @@ begin
         Result := TEngineStateSpace.Create;
       end;
   else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+    Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
   end;
 end;
 
@@ -261,7 +264,7 @@ begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpace.Create;
       end else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+    Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
   end;
 end;
 
@@ -304,7 +307,7 @@ begin
         Result := TEngineStateShortParam.Create;
       end;
     #0:
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+      Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
   else
     _Context.AddToParameter(c);
     Result := self;
@@ -326,7 +329,7 @@ begin
         Result := TEngineStateSpace.Create;
       end;
     '"', '''':
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+      Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
   else
     _Context.AddToOption(c);
     Result := TEngineStateLongOption.Create;
@@ -368,7 +371,7 @@ begin
         Result := TEngineStateLongParam.Create;
       end;
     #0:
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
+      Result := TEngineStateError.Create(Format(RS_INVALID_CHARACTER_S, [c]));
   else
     _Context.AddToParameter(c);
     Result := TEngineStateQuotedLongParam.Create;

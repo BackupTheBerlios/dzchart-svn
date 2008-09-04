@@ -33,7 +33,9 @@ uses
   u_dzDateUtils in '..\..\src\u_dzDateUtils.pas',
   Testu_dzStringUtils in 'Testu_dzStringUtils.pas',
   Testu_dzMultiWriteSingleReadLockFreeQueue in 'Testu_dzMultiWriteSingleReadLockFreeQueue.pas',
-  u_dzMultiWriteSingleReadLockFreeQueue in '..\..\lockfree\u_dzMultiWriteSingleReadLockFreeQueue.pas';
+  u_dzMultiWriteSingleReadLockFreeQueue in '..\..\lockfree\u_dzMultiWriteSingleReadLockFreeQueue.pas',
+  u_dzRecordArray in '..\..\src\u_dzRecordArray.pas',
+  Testu_dzRecordArray in 'Testu_dzRecordArray.pas';
 
 {$R *.RES}
 

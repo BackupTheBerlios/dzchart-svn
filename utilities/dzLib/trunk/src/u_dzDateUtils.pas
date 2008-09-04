@@ -1,12 +1,31 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 /// implements some utility functions for converting TDateTime to and from strings
 /// in ISO 6801 format (note that these function do not implement the complete
 /// standard but only the extended form without omitting date parts.
 unit u_dzDateUtils;
 
-{$i jedi.inc}
+{$I jedi.inc}
 
 interface
+
+type
+  ///<summary> Similar to the DayMonday etc. constants in DateUtils, but starting
+  ///           with Monday rather than Sunday and also as a typesafe enum </summary>
+  TDayOfWeekEnum = (dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday, dowSunday);
+  ///<summary> subtype for month numbers </summary>
+  TMonthNumbers = 1..12;
+  //<summary> subtype for day numbers </summary>
+  TDayOfMonthNumbers = 1..31;
+
+///<summary> Same as SysUtils.GetDayOfTheWeek, but returns a TDayOfWeekEnum rather
+///          than a word value </summary>
+function GetDayOfTheWeek(_Date: TDateTime): TDayOfWeekEnum;
+
+///<summary> returns the localized string for the day of the week </summary>
+function DayOfWeek2Str(_Dow: TDayOfWeekEnum): string;
+
+///</summary> returns the localized string for the month </summary>
+function Month2Str(_Month: TMonthNumbers): string;
 
 /// <summary>
 /// Converts a TDateTime value to a string in ISO 8601 format
@@ -50,19 +69,89 @@ implementation
 
 uses
   SysUtils,
-  u_dzStringUtils;
+  u_dzStringUtils,
+  DateUtils;
+
+resourcestring
+  RS_Monday = 'Monday';
+  RS_Tuesday = 'Tuesday';
+  RS_Wednesday = 'Wednesday';
+  RS_Thursday = 'Thursday';
+  RS_Friday = 'Friday';
+  RS_Saturday = 'Saturday';
+  RS_Sunday = 'Sunday';
+  RS_January = 'January';
+  RS_February = 'February';
+  RS_March = 'March';
+  RS_April = 'April';
+  RS_May = 'May';
+  RS_June = 'June';
+  RS_July = 'July';
+  RS_August = 'August';
+  RS_September = 'September';
+  RS_October = 'October';
+  RS_November = 'November';
+  RS_December = 'December';
+  RS_InvalidMonthNumber_D = 'Invalid month number %d';
+  RS_InvalidValueForDayOfWeek_D = 'Invalid value for DayOfWeek: %d';
+
+function GetDayOfTheWeek(_Date: TDateTime): TDayOfWeekEnum;
+var
+  DayNo: word;
+begin
+  // 1=Su, 2=Mo ..
+  DayNo := DateUtils.DayOfTheWeek(_Date);
+  Result := TDayOfWeekEnum(DayNo - DateUtils.DayMonday);
+end;
+
+function DayOfWeek2Str(_Dow: TDayOfWeekEnum): string;
+begin
+  case _Dow of
+    dowMonday: Result := RS_Monday;
+    dowTuesday: Result := RS_Tuesday;
+    dowWednesday: Result := RS_Wednesday;
+    dowThursday: Result := RS_Thursday;
+    dowFriday: Result := RS_Friday;
+    dowSaturday: Result := RS_Saturday;
+    dowSunday: Result := RS_Sunday;
+  else
+    // should never happen ...
+    raise exception.CreateFmt(RS_InvalidValueForDayOfWeek_D, [Ord(_Dow)]);
+  end;
+end;
+
+function Month2Str(_Month: TMonthNumbers): string;
+begin
+  case _Month of
+    1: Result := RS_January;
+    2: Result := RS_February;
+    3: Result := RS_March;
+    4: Result := RS_April;
+    5: Result := RS_May;
+    6: Result := RS_June;
+    7: Result := RS_July;
+    8: Result := RS_August;
+    9: Result := RS_September;
+    10: Result := RS_October;
+    11: Result := RS_November;
+    12: Result := RS_December;
+  else
+    // should never happen ...
+    raise Exception.CreateFmt(RS_InvalidMonthNumber_D, [_Month]);
+  end;
+end;
 
 function DateTime2Iso(_dt: TDateTime; _IncludeTime: boolean = false): string;
 begin
   if _IncludeTime then
-    DateTimeToString(Result, 'yyyy-mm-dd hh:nn:ss', _dt)
+    DateTimeToString(Result, 'yyyy-mm-dd hh:nn:ss', _dt) // do not translate
   else
-    DateTimeToString(Result, 'yyyy-mm-dd', _dt);
+    DateTimeToString(Result, 'yyyy-mm-dd', _dt); // do not translate
 end;
 
 function Date2ddmmyyyy(_Date: TDateTime): string;
 begin
-  DateTimeToString(Result, 'dd.mm.yyyy', _Date);
+  DateTimeToString(Result, 'dd.mm.yyyy', _Date); // do not translate
 end;
 
 function Tryddmmyyyy2Date(const _s: string; out _Date: TDateTime): boolean;
@@ -71,8 +160,8 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.DateSeparator := '.';
-  Settings.ShortDateFormat := 'dd.mm.yyyy';
-  Result := TryStrToDate(_s, _Date, Settings); 
+  Settings.ShortDateFormat := 'dd.mm.yyyy'; // do not translate
+  Result := TryStrToDate(_s, _Date, Settings);
 end;
 
 function ddmmyyyy2Date(const _s: string): TDateTime;
@@ -81,7 +170,7 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.DateSeparator := '.';
-  Settings.ShortDateFormat := 'dd.mm.yyyy';
+  Settings.ShortDateFormat := 'dd.mm.yyyy'; // do not translate
   Result := StrToDate(_s, Settings);
 end;
 
@@ -89,9 +178,9 @@ function Time2Iso(_dt: TDateTime; _IncludeSeconds: boolean = true): string;
 var
   fmt: string;
 begin
-  fmt := 'hh:nn';
+  fmt := 'hh:nn'; // do not translate
   if _IncludeSeconds then
-    fmt := fmt + ':ss';
+    fmt := fmt + ':ss'; // do not translate
   DateTimeToString(Result, fmt, _dt);
 end;
 
@@ -101,7 +190,7 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.TimeSeparator := ':';
-  Settings.ShortTimeFormat := 'hh:nn:ss';
+  Settings.ShortTimeFormat := 'hh:nn:ss'; // do not translate
   Result := TryStrToTime(_s, _Time, Settings);
 end;
 
@@ -111,7 +200,7 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.TimeSeparator := ':';
-  Settings.ShortTimeFormat := 'hh:nn:ss';
+  Settings.ShortTimeFormat := 'hh:nn:ss'; // do not translate
   Result := StrToTime(_s, Settings);
 end;
 
@@ -121,7 +210,7 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.DateSeparator := '-';
-  Settings.ShortDateFormat := 'yyyy-mm-dd';
+  Settings.ShortDateFormat := 'yyyy-mm-dd'; // do not translate
   Result := TryStrToDate(_s, _Date, Settings);
 end;
 
@@ -131,7 +220,7 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.DateSeparator := '-';
-  Settings.ShortDateFormat := 'yyyy-mm-dd';
+  Settings.ShortDateFormat := 'yyyy-mm-dd'; // do not translate
   Result := StrToDate(_s, Settings);
 end;
 
@@ -141,9 +230,9 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.DateSeparator := '-';
-  Settings.ShortDateFormat := 'yyyy-mm-dd';
+  Settings.ShortDateFormat := 'yyyy-mm-dd'; // do not translate
   Settings.TimeSeparator := ':';
-  Settings.ShortTimeFormat := 'hh:nn:ss';
+  Settings.ShortTimeFormat := 'hh:nn:ss'; // do not translate
   Result := TryStrToDateTime(_s, _DateTime, Settings);
 end;
 
@@ -153,10 +242,11 @@ var
 begin
   Settings := GetUserDefaultLocaleSettings;
   Settings.DateSeparator := '-';
-  Settings.ShortDateFormat := 'yyyy-mm-dd';
+  Settings.ShortDateFormat := 'yyyy-mm-dd'; // do not translate
   Settings.TimeSeparator := ':';
-  Settings.ShortTimeFormat := 'hh:nn:ss';
+  Settings.ShortTimeFormat := 'hh:nn:ss'; // do not translate
   Result := StrToDateTime(_s, Settings);
 end;
 
 end.
+

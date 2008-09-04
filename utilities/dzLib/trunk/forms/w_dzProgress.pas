@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 {: generic progress form
    This unit implements a generic progress form.
    Create it, set FormCaption, optionally set Max, show the form.
@@ -100,7 +100,11 @@ begin
   l_Action.Caption := '';
   FormCaption := FormCaptionD;
 
-  TranslateComponent(Self);
+  PopupMode := pmExplicit;
+  if _Owner is TCustomForm then
+    PopupParent := _Owner as TCustomForm;
+
+  TranslateComponent(Self, 'dzlib');
 end;
 
 procedure Tf_dzProgress.b_CancelClick(Sender: TObject);
@@ -112,8 +116,7 @@ procedure Tf_dzProgress.InternalSetCaption;
 var
   OldPercent: integer;
 begin
-  if fFormCaptionPercent then
-  begin
+  if fFormCaptionPercent then begin
     OldPercent := fPercent;
     fPercent := (fProgressPos * 100) div fMax;
     if OldPercent = fPercent then
@@ -156,22 +159,17 @@ begin
   _Percent := false;
   _ParamCount := 0;
   p := PosEx('%', _Caption, 1);
-  while p <> 0 do
-  begin
-    if (p >= Length(_Caption)) then
-    begin
+  while p <> 0 do begin
+    if (p >= Length(_Caption)) then begin
       _Error := PercentAtEnd;
       exit;
     end;
     if _Caption[p + 1] = 'd' then
       Inc(_ParamCount)
-    else if _Caption[p + 1] = '%' then
-    begin
+    else if _Caption[p + 1] = '%' then begin
       _Percent := true;
       Inc(p)
-    end
-    else
-    begin
+    end else begin
       _Error := InvalidFormatChar;
       exit;
     end;
@@ -232,14 +230,11 @@ procedure Tf_dzProgress.SetActionVisible(_Visible: boolean);
 begin
   fActionVisible := _Visible;
   l_Action.Visible := fActionVisible;
-  if not fActionVisible then
-  begin
+  if not fActionVisible then begin
     ClientHeight := 2 * 5 + b_Cancel.Height;
     b_Cancel.Top := (ClientHeight - b_Cancel.Height) div 2;
     pb_Progress.Top := (ClientHeight - pb_Progress.Height) div 2;
-  end
-  else
-  begin
+  end else begin
     // as designed
     b_Cancel.Top := 20;
     pb_Progress.Top := 24;

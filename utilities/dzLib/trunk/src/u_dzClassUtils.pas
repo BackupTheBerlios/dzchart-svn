@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 /// <summary>
 /// Implements functions which work on classes but are not methods.
 /// @autor(twm)
@@ -38,7 +38,7 @@ procedure TStrings_FreeWithObjects(_Strings: TStrings);
 /// Frees all objects stored in the TStrings intance and returns the instance,
 /// meant to be called like
 /// @code( TStrings_FreeAllObjects(sl).Free; ) or
-/// @code( TStrings_FreeAllObjects(sl).Clear; ) 
+/// @code( TStrings_FreeAllObjects(sl).Clear; )
 /// </summary>
 function TStrings_FreeAllObjects(_Strings: TStrings): TStrings;
 
@@ -62,10 +62,25 @@ procedure TList_FreeWithItems(var _List: TList); deprecated; // use contnrs.TObj
 function TStream_WriteString(_Stream: TStream; const _s: string): integer;
 
 /// <summary>
+// Write a ShortString to the stream as binary, that is the length byte followed by len content bytes
+/// @param Stream is the TStream to write to.
+/// @param s is the string to write
+/// @returns the number of bytes written.
+/// </summary>
+function TStream_WriteShortStringBinary(_Stream: TStream; const _s: ShortString): integer;
+
+/// <summary>
+// Reads a ShortString as written by TStream_WriteShortStringBinary
+/// @param Stream is the TStream to write to.
+/// @returns the string read
+/// </summary>
+function TStream_ReadShortStringBinary(_Stream: TStream): ShortString;
+
+/// <summary>
 /// Write a string to the stream appending CRLF
 /// @param Stream is the TStream to write to.
 /// @param s is the string to write
-/// @returns the number of bytes written. 
+/// @returns the number of bytes written.
 /// </summary>
 function TStream_WriteStringLn(_Stream: TStream; const _s: string): integer;
 
@@ -115,11 +130,24 @@ function TStrings_TryStringByObj(_Strings: TStrings; _Obj: pointer; out _Value: 
 /// </summary>
 function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
 
+///<summary>
+/// reads a string list from an ini file section of the form
+/// [section]
+/// count=2
+/// Item0=blab
+/// Item1=blub
+/// @returns the number of strings read
+/// </summary>
+function TIniFiles_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
+
 implementation
 
 uses
   StrUtils,
   u_dzStringUtils;
+
+resourcestring
+  RS_NO_MATCHING_OBJECT_FOUND = 'no matching object found';
 
 procedure TList_FreeWithItems(var _List: TList);
 var
@@ -188,6 +216,26 @@ begin
   Result := _Stream.Write(pChar(_s)^, Length(_s));
 end;
 
+function TStream_WriteShortStringBinary(_Stream: TStream; const _s: ShortString): integer;
+var
+  Len: Byte;
+begin
+  Len := Ord(_s[0]);
+  Result := _Stream.Write(Len, SizeOf(Len));
+  if Len > 0 then
+    Result := Result + _Stream.Write(_s[1], Len);
+end;
+
+function TStream_ReadShortStringBinary(_Stream: TStream): ShortString;
+var
+  Len: byte;
+begin
+  _Stream.Read(Len, SizeOf(Len));
+  Result[0] := Chr(Len);
+  if Len > 0 then
+    _Stream.Read(Result[1], Len);
+end;
+
 function TStream_WriteStringLn(_Stream: TStream; const _s: string): integer;
 begin
   Result := TStream_WriteString(_Stream, _s);
@@ -206,9 +254,10 @@ var
   NewPos: integer;
   c: char;
 begin
+  Assert(SizeOf(c) = 1, 'This works only with one byte characters!'); // do not translate
+
   // twm: this is not really efficient, because it reads single bytes, if it becomes a problem, optimize it ;-)
   OldPos := _Stream.Position;
-  Assert(SizeOf(c) = 1, 'This works only with one byte characters!');
   EndString := OldPos;
   NewPos := OldPos;
   while true do begin
@@ -253,7 +302,7 @@ function TStrings_StringByObj(_Strings: TStrings; _Obj: pointer; _RaiseException
 begin
   if not TStrings_TryStringByObj(_Strings, _Obj, Result) then begin
     if _RaiseException then
-      raise EObjectNotFound.Create('no matching object found');
+      raise EObjectNotFound.Create(RS_NO_MATCHING_OBJECT_FOUND);
     Result := '';
   end;
 end;
@@ -262,10 +311,19 @@ function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string
 var
   s: string;
 begin
-  s:=_Ini.ReadString(_Section, _Ident, _Default);
+  s := _Ini.ReadString(_Section, _Ident, _Default);
   if s = '' then
-    s:= _Default;
+    s := _Default;
   Result := s[1];
+end;
+
+function TIniFiles_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
+var
+  i: integer;
+begin
+  Result := _Ini.ReadInteger(_Section, 'Count', 0);
+  for i := 0 to Result - 1 do
+    _st.Add(_Ini.ReadString(_Section, 'Item' + IntToStr(i), ''));
 end;
 
 end.

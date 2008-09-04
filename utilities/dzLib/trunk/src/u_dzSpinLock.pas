@@ -6,28 +6,28 @@ uses
   Windows;
 
 type
-  /// This is a very simple thread synchronisation class that allows to limit
-  /// access to a resource. It uses InterlockedIncrement/Decrement and busy
-  /// waiting, so only use it for very small sections of code e.g.:
+  /// <summary> This is a very simple thread synchronisation class that allows to limit
+  ///           access to a resource. It uses InterlockedIncrement/Decrement and busy
+  ///           waiting, so only use it for very small sections of code e.g.:
   ///
-  /// Lock.Acquire;
-  /// try
-  ///   SharedVariable := NewValue;
-  /// finally
-  ///   Lock.Release;
-  /// end;
+  ///           Lock.Acquire;
+  ///           try
+  ///             SharedVariable := NewValue;
+  ///           finally
+  ///             Lock.Release;
+  ///           end;
   ///
-  /// For more complex code, use a Mutex or
+  ///           For more complex code, use a Mutex or Critical Section </summary>
   TSpinLock = class
   private
     FLock: integer;
   public
     constructor Create;
-    /// try to acquire the lock and sleep (spin) until successfull
+    /// <summary> try to acquire the lock and sleep (spin) until successfull </summary>
     procedure Acquire;
-    /// try to aquire the lock and return false if it could not be acquired
+    /// <summary> try to aquire the lock and return false if it could not be acquired </summary>
     function TryAcquire: boolean;
-    /// release the lock
+    /// <summary> release the lock  </summary>
     procedure Release;
   end;
 

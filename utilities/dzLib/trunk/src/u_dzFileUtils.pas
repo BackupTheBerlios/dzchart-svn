@@ -615,6 +615,7 @@ type
     /// </summary>
     class function TryGetFileInfo(const _Filename: string; out _Info: TFileInfoRec): boolean;
     class function TryGetFileSize(const _Filename: string; out _Size: Int64): boolean;
+    class function GetFileSize(const _Filename: string): Int64;
 
     /// <summary>
     /// Returns the free space (in bytes) on the disk with the given drive letter
@@ -712,6 +713,9 @@ resourcestring
   // duplicate % so they get passed through the format function
   STR_CREATEDIR_ERROR_S = 'Error %%1:s (%%0:d) creating directory "%s"';
   STR_CREATEDIR_EXCEPTION_SSS = 'Error creating directory "%s": %s (%s)';
+  RS_FILE_NOT_FOUND_S = 'File not found: "%s"';
+  RS_COMBINATION_NOT_ALLOWED = 'Combination of ResultContainsNumber and Keep' +
+    'Original is not allowed';
 
 function itpd(const _Dirname: string): string; inline;
 begin
@@ -935,7 +939,13 @@ end;
 class function TFileSystem.GetFileInfo(const _Filename: string): TFileInfoRec;
 begin
   if not TryGetFileInfo(_Filename, Result) then
-    raise EFileNotFound.CreateFmt('File not found: "%s"', [_Filename]);
+    raise EFileNotFound.CreateFmt(RS_FILE_NOT_FOUND_S, [_Filename]);
+end;
+
+class function TFileSystem.GetFileSize(const _Filename: string): Int64;
+begin
+  if not TryGetFileSize(_Filename, Result) then
+    raise EFileNotFound.CreateFmt(RS_FILE_NOT_FOUND_S, [_Filename]);
 end;
 
 class function TFileSystem.TryGetFileSize(const _Filename: string;
@@ -1555,7 +1565,7 @@ function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
 begin
   if FResultContainsNumber then begin
     if _KeepOriginal then
-      raise EInvalidPropertyCombination.Create('Combination of ResultContainsNumber and KeepOriginal is not allowed');
+      raise EInvalidPropertyCombination.Create(RS_COMBINATION_NOT_ALLOWED);
     if FOldestIsHighest then begin
       Result := doNumberOldIsHighest();
     end else begin

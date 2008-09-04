@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 {: Implements commonly used functions.
    This unit implements some commonly used functions.<br>
    There is also a NotImplemend procedure which should be called
@@ -6,7 +6,8 @@
    This procedure will not be available when we compile the
    shipping code (no DEBUG symbol), so the compiler should
    complain if it is still used by then.<br>
-   <strong>note</strong>: String functions have been moved to dzStringfunc
+   Note: String functions have been moved to dzStringUtils
+   Note: Variant functions have been moved to dzVariantUtils
    @author twm
 }
 
@@ -14,14 +15,13 @@ unit u_dzMiscUtils;
 
 {$I jedi.inc}
 
-{ TODO -otwm : Move variant functions to u_dzVariants }
-
 {$WARN SYMBOL_PLATFORM off}
+{$WARN UNIT_PLATFORM off}
 
 interface
 
 uses
-  Variants,
+//  Variants,
   SysUtils,
   Windows,
   Registry;
@@ -53,7 +53,7 @@ type
 type
   TBooleanNames = array[boolean] of string;
 const
-  BOOLEAN_NAMES: TBooleanNames = ('false', 'true');
+  BOOLEAN_NAMES: TBooleanNames = ('false', 'true'); // do not translate
 
 {: Emulates this infamous Visual Basic function of which nobody actually knows
    what it does.}
@@ -106,115 +106,6 @@ function IntToBool(_Int: integer): boolean;
    @returns(0 if the boolean is false, 1 if it is true) }
 function BoolToInt(_B: boolean): integer;
 
-// Variant to other type conversion functions
-// Var2XxxConditional converts from variant to type Xxx, returns false, if
-// the variant is NULL.
-// Var2Xxx converts from variant to type Xxx and returns the Default if the
-// variant is NULL.
-// Var2XxxEx converts from variant to type Xxx, but raises an exception if
-// variant is NULL, using the Source for the message.
-
-{: Converts a variant to an integer.
-   If v is null or empty, it returns false
-   @param(v Variant value to convert)
-   @param(Value is the variants integer value, only valid if the function
-          returns true.)
-   @returns(true, if the variant could be converted to integer, false if not.) }
-function Var2IntConditional(const _v: variant; out _Value: integer): boolean;
-
-{: Converts a variant to an integer.
-   If v is null or empty, it returns the Default.
-   @param(v Variant value to convert)
-   @param(Default Value to return if v is empty or null)
-   @returns(the integer value of v or the Default if v can not be converted) }
-function Var2Int(const _v: variant; _Default: integer): integer;
-
-{: Converts a variant to an integer.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the integer value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
-function Var2IntEx(const _v: variant; const _Source: string): integer;
-
-{: Converts a variant to the string representation of an integer.
-   If v is null or empty, it returns the NullValue.
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(the string representation of the integer value of v or the
-            NullValue if v can not be converted) }
-function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
-
-{: Converts a variant to a double.
-   If v is null or empty, it returns false.
-   @param(v Variant value to convert)
-   @param(Value is the variant's double value, only valid if the function
-                returns true.)
-   @returns(true, if the varian could be converted to double, false if not) }
-function TryVar2Dbl(const _v: variant; out _Value: double): boolean;
-function Var2DblConditional(const _v: variant; out _Value: double): boolean; deprecated; // use TryVar2Dbl
-
-{: Converts a variant to a double.
-   If v is null or empty, it returns the Default.
-   @param(v Variant value to convert)
-   @param(Default Value to return if v is empty or null)
-   @returns(the double value of v or the Default if v can not be converted) }
-function Var2Dbl(const _v: variant; const _Default: double): double;
-
-{: Converts a variant to a double.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the double value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
-function Var2DblEx(const _v: variant; const _Source: string): double;
-
-{: Converts a variant to the string representation of a double.
-   If v is null or empty, it returns the Default.
-   It uses Float2Str (not FloatToStr) with a '.' as decimal separator.
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(the string representation of the double value of v or the
-            NullValue if v can not be converted) }
-function Var2DblStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
-
-{: Converts a variant to a TDateTime.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the TDateTime value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
-function Var2DateTimeEx(const _v: variant; const _Source: string): TDateTime;
-
-{: Converts a variant to an ISO format DateTime string (yyyy-mm-dd hh:mm:ss)
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(an ISO format DateTime string of v or NullValue if v can not be converted) }
-function Var2DateTimeStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
-
-{: Converts a variant to a string.
-   If v is null or empty, it returns the Default.
-   @param(v Variant value to convert)
-   @param(Default Value to return if v is empty or null)
-   @returns(the string value of v or the Default if v can not be converted) }
-function Var2Str(const _v: variant; const _Default: string = '*NULL*'): string;
-
-{: Converts a variant to a string.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the string value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
-function Var2StrEx(_v: variant; const _Source: string): string;
-
 {: Uses GetLastError to get the last WinAPI error code, then
    calls SysErrorMessage to get the corresponding error string,
    optionally takes a format string.
@@ -226,7 +117,8 @@ function Var2StrEx(_v: variant; const _Source: string): string;
                  If no format string is given Error will just contain the
                  Windows error message.)
    @returns(the error code) }
-function GetLastOsError(out _Error: string; const _Format: string = ''): DWORD;
+function GetLastOsError(out _Error: string; const _Format: string = ''): DWORD; overload;
+function GetLastOsError(_ErrCode: integer; out _Error: string; const _Format: string = ''): DWORD; overload;
 
 {: Similar to SysUtils.Win32Check, but does not raise an exception. Instead
    it returns the error message. The function optionally takes a format string.
@@ -340,19 +232,10 @@ uses
   u_dzConvertUtils;
 
 resourcestring
-  // Variant ist Null, sollte %s sein: %s
-  STR_VARIANT_IS_NULL_SHOULD_BE_SS = 'Variant is Null, should be %s: %s';
-  // Variant ist Empty, sollte %s sein: %s
-  STR_VARIANT_IS_EMPTY_SHOULD_BE_SS = 'Variant is Empty, should be %s: %s';
-  // Variant kann nicht nach %s konvertiert werden: %s
-  STR_VARAINT_CAN_NOT_BE_CONVERTED_TO_SS = 'Variant can not be converted to %s: %s';
-{$IFDEF delphi7up}
   // Unbekannter Betriebssystem Fehler
   STR_UNKNOWN_WIN32_ERROR = 'unknown OS error';
-{$ELSE}
-  // Unbekannter Win32 Fehler
-  STR_UNKNOWN_WIN32_ERROR = 'unknown Win32 error';
-{$ENDIF delphi7up}
+  RS_UNKNOWN_REGISTRY_ROOT_KEY_X = 'unknown Registry Root Key %x';
+  RS_UNKNOWN_REGDATATYPE = 'unknown RegDataType';
 
 {$IFDEF debug}
 
@@ -396,7 +279,7 @@ begin
     HKEY_CURRENT_CONFIG: result := 'HKEY_CURRENT_CONFIG';
     HKEY_DYN_DATA: result := 'HKEY_DYN_DATA';
   else
-    Result := 'unknown Registry Root Key';
+    Result := Format(RS_UNKNOWN_REGISTRY_ROOT_KEY_X, [_HKey]);
   end;
 end;
 
@@ -409,7 +292,7 @@ begin
     rdInteger: Result := 'Integer';
     rdBinary: Result := 'Binary';
   else
-    Result := 'unknown RegDataType';
+    Result := RS_UNKNOWN_REGDATATYPE;
   end;
 end;
 
@@ -424,136 +307,6 @@ begin
     Result := 1
   else
     Result := 0;
-end;
-
-function Var2IntConditional(const _v: variant; out _Value: integer): boolean;
-begin
-  Result := not VarIsNull(_v) and not VarIsEmpty(_v);
-  if Result then
-    _Value := _v;
-end;
-
-function Var2Int(const _v: variant; _Default: integer): integer;
-begin
-  if not Var2IntConditional(_v, Result) then
-    Result := _Default;
-end;
-
-function Var2IntEx(const _v: variant; const _Source: string): integer;
-begin
-  if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['Integer', _Source]);
-  if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['Integer', _Source]);
-  try
-    Result := _v;
-  except
-    on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARAINT_CAN_NOT_BE_CONVERTED_TO_SS, ['Integer', _Source]);
-  end;
-end;
-
-function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
-var
-  Value: integer;
-begin
-  if Var2IntConditional(_v, Value) then
-    Result := IntToStr(Value)
-  else
-    Result := _NullValue;
-end;
-
-function Var2DateTimeEx(const _v: variant; const _Source: string): TDateTime;
-begin
-  if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['Date', _Source]);
-  if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['Date', _Source]);
-  try
-    Result := _v;
-  except
-    on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARAINT_CAN_NOT_BE_CONVERTED_TO_SS, ['Date', _Source]);
-  end;
-end;
-
-function Var2DateTimeStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
-var
-  Value: TDateTime;
-begin
-  if VarIsNull(_v) or VarIsEmpty(_v) then
-    Result := _NullValue
-  else
-    try
-      Value := _v;
-      Result := FormatDateTime('yyyy-mm-dd hh:nn:ss', Value);
-    except
-      Result := _NullValue;
-    end;
-end;
-
-function TryVar2Dbl(const _v: variant; out _Value: double): boolean;
-begin
-  Result := not VarIsNull(_v) and not VarIsEmpty(_v);
-  if Result then
-    _Value := _v;
-end;
-
-function Var2DblConditional(const _v: variant; out _Value: double): boolean;
-begin
-  Result := TryVar2Dbl(_v, _Value);
-end;
-
-function Var2Dbl(const _v: variant; const _Default: double): double;
-begin
-  if not TryVar2Dbl(_v, Result) then
-    Result := _Default
-end;
-
-function Var2DblEx(const _v: variant; const _Source: string): double;
-begin
-  if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['Double', _Source]);
-  if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['Double', _Source]);
-  try
-    Result := _v;
-  except
-    on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARAINT_CAN_NOT_BE_CONVERTED_TO_SS, ['Double', _Source]);
-  end;
-end;
-
-function Var2DblStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
-var
-  Value: double;
-begin
-  if TryVar2Dbl(_v, Value) then
-    Result := Float2Str(Value)
-  else
-    Result := _NullValue;
-end;
-
-function Var2Str(const _v: variant; const _Default: string): string;
-begin
-  if VarIsNull(_v) or VarIsEmpty(_v) then
-    Result := _Default
-  else
-    Result := _v;
-end;
-
-function Var2StrEx(_v: variant; const _Source: string): string;
-begin
-  if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['String', _Source]);
-  if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['String', _Source]);
-  try
-    Result := _v;
-  except
-    on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARAINT_CAN_NOT_BE_CONVERTED_TO_SS, ['String', _Source]);
-  end;
 end;
 
 procedure RaiseLastOsErrorEx(const _Format: string);
@@ -574,10 +327,15 @@ begin
 end;
 
 function GetLastOsError(out _Error: string; const _Format: string = ''): DWORD;
+begin
+  Result := GetLastOsError(GetLastError, _Error, _Format);
+end;
+
+function GetLastOsError(_ErrCode: integer; out _Error: string; const _Format: string = ''): DWORD;
 var
   s: string;
 begin
-  Result := GetLastError;
+  Result := _ErrCode;
   if Result <> ERROR_SUCCESS then
     s := SysErrorMessage(Result)
   else
@@ -676,9 +434,9 @@ begin
       MaskFound := true;
     if _Wildcard[i] = '\' then begin
       if MaskFound or not DirectoryExists(_Wildcard) then begin
-              // if we had a mask, this is easy, just split the wildcard at position i
-              // if there was no mask, and the whole thing is not directory,
-              // split at position i
+        // if we had a mask, this is easy, just split the wildcard at position i
+        // if there was no mask, and the whole thing is not a directory,
+        // split at position i
         _Mask := TailStr(_Wildcard, i + 1);
         _Path := LeftStr(_Wildcard, i - 1);
         Result := DirectoryExists(_Path);
@@ -838,19 +596,6 @@ begin
   end else
     Result := 0;
 end;
-
-{$IFNDEF delphi7up}
-
-function ExcludeTrailingPathDelimiter(const _s: string): string;
-begin
-  Result := ExcludeTrailingBackslash(_s);
-end;
-
-function IncludeTrailingPathDelimiter(const _s: string): string;
-begin
-  Result := IncludeTrailingBackslash(_s);
-end;
-{$ENDIF}
 
 end.
 

@@ -11,6 +11,12 @@ dxgettext --delphi -r -b %BASE%\src -b %BASE%\forms -o %BASE%
 msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
 
 @rem merge German translations
-msgmerge --no-wrap --update %BASE%\default_de.po %BASE%\filtered.po
+msgmerge --no-wrap --update %BASE%\translations\de\dzlib.po %BASE%\filtered.po
+
+@rem merge French translations
+msgmerge --no-wrap --update %BASE%\translations\fr\dzlib.po %BASE%\filtered.po
+
+@rem merge English "translations"
+msgmerge --no-wrap --update %BASE%\translations\en\dzlib.po %BASE%\filtered.po
 
 pause

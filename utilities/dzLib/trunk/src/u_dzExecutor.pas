@@ -200,6 +200,15 @@ uses
   JclSysInfo,
   u_dzMiscUtils;
 
+resourcestring
+  RS_CANNOT_FREE_EXECUTOR = 'Can not free Executor while a process using redirection is still running.';
+  RS_PROCESS_HAS_NOT_YET_BEEN_STARTED_S = 'Process has not yet been started.'#13#10'%s';
+  RS_PROCESS_IS_STILL_RUNNING_S = 'Process is still running.'#13#10'%s';
+  RS_PROCESS_HAS_TERMINATED_S = 'Process has terminated.'#13#10'%s';
+  RS_PROCESS_HAS_NOT_YET_BEEN_STARTED = 'Process has not yet been started';
+  RS_STDERR_WAS_NOT_REDIRECTED = 'StdErr was not redirected';
+  RS_STDOUT_WAS_NOT_REDIRECTED = 'StdOut was not redirected';
+
 { TExecutor }
 
 constructor TExecutor.Create;
@@ -218,8 +227,7 @@ begin
   inherited;
   if (Status = esRunning) and
     (RedirectStdIn or RedirectStdOut or RedirectStdErr) then
-    raise ERedirectedProcess.Create('Can not free Executor while a process' +
-      ' using redirection is still running.');
+    raise ERedirectedProcess.Create(RS_CANNOT_FREE_EXECUTOR);
   fInputFile.Free;
   fOutputFile.Free;
   fErrorFile.Free;
@@ -257,9 +265,9 @@ begin
   Stat := GetStatus;
   if not (Stat in _ValidStatusSet) then
     case Stat of
-      esInvalid: raise ENoProcess.CreateFmt('Process has not yet been started.'#13#10'%s', [_Method]);
-      esRunning: raise EProcessRunning.CreateFmt('Process is still running.'#13#10'%s', [_Method]);
-      esTerminated: raise EProcessTerminated.CreateFmt('Process has terminated.'#13#10'%s', [_Method]);
+      esInvalid: raise ENoProcess.CreateFmt(RS_PROCESS_HAS_NOT_YET_BEEN_STARTED_S, [_Method]);
+      esRunning: raise EProcessRunning.CreateFmt(RS_PROCESS_IS_STILL_RUNNING_S, [_Method]);
+      esTerminated: raise EProcessTerminated.CreateFmt(RS_PROCESS_HAS_TERMINATED_S, [_Method]);
     end;
 end;
 
@@ -290,7 +298,7 @@ end;
 function TExecutor.Kill: boolean;
 begin
   case GetStatus of
-    esInvalid: raise ENoProcess.Create('Process has not yet been started');
+    esInvalid: raise ENoProcess.Create(RS_PROCESS_HAS_NOT_YET_BEEN_STARTED);
     esRunning: Result := TerminateProcess(fProcessInfo.hProcess, $FFFFFFFF);
   else
     Result := true;
@@ -424,7 +432,7 @@ begin
       fErrorFile.Read(Result[1], Size);
     end;
   end else
-    raise ENotRedirected.Create('StdErr was not redirected');
+    raise ENotRedirected.Create(RS_STDERR_WAS_NOT_REDIRECTED);
 end;
 
 function TExecutor.GetStdOut: string;
@@ -440,7 +448,7 @@ begin
       fOutputFile.Read(Result[1], Size);
     end;
   end else
-    raise ENotRedirected.Create('StdOut was not redirected');
+    raise ENotRedirected.Create(RS_STDOUT_WAS_NOT_REDIRECTED);
 end;
 
 end.

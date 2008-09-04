@@ -49,6 +49,7 @@
     <DCCReference Include="..\..\src\u_dzDateUtils.pas" />
     <DCCReference Include="..\..\src\u_dzFileUtils.pas" />
     <DCCReference Include="..\..\src\u_dzMiscUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzRecordArray.pas" />
     <DCCReference Include="..\..\src\u_dzStringUtils.pas" />
     <DCCReference Include="..\..\src\u_dzTranslator.pas" />
     <DCCReference Include="..\..\src\u_dzUnitTestUtils.pas" />
@@ -57,6 +58,7 @@
     <DCCReference Include="Testu_dzDateUtils.pas" />
     <DCCReference Include="Testu_dzFileUtils.pas" />
     <DCCReference Include="Testu_dzMultiWriteSingleReadLockFreeQueue.pas" />
+    <DCCReference Include="Testu_dzRecordArray.pas" />
     <DCCReference Include="Testu_dzStringUtils.pas" />
   </ItemGroup>
 </Project>

@@ -156,6 +156,11 @@ type
 
 implementation
 
+resourcestring
+  RS_INDEX_OUT_OF_BOUNDS_D = 'Index %d out of bounds.';
+  RS_BUFFER_IS_FULL = 'Buffer is full';
+  RS_BUFFER_IS_EMPTY = 'Buffer is empty';
+
 { TdzCustomRingBuffer }
 
 constructor TdzCustomRingBuffer.Create(_ElementSize, _Length: integer);
@@ -170,11 +175,10 @@ end;
 
 destructor TdzCustomRingBuffer.Destroy;
 begin
-  if Assigned(fBuffer) and (fLength > 0) then
-    begin
-      FinalizeElements;
-      FreeMem(fBuffer);
-    end;
+  if Assigned(fBuffer) and (fLength > 0) then begin
+    FinalizeElements;
+    FreeMem(fBuffer);
+  end;
   inherited;
 end;
 
@@ -236,7 +240,7 @@ var
   p: PByte;
 begin
   if (fFirstUsed + _Idx) mod fLength >= fFirstFree then
-    raise EIndexOutOfBounds.CreateFmt('Index %d out of bounds.', [_Idx]);
+    raise EIndexOutOfBounds.CreateFmt(RS_INDEX_OUT_OF_BOUNDS_D, [_Idx]);
   p := fBuffer;
   Inc(p, (fFirstUsed + _Idx) * fElementSize);
   Move(p^, _Element, fElementSize);
@@ -247,7 +251,7 @@ var
   p: PByte;
 begin
   if (fFirstUsed + _Idx) mod fLength >= fFirstFree then
-    raise EIndexOutOfBounds.CreateFmt('Index %d out of bounds.', [_Idx]);
+    raise EIndexOutOfBounds.CreateFmt(RS_INDEX_OUT_OF_BOUNDS_D, [_Idx]);
   p := fBuffer;
   Inc(p, (fFirstUsed + _Idx) * fElementSize);
   Move(_Element, p^, fElementSize);
@@ -271,7 +275,7 @@ end;
 procedure TdzCustomRingBuffer.CheckFull;
 begin
   if IsFull then
-    raise EBufferFull.Create('Buffer is full');
+    raise EBufferFull.Create(RS_BUFFER_IS_FULL);
 end;
 
 function TdzCustomRingBuffer.IsEmpty: boolean;
@@ -282,7 +286,7 @@ end;
 procedure TdzCustomRingBuffer.CheckEmpty;
 begin
   if IsEmpty then
-    raise EBufferEmpty.Create('Buffer is empty');
+    raise EBufferEmpty.Create(RS_BUFFER_IS_EMPTY);
 end;
 
 function TdzCustomRingBuffer.GetCount: integer;

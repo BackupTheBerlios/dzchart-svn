@@ -30,9 +30,10 @@ type
 
 implementation
 
-uses
-  u_dzTranslator;
-
+resourcestring
+  RS_INVALID_FILE_ACCES_VALUE_D = 'Invalid file access value (%d)';
+  RS_ACCESSING_FILE_SS = '%s accessing file %s';
+  
 { TTextFile }
 
 constructor TTextFile.Create(const _Filename: string; _Access: TTextFileAccess);
@@ -48,11 +49,11 @@ begin
       tfaWrite: Rewrite(FFile);
       tfaAppend: Append(FFile);
     else
-      raise Exception.CreateFmt(_('Invalid file access value (%d)'), [Ord(_Access)]);
+      raise Exception.CreateFmt(RS_INVALID_FILE_ACCES_VALUE_D, [Ord(_Access)]);
     end;
   except
     on e: EInOutError do begin
-      EInOut := EInOutError.Create(e.Message + ' Accessing file ' + _Filename);
+      EInOut := EInOutError.CreateFmt(RS_ACCESSING_FILE_SS, [e.Message, _Filename]);
       EInOut.ErrorCode := e.ErrorCode;
       raise EInOut;
     end;

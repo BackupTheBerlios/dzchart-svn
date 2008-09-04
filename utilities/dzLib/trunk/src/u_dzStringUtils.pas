@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 {: Implements a bunch of commonly used string functions. This is a copy of
    TwmString adapted to Delphi.
    @author   twm }
@@ -45,6 +45,7 @@ function GetDelStr(var _Zeile: string; _Del: char): string; deprecated;
 /// extracts the substring from the start of Source up to the Delimiter
 /// </summary>
 function ExtractStr(var _Source: string; _Delimiter: char): string; overload;
+function ExtractStr(var _Source: string; _Delimiters: TCharSet): string; overload;
 /// <summary>
 /// extracts a substring from the start of Source up to the Delimiter
 /// @returns true, if a substring (even an empty one) was found.
@@ -238,6 +239,9 @@ function ReplaceCtrlChars(const _s: string; _ReplaceChar: char; _RemoveDuplicate
    If RemoveDuplicates is true, a sequence of control characters is replaced
    by a single space. }
 function CtrlcharsToSpace(const _s: string; _RemoveDuplicates: boolean = true): string;
+
+///<summary> Checks whether a string contains only given chars </summary>
+function ContainsOnlyCharsFrom(const _s: string; _ValidChars: TCharSet): boolean;
 
 {: Replaces all control characters (ord(c) <= ord(' '), " and ') with Prefix<hexcode> }
 function HexEncodeControlChars(_Prefix: char; const _s: string; _ControlChars: TCharSet = STANDARD_CONTROL_CHARS): string;
@@ -550,7 +554,7 @@ begin
   Result := _s;
   Dup := false;
   for i := Length(Result) downto 1 do
-    if Ord(Result[i]) <= Ord(' ') then begin
+    if Ord(Result[i]) < Ord(' ') then begin
       if not Dup or not _RemoveDuplicates then begin
         Result[i] := _ReplaceChar;
         Dup := true;
@@ -558,6 +562,17 @@ begin
         Delete(Result, i, 1);
     end else
       Dup := false;
+end;
+
+function ContainsOnlyCharsFrom(const _s: string; _ValidChars: TCharSet): boolean;
+var
+  i: Integer;
+begin
+  Result := false;
+  for i := 1 to Length(_s) do
+    if not (_s[i] in _ValidChars) then
+      exit;
+  Result := True;
 end;
 
 function CtrlcharsToSpace(const _s: string; _RemoveDuplicates: boolean = true): string;
@@ -573,7 +588,7 @@ begin
   Include(_ControlChars, _Prefix);
   for i := 1 to Length(_s) do begin
     if _s[i] in _ControlChars then
-      Result := Result + Format('%s%.2x', [_Prefix, Ord(_s[i])])
+      Result := Result + Format('%s%.2x', [_Prefix, Ord(_s[i])]) // do not translate
     else
       Result := Result + _s[i];
   end;
@@ -675,7 +690,7 @@ end;
 function RTrimSpaces(const _s: string): string;
 begin
   Result := _s;
-  while (Length(Result) > 0) and  (NthCharOf(Result, Length(Result)) = ' ') do
+  while (Length(Result) > 0) and (NthCharOf(Result, Length(Result)) = ' ') do
     System.Delete(Result, Length(Result), 1);
 end;
 
@@ -800,6 +815,12 @@ begin
     Result := LeftStr(_Source, p - 1);
     _Source := TailStr(_Source, p + 1);
   end;
+end;
+
+function ExtractStr(var _Source: string; _Delimiters: TCharSet): string;
+begin
+  if not ExtractStr(_Source, _Delimiters, Result) then
+    Result := '';
 end;
 
 function ExtractStr(var _Source: string; _Delimiters: TCharSet; out _Substr: string; var _LastWasDelimiter: boolean): boolean;
@@ -1012,7 +1033,7 @@ begin
   if Assigned(_P) then
     Result := '"' + _P + '"'
   else
-    Result := 'NULL';
+    Result := 'NULL'; // do not translate
 end;
 
 function GetSystemDefaultLocaleSettings: TFormatSettings;

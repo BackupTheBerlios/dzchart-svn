@@ -8,6 +8,7 @@ uses
   SysUtils,
   Forms,
   TestFramework,
+  u_dzUnitTestUtils,
   u_dzNamedThread,
   u_dzMultiWriteSingleReadLockFreeQueue;
 
@@ -54,7 +55,7 @@ type
   end;
 
 type
-  TestTMultiWriteSingleReadLockFreeQueue = class(TTestCase)
+  TestTMultiWriteSingleReadLockFreeQueue = class(TdzTestCase)
   private
     FQueue: TMultiWriteSingleReadLockFreeQueue;
     FProducers: array[0..PRODUCER_COUNT - 1] of TProducerThread;
