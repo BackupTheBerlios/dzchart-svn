@@ -1,15 +1,18 @@
 {.GXFormatter.config=twm}
-{: Implements commonly used functions.
-   This unit implements some commonly used functions.<br>
-   There is also a NotImplemend procedure which should be called
-   whereever some features are left out to be implemented "later"
-   This procedure will not be available when we compile the
-   shipping code (no DEBUG symbol), so the compiler should
-   complain if it is still used by then.<br>
-   Note: String functions have been moved to dzStringUtils
-   Note: Variant functions have been moved to dzVariantUtils
-   @author twm
-}
+///<summary>
+/// Implements commonly used functions.
+/// This unit implements some commonly used functions.
+///<br/>
+/// There is also a NotImplemend procedure which should be called
+/// whereever some features are left out to be implemented "later"
+/// This procedure will not be available when we compile the
+/// shipping code (no DEBUG symbol), so the compiler should
+/// complain if it is still used by then.
+/// <br>
+/// Note: String functions have been moved to dzStringUtils
+/// Note: Variant functions have been moved to dzVariantUtils
+/// @author twm
+///</summary>
 
 unit u_dzMiscUtils;
 
@@ -21,26 +24,13 @@ unit u_dzMiscUtils;
 interface
 
 uses
-//  Variants,
   SysUtils,
   Windows,
   Registry;
 
 type
-  {: raised if there is a conversion error in one of the Xxx2YyyEx functions }
-  EConvertError = class(Exception);
-
-  {: raised if there is a conversion error in one of the Var2XxxEx functions }
-  EVariantConvertError = class(EConvertError);
-
-  {: raised if the variant passed to one of the Var2XxxEx functions is null }
-  EVarIsNull = class(EVariantConvertError);
-
-  {: raised if the variant passed to one of the Var2XxxEx functions is empty }
-  EVarIsEmpty = class(EVariantConvertError);
-
-  {: raised by Max([array of const]) and Min([array of const]) if the passed
-     paramter is empty }
+  ///<summary> raised by Max([array of const]) and Min([array of const]) if the passed
+  ///   paramter is empty </summary>
   EEmptyArray = class(Exception);
 
   EPathTooLong = class(Exception);
@@ -55,39 +45,39 @@ type
 const
   BOOLEAN_NAMES: TBooleanNames = ('false', 'true'); // do not translate
 
-{: Emulates this infamous Visual Basic function of which nobody actually knows
-   what it does.}
+///<summary> Emulates this infamous Visual Basic function of which nobody actually knows
+///          what it does. </summary>
 function TwipsPerPixelX(_Handle: hdc): Extended;
 
-{: Emulates this infamous Visual Basic function of which nobody actually knows
-   what it does.}
+///<summary> Emulates this infamous Visual Basic function of which nobody actually knows
+///          what it does. </summary>
 function TwipsPerPixelY(_Handle: hdc): Extended;
 
-{: Returns the name for the HKey constant. }
+///<summary> Returns the name for the HKey constant. </summary>
 function HKeyToString(_HKey: HKey): string;
 
-{: Returns the name for the TRegDataType Value. }
+///<summary> Returns the name for the TRegDataType Value. </summary>
 function RegDataTypeToString(_DataType: TRegDataType): string;
 
-{: returns a hex dump of the buffer (no spaces added)
-   @param(Buffer is the memory block to dump)
-   @param(Len is the length of the block)
-   @returns(a string containing the hex dump of the buffer) }
+///<summary> returns a hex dump of the buffer (no spaces added)
+///          @param Buffer is the memory block to dump
+///          @param Len is the length of the block
+///          @returns a string containing the hex dump of the buffer </summary>
 function HexDump(const _Buffer; _Len: integer): string;
 
-{: hex dumps a double value }
+///<summary> hex dumps a double value </summary>
 function HexDumpDouble(const _dbl: Double): string;
 
-{: hex dumps an extended value }
+///<summary> hex dumps an extended value </summary>
 function HexDumpExtended(const _ext: Extended): string;
 
-{: returns a hex dump of the zero terminated string s }
-function HexDumpString(const _s: string): string;
+///<summary> returns a hex dump of the string s </summary>
+function HexDumpString(const _s: ansistring): string;
 
-{: converts a hexdump of a double back to a double value }
+///<summary> converts a hexdump of a double back to a double value </summary>
 procedure HexDumpToDbl(const _s: string; var _Value: double);
 
-{: converts a hexdump of an extended back to an extended value }
+///<summary> converts a hexdump of an extended back to an extended value </summary>
 procedure HexDumpToExtended(const _s: string; var _Value: Extended);
 
 ///<summary> converts an integer to a 8 digit hex string </summary>
@@ -96,117 +86,98 @@ function IntToHex(_Value: integer): string; overload;
 ///<summary> converts an In64 to a 16 digit hex string </summary>
 function IntToHex(_Value: Int64): string; overload;
 
-{: Converts an integer to a boolean.
-   @param(Int is the integer to convert)
-   @returns(false, if the integer is 0, true otherwise) }
+///<summary> Converts an integer to a boolean.
+///          @param Int is the integer to convert
+///          @returns false, if the integer is 0, true otherwise </summary>
 function IntToBool(_Int: integer): boolean;
 
-{: Converts a boolean to an integer.
-   @param(B is the boolean to convert)
-   @returns(0 if the boolean is false, 1 if it is true) }
+///<summary> Converts a boolean to an integer.
+///          @param B is the boolean to convert
+///          @returns 0 if the boolean is false, 1 if it is true </summary>
 function BoolToInt(_B: boolean): integer;
 
-{: Uses GetLastError to get the last WinAPI error code, then
-   calls SysErrorMessage to get the corresponding error string,
-   optionally takes a format string.
-   @param(Error is the error string, only valid if error code <> 0)
-   @param(Format The Format string to use. It must have %d and %s in it, to
-                 change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
-                 %d is replaced by the error code and %s is replaced by the
-                 error message string.
-                 If no format string is given Error will just contain the
-                 Windows error message.)
-   @returns(the error code) }
+///<summary> Uses GetLastError to get the last WinAPI error code, then
+///          calls SysErrorMessage to get the corresponding error string,
+///          optionally takes a format string.
+///          @param Error is the error string, only valid if error code <> 0
+///          @param Format The Format string to use. It must have %d and %s in it, to
+///                        change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
+///                        %d is replaced by the error code and %s is replaced by the
+///                        error message string.
+///                        If no format string is given Error will just contain the
+///                        Windows error message.
+///                        NOTE: Do not pass a resource string or a string translated
+///                              using DxGetText to this function since this
+///                              would clear the GetLastError result. Use the
+///                              overloaded version that takes the ErrCode
+///                              parameter instead.
+///          @returns the error code /</summary>
 function GetLastOsError(out _Error: string; const _Format: string = ''): DWORD; overload;
 function GetLastOsError(_ErrCode: integer; out _Error: string; const _Format: string = ''): DWORD; overload;
 
-{: Similar to SysUtils.Win32Check, but does not raise an exception. Instead
-   it returns the error message. The function optionally takes a format string.
-   @param RetVal is the return value of a WinAPI function
-   @param ErrorCode is the error code returned by GetLastError
-   @param Error is the error message corresponding to the error code (only valid if result <> 0)
-   @param Format The Format string to use. It must have %d and %s in it, to
-                 change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
-                 %d is replaced by the error code and %s is replaced by the
-                 error message string.
-                 If no format string is given Error will just contain the
-                 Windows error message.
-   @Returns the error code }
+///<summary> Similar to SysUtils.Win32Check, but does not raise an exception. Instead
+///          it returns the error message. The function optionally takes a format string.
+///          @param RetVal is the return value of a WinAPI function
+///          @param ErrorCode is the error code returned by GetLastError
+///          @param Error is the error message corresponding to the error code (only valid if result <> 0)
+///          @param Format The Format string to use. It must have %d and %s in it, to
+///                        change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
+///                        %d is replaced by the error code and %s is replaced by the
+///                        error message string.
+///                        If no format string is given Error will just contain the
+///                        Windows error message.
+///                        NOTE: Do not pass a resource string or a string translated
+///                              using DxGetText to this function since this
+///                              would clear the GetLastError result.
+///          @Returns the error code </summary>
 function Win32CheckEx(_RetVal: BOOL; out _ErrorCode: DWORD; out _Error: string; const _Format: string = ''): BOOL;
 
-{: Same as VCL RaiseLastWin32Error but can specify a format.
-   This procedure does the same as the VCL RaiseLastWin32Error but you can
-   specify a format string to use. With this string you can provide some
-   additional information about where the error occured.
-   It calls GetLastError to get the result code of the last Win32 api function.
-   If it returns non 0 the function uses SysErrorMessage to retrieve an error
-   message for the error code and raises raises an EWin32Error exception
-   (to be compatible with the VCL function) with the Error message.
-   NOTE: Do not pass a resource string as format parameter, since loading this
-         string will reset the error code returned by GetLastError, so
-         you always get 0. Use the overloaded Version that takes the error code
-         as parameter and get it before using the resource string if you want that.
-   @param Format The Format string to use. It must have %d and %s in it, to
-                 change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
-                 %d is replaced by the error code and %s is replaced by the
-                 error message string. }
+///<summary> Same as VCL RaiseLastWin32Error but can specify a format.
+///          This procedure does the same as the VCL RaiseLastWin32Error but you can
+///          specify a format string to use. With this string you can provide some
+///          additional information about where the error occured.
+///          It calls GetLastError to get the result code of the last Win32 api function.
+///          If it returns non 0 the function uses SysErrorMessage to retrieve an error
+///          message for the error code and raises raises an EWin32Error exception
+///          (to be compatible with the VCL function) with the Error message.
+///          NOTE: Do not pass a resource string as format parameter, since loading this
+///                string will reset the error code returned by GetLastError, so
+///                you always get 0. Use the overloaded Version that takes the error code
+///                as parameter and get it before using the resource string if you want that.
+///          @param Format The Format string to use. It must have %d and %s in it, to
+///                        change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
+///                        %d is replaced by the error code and %s is replaced by the
+///                        error message string. </summary>
 procedure RaiseLastOsErrorEx(const _Format: string); overload;
 
-{: Same as VCL RaiseLastWin32Error but can specify a format.
-   This procedure does the same as the VCL RaiseLastWin32Error but you can
-   specify a format string to use. With this string you can provide some
-   additional information about where the error occured.
-   If it returns non 0 the function uses SysErrorMessage to retrieve an error
-   message for the error code and raises raises an EWin32Error exception
-   (to be compatible with the VCL function) with the Error message.
-   NOTE: If you pass a resource string as format parameter make sure you
-         call GetLastError before referencing the resource string, otherwise
-         loading the string will reset the error code returned by GetLastError, so
-         you always get 0.
-   @param ErrorCode is an error code returned from GetLastWin32Error
-   @param Format The Format string to use. It must have %d and %s in it, to
-                 change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
-                 %d is replaced by the error code and %s is replaced by the
-                 error message string. }
+///<summary> Same as VCL RaiseLastWin32Error but can specify a format.
+///          This procedure does the same as the VCL RaiseLastWin32Error but you can
+///          specify a format string to use. With this string you can provide some
+///          additional information about where the error occured.
+///          If it returns non 0 the function uses SysErrorMessage to retrieve an error
+///          message for the error code and raises raises an EWin32Error exception
+///          (to be compatible with the VCL function) with the Error message.
+///          NOTE: If you pass a resource string as format parameter make sure you
+///          call GetLastError before referencing the resource string, otherwise
+///          loading the string will reset the error code returned by GetLastError, so
+///          you always get 0.
+///          @param ErrorCode is an error code returned from GetLastWin32Error
+///          @param Format The Format string to use. It must have %d and %s in it, to
+///                        change the order, use %0:d and %1:s, e.g. 'Error %1:s (%0:d)'
+///                        %d is replaced by the error code and %s is replaced by the
+///                        error message string. </summary>
 procedure RaiseLastOsErrorEx(_ErrorCode: integer; _Format: string); overload;
 
-//{: Determines the greater of two integer values.
-//   @Returns the greater of A and B. }
-//function Max(_a, _b: integer): integer; overload;
-//
-//{: Determines the greater of two double values.
-//   @Returns the greater of A and B. }
-//function Max(_a, _b: double): double; overload;
-//
-//{: Determines the greater of two int64 values.
-//   @Returns the greater of A and B. }
-//function Max(_a, _b: int64): int64; overload;
-
-//{: Determines the lesser of two integer values.
-//   @Returns(the lesser of A and B.) }
-//
-//function Min(_a, _b: integer): integer; overload;
-//
-//{: Determines the lesser of two double values.
-//   @Returns(the lesser of A and B.) }
-//
-//function Min(_a, _b: double): double; overload;
-//
-//{: Determines the lesser of two int64 values.
-//   @Returns(the lesser of A and B.) }
-//
-//function Min(_a, _b: int64): int64; overload;
-
-{: Combines WriteLn with Format
-   @param(FormatStr string describing the format)
-   @param(Args constant array with the arguments) }
+///<summary> Combines WriteLn with Format
+///          @param FormatStr string describing the format
+///          @param Args constant array with the arguments </summary>
 procedure WriteFmtLn(const _FormatStr: string; _Args: array of const);
 
-{: splits a wildcard into its components: The path and the filemask
-   @param(Wildcard is a string specifying the wildcard)
-   @param(Path is a string returning the path part of the wildcard)
-   @param(Mask is a string returning the Mask part of the wildcard)
-   @returns(true, if the Path exists, false otherwise) }
+///<summary> splits a wildcard into its components: The path and the filemask
+///          @param Wildcard is a string specifying the wildcard
+///          @param Path is a string returning the path part of the wildcard
+///          @param Mask is a string returning the Mask part of the wildcard
+///          @returns true, if the Path exists, false otherwise </summary>
 function SplitWildcard(_Wildcard: string; out _Path, _Mask: string): boolean;
 
 {: returns the string's reference counter, pass a string by typecasting it
@@ -228,14 +199,14 @@ uses
 {$ENDIF}
   FileCtrl,
   StrUtils,
+  u_dzTranslator,
   u_dzStringUtils,
   u_dzConvertUtils;
 
-resourcestring
-  // Unbekannter Betriebssystem Fehler
-  STR_UNKNOWN_WIN32_ERROR = 'unknown OS error';
-  RS_UNKNOWN_REGISTRY_ROOT_KEY_X = 'unknown Registry Root Key %x';
-  RS_UNKNOWN_REGDATATYPE = 'unknown RegDataType';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 {$IFDEF debug}
 
@@ -271,28 +242,28 @@ end;
 function HKeyToString(_HKey: HKey): string;
 begin
   case _HKey of
-    HKEY_CLASSES_ROOT: result := 'HKEY_CLASSES_ROOT';
-    HKEY_CURRENT_USER: result := 'HKEY_CURRENT_USER';
-    HKEY_LOCAL_MACHINE: result := 'HKEY_LOCAL_MACHINE';
-    HKEY_USERS: result := 'HKEY_USERS';
-    HKEY_PERFORMANCE_DATA: result := 'HKEY_PERFORMANCE_DATA';
-    HKEY_CURRENT_CONFIG: result := 'HKEY_CURRENT_CONFIG';
-    HKEY_DYN_DATA: result := 'HKEY_DYN_DATA';
+    HKEY_CLASSES_ROOT: result := 'HKEY_CLASSES_ROOT'; // do not translate
+    HKEY_CURRENT_USER: result := 'HKEY_CURRENT_USER'; // do not translate
+    HKEY_LOCAL_MACHINE: result := 'HKEY_LOCAL_MACHINE'; // do not translate
+    HKEY_USERS: result := 'HKEY_USERS'; // do not translate
+    HKEY_PERFORMANCE_DATA: result := 'HKEY_PERFORMANCE_DATA'; // do not translate
+    HKEY_CURRENT_CONFIG: result := 'HKEY_CURRENT_CONFIG'; // do not translate
+    HKEY_DYN_DATA: result := 'HKEY_DYN_DATA'; // do not translate
   else
-    Result := Format(RS_UNKNOWN_REGISTRY_ROOT_KEY_X, [_HKey]);
+    Result := Format(_('unknown Registry Root Key %x'), [_HKey]);
   end;
 end;
 
 function RegDataTypeToString(_DataType: TRegDataType): string;
 begin
   case _DataType of
-    rdUnknown: Result := 'Unknown';
-    rdString: Result := 'String';
-    rdExpandString: Result := 'ExpandString';
-    rdInteger: Result := 'Integer';
-    rdBinary: Result := 'Binary';
+    rdUnknown: Result := 'Unknown'; // do not translate
+    rdString: Result := 'String'; // do not translate
+    rdExpandString: Result := 'ExpandString'; // do not translate
+    rdInteger: Result := 'Integer'; // do not translate
+    rdBinary: Result := 'Binary'; // do not translate
   else
-    Result := RS_UNKNOWN_REGDATATYPE;
+    Result := _('unknown RegDataType');
   end;
 end;
 
@@ -321,7 +292,7 @@ begin
   if _ErrorCode <> ERROR_SUCCESS then
     Error := EOSError.CreateFmt(_Format, [_ErrorCode, SysErrorMessage(_ErrorCode)])
   else
-    Error := EOsError.CreateFmt(_Format, [_ErrorCode, STR_UNKNOWN_WIN32_ERROR]);
+    Error := EOsError.CreateFmt(_Format, [_ErrorCode, _('unknown OS error')]);
   Error.ErrorCode := _ErrorCode;
   raise Error;
 end;
@@ -339,7 +310,7 @@ begin
   if Result <> ERROR_SUCCESS then
     s := SysErrorMessage(Result)
   else
-    s := STR_UNKNOWN_WIN32_ERROR;
+    s := _('unknown OS error');
   if _Format <> '' then
     try
       _Error := Format(_Format, [Result, s])
@@ -356,60 +327,6 @@ begin
   if not Result then
     _ErrorCode := GetLastOsError(_Error, _Format);
 end;
-
-// Irgendwie doof, dass man das dreimal implementieren muss, nur weil der
-// Typ verschieden ist. Habe ich mal erwaehnt, dass C macros doch ganz nett
-// sein koennen? ;-)
-
-//function Max(_a, _b: integer): integer;
-//begin
-//  if _a > _b then
-//    Result := _a
-//  else
-//    Result := _b;
-//end;
-//
-//function Max(_a, _b: double): double;
-//begin
-//  if _a > _b then
-//    Result := _a
-//  else
-//    Result := _b;
-//end;
-//
-//function Max(_a, _b: int64): int64;
-//begin
-//  if _a > _b then
-//    Result := _a
-//  else
-//    Result := _b;
-//end;
-
-// und jetzt dasselbe nochmal fuer Min ...
-
-//function Min(_a, _b: integer): integer;
-//begin
-//  if _a < _b then
-//    Result := _a
-//  else
-//    Result := _b;
-//end;
-//
-//function Min(_a, _b: double): double;
-//begin
-//  if _a < _b then
-//    Result := _a
-//  else
-//    Result := _b;
-//end;
-//
-//function Min(_a, _b: int64): int64;
-//begin
-//  if _a < _b then
-//    Result := _a
-//  else
-//    Result := _b;
-//end;
 
 procedure WriteFmtLn(const _FormatStr: string; _Args: array of const);
 begin
@@ -441,7 +358,7 @@ begin
         _Path := LeftStr(_Wildcard, i - 1);
         Result := DirectoryExists(_Path);
       end else begin
-              // there was no mask and the whole thing is a directory
+        // there was no mask and the whole thing is a directory
         Result := true;
         _Path := _Wildcard;
         _Mask := '';
@@ -461,7 +378,7 @@ begin
     _Mask := _Wildcard;
     Result := true;
   end else begin
-      // otherwise it is a subdirectory
+    // otherwise it is a subdirectory
     _Path := _Wildcard;
     _Mask := '';
     Result := true;
@@ -500,7 +417,7 @@ begin
     Result := _IfFalse;
 end;
 
-function HexDumpString(const _s: string): string;
+function HexDumpString(const _s: ansistring): string;
 var
   i: integer;
 begin
