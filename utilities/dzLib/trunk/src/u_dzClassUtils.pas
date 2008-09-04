@@ -54,7 +54,7 @@ procedure TStrings_DeleteAndFreeObject(_Strings: TStrings; _Idx: integer);
 procedure TList_FreeWithItems(var _List: TList); deprecated; // use contnrs.TObjectList
 
 /// <summary>
-// Write a string to the stream
+/// Write a string to the stream
 /// @param Stream is the TStream to write to.
 /// @param s is the string to write
 /// @returns the number of bytes written.
@@ -62,7 +62,7 @@ procedure TList_FreeWithItems(var _List: TList); deprecated; // use contnrs.TObj
 function TStream_WriteString(_Stream: TStream; const _s: string): integer;
 
 /// <summary>
-// Write a ShortString to the stream as binary, that is the length byte followed by len content bytes
+/// Write a ShortString to the stream as binary, that is the length byte followed by len content bytes
 /// @param Stream is the TStream to write to.
 /// @param s is the string to write
 /// @returns the number of bytes written.
@@ -70,7 +70,7 @@ function TStream_WriteString(_Stream: TStream; const _s: string): integer;
 function TStream_WriteShortStringBinary(_Stream: TStream; const _s: ShortString): integer;
 
 /// <summary>
-// Reads a ShortString as written by TStream_WriteShortStringBinary
+/// Reads a ShortString as written by TStream_WriteShortStringBinary
 /// @param Stream is the TStream to write to.
 /// @returns the string read
 /// </summary>
@@ -144,10 +144,13 @@ implementation
 
 uses
   StrUtils,
+  u_dzTranslator,
   u_dzStringUtils;
 
-resourcestring
-  RS_NO_MATCHING_OBJECT_FOUND = 'no matching object found';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 procedure TList_FreeWithItems(var _List: TList);
 var
@@ -302,7 +305,7 @@ function TStrings_StringByObj(_Strings: TStrings; _Obj: pointer; _RaiseException
 begin
   if not TStrings_TryStringByObj(_Strings, _Obj, Result) then begin
     if _RaiseException then
-      raise EObjectNotFound.Create(RS_NO_MATCHING_OBJECT_FOUND);
+      raise EObjectNotFound.Create(_('no matching object found'));
     Result := '';
   end;
 end;
