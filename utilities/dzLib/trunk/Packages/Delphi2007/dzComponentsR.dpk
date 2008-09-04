@@ -27,6 +27,7 @@ package dzComponentsR;
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
 {$DEFINE no_translation}
+{$DEFINE NO_TRANSLATION_HINT}
 
 requires
   rtl,

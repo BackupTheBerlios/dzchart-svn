@@ -1,7 +1,7 @@
 {.GXFormatter.config=twm}
-{: Implements a bunch of commonly used string functions. This is a copy of
-   TwmString adapted to Delphi.
-   @author   twm }
+///<summary> Implements a bunch of commonly used string functions. This started out
+///          as a copy of my Virtual Pascal Unit TwmString adapted to Delphi.
+///          @author   twm </summary>
 unit u_dzStringUtils;
 
 {$I jedi.inc}
@@ -15,25 +15,24 @@ uses
   SysUtils;
 
 type
-  {: Ancestor of all exceptions raised in u_dzStringUtils }
+///<summary> Ancestor of all exceptions raised in u_dzStringUtils </summary>
   EStringfunc = class(Exception);
-  {: Raised by NthWord if the word index is out of range (1..word count)}
+///<summary> Raised by NthWord if the word index is out of range (1..word count) </summary>
   EWordIndexOutOfRange = class(EStringfunc);
-  {: Raised by CenterStr if the given string ist too long. }
+///<summary> Raised by CenterStr if the given string ist too long. </summary>
   EStringTooLong = class(EStringfunc);
-  {: Raised by NthCharOf if passed a char index of 0. }
+///<summary> Raised by NthCharOf if passed a char index of 0. </summary>
   ECharIndexOutOfRange = class(EStringfunc);
 
 type
-  {: Do I really need to comment this? }
   TCharSet = set of char;
 
 const
-  {: Characters that are usually used as word delimiters.
-     This can be passed when a function takes a TCharSet of delimiters.
-     warning: These might not be complete. }
+  ///<summary> Characters that are usually used as word delimiters.
+  ///          This can be passed when a function takes a TCharSet of delimiters.
+  ///          warning: These might not be complete. </summary>
   STANDARD_DELIMITERS = [chr(0)..chr(255)] - ['a'..'z', 'A'..'Z',
-    '0'..'9', 'ö', 'Ö', 'ä', 'Ä', 'ü', 'Ü', 'ß'];
+    '0'..'9', 'ä', 'Ä', 'ö', 'Ö', 'ü', 'Ü', 'ß'];
   STANDARD_CONTROL_CHARS = [#0..' '];
 
 /// <summary>
@@ -151,7 +150,7 @@ function ForceExtension(const _Name, _Ext: string): string;
 {: Returns only the filename (incl. extension) portion of Name. }
 function JustFilename(const _Name: string): string;
 /// <summary>
-/// function is deprecated (because it did a different thing than the name said)
+/// function is deprecated (because it did a different thing but what the name said)
 /// use RemoveSuffixIfMatching instead
 /// </summary>
 function RemoveFileExtIfMatching(const _s, _Suffix: string): string; deprecated;
@@ -164,105 +163,105 @@ function RemoveFileExtIfMatching(const _s, _Suffix: string): string; deprecated;
 /// </summary>
 function RemoveSuffixIfMatching(const _s, _Suffix: string): string;
 
-{: Appends spaces to the string S to bring it to the given length. If S is
-   too long it is truncated, thus the result is guaranteed to be Len characters
-   long. }
+///<summary> Appends spaces to the string S to bring it to the given length. If S is
+///          too long it is truncated, thus the result is guaranteed to be Len characters
+///          long. </summary>
 function RPadStr(const _s: string; _Len: integer): string;
-{: Prepends spaces to the string S to bring it to the given length. If S is
-   too long it is truncated, thus the result is guaranteed to be Len characters
-   long. }
+///<summary> Prepends spaces to the string S to bring it to the given length. If S is
+///          too long it is truncated, thus the result is guaranteed to be Len characters
+///          long. </summary>
 function LPadStr(const _s: string; _Len: integer): string;
 
-{: Returns true, if SubStr is found in Str and sets Head to the text before
-   and Tail to the text after SubStr. Otherwise Head and Tail are undefined. }
+///<summary> Returns true, if SubStr is found in Str and sets Head to the text before
+///          and Tail to the text after SubStr. Otherwise Head and Tail are undefined. </summary>
 function FindString(const _Substr, _Str: string; var _Head, _Tail: string): boolean;
 
-{: Returns the rightmost position of Sub in S or 0 if Sub is not found in S. }
+///<summary> Returns the rightmost position of Sub in S or 0 if Sub is not found in S. </summary>
 function RPosStr(_Sub, _s: string): integer;
 
-{: Converts a PChar to as Pascal string. }
+///<summary> Converts a PChar to as Pascal string. Treats NIL as an empty string. </summary>
 function Str2Pas(_p: PChar): string;
-{: Allocates a new PChar and sets it to the contents of S, the length is set
-   exactly to the length of S. }
+///<summary> Allocates a new PChar and sets it to the contents of S, the length is set
+///          exactly to the length of S. </summary>
 function StrPNew(_s: string): PChar;
-{: Returns a pointer to a temporary string containing S. Warning: This uses a
-   global constant for ShortStrings respectively just typecasts AnsiStrings
-   to PChar. Use with care! }
-function Pas2Str(var _s: string): PChar;
+///<summary> Returns a pointer to a temporary string containing S. Warning: This uses a
+///          global constant for ShortStrings respectively just typecasts AnsiStrings
+///          to PChar. Use with care! </summary>
+function Pas2Str(var _s: string): PChar; deprecated; // just typecast AnsiStrings to PChar
 
-{: Reads a line from the file F and returns it as PChar. P is allocated to
-   the correct length. }
+///<summary> Reads a line from the file F and returns it as PChar. P is allocated to
+///          the correct length. </summary>
 procedure StrReadLn(var _f: file; _p: PChar);
-{: Reads a 0-terminated string from file F and returns it as PChar. P is
-   allocated to the correct length. }
+///<summary> Reads a 0-terminated string from file F and returns it as PChar. P is
+///          allocated to the correct length. </summary>
 procedure StrReadZ(var _f: file; _p: PChar);
 
-{: Returns true if Searched starts with the string Match. }
+///</summary> Returns true if Searched starts with the string Match. </summary>
 function MatchStr(const _Searched, _Match: string): boolean;
-{: Returns true if Searched starts with the string Match ignoring case. }
+///<summary> Returns true if Searched starts with the string Match ignoring case. </summary>
 function UMatchStr(const _Searched, _Match: string): boolean;
 
-{: Creates a string of the form '...end of the string' with a maximum length. }
+///<summary> Creates a string of the form '...end of the string' with a maximum length. </summary>
 function LDotDotStr(const _s: string; _MaxLen: integer): string;
-{: Creates a string of the form 'Start of string...' with a maximum length. }
+///<summary> Creates a string of the form 'Start of string...' with a maximum length. </summary>
 function RDotDotStr(const _s: string; _MaxLen: integer): string;
-{: Centers the given string, that is right and left pads it with spaces to
-   MaxLenght characters. }
+///<summary> Centers the given string, that is right and left pads it with spaces to
+///          MaxLenght characters. </summary>
 function CenterStr(const _s: string; _MaxLen: integer): string;
 
 function TailStr(const _s: string; _Start: integer): string;
-{: cuts off the rightmost part of a string }
+///<summary> cuts off the rightmost part of a string </summary>
 function StrCutRight(const _s: string; _CutLen: integer): string;
 
-{: Returns part of S left of C (or all of it if it does not contain C) }
+///<summary> Returns part of S left of C (or all of it if it does not contain C) </summary>
 function LeftStrOf(const _s: string; _c: char): string;
-{: Returns part of S right of the last C (or all of it if it does not contain C) }
+///<summary> Returns part of S right of the last C (or all of it if it does not contain C) </summary>
 function RightStrOf(const _s: string; _c: char): string;
-{: Returns part of S right of the last C (or all of it if it does not contain C) }
+///<summary> Returns part of S right of the first C (or all of it if it does not contain C) </summary>
 function TailStrOf(const _s: string; _c: char): string;
 
-{: Returns the next postion of SubStr in S starting from Start. Start is
-   1 based. Returns 0 if SubStr was not found.
-   Note: Function is deprecated, use StrUtils.PosEx instead! }
+///<summary> Returns the next postion of SubStr in S starting from Start. Start is
+///          1 based. Returns 0 if SubStr was not found.
+///          Note: Function is deprecated, use StrUtils.PosEx instead! </summary>
 function PosStr(const _SubStr, _s: string; _Start: integer): integer; deprecated;
 
-{: Replaces all occurences of characters in Search in S with the corresponding
-   character in Replace. }
+///<summary> Replaces all occurences of characters in Search in S with the corresponding
+///          character in Replace. </summary>
 function ReplaceChars(const _s, _Search, _Replace: string): string;
 
-{: Replaces all control characters (ord(c) < ord(' ')) with ReplaceChar.
-   If RemoveDuplicates is true, a sequence of control characters is replaced
-   by a single ReplaceChar. }
+///<summary> Replaces all control characters (ord(c) < ord(' ')) with ReplaceChar.
+///          If RemoveDuplicates is true, a sequence of control characters is replaced
+///          by a single ReplaceChar. </summary>
 function ReplaceCtrlChars(const _s: string; _ReplaceChar: char; _RemoveDuplicates: boolean = true): string;
 
-{: Replaces all control characters (ord(c) < ord(' ')) with Spaces.
-   If RemoveDuplicates is true, a sequence of control characters is replaced
-   by a single space. }
+///<summary> Replaces all control characters (ord(c) < ord(' ')) with Spaces.
+///          If RemoveDuplicates is true, a sequence of control characters is replaced
+///          by a single space. </summary>
 function CtrlcharsToSpace(const _s: string; _RemoveDuplicates: boolean = true): string;
 
 ///<summary> Checks whether a string contains only given chars </summary>
 function ContainsOnlyCharsFrom(const _s: string; _ValidChars: TCharSet): boolean;
 
-{: Replaces all control characters (ord(c) <= ord(' '), " and ') with Prefix<hexcode> }
+///<summary> Replaces all control characters (ord(c) <= ord(' '), " and ') with Prefix<hexcode> </summary>
 function HexEncodeControlChars(_Prefix: char; const _s: string; _ControlChars: TCharSet = STANDARD_CONTROL_CHARS): string;
 function HexDecodeControlChars(const _Prefix: char; const _s: string): string;
 
-{: Replaces all control characters (ord(c) <= ord(' '), " and ') with %<hexcode> }
+///<summary> Replaces all control characters (ord(c) <= ord(' '), " and ') with %<hexcode> </summary>
 function UrlEncodeControlChars(const _s: string; _ControlChars: TCharSet = STANDARD_CONTROL_CHARS): string;
 function UrlDecodeControlChars(const _s: string): string;
 
-{: Returns the WordNo'th word, (counting from 1), using the given Delimiters.
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect) }
+///<summary> Returns the WordNo'th word, (counting from 1), using the given Delimiters.
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///         into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///         (which you might not expect) </summary>
 function nthWord(const _s: string; _WordNo: integer; const _Delimiter: string): string; overload;
-{: Returns the WordNo'th word, (counting from 1), using the given Delimiters.
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect) }
+///<summary> Returns the WordNo'th word, (counting from 1), using the given Delimiters.
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///          (which you might not expect) </summary>
 function nthWord(const _s: string; _WordNo: integer; _Delimiter: TCharSet): string; overload;
 
-{: Returns the Nth character of S or ' ' if S has less than N charaters. }
+///<summary> Returns the Nth character of S or ' ' if S has less than N charaters. </summary>
 function nthCharOf(const _s: string; _n: integer): Char;
 
 ///<summary> Extract the first word of S using the given delimiters. The word is deleted
@@ -292,20 +291,20 @@ function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWo
 ///          @returns true, if a word could be extracted, false otherwise </summary>
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet; out _FirstWord: string): boolean; overload;
 
-{: extracts the first N characters of a string }
+///<summary> extracts the first N characters of a string </summary>
 function ExtractFirstN(var _s: string; _N: integer): string;
 
-{: Split string s into the list of substrings delimited by delimter
-   NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
-   into two words (which you would expect), but also 'abc'#9#9'def' is two words
-   (which you might not expect)
-   @param sl is the stringlist in which to return the result
-   @param s is the string to split
-   @param Delimiter is a string containing all delimiter characters
-   @returns the sl parameter }
+///<summary> Split string s into the list of substrings delimited by delimter
+///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
+///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
+///          (which you might not expect)
+///          @param sl is the stringlist in which to return the result
+///          @param s is the string to split
+///          @param Delimiter is a string containing all delimiter characters
+///          @returns the sl parameter </summary>
 function SplitString(_sl: TStrings; _s: string; const _Delimiter: string): TStrings;
 
-{: Converts Tab characters into SpcCount spaces }
+///<summary> Converts Tab characters into SpcCount spaces </summary>
 function Tab2Spaces(const _s: string; _SpcCount: integer): string;
 function StartsWith(const _Start, _s: string): boolean;
 function EndsWith(const _End, _s: string): boolean;
@@ -315,47 +314,47 @@ function UEndsWith(const _End, _s: string): boolean;
 
 function UnquoteString(const _s: string; _Quote: char = '"'): string;
 
-{: returns the string, if it isn't NIL or 'NULL' if it is. }
+///<summary> returns the string, if it isn't NIL or 'NULL' if it is. </summary>
 function StringOrNull(_P: PChar): string;
 
-{: returns the default locale settings as read from the system's regional settings }
+///<summary> returns the default locale settings as read from the system's regional settings </summary>
 function GetUserDefaultLocaleSettings: TFormatSettings;
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 
 type
-  {: Helper class for building a text line }
+  ///<summary> Helper class for building a text line </summary>
   TLineBuilder = class
   private
     FListSeparator: string;
     FContent: string;
     FFormatSettings: TFormatSettings;
   public
-    {: Creates a TLineBuilder instance with the given separator
-       @param ListSeparator is the separator string to use, defaults to TAB (#9)
-       @param DecimalSeparator is the decimal separator to use for floating point
-              values, defaults to a dot (.). }
+    ///<summary> Creates a TLineBuilder instance with the given separator
+    ///          @param ListSeparator is the separator string to use, defaults to TAB (#9)
+    ///          @param DecimalSeparator is the decimal separator to use for floating point
+    ///                                  values, defaults to a dot (.). </summary>
     constructor Create(const _ListSeparator: string = #9; const _DecimalSeparator: char = '.');
-    {: Assigns the contents of another TLineBuilder instance }
+    ///<summary> Assigns the contents of another TLineBuilder instance </summary>
     procedure Assign(_Source: TLineBuilder);
-    {: Adds a string column }
+    ///<summary> Adds a string column </summary>
     procedure Add(const _Column: string); overload;
-    {: Adds an integer value column }
+    ///<summary> Adds an integer value column </summary>
     procedure Add(_IntValue: integer); overload;
-    {: Adds a floating point value column with the given number of decimals }
+    ///<summary> Adds a floating point value column with the given number of decimals </summary>
     procedure Add(_FloatValue: extended; _Decimals: integer); overload;
-    {: Adds a column with a time in hh:mm:ss format }
+    ///<summary> Adds a column with a time in hh:mm:ss format </summary>
     procedure Add(_Hours, _Minutes, _Seconds: integer); overload;
-    {: Adds a boolean column, with 'Y' for true and 'N' for false }
+    ///<summary> Adds a boolean column, with 'Y' for true and 'N' for false </summary>
     procedure Add(_b: Boolean); overload;
-    {: Clears the line }
+    ///<summary> Clears the line </summary>
     procedure Clear;
-    {: Appends the contents of the given line }
+    ///<summary> Appends the contents of the given line </summary>
     procedure Append(_Line: TLineBuilder);
-    {: Prepends the contents of the given line }
+    ///<summary> Prepends the contents of the given line </summary>
     procedure Prepend(_Line: TLineBuilder);
-    {: Extracts the first column from the line, returns false when empty }
+    ///<summary> Extracts the first column from the line, returns false when empty </summary>
     function ExtractFirst(out _Column: string): boolean;
-    {: allows read access to the content that has been built }
+    ///<summary> allows read access to the content that has been built </summary>
     property Content: string read FContent;
     property DecimalSeparator: char read FFormatSettings.DecimalSeparator write FFormatSettings.DecimalSeparator default '.';
     property ListSeparator: string read FListSeparator write FListSeparator;
@@ -364,17 +363,13 @@ type
 implementation
 
 uses
-  u_dzConvertUtils;
+  u_dzConvertUtils,
+  u_dzTranslator;
 
-resourcestring
-  // nthWord: Nulltes Wort nicht verfügbar
-  STR_NO_0TH_WORD = 'nthWord: 0th word not available';
-
-  // Zu zentrierender String ist länger als die Maximallänge und kann nicht zentriert werden.
-  STR_STRING_TOO_LONG_TO_CENTER = 'Cannot center string that is larger than the maximum length.';
-
-  // Strings haben kein nulltes Zeichen.
-  STR_CHAR_INDEX_OUT_OF_RANGE = 'Strings do not have a 0th character.';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 function ForceExtension(const _Name, _Ext: string): string;
 var
@@ -417,7 +412,7 @@ var
   i: integer;
 begin
   if _WordNo = 0 then
-    raise EWordIndexOutOfRange.Create(STR_NO_0TH_WORD);
+    raise EWordIndexOutOfRange.Create(_('nthWord: 0th word not available'));
   _Start := 0;
   _Ende := 0;
   i := 1;
@@ -885,7 +880,7 @@ var
   l: integer;
 begin
   if Length(_s) > _MaxLen then
-    raise EStringTooLong.Create(STR_STRING_TOO_LONG_TO_CENTER);
+    raise EStringTooLong.Create(_('Cannot center string that is larger than the maximum length.'));
   l := (_MaxLen - Length(_s)) div 2;
   Result := SpaceStr(l) + _s + SpaceStr(l);
   if Odd(Length(_s)) then
@@ -974,7 +969,7 @@ end;
 function NthCharOf(const _s: string; _n: integer): Char;
 begin
   if _n = 0 then
-    raise ECharIndexOutOfRange.Create(STR_CHAR_INDEX_OUT_OF_RANGE);
+    raise ECharIndexOutOfRange.Create(_('Strings do not have a 0th character.'));
   if _n <= Length(_s) then
     Result := _s[_n]
   else

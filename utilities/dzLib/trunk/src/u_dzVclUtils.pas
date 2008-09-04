@@ -467,7 +467,7 @@ type
   TGridHack = class(TCustomGrid);
   TDbGridHack = class(TCustomDbGrid);
 
-function _(const _s: string): string;
+function _(const _s: string): string; inline;
 begin
   Result := u_dzTranslator.DGetText(_s, 'dzlib');
 end;

@@ -327,26 +327,13 @@ uses
   Windows,
   DateUtils,
   StrUtils,
+  u_dzTranslator,
   u_dzStringUtils;
 
-resourcestring
-  // "%s" ist kein gültiger Fließkomma Wert: %s
-  STR_X_IS_NOT_A_VALID_FLOAT_VALUE_SS = '"%s" is not a valid floating point value: %s';
-  // "%s" ist kein gültiger %s Wert: %s
-  STR_X_IS_NOT_A_VALID_Y_VALUE_SSS = '"%s" is not a valid %s value: %s';
-  RS_DIGIT_OUT_OF_RANGE_S = 'Digit out of range %s';
-  RS_DIGIT_OUT_OF_RANGE_DS = 'Digit #%d (%s) out of range';
-  RS_EXIBYTE_F = '%.2f EiB';
-  RS_PEBIBYTE_F = '%.2f PiB';
-  RS_TEBIBYTE_F = '%.2f TiB';
-  RS_GIBIBYTE_F = '%.2f GiB';
-  RS_MEBIBYTE_F = '%.2f MiB';
-  RS_KIBIBYTE_F = '%.2f KiB';
-  RS_BYTES_D = '%d Bytes';
-  RS_DAYS_HOURS_DD = '%dd %dh';
-  RS_HOURS_MINUTES_DD = '%dh %dm';
-  RS_MINUTES_SECONDS_DD = '%dm %ds';
-  RS_SECONDS_D = '%ds';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 function isDigit(_a: char; _Base: TBaseN): boolean;
 begin
@@ -377,7 +364,7 @@ function Digit2Long(_a: char; _Base: TBaseN): LongInt;
 begin
   Result := Pos(UpCase(_a), LeftStr(DIGIT_CHARS, _Base));
   if Result = 0 then
-    raise EDigitOutOfRange.CreateFmt(RS_DIGIT_OUT_OF_RANGE_S, [_a]);
+    raise EDigitOutOfRange.CreateFmt(_('Digit out of range %s'), [_a]);
   Dec(Result);
 end;
 
@@ -390,7 +377,7 @@ begin
     if isDigit(_s[i], _Base) then
       Result := (Result * _Base + ULong(Pos(UpCase(_s[i]), DIGIT_CHARS)) - 1)
     else
-      raise EDigitOutOfRange.CreateFmt(RS_DIGIT_OUT_OF_RANGE_DS, [i, _s[i]]);
+      raise EDigitOutOfRange.CreateFmt(_('Digit #%d (%s) out of range'), [i, _s[i]]);
 end;
 
 function Long2Num(_l: ULong; _Base: byte): string;
@@ -592,7 +579,7 @@ var
 begin
   Val(_s, Result, e);
   if e <> 0 then
-    raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_Y_VALUE_SSS, [_s, 'Integer', _Source]);
+    raise EStringConvertError.CreateFmt(_('"%s" is not a valid integer value: %s'), [_s, _Source]);
 end;
 
 function Str2Int64(_s: string; _Default: Int64): Int64;
@@ -610,7 +597,7 @@ var
 begin
   Val(_s, Result, e);
   if e <> 0 then
-    raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_Y_VALUE_SSS, [_s, 'Int64', _Source]);
+    raise EStringConvertError.CreateFmt(_('"%s" is not a valid Int64 value: %s'), [_s, _Source]);
 end;
 
 function GuessDecimalSeparator(const _s: string): char;
@@ -681,41 +668,41 @@ end;
 function Str2Float(_s: string; const _Source: string; _DecSeparator: char = '.'): extended;
 begin
   if not TryStr2Float(_s, Result, _DecSeparator) then
-    raise EStringConvertError.CreateFmt(STR_X_IS_NOT_A_VALID_FLOAT_VALUE_SS, [_s, _Source]);
+    raise EStringConvertError.CreateFmt(_('"%s" is not a valid floating point value: %s'), [_s, _Source]);
 end;
 
 function FileSizeToHumanReadableString(_FileSize: Int64): string;
 begin
   if _FileSize > 5 * OneExbiByte then
-    Result := Format(RS_EXIBYTE_F, [_FileSize / OneExbiByte])
+    Result := Format(_('%.2f EiB'), [_FileSize / OneExbiByte])
   else if _FileSize > 5 * OnePebiByte then
-    Result := Format(RS_PEBIBYTE_F, [_FileSize / OnePebiByte])
+    Result := Format(_('%.2f PiB'), [_FileSize / OnePebiByte])
   else if _FileSize > 5 * OneTebiByte then
-    Result := Format(RS_TEBIBYTE_F, [_FileSize / OneTebiByte])
+    Result := Format(_('%.2f TiB'), [_FileSize / OneTebiByte])
   else if _FileSize > 5 * OneGibiByte then
-    Result := Format(RS_GIBIBYTE_F, [_FileSize / OneGibiByte])
+    Result := Format(_('%.2f GiB'), [_FileSize / OneGibiByte])
   else if _FileSize > 5 * OneMebiByte then
-    Result := Format(RS_MEBIBYTE_F, [_FileSize / OneMebiByte])
+    Result := Format(_('%.2f MiB'), [_FileSize / OneMebiByte])
   else if _FileSize > 5 * OneKibiByte then
-    Result := Format(RS_KIBIBYTE_F, [_FileSize / OneKibiByte])
+    Result := Format(_('%.2f KiB'), [_FileSize / OneKibiByte])
   else
-    Result := Format(RS_BYTES_D, [_FileSize]);
+    Result := Format(_('%d Bytes'), [_FileSize]);
 end;
 
 function SecondsToHumanReadableString(_Seconds: Int64): string;
 begin
   if _Seconds > SecondsPerDay then
     // Days and hours, ignore minutes and seconds
-    Result := Format(RS_DAYS_HOURS_DD, [_Seconds div SecondsPerDay, (_Seconds div SecondsPerHour) mod HoursPerDay])
+    Result := Format(_('%dd %dh'), [_Seconds div SecondsPerDay, (_Seconds div SecondsPerHour) mod HoursPerDay])
   else if _Seconds > Round(1.5 * SecondsPerHour) then
     // Hours and minutes, ignore seconds
-    Result := Format(RS_HOURS_MINUTES_DD, [_Seconds div SecondsPerHour, (_Seconds div SecondsPerMinute) mod MinutesPerHour])
+    Result := Format(_('%dh %dm'), [_Seconds div SecondsPerHour, (_Seconds div SecondsPerMinute) mod MinutesPerHour])
   else if _Seconds > Round(1.5 * SecondsPerMinute) then
     // Minutes and seconds
-    Result := Format(RS_MINUTES_SECONDS_DD, [_Seconds div SecondsPerMinute, _Seconds mod SecondsPerMinute])
+    Result := Format(_('%dm %ds'), [_Seconds div SecondsPerMinute, _Seconds mod SecondsPerMinute])
   else
     // Seconds only
-    Result := Format(RS_SECONDS_D, [_Seconds]);
+    Result := Format(_('%ds'), [_Seconds]);
 end;
 
 function GetSystemDefaultLocaleSettings: TFormatSettings;
