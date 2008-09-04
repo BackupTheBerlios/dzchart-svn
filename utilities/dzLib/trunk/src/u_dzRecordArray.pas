@@ -8,6 +8,7 @@ uses
   Classes;
 
 type
+  ///<summary> a class emulating a generic array of records </summary>
   TRecordArray = class
   private
     FData: array of byte;
@@ -32,10 +33,8 @@ type
 implementation
 
 uses
-  RTLConsts;
-
-resourcestring
-  RS_NEW_CAPACITY_CANNOT_BE_LESS_THAN_CURRENT_LENGTH = 'New capacity cannot be less than current length.';
+  RTLConsts,
+  u_dzTranslator;
 
 { TRecordArray }
 
@@ -65,7 +64,7 @@ begin
   NewArraySize := _NewCapacity * FRecordSize;
   if System.Length(FData) <> NewArraySize then begin
     if _NewCapacity < FLength then
-      raise Exception.Create(RS_NEW_CAPACITY_CANNOT_BE_LESS_THAN_CURRENT_LENGTH);
+      raise Exception.Create(_('New capacity cannot be less than current length.'));
     System.SetLength(FData, NewArraySize);
   end;
 end;

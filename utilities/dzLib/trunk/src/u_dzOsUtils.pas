@@ -147,7 +147,7 @@ begin
   end;
   if Res = 0 then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, _('Error %1:s (%0:d)'));
+    RaiseLastOsErrorEx(LastError, _('Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings'));
   end;
   SetLength(Result, Res - 1);
 end;

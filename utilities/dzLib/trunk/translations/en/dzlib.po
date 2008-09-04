@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2008-09-04 04:10\n"
-"PO-Revision-Date: 2008-09-04 04:11-0800\n"
+"POT-Creation-Date: 2008-09-04 05:40\n"
+"PO-Revision-Date: 2008-09-04 05:41-0800\n"
 "Last-Translator: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
@@ -255,25 +255,21 @@ msgstr "StdErr was not redirected"
 msgid "StdOut was not redirected"
 msgstr "StdOut was not redirected"
 
-#. Programmer's name for it: STR_CANNOT_CHANGE_FILENAME_OF_OPEN_FILE
-#: u_dzFileStreams.pas:198
-msgid "Cannot change filename when file is open."
-msgstr "Cannot change filename when file is open."
+#: u_dzFileStreams.pas:259
+msgid "%1:s (%0:d)"
+msgstr "%1:s (%0:d)"
 
-#. Programmer's name for it: STR_INVALID_FILE_FLAGS
-#: u_dzFileStreams.pas:199
-msgid "Invalid file flags"
-msgstr "Invalid file flags"
-
-#. Programmer's name for it: STR_INVALID_FILE_ATTRIBUTES
-#: u_dzFileStreams.pas:200
+#: u_dzFileStreams.pas:307
 msgid "Invalid file attributes"
 msgstr "Invalid file attributes"
 
-#. Programmer's name for it: STR_0S_ERROR_SD
-#: u_dzFileStreams.pas:201
-msgid "%1:s (%0:d)"
-msgstr "%1:s (%0:d)"
+#: u_dzFileStreams.pas:319
+msgid "Invalid file flags"
+msgstr "Invalid file flags"
+
+#: u_dzFileStreams.pas:338
+msgid "Cannot change filename when file is open."
+msgstr "Cannot change filename when file is open."
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
 #: u_dzFileUtils.pas:834
@@ -352,21 +348,19 @@ msgstr "\"%s\" does not exist or is not a directory"
 msgid "Combination of ResultContainsNumber and KeepOriginal is not allowed"
 msgstr "Combination of ResultContainsNumber and KeepOriginal is not allowed"
 
-#. Unbekannter Betriebssystem Fehler
-#. Programmer's name for it: STR_UNKNOWN_WIN32_ERROR
-#: u_dzMiscUtils.pas:236
-msgid "unknown OS error"
-msgstr "unknown OS error"
-
-#. Programmer's name for it: RS_UNKNOWN_REGISTRY_ROOT_KEY_X
-#: u_dzMiscUtils.pas:237
+#. do not translate
+#: u_dzMiscUtils.pas:253
 msgid "unknown Registry Root Key %x"
 msgstr "unknown Registry Root Key %x"
 
-#. Programmer's name for it: RS_UNKNOWN_REGDATATYPE
-#: u_dzMiscUtils.pas:238
+#. do not translate
+#: u_dzMiscUtils.pas:266
 msgid "unknown RegDataType"
 msgstr "unknown RegDataType"
+
+#: u_dzMiscUtils.pas:295
+msgid "unknown OS error"
+msgstr "unknown OS error"
 
 #: u_dzOsUtils.pas:130
 msgid "%s (code %d) calling Windows.GetUsername"
@@ -374,15 +368,14 @@ msgstr "%s (code %d) calling Windows.GetUsername"
 
 #. 16 KB should be enough for everybody... ;-)
 #: u_dzOsUtils.pas:150
-msgid "Error %1:s (%0:d)"
-msgstr "Error %1:s (%0:d)"
+msgid "Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings"
+msgstr "Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings"
 
 #: u_dzOsUtils.pas:308
 msgid "No version information available for %s"
 msgstr "No version information available for %s"
 
-#. Programmer's name for it: RS_NEW_CAPACITY_CANNOT_BE_LESS_THAN_CURRENT_LENGTH
-#: u_dzRecordArray.pas:38
+#: u_dzRecordArray.pas:67
 msgid "New capacity cannot be less than current length."
 msgstr "New capacity cannot be less than current length."
 
@@ -577,6 +570,8 @@ msgstr "&Finish"
 msgid "Already on first page."
 msgstr "Already on first page."
 
+#~ msgid "Error %1:s (%0:d)"
+#~ msgstr "Error %1:s (%0:d)"
 #~ msgid "Buffer is full"
 #~ msgstr "Buffer is full"
 #~ msgid "Buffer is empty"
