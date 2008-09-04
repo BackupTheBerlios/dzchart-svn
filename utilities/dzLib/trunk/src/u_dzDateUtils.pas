@@ -69,31 +69,14 @@ implementation
 
 uses
   SysUtils,
-  u_dzStringUtils,
-  DateUtils;
+  DateUtils,
+  u_dzTranslator,
+  u_dzStringUtils;
 
-resourcestring
-  RS_Monday = 'Monday';
-  RS_Tuesday = 'Tuesday';
-  RS_Wednesday = 'Wednesday';
-  RS_Thursday = 'Thursday';
-  RS_Friday = 'Friday';
-  RS_Saturday = 'Saturday';
-  RS_Sunday = 'Sunday';
-  RS_January = 'January';
-  RS_February = 'February';
-  RS_March = 'March';
-  RS_April = 'April';
-  RS_May = 'May';
-  RS_June = 'June';
-  RS_July = 'July';
-  RS_August = 'August';
-  RS_September = 'September';
-  RS_October = 'October';
-  RS_November = 'November';
-  RS_December = 'December';
-  RS_InvalidMonthNumber_D = 'Invalid month number %d';
-  RS_InvalidValueForDayOfWeek_D = 'Invalid value for DayOfWeek: %d';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 function GetDayOfTheWeek(_Date: TDateTime): TDayOfWeekEnum;
 var
@@ -107,37 +90,37 @@ end;
 function DayOfWeek2Str(_Dow: TDayOfWeekEnum): string;
 begin
   case _Dow of
-    dowMonday: Result := RS_Monday;
-    dowTuesday: Result := RS_Tuesday;
-    dowWednesday: Result := RS_Wednesday;
-    dowThursday: Result := RS_Thursday;
-    dowFriday: Result := RS_Friday;
-    dowSaturday: Result := RS_Saturday;
-    dowSunday: Result := RS_Sunday;
+    dowMonday: Result := _('Monday');
+    dowTuesday: Result := _('Tuesday');
+    dowWednesday: Result := _('Wednesday');
+    dowThursday: Result := _('Thursday');
+    dowFriday: Result := _('Friday');
+    dowSaturday: Result := _('Saturday');
+    dowSunday: Result := _('Sunday');
   else
     // should never happen ...
-    raise exception.CreateFmt(RS_InvalidValueForDayOfWeek_D, [Ord(_Dow)]);
+    raise exception.CreateFmt(_('Invalid value for DayOfWeek: %d'), [Ord(_Dow)]);
   end;
 end;
 
 function Month2Str(_Month: TMonthNumbers): string;
 begin
   case _Month of
-    1: Result := RS_January;
-    2: Result := RS_February;
-    3: Result := RS_March;
-    4: Result := RS_April;
-    5: Result := RS_May;
-    6: Result := RS_June;
-    7: Result := RS_July;
-    8: Result := RS_August;
-    9: Result := RS_September;
-    10: Result := RS_October;
-    11: Result := RS_November;
-    12: Result := RS_December;
+    1: Result := _('January');
+    2: Result := _('February');
+    3: Result := _('March');
+    4: Result := _('April');
+    5: Result := _('May');
+    6: Result := _('June');
+    7: Result := _('July');
+    8: Result := _('August');
+    9: Result := _('September');
+    10: Result := _('October');
+    11: Result := _('November');
+    12: Result := _('December');
   else
     // should never happen ...
-    raise Exception.CreateFmt(RS_InvalidMonthNumber_D, [_Month]);
+    raise Exception.CreateFmt(_('Invalid month number %d'), [_Month]);
   end;
 end;
 
