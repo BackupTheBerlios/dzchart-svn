@@ -26,6 +26,7 @@ package dzComponentsR;
 {$LIBSUFFIX '110'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
+{$DEFINE no_translation}
 
 requires
   rtl,
@@ -41,6 +42,7 @@ contains
   c_dzVirtualStringGrid in '..\..\components\c_dzVirtualStringGrid.pas',
   u_dzVclUtils in '..\..\src\u_dzVclUtils.pas',
   u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
-  u_dzStringUtils in '..\..\src\u_dzStringUtils.pas';
+  u_dzStringUtils in '..\..\src\u_dzStringUtils.pas',
+  u_dzTranslator in '..\..\src\u_dzTranslator.pas';
 
 end.

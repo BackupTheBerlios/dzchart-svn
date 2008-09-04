@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2008-09-04 01:12\n"
+"POT-Creation-Date: 2008-09-04 02:01\n"
 "PO-Revision-Date: 2008-07-18 15:04+0100\n"
 "Last-Translator: Thomas Mueller <dzlib@schniering.com>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
@@ -489,28 +489,23 @@ msgstr "Un variant ne peut pas être converti en %s"
 msgid "Variant can not be converted to %s: %s"
 msgstr "La variation ne peut pas être convertie de %s: %s"
 
-#. Programmer's name for it: RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S
-#: u_dzVclUtils.pas:448 
+#: u_dzVclUtils.pas:685  u_dzVclUtils.pas:732
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
-#. Programmer's name for it: RS_IS_NOT_A_VALID_INTEGER_VALUE_S
-#: u_dzVclUtils.pas:449 
+#: u_dzVclUtils.pas:700  u_dzVclUtils.pas:745
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
-#. Programmer's name for it: RS_NO_ITEM_SELECTED_IN_COMBOBOX
-#: u_dzVclUtils.pas:450 
+#: u_dzVclUtils.pas:1090 
 msgid "No item selected in combobox"
 msgstr ""
 
-#. Programmer's name for it: RS_NO_ITEM_SELECTED_IN_LISTBOX
-#: u_dzVclUtils.pas:451 
+#: u_dzVclUtils.pas:1109 
 msgid "No item selected in listbox"
 msgstr ""
 
-#. Programmer's name for it: RS_JPEG_FILES
-#: u_dzVclUtils.pas:452 
+#: u_dzVclUtils.pas:1541 
 msgid "JPEG Files"
 msgstr "Fichiers JPEG"
 

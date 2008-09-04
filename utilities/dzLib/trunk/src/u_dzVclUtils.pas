@@ -1,6 +1,6 @@
 {.GXFormatter.config=twm}
-{: Implements functions which work on components but are not methods.
-   @author        twm }
+///<summary> Implements functions which work on components but are not methods.
+///          @author        twm </summary>
 unit u_dzVclUtils;
 
 interface
@@ -20,21 +20,21 @@ uses
   DbGrids;
 
 type
-  {: Ancestor to all exceptions raised in this unit. }
+  ///<summary> Ancestor to all exceptions raised in this unit. </summary>
   EdzVclUtils = class(Exception);
 
-  {: raised if the Combobox passed to SetOwnerDrawComboItemCount is not ownder drawn. }
+  ///<summary> raised if the Combobox passed to SetOwnerDrawComboItemCount is not owner drawn. </summary>
   EdzComboBoxNotOwnerDraw = class(EdzVclUtils);
 
-  {: raised if the Listbox passed to SetOwnerDrawListboxItemCount is not ownder drawn. }
+  ///<summary> raised if the Listbox passed to SetOwnerDrawListboxItemCount is not owner drawn. </summary>
   EdzListBoxNotOwnerDraw = class(EdzVclUtils);
 
   EdzComboBoxNoSelection = class(EdzVclUtils);
   EdzListBoxNoSelection = class(EdzVclUtils);
 
 type
-  {: This is a copy of the TFileFormatsList class from Graphics which
-     is unfortunately only declaread in the implementation section }
+  ///<summary> This is a copy of the TFileFormatsList class from Graphics which
+  ///          is unfortunately only declaread in the implementation section </summary>
   TFileFormatsList = class(TList)
   public
     constructor Create;
@@ -43,274 +43,289 @@ type
     function FindExt(Ext: string): TGraphicClass;
     function FindClassName(const Classname: string): TGraphicClass;
     procedure Remove(AClass: TGraphicClass);
-    {: returns a file select filter string for all descendants of the given TGraphicClass }
+    ///<summary> returns a file select filter string for all descendants of the given TGraphicClass </summary>
     procedure BuildFilterStrings(GraphicClass: TGraphicClass; var Descriptions, Filters: string);
     function GetFilterString(GraphicClass: TGraphicClass = nil): string;
   end;
 
-  {: returns the global file formats list }
+///<summary> returns the global file formats list </summary>
 function GetFileFormats: TFileFormatsList;
 
-{: checks whether the integer array contains the given element
-   @param Element is the integer to check for
-   @param Arr is the array to check
-   @returns true, if Arr contains Element }
+///<summary> checks whether the integer array contains the given element
+///          @param Element is the integer to check for
+///          @param Arr is the array to check
+///          @returns true, if Arr contains Element </summary>
 function ArrayContains(_Element: integer; const _Arr: array of integer): boolean;
 
 type
-  {: used in ResizeStringGrid and ResizeDbGrid to specify additional options
-    <ul>
-      <li>roUseGridWidth -> make the columns take up the whole grid width</li>
-      <li>roIgnoreHeader -> do not use the column header to calculate the column
-                            width</li>
-      <li>roUseAllRows -> use all Grid rows to calculate the minimum width, not
-                          just the first 10</li>
-    </ul> }
+  ///<summary> used in ResizeStringGrid and ResizeDbGrid to specify additional options
+  ///  <ul>
+  ///    <li>roUseGridWidth -> make the columns take up the whole grid width</li>
+  ///    <li>roIgnoreHeader -> do not use the column header to calculate the column
+  ///                          width</li>
+  ///    <li>roUseAllRows -> use all Grid rows to calculate the minimum width, not
+  ///                        just the first 10</li>
+  ///  </ul> </summary>
   TResizeOptions = (roUseGridWidth, roIgnoreHeader, roUseAllRows);
   TResizeOptionSet = set of TResizeOptions;
 
-  {: Resizes the columns of a TCustomGrid to fit their contents
-     @param Grid is the TCustomGrid to work on
-     @param Options is a TResizeOptionSet specifying additional options, default
-            is an empty set. }
+///<summary> Resizes the columns of a TCustomGrid to fit their contents
+///          @param Grid is the TCustomGrid to work on
+///          @param Options is a TResizeOptionSet specifying additional options,
+///                         defaults to an empty set. </summary>
 procedure TGrid_Resize(_Grid: TCustomGrid); overload;
 procedure TGrid_Resize(_Grid: TCustomGrid; _Options: TResizeOptionSet); overload;
 procedure TGrid_Resize(_Grid: TCustomGrid; _Options: TResizeOptionSet; _RowOffset: integer); overload;
 procedure TGrid_Resize(_Grid: TCustomGrid; _Options: TResizeOptionSet; const _ConstantCols: array of integer); overload;
 procedure TGrid_Resize(_Grid: TCustomGrid; _Options: TResizeOptionSet; const _ConstantCols: array of integer; _RowOffset: integer); overload;
 
-{: Resizes the columns of a TDbGrid to fit their contents
-   @param Grid is the TCustomDbGrid to work on
-   @param Options is a TResizeOptionSet specifying additional options, default
-          is an empty set. }
+///<summary> Resizes the columns of a TDbGrid to fit their contents
+///          @param Grid is the TCustomDbGrid to work on
+///          @param Options is a TResizeOptionSet specifying additional options,
+///                         defaults to an empty set. </summary>
 procedure TDbGrid_Resize(_Grid: TCustomDbGrid; _Options: TResizeOptionSet = []);
 
-{: Returns the content of a StringGrid as a string
-   @param Grid is the TCustomGrid to read from.
-   @returns a string containing the contents of the grid columns separated by TAB
-            rows sepearated by CRLF. }
+///<summary> Returns the content of a StringGrid as a string
+///          @param Grid is the TCustomGrid to read from.
+///          @param IncludeFixed determines whether the fixed rows/columns are also included
+///          @returns a string containing the contents of the grid columns separated by TAB
+///                   rows sepearated by CRLF. </summary>
 function TGrid_GetText(_Grid: TCustomGrid; _IncludeFixed: boolean = false): string; overload;
+
+///<summary> Returns the content of a StringGrid as a string
+///          @param Grid is the TCustomGrid to read from.
+///          @param Selection is a TGridRect that determinens the area of the grid to return
+///          @returns a string containing the contents of the grid columns separated by TAB
+///                   rows sepearated by CRLF. </summary>
 function TGrid_GetText(_Grid: TCustomGrid; _Selection: TGridRect): string; overload;
 
-{: sets the row count, taking the fixed rows into account }
-procedure TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
-
-{: sets the column count, taking the fixed columns into account }
-procedure TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
-
-{: exports the contents of the string grid to a tab separated text file
-   @param Grid is the string grid to export
-   @param Filename is the name of the text file to create }
+///<summary> exports the contents of the string grid to a tab separated text file
+///          @param Grid is the string grid to export
+///          @param Filename is the name of the text file to create
+///          @param IncludeFixed determines whether the fixed rows/columns are also exported </summary>
 procedure TGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string; _IncludeFixed: boolean = false);
 
-{: sets the row count to FixedRows + 1 and clears all non-fixed cells }
+///<summary> sets the row count, taking the fixed rows into account </summary>
+procedure TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
+
+///<summary> sets the column count, taking the fixed columns into account </summary>
+procedure TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
+
+///<summary> sets the row count to FixedRows + 1 and clears all non-fixed cells </summary>
 procedure TStringGrid_Clear(_Grid: TStringGrid);
 
+///<summary> adds a new column to the Grid
+///          It first searches for an empty column (no caption) and uses that, if
+///          found, otherwise the column count is incremented.
+///          @param Grid is the grid to expand
+///          @param Caption is the caption of the new column
+///          @returns the index of the new column </summary>
 function TStringGrid_AddColumn(_Grid: TStringGrid; const _Caption: string): integer;
 
-{: exports the contents of the string grid to a tab separated text file
-   @param Grid is the string grid to export
-   @param Filename is the name of the text file to create }
+///<summary> exports the contents of the string grid to a tab separated text file (deprecated, use TGrid_ExportTofile instead)
+///          @param Grid is the string grid to export
+///          @param Filename is the name of the text file to create </summary>
 procedure TStringGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string); deprecated; inline; // use TGrid_ExportTofile instead
 
-{: scrolls up the lines of a string grid
-   @param Grid is the TStringGrid to scroll
-   @param Top is the topmost row to scroll, if passed as -1 defaults to the first non-fixed row
-   @param Bottom is the bottommost row to scroll, if passed as -1 defaults to RowCount-1 }
+///<summary> scrolls up the lines of a string grid
+///          @param Grid is the TStringGrid to scroll
+///          @param Top is the topmost row to scroll, if passed as -1 defaults to the first non-fixed row
+///          @param Bottom is the bottommost row to scroll, if passed as -1 defaults to RowCount-1 </summary>
 procedure TStringGrid_ScrollUp(_Grid: TStringGrid; _Top: integer = -1; _Bottom: integer = -1);
 
-{: sets the row count, taking the fixed rows into account }
+///<summary> sets the row count, taking the fixed rows into account  (deprecated, use TGrid_SetRowCount instead) </summary>
 procedure TStringGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer); deprecated; inline; // use TGrid_SetRowCount instead
 
-{: sets the column count, taking the fixed columns into account }
+///<summary> sets the column count, taking the fixed columns into account </summary>
 procedure TStringGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer); deprecated; inline; // use TGrid_SetColCount instead
 
-{: deletes the given row from the string grid and moves all rows below it up by one,
-   if there is only one non-fixed row left, this row is cleared but not deleted.
-   @param Grid is the StringGrid to change
-   @param Row is the index of the row to delete, or -1 to delete the current row
-   @returns true, if the row was deleted }
+///<summary> deletes the given row from the string grid and moves all rows below it up by one,
+///   if there is only one non-fixed row left, this row is cleared but not deleted.
+///   @param Grid is the StringGrid to change
+///   @param Row is the index of the row to delete, or -1 to delete the current row
+///   @returns true, if the row was deleted </summary>
 function TStringGrid_DeleteRow(_Grid: TStringGrid; _Row: integer = -1): boolean;
 
-{: inserts a row at the given index into the string grid and moves all rows below it down by one.
-   @param Grid is the StringGrid to change
-   @param Row is the index of the row to insert, or -1 to insert at the current row
-   @returns the inserted row index or -1 if the row cannot be inserted }
+///<summary> inserts a row at the given index into the string grid and moves all rows below it down by one.
+///          @param Grid is the StringGrid to change
+///          @param Row is the index of the row to insert, or -1 to insert at the current row
+///          @returns the inserted row index or -1 if the row cannot be inserted </summary>
 function TStringGrid_InsertRow(_Grid: TStringGrid; _Row: integer = -1): integer;
 
-{: Tries to convert the grid cell to a double, if an error occurs, it raises
-   an exception and optionally focuses the cell.
-   @param Grid is the grid containing the data
-   @param Col is the cell's column (zero based)
-   @param Row is the cell's row (zero based)
-   @param FocusCell is a boolean which determines whether to focus the grid and cell
-          if it does not contain a valid value or not
-   @returns the cell's content as a double
-   @raises EConvertError if the cell's content could not be converted }
+///<summary> Tries to convert the grid cell to a double, if an error occurs, it raises
+///          an exception and optionally focuses the cell.
+///          @param Grid is the grid containing the data
+///          @param Col is the cell's column (zero based)
+///          @param Row is the cell's row (zero based)
+///          @param FocusCell is a boolean which determines whether to focus the grid and cell
+///                           if it does not contain a valid value
+///          @returns the cell's content as a double
+///          @raises EConvertError if the cell's content could not be converted </summary>
 function TStringGrid_CellToDouble(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): double;
 
-{: Tries to convert the grid cell to an integer, if an error occurs, it raises
-   an exception and optionally focuses the cell.
-   @param Grid is the grid containing the data
-   @param Col is the cell's column (zero based)
-   @param Row is the cell's row (zero based)
-   @param FocusCell is a boolean which determines whether to focus the grid and cell
-          if it does not contain a valid value or not
-   @returns the cell's content as an integer
-   @raises EConvertError if the cell's content could not be converted }
+///<summary> Tries to convert the grid cell to an integer, if an error occurs, it raises
+///          an exception and optionally focuses the cell.
+///          @param Grid is the grid containing the data
+///          @param Col is the cell's column (zero based)
+///          @param Row is the cell's row (zero based)
+///          @param FocusCell is a boolean which determines whether to focus the grid and cell
+///                           if it does not contain a valid value
+///          @returns the cell's content as an integer
+///          @raises EConvertError if the cell's content could not be converted </summary>
 function TStringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): integer;
 
-{: Deletes the top lines of the memo so it only contains Retain lines
-   @param Memo is the meme to work on
-   @param Retain is the number of lines to retain }
+///<summary> Deletes the top lines of the memo so it only contains Retain lines
+///          @param Memo is the memo to work on
+///          @param Retain is the number of lines to retain </summary>
 procedure TMemo_DeleteTopLines(_Memo: TMemo; _Retain: integer);
 
-{: Scrolls the memo to the end }
+///<summary> Scrolls the memo to the end </summary>
 procedure TMemo_ScrollToEnd(_Memo: TMemo);
 
 ///<summary> sets the Text property of a TEdit without triggering an OnChange event </summary>
 procedure TEdit_SetTextNoChange(_ed: TCustomEdit; const _Text: string);
 
-{: Tries to convert the edit control text to a double, if an error occurs, it raises
-   an exception and optionally focuses the control.
-   @param ed is the edit control
-   @param FocusControl is a boolean which determines whether to focus the control
-          if it does not contain a valid value or not
-   @returns the controls content as a double
-   @raises EConvertError if the controls content could not be converted }
+///<summary> Tries to convert the edit control text to a double, if an error occurs, it raises
+///          an exception and optionally focuses the control.
+///          @param ed is the edit control
+///          @param FocusControl is a boolean which determines whether to focus the control
+///                              if it does not contain a valid value or not
+///          @returns the controls content as a double
+///          @raises EConvertError if the controls content could not be converted </summary>
 function TEdit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double;
 
-{: Tries to convert the edit control text to an integer, if an error occurs, it raises
-   an exception and optionally focuses the control.
-   @param ed is the edit control
-   @param FocusControl is a boolean which determines whether to focus the control
-          if it does not contain a valid value or not
-   @returns the controls content as an integer
-   @raises EConvertError if the controls content could not be converted }
+///<summary> Tries to convert the edit control text to an integer, if an error occurs, it raises
+///          an exception and optionally focuses the control.
+///          @param ed is the edit control
+///          @param FocusControl is a boolean which determines whether to focus the control
+///                              if it does not contain a valid value
+///          @returns the controls content as an integer
+///          @raises EConvertError if the controls content could not be converted </summary>
 function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
 
-{: returns the contents of the tree view as a string with indentations
-   @param Tree is the TTreeView to process
-   @param Indentation is the number of spaces for indentation
-   @param Marker is a marker character to use for each item #0 for no marker }
+///<summary> returns the contents of the tree view as a string with indentations
+///          @param Tree is the TTreeView to process
+///          @param Indentation is the number of spaces for indentation
+///          @param Marker is a marker character to use for each item, #0 for no marker </summary>
 function TTreeView_GetAsText(_Tree: TTreeView; _Indentation: integer = 2; _Marker: char = #0): string;
 
-{: adds a new TTabSheet to the given PageControl with the given Caption and returns it }
+///<summary> adds a new TTabSheet with the given Caption to the PageControl and returns it </summary>
 function TPageControl_AddTabSheet(_PageControl: TPageControl; const _Caption: string): TTabSheet;
 
-{: Draws the tab text for a TPageControl as horizontal text, useful, if you
-   want to have the tabs on the left or right but don't want vertical text.
-   Set the TPageControl's OwnerDraw property to true, the TabHeight property
-   (which actually gives the width of the tabs if they are on the left or right
-   hand side) sufficiently large, the TabWidth (which is actually is the height)
-   to 18 and assign a OnDrawTab event. From this event call this function.
-   @param PageControl is the TPageControl to draw
-   @param TabIndex is the index of the tab to draw
-   @param Rect is a TRect giving the drawing area
-   @param Active is a boolean that is true if the Tab is currently active }
+///<summary> Draws the tab text for a TPageControl as horizontal text, useful, if you
+///          want to have the tabs on the left or right but don't want vertical text.
+///         Set the TPageControl's OwnerDraw property to true, the TabHeight property
+///         (which actually gives the width of the tabs if they are on the left or right
+///         hand side) sufficiently large, the TabWidth (which is actually is the height)
+///         to 18 and assign a OnDrawTab event. From this event call this function.
+///         @param PageControl is the TPageControl to draw
+///         @param TabIndex is the index of the tab to draw
+///         @param Rect is a TRect giving the drawing area
+///         @param Active is a boolean that is true if the Tab is currently active </summary>
 procedure TPageControl_DrawTab(_PageControl: TPageControl; _TabIndex: integer;
   const _Rect: TRect; _Active: boolean);
 
-{: Draws the tab text for a TTabControl as horizontal text, useful, if you
-   want to have the tabs on the left or right but don't want vertical text.
-   Set the TTabControl's OwnerDraw property to true, the TabHeight property
-   (which actually gives the width of the tabs if they are on the left or right
-   hand side) sufficiently large, the TabWidth (which is actually is the height)
-   to 18 and assign a OnDrawTab event. From this event call this function.
-   @param PageControl is the TPageControl to draw
-   @param TabIndex is the index of the tab to draw
-   @param Rect is a TRect giving the drawing area
-   @param Active is a boolean that is true if the Tab is currently active }
+///<summary> Draws the tab text for a TTabControl as horizontal text, useful, if you
+///          want to have the tabs on the left or right but don't want vertical text.
+///         Set the TTabControl's OwnerDraw property to true, the TabHeight property
+///         (which actually gives the width of the tabs if they are on the left or right
+///         hand side) sufficiently large, the TabWidth (which is actually is the height)
+///         to 18 and assign a OnDrawTab event. From this event call this function.
+///         @param PageControl is the TPageControl to draw
+///         @param TabIndex is the index of the tab to draw
+///         @param Rect is a TRect giving the drawing area
+///         @param Active is a boolean that is true if the Tab is currently active </summary>
 procedure TTabControl_DrawTab(_TabControl: TTabControl; _TabIndex: integer;
   const _Rect: TRect; _Active: boolean);
 
-{: Sets a TTabControl's tab width based on the text it displays, usefull
-   to display horizontal text in tabs on the left or right hand side }
+///<summary> Sets a TTabControl's tab width based on the text it displays, usefull
+///          to display horizontal text in tabs on the left or right hand side </summary>
 procedure TTabControl_AdjustTabWidth(_TabControl: TTabControl; _Form: TForm; _MinWidth: integer = 80);
 
-{: sets the control and all its child controls Enabled property and changes their
-   caption to reflect this
-   @param Control is the TControl to change
-   @param Enabled is a boolean with the new value for the Enabled property. }
+///<summary> sets the control and all its child controls Enabled property and changes their
+///          caption to reflect this
+///          @param Control is the TControl to change
+///          @param Enabled is a boolean with the new value for the Enabled property. </summary>
 procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
 
+///<summary> sets the with of a ComboBox's dropdown  in pixels </summary>
 procedure TComboBox_SetDropdownWidth(_cmb: TCustomCombobox; _Pixels: integer);
 
-{: Selects the entry in a combobox that has an object pointer matching Value
-   @param cmb is the TCustomCombobox (descendant) to select
-   @param Value is the desired object value
-   @returns true, if the value could be found, false otherwise }
+///<summary> Selects the entry in a combobox that has an object pointer matching Value
+///          @param cmb is the TCustomCombobox (descendant) to select
+///          @param Value is the desired object value
+///          @returns true, if the value could be found, false otherwise </summary>
 function TComboBox_SelectByObject(_cmb: TCustomCombobox; _Value: pointer): boolean;
 
-{: Gets the string of a combobox entry that has an object pointer matching Obj
-   @param cmb is the TCustomCombobox (descendant) to select
-   @param Obj is the desired object value
-   @param s is the string of the combobox entry, only valid if the function returns true
-   @returns true, if the object could be found, false otherwise }
+///<summary> Gets the string of a combobox entry that has an object pointer matching Obj
+///          @param cmb is the TCustomCombobox (descendant) to select
+///          @param Obj is the desired object value
+///          @param s is the string of the combobox entry, only valid if the function returns true
+///          @returns true, if the object could be found, false otherwise </summary>
 function TComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s: string): boolean;
 
-{: Gets the object pointer of the selected combobox item
-   @param cmb is the TCustomCombobox (descendant) to read from
-   @param Idx is the combobox's ItemIndex, only valid if the function returns true
-   @param Obj is the value of the object pointer of the selected item, only valid
-          if the function returns true
-   @param FocusControl is a boolean which determines whether to focus the control
-          if it does not contain a valid value or not, default = false
-   @returns true, if these values are valid }
+///<summary> Gets the object pointer of the selected combobox item
+///          @param cmb is the TCustomCombobox (descendant) to read from
+///          @param Idx is the combobox's ItemIndex, only valid if the function returns true
+///          @param Obj is the value of the object pointer of the selected item, only valid
+///                     if the function returns true
+///          @param FocusControl is a boolean which determines whether to focus the control
+///                              if it does not contain a valid value, default = false
+///          @returns true, if these out parameters are valid </summary>
 function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
   out _Obj: pointer; _FocusControl: boolean = false): boolean;
 
-{: Gets the caption of the selected combobox item
-   @param cmb is the TCustomCombobox (descendant) to read from
-   @param Item is the selected item, only valid if the function returns true
-   @param FocusControl is a boolean which determines whether to focus the control
-          if it does not contain a valid value or not, default = false
-   @returns true, if an item was selected }
+///<summary> Gets the caption of the selected combobox item
+///          @param cmb is the TCustomCombobox (descendant) to read from
+///          @param Item is the selected item, only valid if the function returns true
+///          @param FocusControl is a boolean which determines whether to focus the control
+///                              if it does not contain a valid value, default = false
+///          @returns true, if an item was selected </summary>
 function TComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
   _FocusControl: boolean = false): boolean; overload;
 function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
 
-{: Selects the item if it is in the list and returns the new ItemIndex
-   @param cmb is the TCustomCombobox (descendant) to use
-   @param Item is the item to select
-   @param DefaultIdx is the ItemIndex to use if no item matches.
-   @returns the index of the newly selected item or -1 if it doesn't exist }
+///<summary> Selects the item if it is in the list and returns the new ItemIndex
+///          @param cmb is the TCustomCombobox (descendant) to use
+///          @param Item is the item to select
+///          @param DefaultIdx is the ItemIndex to use if no item matches.
+///          @returns the index of the newly selected item or -1 if it doesn't exist </summary>
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
 
-{: Gets the object pointer of the selected listbox item
-   @param lst is the TCustomListbox (descendant) to read from
-   @param Idx is the listbox's ItemIndex, only valid if the function returns true
-   @param Obj is the value of the object pointer of the selected item, only valid
-          if the function returns true
-   @returns true, if these values are valid }
+///<summary> Gets the object pointer of the selected listbox item
+///          @param lst is the TCustomListbox (descendant) to read from
+///          @param Idx is the listbox's ItemIndex, only valid if the function returns true
+///          @param Obj is the value of the object pointer of the selected item, only valid
+///                     if the function returns true
+///          @returns true, if out parameters are valid </summary>
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
 
-{: Gets the caption of the selected listbox item
-   @param cmb is the TCustomListbox (descendant) to read from
-   @param Item is the selected item, only valid if the function returns true
-   @param FocusControl is a boolean which determines whether to focus the control
-          if it does not contain a valid value or not, default = false
-   @returns true, if an item was selected }
+///<summary> Gets the caption of the selected listbox item
+///          @param cmb is the TCustomListbox (descendant) to read from
+///          @param Item is the selected item, only valid if the function returns true
+///          @param FocusControl is a boolean which determines whether to focus the control
+///                              if it does not contain a valid value, default = false
+///          @returns true, if an item was selected </summary>
 function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
   _FocusControl: boolean = false): boolean; overload;
 function TListBox_GetSelected(_lb: TCustomListBox): string; overload;
 
-{: Selects the item if it is in the list and returns the new ItemIndex
-   @param lb is the TCustomListbox (descendant) to use
-   @param Item is the item to select
-   @param DefaultIdx is the ItemIndex to use if no item matches.
-   @returns the index of the newly selected item or -1 if it doesn't exist }
+///<summary> Selects the item if it is in the list and returns the new ItemIndex
+///          @param lb is the TCustomListbox (descendant) to use
+///          @param Item is the item to select
+///          @param DefaultIdx is the ItemIndex to use if no item matches.
+///          @returns the index of the newly selected item or -1 if it doesn't exist </summary>
 function TListBox_Select(_lb: TCustomListBox; const _Item: string; _DefaultIdx: integer = -1): integer;
 
-{: Deletes the selected listbox item
-   @param lst is the TCustomListbox (descendant) to read from
-   @param Idx is the listbox's ItemIndex, only valid if the function returns true
-          if the function returns true
-   @returns true, if these values are valid }
+///<summary> Deletes the selected listbox item
+///          @param lst is the TCustomListbox (descendant) to read from
+///          @param Idx is the listbox's ItemIndex, only valid if the function returns true
+///   @returns true, if these values are valid </summary>
 function TListBox_DeleteSelected(_lst: TCustomListbox; out _Idx: integer): boolean; overload;
 function TListBox_DeleteSelected(_lst: TCustomListbox): boolean; overload;
 function TListBox_DeleteSelected(_lst: TCustomListBox; out _s: string): boolean; overload;
 
+///<summary> Returns the nunber of items that are checked </summary>
 function TCheckListBox_GetCheckedCount(_clb: TCheckListBox): integer;
 procedure TCheckListBox_DeleteDisabled(_clb: TCheckListBox);
 procedure TCheckListBox_InvertCheckmarks(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
@@ -327,13 +342,13 @@ function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings; _Unch
 procedure TCheckListBox_CheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
 procedure TCheckListBox_UncheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
 
-{: Gets the caption of the given or selected item in the RadioGroup
-   @param rg is the TCustomRadioGroup descendant to read
-   @param Caption returns a string with the requested caption with
-                  Ampersands ('&') stripped, only valid, if
-                  the function returns true
-   @param Idx is the item index to read, defaults to -1 meaning 'selected item'
-   @returns true, if the caption could be read }
+///<summary> Gets the caption of the given or selected item in the RadioGroup
+///          @param rg is the TCustomRadioGroup descendant to read
+///          @param Caption returns a string with the requested caption with
+///                         Ampersands ('&') stripped, only valid, if
+///                         the function returns true
+///          @param Idx is the item index to read, defaults to -1 meaning 'selected item'
+///          @returns true, if the caption could be read </summary>
 function TRadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
   out _Caption: string; _Idx: integer = -1): boolean;
 
@@ -342,91 +357,93 @@ function TRadioGroup_GetItemCaption(_rg: TCustomRadioGroup;
 ///          Comparison is case insensitive </summary>
 function TRadioGroup_Select(_rg: TCustomRadioGroup; const _Item: string; _DefaultIdx: integer = -1): integer;
 
-{: Gets the object pointer of the selected RadioGroup item
-   @param cmb is the TCustomListbox (descendant) to read from
-   @param Idx is the listbox's ItemIndex, only valid if the function returns true
-   @param Obj is the value of the object pointer of the selected item, only valid
-          if the function returns true
-   @returns true, if these values are valid }
+///<summary> Gets the object pointer of the selected RadioGroup item
+///          @param cmb is the TCustomListbox (descendant) to read from
+///          @param Idx is the listbox's ItemIndex, only valid if the function returns true
+///          @param Obj is the value of the object pointer of the selected item, only valid
+///                     if the function returns true
+///          @returns true, if the out parameters are valid </summary>
 function TRadioGroup_GetSelectedObject(_rg: TCustomRadioGroup; out _Idx: integer; out _Obj: pointer): boolean;
 
-{: Writes a TPicture object to a String. The Format is
-   <pictureformat>#26<picturedata> }
+///<summary> Writes a TPicture object to a String. The Format is
+///          <pictureformat>#26<picturedata> </summary>
 function TPicture_WriteToString(_Pic: TPicture): string;
 
-{: Reads a TPicture object from a String which was created using
-   Picture_WriteToString }
+///<summary> Reads a TPicture object from a String which was created using
+///          Picture_WriteToString </summary>
 procedure TPicture_ReadFromString(_Pic: TPicture; const _S: string);
 
-{: Writes a TRichEdit to a string including all formatting }
+///<summary> Writes a TRichEdit to a string including all formatting </summary>
 function TRichEdit_WriteToString(_Re: TRichEdit): string;
 
-{: Reads a TRichEdit from a string including all formatting }
+///<summary> Reads a TRichEdit from a string including all formatting </summary>
 procedure TRichEdit_ReadFromString(_Re: TRichEdit; const _S: string);
 
-{: Returns the characater offset of the first character of the given row
-   example: RicheEdit1.SelStart := RichEdit_GetRowCharIndex(RichEdit1, 5);
-   @param Re is a TRichEdit
-   @param Row is the row number (0 based)
-   @returns the character offset (0 based) of the first character of the row }
+///<summary> Returns the characater offset of the first character of the given row
+///          example: RicheEdit1.SelStart := RichEdit_GetRowCharIndex(RichEdit1, 5);
+///          @param Re is a TRichEdit
+///          @param Row is the row number (0 based)
+///          @returns the character offset (0 based) of the first character of the row </summary>
 function TRichEdit_RowToCharIndex(_Re: TRichEdit; _Row: integer): integer;
 
-{: Returns the row which contains the given character index }
+///<summary> Returns the row which contains the given character index </summary>
 function TRichEdit_CharIndexToRow(_Re: TRichEdit; _Idx: integer): integer;
 
-{: Returns the current row number (0 based) of the RichEdit }
+///<summary> Returns the current row number (0 based) of the RichEdit </summary>
 function TRichEdit_GetCurrentRow(_Re: TRichEdit): integer;
 
-{: Scrolls the rich edit to the current caret position }
+///<summary> Scrolls the rich edit to the current caret position </summary>
 procedure TRichEdit_ScrollToCaret(_Re: TRichEdit);
 
-{: Write a line to a RichEdit, optionally specifying color and font style }
+///<summary> Write a line to a RichEdit, optionally specifying color and font style </summary>
 procedure TRichEdit_WriteLn(_Re: TRichEdit; const _s: string; _Color: TColor = clBlack; _Style: TFontStyles = []);
 
-{: Fuegt ein Control und ein zugehoeriges Label ein, Zeilenabstand ist 24 Punkte
-   mit 16 Punkten Abstand vom oberen und 8 vom linken Rand. Es wird angenommen,
-   dass _ctrl bereits die korrekte x-Position hat, lediglich Top wird angepasst }
+///<summary> Adds a control and a corresponding label, a line consists of 24 pixels
+///          with 16 pixels distance from the upper and 8 pixels from the left border.
+///          It is assumed that the control already has the correct x position, only
+///          Top will be adjusted. </summary>
 function AddLabeledControl(_Idx: integer; const _Caption: string; _ctrl: TControl): TLabel;
 
-{: Calculates the height for writing a Text on a control }
+///<summary> Calculates the height for writing a Text on a control </summary>
 function CalcTextHeight(_Ctrl: TWinControl; const _Text: string; _Width: integer = -1): integer; overload;
 function CalcTextHeight(_Ctrl: TGraphicControl; const _Text: string; _Width: integer = -1): integer; overload;
 
-{: I don't quite remember what this is supposed to do and where it is used,
-   Please, if you find a call to this function somewhere, tell me. -- twm }
+///<summary> I don't quite remember what this is supposed to do and where it is used,
+///          Please, if you find a call to this function somewhere, tell me. -- twm </summary>
 function TStringGrid_IsScrollBarVisible(_Grid: TCustomGrid; _Code: integer): boolean;
 
-{: Returns the path to the application's executable including the trailing backslash }
-function GetApplicationPath: string;
+///<summary> Returns the path to the application's executable including the trailing backslash </summary>
+function GetApplicationPath: string; deprecated; // use TApplication_GetExePath instead
 
-{: Center the child on the parent}
+///<summary> Center the child on the parent </summary>
 procedure TControl_Center(_Child: TControl; _Parent: TControl);
 
-{: sets the Checked property without firing an OnClick event }
+///<summary> sets the Checked property without firing an OnClick event </summary>
 procedure TCheckBox_SetCheckedNoOnClick(_Chk: TCustomCheckBox; _Checked: boolean);
 
-{: centers a form on the given point, but makes sure the form is fully visible }
+///<summary> centers a form on the given point, but makes sure the form is fully visible </summary>
 procedure TForm_CenterOn(_frm: TForm; _Center: TPoint); overload;
-{: centers a form on the given component, but makes sure the form is fully visible }
+///<summary> centers a form on the given component, but makes sure the form is fully visible </summary>
 procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
 
-{: tries to focus the given control, returns false if that's not possible }
+///<summary> tries to focus the given control, returns false if that's not possible </summary>
 function TWinControl_SetFocus(_Ctrl: TWinControl): boolean;
 
-{: returns the full path of the executable (without the filename but including
-   a backslash }
+///<summary> returns the full path of the executable (without the filename but including
+///          a backslash) </summary>
 function TApplication_GetExePath: string;
 
+///<summary> returns true, if the application's executable contains version information </summary>
 function TApplication_HasVersionInfo: boolean;
 
-{: switches off "Windows Ghosting" in Win 2000 and XP
-  This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
-  Call in application startup. }
+///<summary> switches off "Windows Ghosting" in Win 2000 and XP
+///          This is a workaround for the bug that modal forms sometimes aren't modal in W2K and XP.
+///          Call in application startup. </summary>
 procedure DisableProcessWindowsGhosting;
 
-{: Reverses a VclUtils.MergeForm (rxlib)
-   @param Form is the TForm to unmerge }
-procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign; Show: Boolean);
+procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign; Show: Boolean); deprecated; // use a frame instead
+///<summary> Reverses a VclUtils.MergeForm (rxlib)
+///          @param Form is the TForm to unmerge </summary>
 procedure UnMergeForm(_Form: TCustomForm); deprecated; // use a frame instead
 
 implementation
@@ -441,20 +458,19 @@ uses
   RxGConst,
   rxGif,
 {$ENDIF GIFByRx}
+  u_dzTranslator,
   u_dzConvertUtils,
   u_dzStringUtils;
-
-resourcestring
-  RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S = '"%s" is not a valid floating point value.';
-  RS_IS_NOT_A_VALID_INTEGER_VALUE_S = '"%s" is not a valid integer value.';
-  RS_NO_ITEM_SELECTED_IN_COMBOBOX = 'No item selected in combobox';
-  RS_NO_ITEM_SELECTED_IN_LISTBOX = 'No item selected in listbox';
-  RS_JPEG_FILES = 'JPEG Files';
 
 // we need this to access protected methods
 type
   TGridHack = class(TCustomGrid);
   TDbGridHack = class(TCustomDbGrid);
+
+function _(const _s: string): string;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 function TGrid_GetText(_Grid: TCustomGrid; _IncludeFixed: boolean = false): string;
 var
@@ -666,7 +682,7 @@ begin
       _grid.Col := _Col;
       _grid.SetFocus;
     end;
-    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S, [s]);
+    raise EConvertError.CreateFmt(_('"%s" is not a valid floating point value.'), [s]);
   end;
 end;
 
@@ -681,7 +697,7 @@ begin
       _grid.Col := _Col;
       _grid.SetFocus;
     end;
-    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_INTEGER_VALUE_S, [s]);
+    raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
   end;
 end;
 
@@ -713,7 +729,7 @@ begin
     if _FocusControl then begin
       _ed.SetFocus;
     end;
-    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_FLOATING_POINT_VALUE_S, [s]);
+    raise EConvertError.CreateFmt(_('"%s" is not a valid floating point value.'), [s]);
   end;
 end;
 
@@ -726,7 +742,7 @@ begin
     if _FocusControl then begin
       _ed.SetFocus;
     end;
-    raise EConvertError.CreateFmt(RS_IS_NOT_A_VALID_INTEGER_VALUE_S, [s]);
+    raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
   end;
 end;
 
@@ -1071,7 +1087,7 @@ end;
 function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
 begin
   if not TComboBox_GetSelected(_cmb, Result) then
-    raise EdzComboBoxNoSelection.Create(RS_NO_ITEM_SELECTED_IN_COMBOBOX);
+    raise EdzComboBoxNoSelection.Create(_('No item selected in combobox'));
 end;
 
 function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
@@ -1090,7 +1106,7 @@ end;
 function TListBox_GetSelected(_lb: TCustomListBox): string;
 begin
   if not TListBox_GetSelected(_lb, Result) then
-    raise EdzListBoxNoSelection(RS_NO_ITEM_SELECTED_IN_LISTBOX);
+    raise EdzListBoxNoSelection(_('No item selected in listbox'));
 end;
 
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
@@ -1522,7 +1538,7 @@ begin
 {$IFDEF GIFByRx}
   Add('gif', LoadStr(SGIFImage), 0, TGIFImage);
 {$ENDIF GIFByRx}
-  Add('jpg', RS_JPEG_FILES, 0, TJPEGImage);
+  Add('jpg', _('JPEG Files'), 0, TJPEGImage);
 end;
 
 destructor TFileFormatsList.Destroy;
