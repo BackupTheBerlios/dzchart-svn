@@ -1,5 +1,5 @@
 {.GXFormatter.config=twm}
-{: implements an object with utility functions regarding the ShellAPI }
+///<summary> implements an object with utility functions regarding the ShellAPI </summary>
 unit u_dzShellApiUtils;
 
 {$i jedi.inc}
@@ -25,28 +25,28 @@ type
   TSHGetFolderPath = function(hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: DWORD; pszPath: PChar): HResult; Stdcall;
 
 type
-  {: TWindowsShell is a wrapper object for several ShellApi functions }
+  ///<summary> TWindowsShell is a wrapper object for several ShellApi functions </summary>
   TWindowsShell = class
   private
     function LoadSHFolder(var SHGetFolderPath: TSHGetFolderPath): Integer;
   protected
-    fAppHandle: THandle;
+    FAppHandle: THandle;
     function GetSpecialFolder(_CSIDL: integer): string;
   public
-    {: Creates a TWindowsShell object,
-       @param ApplicationHandle is the application's handle (Application.Handle) }
+    ///<summary> Creates a TWindowsShell object,
+    ///   @param ApplicationHandle is the application's handle (Application.Handle) </summary>
     constructor Create(_ApplicationHandle: THandle = 0);
     destructor Destroy; override;
-    {: returns the path to the 'My Documents' folder }
+    ///<summary> returns the path to the 'My Documents' folder </summary>
     function GetMyDocuments: string;
     class function GetMyDocumentsDir(_ApplicationHandle: THandle = 0): string;
-    {: returns the path of the 'My Pictures' folder }
+    ///<summary> returns the path of the 'My Pictures' folder </summary>
     function GetMyPictures: string;
     class function GetMyPicturesDir(_ApplicationHandle: THandle = 0): string;
-    {: returns the 'common files' folder }
+    ///<summary> returns the 'common files' folder </summary>
     function GetCommonFiles: string;
     class function GetCommonFilesDir(_ApplicationHandle: THandle = 0): string;
-    {: returngs the 'program files' folder }
+    ///<summary> returngs the 'program files' folder </summary>
     function GetProgramFiles: string;
     class function GetProgramFilesDir(_ApplicationHandle: THandle = 0): string;
 
@@ -114,9 +114,9 @@ constructor TWindowsShell.Create(_ApplicationHandle: THandle = 0);
 begin
   inherited Create;
   if _ApplicationHandle = 0 then
-    fAppHandle := Application.Handle
+    FAppHandle := Application.Handle
   else
-    fAppHandle := _ApplicationHandle;
+    FAppHandle := _ApplicationHandle;
 end;
 
 destructor TWindowsShell.Destroy;
