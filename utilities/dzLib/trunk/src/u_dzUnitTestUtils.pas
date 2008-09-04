@@ -162,7 +162,7 @@ begin
     ActStrings := TStringList.Create;
     ExpStrings.Text := _Expected;
     ActStrings.Text := _Actual;
-    CheckEquals(ExpStrings.Count, ActStrings.Count, _Message + ' (no of lines does not match)');
+    CheckEquals(ExpStrings.Count, ActStrings.Count, _Message + ' (no. of lines does not match)');
     for i := 0 to ExpStrings.Count - 1 do
       CheckEquals(ExpStrings[i], ActStrings[i], _Message + Format(' (line %d does not match)', [i]));
   finally
