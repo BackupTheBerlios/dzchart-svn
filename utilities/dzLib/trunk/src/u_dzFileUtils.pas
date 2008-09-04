@@ -688,34 +688,15 @@ function itpd(const _Dirname: string): string; inline;
 implementation
 
 uses
+  u_dzTranslator,
   u_dzMiscUtils,
   u_dzStringUtils,
   u_dzDateUtils;
 
-resourcestring
-  STR_GETTEMPPATH_ERROR_DS = 'u_dzFileUtils.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath';
-  STR_GETTEMPPATH_ERROR2_DS = 'u_dzFileUtils.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)';
-  STR_CREATEUNIQUEDIR_ERROR_S = 'could not find a unique directory name based on "%s"';
-  STR_GETTEMPFILENAME_ERROR_DS = 'u_dzFileUtils.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName';
-  STR_GETSHORTPATHNAME_ERROR_DS = 'u_dzFileUtils.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname';
-  STR_GETSHORTPATHNAME_TOO_LONG_D = 'Short pathname is longer than MAX_PATH (%d) characters';
-  // duplicate % so they get passed through the format function
-  STR_MOVEFILE_ERROR_SS = 'Error %%1:s (%%0:d) while trying to move "%s" to "%s".';
-  // duplicate % so they get passed through the format function
-  STR_SETREADONLY_ERROR_S = 'Error %%1:s (%%0:d) while changing the readonly flag of "%s"';
-  // duplicate % so they get passed through the format function
-  STR_COPYFILE_ERROR_SS = 'Error %%1:s (%%0:d) while trying to copy "%s" to "%s".';
-  // duplicate % so they get passed through the format function
-  STR_DELETEFILE_ERROR_S = 'Error %%1:s (%%0:d) deleting file "%s"';
-  // duplicate % so they get passed through the format function
-  STR_REMOVEDIR_ERROR_S = 'Error %%1:s (%%0:d) deleting directory "%s"';
-  STR_DELTREE_ERROR_S = '"%s" does not exist or is not a directory';
-  // duplicate % so they get passed through the format function
-  STR_CREATEDIR_ERROR_S = 'Error %%1:s (%%0:d) creating directory "%s"';
-  STR_CREATEDIR_EXCEPTION_SSS = 'Error creating directory "%s": %s (%s)';
-  RS_FILE_NOT_FOUND_S = 'File not found: "%s"';
-  RS_COMBINATION_NOT_ALLOWED = 'Combination of ResultContainsNumber and Keep' +
-    'Original is not allowed';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 function itpd(const _Dirname: string): string; inline;
 begin
@@ -848,15 +829,17 @@ begin
   SetLength(Result, 1024);
   Res := Windows.GetTempPath(1024, PChar(Result));
   if Res < 0 then begin
+    // GetLastError must be called before _(), otherwise the error code gets lost
     LastError := GetLastError;
-    RaiseLastOSErrorEx(LastError, STR_GETTEMPPATH_ERROR_DS);
+    RaiseLastOSErrorEx(LastError, _('TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath'));
   end;
   if Res > 1024 then begin
     SetLength(Result, Res + 1);
     Res := Windows.GetTempPath(Res + 1, PChar(Result));
     if Res < 0 then begin
+      // GetLastError must be called before _(), otherwise the error code gets lost
       LastError := GetLastError;
-      RaiseLastOsErrorEx(LastError, STR_GETTEMPPATH_ERROR2_DS);
+      RaiseLastOsErrorEx(LastError, _('TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)'));
     end;
   end;
   SetLength(Result, Res);
@@ -870,8 +853,10 @@ begin
   Result := SysUtils.CreateDir(_DirectoryName);
   if not Result then begin
     if _RaiseException then begin
+      // GetLastError must be called before _(), otherwise the error code gets lost
       LastError := GetLastError;
-      RaiseLastOsErrorEx(LastError, Format(STR_CREATEDIR_ERROR_S, [_DirectoryName]));
+      // duplicate % so they get passed through the format function
+      RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) creating directory "%s"'), [_DirectoryName]));
     end;
   end;
 end;
@@ -895,7 +880,7 @@ begin
     if not OK then begin
       Inc(Counter);
       if Counter > 1000 then
-        raise ECreateUniqueDir.CreateFmt(STR_CREATEUNIQUEDIR_ERROR_S, [Result]);
+        raise ECreateUniqueDir.CreateFmt(_('Could not find a unique directory name based on "%s"'), [Result]);
     end;
   end;
 end;
@@ -911,8 +896,9 @@ begin
   SetLength(Result, MAX_PATH);
   Res := Windows.GetTempFileName(PChar(_Directory), PChar(_Prefix), _Unique, PChar(Result));
   if Res = 0 then begin
+    // GetLastError must be called before _(), otherwise the error code gets lost
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, STR_GETTEMPFILENAME_ERROR_DS);
+    RaiseLastOsErrorEx(LastError, _('TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName'));
   end;
   Result := PChar(Result); // remove trailing characters
 end;
@@ -939,13 +925,13 @@ end;
 class function TFileSystem.GetFileInfo(const _Filename: string): TFileInfoRec;
 begin
   if not TryGetFileInfo(_Filename, Result) then
-    raise EFileNotFound.CreateFmt(RS_FILE_NOT_FOUND_S, [_Filename]);
+    raise EFileNotFound.CreateFmt(_('File not found: "%s"'), [_Filename]);
 end;
 
 class function TFileSystem.GetFileSize(const _Filename: string): Int64;
 begin
   if not TryGetFileSize(_Filename, Result) then
-    raise EFileNotFound.CreateFmt(RS_FILE_NOT_FOUND_S, [_Filename]);
+    raise EFileNotFound.CreateFmt(_('File not found: "%s"'), [_Filename]);
 end;
 
 class function TFileSystem.TryGetFileSize(const _Filename: string;
@@ -990,9 +976,9 @@ begin
   Res := Windows.GetShortPathname(PChar(_LongName), PChar(Result), Length(Result));
   if Res = 0 then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, STR_GETSHORTPATHNAME_ERROR_DS);
+    RaiseLastOsErrorEx(LastError, _('TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname'));
   end else if Res > MAX_PATH then
-    raise EPathTooLong.CreateFmt(STR_GETSHORTPATHNAME_TOO_LONG_D, [MAX_PATH]);
+    raise EPathTooLong.CreateFmt(_('Short pathname is longer than MAX_PATH (%d) characters'), [MAX_PATH]);
   Result := PChar(Result); // truncate at first #0
 end;
 
@@ -1003,7 +989,8 @@ begin
   Result := Windows.MoveFile(PChar(_Source), PChar(_Dest));
   if not Result and _RaiseException then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, Format(STR_MOVEFILE_ERROR_SS, [_Source, _Dest]));
+    // duplicate % so they get passed through the format function
+    RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to move "%s" to "%s".'), [_Source, _Dest]));
   end;
 end;
 
@@ -1020,7 +1007,8 @@ begin
   if FileSetAttr(_Filename, Attr) <> 0 then begin
     if _RaiseException then begin
       LastError := GetLastError;
-      RaiseLastOsErrorEx(LastError, Format(STR_SETREADONLY_ERROR_S, [_Filename]));
+      // duplicate % so they get passed through the format function
+      RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while changing the readonly flag of "%s"'), [_Filename]));
     end;
     Result := false
   end else
@@ -1039,7 +1027,8 @@ begin
   end;
   if not Result and _RaiseException then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
+    // duplicate % so they get passed through the format function
+    RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to copy "%s" to "%s".'), [_Source, _Dest]));
   end;
 end;
 
@@ -1144,8 +1133,10 @@ begin
       if LastError = ERROR_REQUEST_ABORTED then
         Result := cfwAborted
       else begin
-        if cfwRaiseException in _Flags then
-          RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
+        if cfwRaiseException in _Flags then begin
+          // duplicate % so they get passed through the format function
+          RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to copy "%s" to "%s".'), [_Source, _Dest]));
+        end;
         Result := cfwError;
       end;
     end else
@@ -1215,8 +1206,10 @@ begin
       @ProgressCallback, Redir, Flags);
     if not Res then begin
       LastError := GetLastError;
-      if mfwRaiseException in _Flags then
-        RaiseLastOsErrorEx(LastError, Format(STR_COPYFILE_ERROR_SS, [_Source, _Dest]));
+      if mfwRaiseException in _Flags then begin
+        // duplicate % so they get passed through the format function
+        RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to copy "%s" to "%s".'), [_Source, _Dest]));
+      end;
 
       if LastError = ERROR_REQUEST_ABORTED then
         Result := cfwAborted
@@ -1244,7 +1237,8 @@ begin
   end;
   if not Result and _RaiseException then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, Format(STR_DELETEFILE_ERROR_S, [_Filename]));
+    // duplicate % so they get passed through the format function
+    RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) deleting file "%s"'), [_Filename]));
   end;
 end;
 
@@ -1305,14 +1299,15 @@ begin
     on e: Exception do begin
       // ForceDirectories can raise EInOutError if the directory path contains empty parts
       if _RaiseException then
-        raise Exception.CreateFmt(STR_CREATEDIR_EXCEPTION_SSS, [_DirectoryPath, e.Message, e.ClassName]);
+        raise Exception.CreateFmt(_('Error creating directory "%s": %s (%s)'), [_DirectoryPath, e.Message, e.ClassName]);
       Result := false;
       exit;
     end;
   end;
   if not Result and _RaiseException then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, Format(STR_CREATEDIR_ERROR_S, [_DirectoryPath]));
+    // duplicate % so they get passed through the format function
+    RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) creating directory "%s"'), [_DirectoryPath]));
   end;
 end;
 
@@ -1330,7 +1325,8 @@ begin
   end;
   if not Result and _RaiseException then begin
     LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, Format(STR_REMOVEDIR_ERROR_S, [_Dirname]));
+    // duplicate % so they get passed through the format function
+    RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) deleting directory "%s"'), [_Dirname]));
   end;
 end;
 
@@ -1348,7 +1344,7 @@ begin
   Result := DirectoryExists(ExcludeTrailingPathDelimiter(_Dirname));
   if not Result then begin
     if _RaiseException then
-      raise EDirNotFound.CreateFmt(STR_DELTREE_ERROR_S, [_DirName]);
+      raise EDirNotFound.CreateFmt(_('"%s" does not exist or is not a directory'), [_DirName]);
     exit;
   end;
   if 0 = FindFirst(IncludeTrailingPathDelimiter(_Dirname) + '*.*', faAnyFile, sr) then
@@ -1565,7 +1561,7 @@ function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
 begin
   if FResultContainsNumber then begin
     if _KeepOriginal then
-      raise EInvalidPropertyCombination.Create(RS_COMBINATION_NOT_ALLOWED);
+      raise EInvalidPropertyCombination.Create(_('Combination of ResultContainsNumber and KeepOriginal is not allowed'));
     if FOldestIsHighest then begin
       Result := doNumberOldIsHighest();
     end else begin
