@@ -97,7 +97,7 @@ type
     FDataset: TDataset;
     FTableName: string;
   public
-    ///<summary> creates a TDatasetHelper for accessing a TAdoTable or TAdoQuery </summary>
+    ///<summary> creates a TDatasetHelper for accessing a TQuery, TTable, TAdoTable or TAdoQuery </summary>
     constructor Create(_Table: TAdoTable); overload;
     constructor Create(_Table: TTable); overload;
     ///<summary> creates a TDatasetHelper for accessing a query
@@ -160,8 +160,14 @@ implementation
 
 uses
   Variants,
+  u_dzTranslator,
   u_dzVariantUtils,
   u_dzMiscUtils;
+
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 { TDatasetHelper }
 
@@ -326,7 +332,7 @@ begin
   else if FDataset is TQuery then
     (FDataset as TQuery).ParamByName(_Param).Value := _Value
   else
-    raise Exception.CreateFmt('SetParamByName is not supported for a %s (only TQuery and TAdoDataset descendants).', [FDataset.ClassName]);
+    raise Exception.CreateFmt(_('SetParamByName is not supported for a %s (only TQuery and TAdoDataset descendants).'), [FDataset.ClassName]);
 end;
 
 procedure TDatasetHelper.Cancel;
