@@ -90,7 +90,14 @@ uses
   SysUtils,
   Classes,
   Dialogs,
-  u_dzLogging;
+  u_dzLogging,
+  w_dzDialog;
+
+resourcestring
+  RS_Error_S = 'Error: %s';
+  RS_Synopsis_S_S = 'Synopsis: %s %s';
+  RS_Parameters = 'Parameters:';
+  RS_Options = 'Options:';
 
 constructor TDefaultMain.Create;
 begin
@@ -117,14 +124,14 @@ var
   s: string;
 begin
   if _Error <> '' then begin
-    s := Format(_('Error: %s') + #13#10#13#10, [_Error]);
+    s := Format(RS_Error_S + #13#10#13#10, [_Error]);
     LogError(_Error);
   end;
   MessageDlg(s + Format(
-    _('Synopsis: %s %s') + #13#10#13#10 +
-    _('Parameters:') + #13#10 +
+    RS_Synopsis_S_S + #13#10#13#10 +
+    RS_Parameters + #13#10 +
     '%s'#13#10#13#10 +
-    _('Options:') + #13#10 +
+    RS_Options + #13#10 +
     '%s',
     [FGetOpt.ProgName, FGetOpt.GetCmdLineDesc, FGetOpt.GetParamHelp, FGetOpt.GetOptionHelp]),
     mtError, [mbOK], 0);
@@ -168,12 +175,12 @@ begin
       FExitCode := 1;
     end;
     on e: Exception do begin
-      s := 'Exception ' + e.ClassName + ': ' + e.Message;
+      s := 'Exception: ' + e.Message + ' (' + e.ClassName + ')';
       LogError(s);
       if IsConsole then
         WriteLn(s)
       else
-        ShowException(e, ExceptAddr);
+       Tf_dzDialog.ShowException(e);
       FExitCode := 1;
     end;
   end;

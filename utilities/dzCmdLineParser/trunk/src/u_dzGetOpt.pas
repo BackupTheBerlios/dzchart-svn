@@ -109,7 +109,17 @@ type
 implementation
 
 uses
-  u_dzCmdLineParser;
+  u_dzCmdLineParser,
+  u_dzTranslator;
+
+resourcestring
+  RS_NOT_A_REGISTERED_OPTION_S = '%s is not a registered option.';
+  RS_TOO_MANY_PARAMETERS = 'There are too many parameters.';
+  RS_NOT_ENOUGH_PARAMETERS_SD = 'There are not enough %s parameters (min: %d)';
+  RS_DISPLAY_PARAMETER_HELP = 'display parameter help';
+  RS_OPTION_IS_UNKNOWN_S = 'Option %s is unknown';
+  RS_OPTION_REQUIRES_VALUE_S = 'Option %s requires a value.';
+  RS_OPTIONS = '[options]';
 
 { TdzGetOpt }
 
@@ -145,7 +155,7 @@ var
   s: string;
 begin
   if FOptionDescList.Count <> 0 then
-    Result := '[options]'
+    Result := RS_OPTIONS
   else
     Result := '';
   for i := 0 to FParamDescList.Count - 1 do begin
@@ -204,7 +214,7 @@ var
   PrimaryName: string;
 begin
   if not FOptionNameList.Find(PChar(_Name), Idx) then
-    raise EUnknownOption.CreateFmt('%s is not a registered option.', [_Name]);
+    raise EUnknownOption.CreateFmt(RS_NOT_A_REGISTERED_OPTION_S, [_Name]);
 
   Result := 0;
   PrimaryName := FOptionNameList[Idx].GetPrimaryName;
@@ -271,6 +281,7 @@ procedure TGetOpt.EvaluateCmdLine(_Options, _Params: TStrings);
 var
   DescIdx: integer;
   FoundIdx: integer;
+  DesCount: Integer;
   Cnt: integer;
   pd: TParamDesc;
   OptDesc: TOptionDesc;
@@ -280,36 +291,37 @@ begin
   FoundIdx := 0;
   DescIdx := 0;
   while FoundIdx < _Params.Count do begin
-    if DescIdx >= FParamDescList.Count then
-      raise ETooManyParams.Create('There are too many parameters.');
+    DesCount := FParamDescList.Count;
+    if (DescIdx >= DesCount) then
+      raise ETooManyParams.Create(RS_TOO_MANY_PARAMETERS);
     pd := FParamDescList[DescIdx];
     Cnt := 0;
-    while (Cnt < pd.MaxCount) and (FoundIdx < _Params.Count) do begin
+    while ((Cnt < pd.MaxCount) or (pd.MaxCount = -1)) and (FoundIdx < _Params.Count) do begin
       s := _Params[FoundIdx];
-      FParamsFoundList.Insert(TParamFound.Create(pd, s));
+      FParamsFoundList.Add(TParamFound.Create(pd, s));
       Inc(Cnt);
       Inc(FoundIdx);
     end;
     if Cnt < pd.MinCount then
-      raise ETooFewParams.CreateFmt('There are not enough %s parameters (min: %d)', [pd.Name, pd.MinCount]);
+      raise ETooFewParams.CreateFmt(RS_NOT_ENOUGH_PARAMETERS_SD, [pd.Name, pd.MinCount]);
     Inc(DescIdx);
   end;
   while DescIdx < FParamDescList.Count do begin
     pd := FParamDescList[DescIdx];
     if pd.MinCount > 0 then
-      raise ETooFewParams.CreateFmt('There are not enough %s parameters (min: %d)', [pd.Name, pd.MinCount]);
+      raise ETooFewParams.CreateFmt(RS_NOT_ENOUGH_PARAMETERS_SD, [pd.Name, pd.MinCount]);
     Inc(DescIdx);
   end;
 
   FoundIdx := 0;
   while FoundIdx < _Options.Count do begin
     if not FOptionNameList.Find(_Options.Names[FoundIdx], OptName) then
-      raise EUnknownOption.CreateFmt('Option %s is unknown', [_Options.Names[Foundidx]]);
+      raise EUnknownOption.CreateFmt(RS_OPTION_IS_UNKNOWN_S, [_Options.Names[Foundidx]]);
     s := _Options.ValueFromIndex[FoundIdx];
     OptDesc := OptName.OptionDesc;
     if OptDesc.HasValue and (s = '') then
-      raise EOptionValue.CreateFmt('Option %s requires a value.', [OptName.Name]);
-    FOptionsFoundList.Insert(TOptionFound.Create(OptDesc, OptName.Name, s));
+      raise EOptionValue.CreateFmt(RS_OPTION_REQUIRES_VALUE_S, [OptName.Name]);
+    FOptionsFoundList.Add(TOptionFound.Create(OptDesc, OptName.Name, s));
     Inc(FoundIdx);
   end;
 end;
@@ -352,7 +364,7 @@ end;
 
 procedure TGetOpt.RegisterHelpOptions;
 begin
-  RegisterOption(['help', '?', 'h', 'H'], 'display parameter help', false);
+  RegisterOption(['help', '?', 'h', 'H'], RS_DISPLAY_PARAMETER_HELP, false);
 end;
 
 procedure TGetOpt.RegisterOption(const _Name, _Description: string; _HasValue: boolean);
@@ -367,16 +379,18 @@ var
   Desc: TOptionDesc;
 begin
   Desc := TOptionDesc.Create(_Names, _Description, _HasValue);
-  FOptionDescList.Insert(Desc);
+  FOptionDescList.Add(Desc);
   for i := 0 to High(_Names) do
-    FOptionNameList.Insert(TOptionName.Create(_Names[i], Desc));
+    FOptionNameList.Add(TOptionName.Create(_Names[i], Desc));
 end;
 
 procedure TGetOpt.RegisterParam(const _Name, _Description: string;
   _MinCount, _MaxCount: integer);
 begin
-  FParamDescList.Insert(TParamDesc.Create(_Name, _Description, _MinCount, _MaxCount));
+  FParamDescList.Add(TParamDesc.Create(_Name, _Description, _MinCount, _MaxCount));
 end;
 
+initialization
+  AddDomainForResourceString('dzCmdLineParser');
 end.
 

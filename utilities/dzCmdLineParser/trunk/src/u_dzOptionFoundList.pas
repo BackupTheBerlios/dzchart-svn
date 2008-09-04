@@ -24,8 +24,6 @@ type
 {$DEFINE __DZ_SORTED_OBJECT_LIST_TEMPLATE__}
 type
   _LIST_ANCESTOR_ = TObject;
-  _LIST_CONTAINER_ = TList;
-  _LIST_CONTAINER_ITEM_TYPE_ = pointer;
   _ITEM_TYPE_ = TOptionFound;
   _KEY_TYPE_ = string;
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}

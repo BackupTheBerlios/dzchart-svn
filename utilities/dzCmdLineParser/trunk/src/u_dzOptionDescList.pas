@@ -33,8 +33,6 @@ type
 {$DEFINE __DZ_SORTED_OBJECT_LIST_TEMPLATE__}
 type
   _LIST_ANCESTOR_ = TObject;
-  _LIST_CONTAINER_ = TList;
-  _LIST_CONTAINER_ITEM_TYPE_ = pointer;
   _ITEM_TYPE_ = TOptionDesc;
   _KEY_TYPE_ = string;
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
@@ -54,6 +52,12 @@ implementation
 
 uses
   StrUtils;
+
+resourcestring
+  RS_OPTION_NAME_CANNOT_BE_EMPTY = 'Option name cannot be empty.';
+  RS_OPTION_NAME_MUST_START_WITH_ALPHANUMERIC = 'Option name must start with an alphanumeric character.';
+  RS_OPTION_NAME_CONTAINS_INVALID_CHAR_SD = 'Option name contains invalid character "%s" (%d).';
+  RS_VALUE = 'value';
 
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
 
@@ -98,13 +102,13 @@ var
   i: integer;
 begin
   if _Name = '' then
-    raise EOptionName.Create('Option name cannot be empty.');
+    raise EOptionName.Create(RS_OPTION_NAME_CANNOT_BE_EMPTY);
   { TODO -otwm : Maybe '$', '#' and some other chars should be allowed }
   if not (_Name[1] in ['a'..'z', 'A'..'Z', '0'..'9', '?']) then
-    raise EOptionName.Create('Option name must start with an alphanumeric character.');
+    raise EOptionName.Create(RS_OPTION_NAME_MUST_START_WITH_ALPHANUMERIC);
   for i := 2 to Length(_Name) do
     if not (_Name[i] in ['a'..'z', 'A'..'Z', '0'..'9', '-', '_']) then
-      raise EOptionName.CreateFmt('Option name contains invalid character "%s" (%d).', [_Name[i], Ord(_Name[i])]);
+      raise EOptionName.CreateFmt(RS_OPTION_NAME_CONTAINS_INVALID_CHAR_SD, [_Name[i], Ord(_Name[i])]);
 end;
 
 function TOptionDesc.CreateDescription(const _OptionName: string): string;
@@ -114,12 +118,12 @@ begin
     1: begin
         Result := '-' + _OptionName;
         if FHasValue then
-          Result := Result + ' value';
+          Result := Result + ' ' + RS_VALUE;
       end;
   else begin
       Result := '--' + _OptionName;
       if FHasValue then
-        Result := Result + '=value';
+        Result := Result + '=' + RS_VALUE;
     end
   end;
 end;

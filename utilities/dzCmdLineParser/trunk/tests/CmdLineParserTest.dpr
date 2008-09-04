@@ -4,8 +4,8 @@ program CmdLineParserTest;
   Delphi DUnit Test Project
   -------------------------
   This project contains the DUnit test framework and the GUI/Console test runners.
-  Add "CONSOLE_TESTRUNNER" to the conditional defines entry in the project options 
-  to use the console test runner.  Otherwise the GUI test runner will be used by 
+  Add "CONSOLE_TESTRUNNER" to the conditional defines entry in the project options
+  to use the console test runner.  Otherwise the GUI test runner will be used by
   default.
 
 }
@@ -15,6 +15,7 @@ program CmdLineParserTest;
 {$ENDIF}
 
 uses
+  u_dzTranslator in '..\..\dzlib\src\u_dzTranslator.pas',
   Forms,
   TestFramework,
   GUITestRunner,
@@ -27,8 +28,8 @@ uses
   u_dzOptionNameList in '..\src\u_dzOptionNameList.pas',
   u_dzOptionFoundList in '..\src\u_dzOptionFoundList.pas',
   u_dzGetOpt_UnitTest in 'u_dzGetOpt_UnitTest.pas',
-  u_dzCmdLineParser in '..\libs\dzlib\src\u_dzCmdLineParser.pas',
-  u_dzCmdLineParserStates in '..\libs\dzlib\src\u_dzCmdLineParserStates.pas';
+  u_dzCmdLineParser in '..\..\dzlib\src\u_dzCmdLineParser.pas',
+  u_dzCmdLineParserStates in '..\..\dzlib\src\u_dzCmdLineParserStates.pas';
 
 {$R *.RES}
 

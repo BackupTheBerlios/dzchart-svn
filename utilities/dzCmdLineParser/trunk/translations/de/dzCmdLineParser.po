@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dzCmdLineParser 1.0\n"
+"POT-Creation-Date: 2008-04-23 16:07\n"
+"PO-Revision-Date: 2008-04-23 16:06+0100\n"
+"Last-Translator: Thomas Mueller <info@schniering.com>\n"
+"Language-Team: twm <nospam@dummzeuch.de>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: dxgettext 1.2.2\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+
+#: u_dzDefaultMain.pas:120 
+msgid "Error: %s"
+msgstr "Fehler: %s"
+
+#: u_dzDefaultMain.pas:124 
+msgid "Synopsis: %s %s"
+msgstr "Aufruf: %s %s"
+
+#: u_dzDefaultMain.pas:125 
+msgid "Parameters:"
+msgstr "Parameter:"
+
+#: u_dzDefaultMain.pas:127 
+msgid "Options:"
+msgstr "Optionen:"
+
+#. Programmer's name for it: RS_NOT_A_REGISTERED_OPTION_S
+#: u_dzGetOpt.pas:115 
+msgid "%s is not a registered option."
+msgstr "%s ist keine registrierte Option"
+
+#. Programmer's name for it: RS_TOO_MANY_PARAMETERS
+#: u_dzGetOpt.pas:116 
+msgid "There are too many parameters."
+msgstr "Zuviele Parameter"
+
+#. Programmer's name for it: RS_NOT_ENOUGH_PARAMETERS_SD
+#: u_dzGetOpt.pas:117 
+msgid "There are not enough %s parameters (min: %d)"
+msgstr "Nicht genügend %s Parameter (min: %d)"
+
+#. Programmer's name for it: RS_DISPLAY_PARAMETER_HELP
+#: u_dzGetOpt.pas:118 
+msgid "display parameter help"
+msgstr "Parameter Hilfe anzeigen"
+
+#. Programmer's name for it: RS_OPTION_IS_UNKNOWN_S
+#: u_dzGetOpt.pas:119 
+msgid "Option %s is unknown"
+msgstr "Option %s ist nciht bekannt"
+
+#. Programmer's name for it: RS_OPTION_REQUIRES_VALUE_S
+#: u_dzGetOpt.pas:120 
+msgid "Option %s requires a value."
+msgstr "Option %s benötigt einen Wert."
+
+#. Programmer's name for it: RS_OPTIONS
+#: u_dzGetOpt.pas:121 
+msgid "[options]"
+msgstr "[Optionen]"
+
+#. Programmer's name for it: RS_OPTION_NAME_CANNOT_BE_EMPTY
+#: u_dzOptionDescList.pas:59 
+msgid "Option name cannot be empty."
+msgstr "Optionsname kann nicht leer sein."
+
+#. Programmer's name for it: RS_OPTION_NAME_MUST_START_WITH_ALPHANUMERIC
+#: u_dzOptionDescList.pas:60 
+msgid "Option name must start with an alphanumeric character."
+msgstr "Optionsname muss mit einem alphanumerischen Zeichen beginnen."
+
+#. Programmer's name for it: RS_OPTION_NAME_CONTAINS_INVALID_CHAR_SD
+#: u_dzOptionDescList.pas:61 
+msgid "Option name contains invalid character \"%s\" (%d)."
+msgstr "Optionsname enthält ungültiges Zeichen \"%s\" (%d)"
+
+#. Programmer's name for it: RS_VALUE
+#: u_dzOptionDescList.pas:62 
+msgid "value"
+msgstr "Wert"
