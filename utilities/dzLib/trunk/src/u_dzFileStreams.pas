@@ -191,14 +191,14 @@ type
 implementation
 
 uses
+  u_dzTranslator,
   u_dzFileUtils,
   u_dzMiscUtils;
 
-resourcestring
-  STR_CANNOT_CHANGE_FILENAME_OF_OPEN_FILE = 'Cannot change filename when file is open.';
-  STR_INVALID_FILE_FLAGS = 'Invalid file flags';
-  STR_INVALID_FILE_ATTRIBUTES = 'Invalid file attributes';
-  STR_0S_ERROR_SD = '%1:s (%0:d)';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 const
   cFileAccessModeValues: array[TFileAccessModes] of DWORD =
@@ -252,11 +252,12 @@ end;
 
 procedure TdzFile.Open;
 var
-  s: string;
+  LastError: Cardinal;
 begin
-  s := STR_0S_ERROR_SD;
-  if not OpenNoException then
-    RaiseLastOSErrorEx(s);
+  if not OpenNoException then begin
+    LastError := GetLastError;
+    RaiseLastOSErrorEx(LastError, _('%1:s (%0:d)'));
+  end;
 end;
 
 function TdzFile.OpenNoException: boolean;
@@ -303,7 +304,7 @@ const
     FILE_ATTRIBUTE_SYSTEM or FILE_ATTRIBUTE_TEMPORARY;
 begin
   if (_FileAttributes and not cValidAttributes) <> 0 then
-    raise EdzFile.Create(STR_INVALID_FILE_ATTRIBUTES);
+    raise EdzFile.Create(_('Invalid file attributes'));
   FFileAttributes := _FileAttributes;
 end;
 
@@ -315,7 +316,7 @@ const
     FILE_FLAG_BACKUP_SEMANTICS or FILE_FLAG_POSIX_SEMANTICS);
 begin
   if (_FileFlags and not cValidFlags) <> 0 then
-    raise EdzFile.Create(STR_INVALID_FILE_FLAGS);
+    raise EdzFile.Create(_('Invalid file flags'));
   FFileFlags := _FileFlags;
 end;
 
@@ -334,7 +335,7 @@ end;
 procedure TdzFile.SetFilename(const _Filename: string);
 begin
   if Self.Handle <> integer(INVALID_HANDLE_VALUE) then
-    raise EdzFile.Create(STR_CANNOT_CHANGE_FILENAME_OF_OPEN_FILE);
+    raise EdzFile.Create(_('Cannot change filename when file is open.'));
   FFilename := _Filename;
 end;
 
