@@ -8,25 +8,25 @@ uses
   Variants;
 
 type
-  {: raised if there is a conversion error in one of the Var2XxxEx functions }
+  ///<summary> raised if there is a conversion error in one of the Var2XxxEx functions </summary>
   EVariantConvertError = class(Exception);
-  {: raised if the variant passed to one of the Var2XxxEx functions is null }
+  ///<summary> raised if the variant passed to one of the Var2XxxEx functions is null </summary>
   EVarIsNull = class(EVariantConvertError);
-  {: raised if the variant passed to one of the Var2XxxEx functions is empty }
+  ///<summary> raised if the variant passed to one of the Var2XxxEx functions is empty </summary>
   EVarIsEmpty = class(EVariantConvertError);
 
-{: converts a variant to its string representation (for debugging) }
+///<summary> converts a variant to its string representation (for debugging / logging) </summary>
 function toString(_v: OleVariant): string; overload;
 
-{: Checks whether a variant is a type that can be assigned to an integer (signed 32 bit),
-   Note: Excludes longword and Int64, even if the value may be <= MaxLongInt }
+///<summary> Checks whether a variant is a type that can be assigned to an integer (signed 32 bit),
+///          Note: Excludes longword and Int64, even if the value may be <= MaxLongInt </summary>
 function VarIsInteger(_v: variant): boolean;
 
-{: Checks whether a variant is of a type that can be assigned to a longword (unsigned 32 bit),
-   Note: Excludes signed integers, even if the value may be positive }
+///<summary> Checks whether a variant is of a type that can be assigned to a longword (unsigned 32 bit),
+//           Note: Excludes signed integers, even if the value may be positive </summary>
 function VarIsLongWord(_v: variant): boolean;
 
-{: Checks whether a variant is of a type that can be assigned to an Int64 (signed 64 bit) }
+///<summary> Checks whether a variant is of a type that can be assigned to an Int64 (signed 64 bit) </summary>
 function VarIsInt64(_v: variant): boolean;
 
 // Variant to other type conversion functions
@@ -37,30 +37,30 @@ function VarIsInt64(_v: variant): boolean;
 // Var2XxxEx converts from variant to type Xxx, but raises an exception if
 // variant is NULL, using the Source for the message.
 
-{: Converts a variant to an integer.
-   If v is null or empty, it returns false
-   @param(v Variant value to convert)
-   @param(Value is the variants integer value, only valid if the function
-          returns true.)
-   @returns(true, if the variant could be converted to integer, false if not.) }
+///<summary> Converts a variant to an integer.
+///          If v is null or empty, it returns false
+///          @param v Variant value to convert
+///          @param Value is the variants integer value, only valid if the function
+///                       returns true.
+///          @returns true, if the variant could be converted to integer, false if not. </summary>
 function TryVar2Int(const _v: variant; out _Value: integer): boolean;
 function TryVar2Int64(const _v: variant; out _Value: int64): boolean;
 
-{: Converts a variant to an integer.
-   If v is null or empty, it returns the Default.
-   @param(v Variant value to convert)
-   @param(Default Value to return if v is empty or null)
-   @returns(the integer value of v or the Default if v can not be converted) }
+///<summary> Converts a variant to an integer.
+///          If v is null or empty, it returns the Default.
+///          @param v Variant value to convert
+///          @param Default Value to return if v is empty or null
+///          @returns the integer value of v or the Default if v can not be converted </summary>
 function Var2Int(const _v: variant; _Default: integer): integer;
 
-{: Converts a variant to an integer.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the integer value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
+///<summary> Converts a variant to an integer.
+///          Raises an exception if v can not be converted.
+///          @param v Variant value to convert
+///          @param Source string to include in the exception message
+///          @returns the integer value of v
+///          @raises EVarIsNull if v is null
+///          @raises EVarIsEmpty if v is empty
+///          @raises EVariantConvertError if there is some other conversion error </summary>
 function Var2IntEx(const _v: variant; const _Source: string): integer;
 
 ///<summary> tries to convert a variant to a boolean
@@ -71,12 +71,12 @@ function TryVar2Bool(const _v: variant; out _b: Boolean): boolean;
 ///<summary> Converts a variant to a boolean </summary>
 function Var2BoolEx(const _v: variant; const _Source: string): boolean;
 
-{: Converts a variant to the string representation of an integer.
-   If v is null or empty, it returns the NullValue.
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(the string representation of the integer value of v or the
-            NullValue if v can not be converted) }
+///<summary> Converts a variant to the string representation of an integer.
+///          If v is null or empty, it returns the NullValue.
+///          @param v Variant value to convert
+///          @param NullValue String value to return if v is empty or null
+///          @returns the string representation of the integer value of v or the
+///                   NullValue if v can not be converted </summary>
 function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
 ///<summary> tries to convert a variant to a double
@@ -88,11 +88,11 @@ function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): str
 ///          @raises EVariantConvertError if there is some other conversion error </summary>
 function TryVar2Dbl(const _v: variant; out _Value: double): boolean;
 
-{: Converts a variant to a double.
-   If v is null or empty, it returns the Default.
-   @param(v Variant value to convert)
-   @param(Default Value to return if v is empty or null)
-   @returns(the double value of v or the Default if v can not be converted) }
+///<summary> Converts a variant to a double.
+///          If v is null or empty, it returns the Default.
+///          @param v Variant value to convert
+///          @param Default Value to return if v is empty or null
+///          @returns the double value of v or the Default if v can not be converted </summary>
 function Var2Dbl(const _v: variant; const _Default: double): double;
 
 ///<summary> Converts a variant to a double.
@@ -105,13 +105,13 @@ function Var2Dbl(const _v: variant; const _Default: double): double;
 ///          @raises EVariantConvertError if there is some other conversion error </summary>
 function Var2DblEx(const _v: variant; const _Source: string): double;
 
-{: Converts a variant to the string representation of a double.
-   If v is null or empty, it returns the Default.
-   It uses Float2Str (not FloatToStr) with a '.' as decimal separator.
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(the string representation of the double value of v or the
-            NullValue if v can not be converted) }
+///<summary> Converts a variant to the string representation of a double.
+///          If v is null or empty, it returns the Default.
+///          It uses Float2Str (not FloatToStr) with a '.' as decimal separator.
+///          @param v Variant value to convert
+///          @param NullValue String value to return if v is empty or null
+///          @returns the string representation of the double value of v or the
+///                   NullValue if v can not be converted </summary>
 function Var2DblStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
 ///<summary> tries to convert a variant to an extended
@@ -133,68 +133,65 @@ function TryVar2Ext(const _v: variant; out _Value: extended): boolean;
 ///          @raises EVariantConvertError if there is some other conversion error </summary>
 function Var2ExtEx(const _v: variant; const _Source: string): extended;
 
-{: Converts a variant to a TDateTime.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the TDateTime value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
+///<summary> Converts a variant to a TDateTime.
+///          Raises an exception if v can not be converted.
+///          @param v Variant value to convert
+///          @param Source string to include in the exception message
+///          @returns the TDateTime value of v
+///          @raises EVarIsNull if v is null
+///          @raises EVarIsEmpty if v is empty
+///          @raises EVariantConvertError if there is some other conversion error </summary>
 function Var2DateTimeEx(const _v: variant; const _Source: string): TDateTime;
 
 function TryVar2DateTime(const _v: Variant; out _dt: TDateTime): boolean;
 
-{: Converts a variant to an ISO format DateTime string (yyyy-mm-dd hh:mm:ss)
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(an ISO format DateTime string of v or NullValue if v can not be converted) }
+///<summary> Converts a variant to an ISO format DateTime string (yyyy-mm-dd hh:mm:ss)
+///          @param v Variant value to convert
+///          @param NullValue String value to return if v is empty or null
+///          @returns an ISO format DateTime string of v or NullValue if v can not be converted </summary>
 function Var2DateTimeStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
-{: Converts a variant to an ISO format Date string (yyyy-mm-dd)
-   @param(v Variant value to convert)
-   @param(NullValue String value to return if v is empty or null)
-   @returns(an ISO format Date string of v or NullValue if v can not be converted) }
+///<summary> Converts a variant to an ISO format Date string (yyyy-mm-dd)
+///          @param v Variant value to convert
+///          @param NullValue String value to return if v is empty or null
+///          @returns an ISO format Date string of v or NullValue if v can not be converted </summary>
 function Var2DateStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
-{: Converts a variant to a string
-   If v is null or empty, it returns false.
-   @param(v Variant value to convert)
-   @param(Value is the variant's string value, only valid if the function
-                returns true.)
-   @returns(true, if the variant could be converted to double, false if not) }
+///<summary> Converts a variant to a string
+///          If v is null or empty, it returns false.
+///          @param v Variant value to convert
+///          @param Value is the variant's string value, only valid if the function
+///                       returns true.
+///          @returns true, if the variant could be converted to double, false if not </summary>
 function TryVar2Str(const _v: variant; out _Value: string): boolean;
 
-{: Converts a variant to a string.
-   If v is null or empty, it returns the Default.
-   @param(v Variant value to convert)
-   @param(Default Value to return if v is empty or null)
-   @returns(the string value of v or the Default if v can not be converted) }
+///<summary> Converts a variant to a string.
+///          If v is null or empty, it returns the Default.
+///          @param v Variant value to convert
+///          @param Default Value to return if v is empty or null
+///          @returns the string value of v or the Default if v can not be converted </summary>
 function Var2Str(const _v: variant; const _Default: string = '*NULL*'): string;
 
-{: Converts a variant to a string.
-   Raises an exception if v can not be converted.
-   @param(v Variant value to convert)
-   @param(Source string to include in the exception message)
-   @returns(the string value of v)
-   @raises(EVarIsNull if v is null)
-   @raises(EVarIsEmpty if v is empty)
-   @raises(EVariantConvertError if there is some other conversion error) }
+///<summary> Converts a variant to a string.
+///          Raises an exception if v can not be converted.
+///          @param v Variant value to convert
+///          @param Source string to include in the exception message
+///          @returns the string value of v
+///          @raises EVarIsNull if v is null
+///          @raises EVarIsEmpty if v is empty
+///          @raises EVariantConvertError if there is some other conversion error </summary>
 function Var2StrEx(_v: variant; const _Source: string): string;
 
 implementation
 
 uses
+  u_dzTranslator,
   u_dzConvertUtils;
 
-resourcestring
-  // Variant ist Null, sollte %s sein: %s
-  STR_VARIANT_IS_NULL_SHOULD_BE_SS = 'Variant is Null, should be %s: %s';
-  // Variant ist Empty, sollte %s sein: %s
-  STR_VARIANT_IS_EMPTY_SHOULD_BE_SS = 'Variant is Empty, should be %s: %s';
-  // Variant kann nicht nach %s konvertiert werden: %s
-  STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_S = 'Variant can not be converted to %s';
-  STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS = 'Variant can not be converted to %s: %s';
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 function toString(_v: OleVariant): string;
 var
@@ -280,16 +277,18 @@ begin
 end;
 
 function Var2IntEx(const _v: variant; const _Source: string): integer;
+const
+  EXPECTED = 'Integer'; // do not translate
 begin
   if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['Integer', _Source]); // do not translate
+    raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['Integer', _Source]); // do not translate
+    raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
   try
     Result := _v;
   except
     on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS, ['Integer', _Source]); // do not translate
+      raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
 end;
 
@@ -307,16 +306,18 @@ begin
 end;
 
 function Var2BoolEx(const _v: variant; const _Source: string): boolean;
+const
+  EXPECTED = 'Boolean'; // do not translate
 begin
   if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['Boolean', _Source]); // do not translate
+    raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['Boolean', _Source]); // do not translate
+    raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
   try
     Result := _v;
   except
     on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS, ['Boolean', _Source]); // do not translate
+      raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
 end;
 
@@ -331,16 +332,18 @@ begin
 end;
 
 function Var2DateTimeEx(const _v: variant; const _Source: string): TDateTime;
+const
+  EXPECTED = 'Date'; // do not translate
 begin
   if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['Date', _Source]); // do not translate
+    raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['Date', _Source]); // do not translate
+    raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
   try
     Result := _v;
   except
     on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS, ['Date', _Source]); // do not translate
+      raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
 end;
 
@@ -383,7 +386,7 @@ end;
 
 function TryVar2Dbl(const _v: variant; out _Value: double): boolean;
 const
-  EXPECTED = 'double';
+  EXPECTED = 'double'; // do not translate
 begin
   Result := not VarIsNull(_v) and not VarIsEmpty(_v);
   if Result then
@@ -391,13 +394,13 @@ begin
       _Value := _v;
     except
       on e: EVariantError do
-        raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_S, [EXPECTED]); // do not translate
+        raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s'), [EXPECTED]);
     end;
 end;
 
 function TryVar2Ext(const _v: variant; out _Value: extended): boolean;
 const
-  EXPECTED = 'extended';
+  EXPECTED = 'extended'; // do not translate
 begin
   Result := not VarIsNull(_v) and not VarIsEmpty(_v);
   if Result then
@@ -405,7 +408,7 @@ begin
       _Value := _v;
     except
       on e: EVariantError do
-        raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_S, [EXPECTED]); // do not translate
+        raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s'), [EXPECTED]);
     end;
 end;
 
@@ -417,33 +420,33 @@ end;
 
 function Var2DblEx(const _v: variant; const _Source: string): double;
 const
-  EXPECTED = 'double';
+  EXPECTED = 'double'; // do not translate
 begin
   if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, [EXPECTED, _Source]); // do not translate
+    raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, [EXPECTED, _Source]); // do not translate
+    raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
   try
     Result := _v;
   except
     on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS, [EXPECTED, _Source]); // do not translate
+      raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
 end;
 
 function Var2ExtEx(const _v: variant; const _Source: string): extended;
 const
-  EXPECTED = 'extended';
+  EXPECTED = 'extended'; // do not translate
 begin
   if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, [EXPECTED, _Source]); // do not translate
+    raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, [EXPECTED, _Source]); // do not translate
+    raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
   try
     Result := _v;
   except
     on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS, [EXPECTED, _Source]); // do not translate
+      raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
 end;
 
@@ -458,6 +461,8 @@ begin
 end;
 
 function TryVar2Str(const _v: variant; out _Value: string): boolean;
+const
+  EXPECTED = 'String'; // do not translate
 begin
   Result := not VarIsNull(_v) and not VarIsEmpty(_v);
   if Result then
@@ -465,7 +470,7 @@ begin
       _Value := _v;
     except
       on e: EVariantError do
-        raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_S, ['String']); // do not translate
+        raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s'), [EXPECTED]);
     end;
 end;
 
@@ -476,16 +481,18 @@ begin
 end;
 
 function Var2StrEx(_v: variant; const _Source: string): string;
+const
+  EXPECTED = 'string'; // do not translate
 begin
   if VarIsNull(_v) then
-    raise EVarIsNull.CreateFmt(STR_VARIANT_IS_NULL_SHOULD_BE_SS, ['String', _Source]); // do not translate
+    raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
-    raise EVarIsEmpty.CreateFmt(STR_VARIANT_IS_EMPTY_SHOULD_BE_SS, ['String', _Source]); // do not translate
+    raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
   try
     Result := _v;
   except
     on e: EVariantError do
-      raise EVariantConvertError.CreateFmt(STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS, ['String', _Source]); // do not translate
+      raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
 end;
 

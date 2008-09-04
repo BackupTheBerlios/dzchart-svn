@@ -1,11 +1,12 @@
 unit u_dzRingBuffer;
 
-{$I globaldef.inc}
+{$I jedi.inc}
 
 interface
 
 uses
-  Windows;
+  Windows,
+  SysUtils;
 
 type
   EdzRingBuffer = class(Exception);
