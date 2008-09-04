@@ -17,168 +17,173 @@ type
 type
   TdzCustomRingBuffer = class
   protected
-    {: size of one element stored in this buffer }
-    fElementSize: integer;
-    {: length of the buffer }
-    fLength: integer;
-    {: pointer to a memory block that stores the buffer }
-    fBuffer: PByte;
-    {: position of the first element stored in the buffer,
-       if fFirstUsed = fFirstFree the buffer is empty }
-    fFirstUsed: integer;
-    {: position of the next element bo be stored in the buffer
-       if fFirstUsed = fFirstFree the buffer is empty }
-    fFirstFree: integer;
-    {: number of elements stored in the buffer }
-    fElementCount: integer;
-    {: is called by the destructor to do any finalization that might be
-       necessary for the elements stored in the buffer. Does nothing here. }
+    ///<summary> size of one element stored in this buffer </summary>
+    FElementSize: integer;
+    ///<summary> length of the buffer </summary>
+    FLength: integer;
+    ///<summary> pointer to a memory block that stores the buffer </summary>
+    FBuffer: PByte;
+    ///<summary> position of the first element stored in the buffer,
+    ///          if fFirstUsed = fFirstFree the buffer is empty </summary>
+    FFirstUsed: integer;
+    ///<summary> position of the next element bo be stored in the buffer
+    ///          if fFirstUsed = fFirstFree the buffer is empty </summary>
+    FFirstFree: integer;
+    ///<summary> number of elements stored in the buffer </summary>
+    FElementCount: integer;
+    ///<summary> is called by the destructor to do any finalization that might be
+    ///          necessary for the elements stored in the buffer. Does nothing here. </summary>
     procedure FinalizeElements; virtual;
-    {: inserts the given Element in front of the buffer }
+    ///<summary> inserts the given Element in front of the buffer </summary>
     procedure InsertFront(const _Element); virtual;
-    {: inserts the given Element at the end of the buffer }
+    ///<summary> inserts the given Element at the end of the buffer </summary>
     procedure InsertEnd(const _Element); virtual;
-    {: extracts the first Element from the buffer }
+    ///<summary> extracts the first Element from the buffer </summary>
     procedure ExtractFront(var _Element); virtual;
-    {: extracts the last Element from the buffer }
+    ///<summary> extracts the last Element from the buffer </summary>
     procedure ExtractEnd(var _Element); virtual;
-    {: gets the Element with the index Idx }
+    ///<summary> gets the Element with the index Idx </summary>
     procedure GetElement(_Idx: integer; var _Element); virtual;
-    {: sets the Element with the index Idx, note: No finalization is done
-       for the element previously stored at Idx. }
+    ///<summary> sets the Element with the index Idx, note: No finalization is done
+    ///          for the element previously stored at Idx. </summary>
     procedure SetElement(_Idx: integer; const _Element); virtual;
-    {: gets the first Element from the buffer }
+    ///<summary> gets the first Element from the buffer </summary>
     procedure GetFirst(var _Element); virtual;
-    {: gets the last Element from the buffer }
+    ///<summary> gets the last Element from the buffer </summary>
     procedure GetLast(var _Element); virtual;
-    {: checks whether there is enough space for another element in the buffer }
+    ///<summary> checks whether there is enough space for another element in the buffer </summary>
     procedure CheckFull; virtual;
-    {: checks whether there are any elements in the buffer }
+    ///<summary> checks whether there are any elements in the buffer </summary>
     procedure CheckEmpty; virtual;
-    {: returns true, if the buffer is full }
+    ///<summary> returns true, if the buffer is full </summary>
     function IsFull: boolean; virtual;
-    {: returns true, if the buffer is empty }
+    ///<summary> returns true, if the buffer is empty </summary>
     function IsEmpty: boolean; virtual;
-    {: returns the number of elements stored in the buffer }
+    ///<summary> returns the number of elements stored in the buffer </summary>
     function GetCount: integer; virtual;
-    {: deletes all elements from the buffer }
+    ///<summary> deletes all elements from the buffer </summary>
     procedure Clear; virtual;
   public
-    {: creates a ringbuffer with enough space to store Length elements of
-       ElementSize bytes size }
+    ///<summary> creates a ringbuffer with enough space to store Length elements of
+    ///          ElementSize bytes size </summary>
     constructor Create(_ElementSize: integer; _Length: integer);
-    {: calls FinalizeElements and frees the memory allocated for the buffer }
+    ///<summary> calls FinalizeElements and frees the memory allocated for the buffer </summary>
     destructor Destroy; override;
   end;
 
 type
-  {: publishes all methods of TdzCustomRingBuffer }
+  ///<summary> publishes all methods of TdzCustomRingBuffer </summary>
   TdzRingBuffer = class(TdzCustomRingbuffer)
   public
-    {: inserts the given Element in front of the buffer }
+    ///<summary> inserts the given Element in front of the buffer </summary>
     procedure InsertFront(const _Element); override;
-    {: inserts the given Element at the end of the buffer }
+    ///<summary> inserts the given Element at the end of the buffer </summary>
     procedure InsertEnd(const _Element); override;
-    {: extracts the first Element from the buffer }
+    ///<summary> extracts the first Element from the buffer </summary>
     procedure ExtractFront(var _Element); override;
-    {: extracts the last Element from the buffer }
+    ///<summary> extracts the last Element from the buffer </summary>
     procedure ExtractEnd(var _Element); override;
-    {: gets the Element with the index Idx }
+    ///<summary> gets the Element with the index Idx </summary>
     procedure GetElement(_Idx: integer; var _Element); override;
-    {: sets the Element with the index Idx, note: No finalization is done
-       for the element previously stored at Idx. }
+    ///<summary> sets the Element with the index Idx, note: No finalization is done
+    ///          for the element previously stored at Idx. </summary>
     procedure SetElement(_Idx: integer; const _Element); override;
-    {: gets the first Element from the buffer }
+    ///<summary> gets the first Element from the buffer </summary>
     procedure GetFirst(var _Element); override;
-    {: gets the last Element from the buffer }
+    ///<summary> gets the last Element from the buffer </summary>
     procedure GetLast(var _Element); override;
-    {: checks whether there is enough space for another element in the buffer }
+    ///<summary> checks whether there is enough space for another element in the buffer </summary>
     procedure CheckFull; override;
-    {: checks whether there are any elements in the buffer }
+    ///<summary> checks whether there are any elements in the buffer </summary>
     procedure CheckEmpty; override;
-    {: returns true, if the buffer is full }
+    ///<summary> returns true, if the buffer is full </summary>
     function IsFull: boolean; override;
-    {: returns true, if the buffer is empty }
+    ///<summary> returns true, if the buffer is empty </summary>
     function IsEmpty: boolean; override;
-    {: returns the number of elements stored in the buffer }
+    ///<summary> returns the number of elements stored in the buffer </summary>
     function GetCount: integer; override;
-    {: deletes all elements from the buffer }
+    ///<summary> deletes all elements from the buffer </summary>
     procedure Clear; override;
   end;
 
 type
-  {: makes only those methods public that are useful for a stack }
+  ///<summary> makes only those methods public that are useful for a stack
+  ///          (Yes, it doesn't really make much sense implementing a stack
+  ///          as a ring buffer.) </summary>
   TdzRingStack = class(TdzCustomRingbuffer)
   public
-    {: inserts the given Element at the end of the buffer }
+    ///<summary> inserts the given Element at the end of the buffer </summary>
     procedure InsertEnd(const _Element); override;
-    {: extracts the last Element from the buffer }
+    ///<summary> extracts the last Element from the buffer </summary>
     procedure ExtractEnd(var _Element); override;
-    {: gets the Element with the index Idx }
+    ///<summary> gets the Element with the index Idx </summary>
     procedure GetElement(_Idx: integer; var _Element); override;
-    {: sets the Element with the index Idx, note: No finalization is done
-       for the element previously stored at Idx. }
+    ///<summary> sets the Element with the index Idx, note: No finalization is done
+    ///          for the element previously stored at Idx. <summary>
     procedure SetElement(_Idx: integer; const _Element); override;
-    {: gets the last Element from the buffer }
+    ///<summary> gets the last Element from the buffer </summary>
     procedure GetLast(var _Element); override;
-    {: returns true, if the buffer is full }
+    ///<summary> returns true, if the buffer is full </summary>
     function IsFull: boolean; override;
-    {: returns true, if the buffer is empty }
+    ///<summary> returns true, if the buffer is empty </summary>
     function IsEmpty: boolean; override;
-    {: returns the number of elements stored in the buffer }
+    ///<summary> returns the number of elements stored in the buffer </summary>
     function GetCount: integer; override;
-    {: deletes all elements from the buffer }
+    ///<summary> deletes all elements from the buffer </summary>
     procedure Clear; override;
   end;
 
 type
-  {: makes only those methods public that are usefull for a queue }
+  ///<summary> makes only those methods public that are usefull for a queue </summary>
   TdzRingQueue = class(TdzCustomRingbuffer)
-    {: inserts the given Element at the end of the buffer }
+    ///<summary> inserts the given Element at the end of the buffer </summary>
     procedure InsertEnd(const _Element); override;
-    {: extracts the first Element from the buffer }
+    ///<summary> extracts the first Element from the buffer </summary>
     procedure ExtractFront(var _Element); override;
-    {: gets the Element with the index Idx }
+    ///<summary> gets the Element with the index Idx </summary>
     procedure GetElement(_Idx: integer; var _Element); override;
-    {: sets the Element with the index Idx, note: No finalization is done
-       for the element previously stored at Idx. }
+    ///<summary> sets the Element with the index Idx, note: No finalization is done
+    ///          for the element previously stored at Idx. </summary>
     procedure SetElement(_Idx: integer; const _Element); override;
-    {: gets the first Element from the buffer }
+    ///<summary> gets the first Element from the buffer </summary>
     procedure GetFirst(var _Element); override;
-    {: returns true, if the buffer is full }
+    ///<summary> returns true, if the buffer is full </summary>
     function IsFull: boolean; override;
-    {: returns true, if the buffer is empty }
+    ///<summary> returns true, if the buffer is empty </summary>
     function IsEmpty: boolean; override;
-    {: returns the number of elements stored in the buffer }
+    ///<summary> returns the number of elements stored in the buffer </summary>
     function GetCount: integer; override;
-    {: deletes all elements from the buffer }
+    ///<summary> deletes all elements from the buffer </summary>
     procedure Clear; override;
   end;
 
 implementation
 
-resourcestring
-  RS_INDEX_OUT_OF_BOUNDS_D = 'Index %d out of bounds.';
-  RS_BUFFER_IS_FULL = 'Buffer is full';
-  RS_BUFFER_IS_EMPTY = 'Buffer is empty';
+uses
+  u_dzTranslator;
+
+function _(const _s: string): string; inline;
+begin
+  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+end;
 
 { TdzCustomRingBuffer }
 
 constructor TdzCustomRingBuffer.Create(_ElementSize, _Length: integer);
 begin
   inherited Create;
-  fLength := _Length;
-  fElementSize := _ElementSize;
-  fFirstUsed := 0;
-  fFirstFree := 0;
-  GetMem(fBuffer, fLength * fElementSize);
+  FLength := _Length;
+  FElementSize := _ElementSize;
+  FFirstUsed := 0;
+  FFirstFree := 0;
+  GetMem(FBuffer, FLength * FElementSize);
 end;
 
 destructor TdzCustomRingBuffer.Destroy;
 begin
-  if Assigned(fBuffer) and (fLength > 0) then begin
+  if Assigned(FBuffer) and (FLength > 0) then begin
     FinalizeElements;
-    FreeMem(fBuffer);
+    FreeMem(FBuffer);
   end;
   inherited;
 end;
@@ -193,11 +198,11 @@ var
   p: PByte;
 begin
   CheckFull;
-  fFirstUsed := (fFirstUsed - 1) mod fLength;
-  p := fBuffer;
-  Inc(p, fFirstUsed * fElementSize);
-  Move(_Element, p^, fElementSize);
-  Inc(fElementCount);
+  FFirstUsed := (FFirstUsed - 1) mod FLength;
+  p := FBuffer;
+  Inc(p, FFirstUsed * FElementSize);
+  Move(_Element, p^, FElementSize);
+  Inc(FElementCount);
 end;
 
 procedure TdzCustomRingBuffer.InsertEnd(const _Element);
@@ -205,11 +210,11 @@ var
   p: PByte;
 begin
   CheckFull;
-  p := fBuffer;
-  Inc(p, fFirstFree * fElementSize);
-  Move(_Element, p^, fElementSize);
-  fFirstFree := (fFirstFree + 1) mod fLength;
-  Inc(fElementCount);
+  p := FBuffer;
+  Inc(p, FFirstFree * FElementSize);
+  Move(_Element, p^, FElementSize);
+  FFirstFree := (FFirstFree + 1) mod FLength;
+  Inc(FElementCount);
 end;
 
 procedure TdzCustomRingBuffer.ExtractFront(var _Element);
@@ -217,11 +222,11 @@ var
   p: PByte;
 begin
   CheckEmpty;
-  p := fBuffer;
-  Inc(p, fFirstUsed * fElementSize);
-  Move(p^, _Element, fElementSize);
-  fFirstUsed := (fFirstUsed + 1) mod fLength;
-  Dec(fElementCount);
+  p := FBuffer;
+  Inc(p, FFirstUsed * FElementSize);
+  Move(p^, _Element, FElementSize);
+  FFirstUsed := (FFirstUsed + 1) mod FLength;
+  Dec(FElementCount);
 end;
 
 procedure TdzCustomRingBuffer.ExtractEnd(var _Element);
@@ -229,33 +234,33 @@ var
   p: PByte;
 begin
   CheckEmpty;
-  fFirstFree := (fFirstFree - 1) mod fLength;
-  p := fBuffer;
-  Inc(p, fFirstFree * fElementSize);
-  Move(p^, _Element, fElementSize);
-  Dec(fElementCount);
+  FFirstFree := (FFirstFree - 1) mod FLength;
+  p := FBuffer;
+  Inc(p, FFirstFree * FElementSize);
+  Move(p^, _Element, FElementSize);
+  Dec(FElementCount);
 end;
 
 procedure TdzCustomRingBuffer.GetElement(_Idx: integer; var _Element);
 var
   p: PByte;
 begin
-  if (fFirstUsed + _Idx) mod fLength >= fFirstFree then
-    raise EIndexOutOfBounds.CreateFmt(RS_INDEX_OUT_OF_BOUNDS_D, [_Idx]);
-  p := fBuffer;
-  Inc(p, (fFirstUsed + _Idx) * fElementSize);
-  Move(p^, _Element, fElementSize);
+  if (FFirstUsed + _Idx) mod FLength >= FFirstFree then
+    raise EIndexOutOfBounds.CreateFmt(_('Index %d out of bounds.'), [_Idx]);
+  p := FBuffer;
+  Inc(p, (FFirstUsed + _Idx) * FElementSize);
+  Move(p^, _Element, FElementSize);
 end;
 
 procedure TdzCustomRingBuffer.SetElement(_Idx: integer; const _Element);
 var
   p: PByte;
 begin
-  if (fFirstUsed + _Idx) mod fLength >= fFirstFree then
-    raise EIndexOutOfBounds.CreateFmt(RS_INDEX_OUT_OF_BOUNDS_D, [_Idx]);
-  p := fBuffer;
-  Inc(p, (fFirstUsed + _Idx) * fElementSize);
-  Move(_Element, p^, fElementSize);
+  if (FFirstUsed + _Idx) mod FLength >= FFirstFree then
+    raise EIndexOutOfBounds.CreateFmt(_('Index %d out of bounds.'), [_Idx]);
+  p := FBuffer;
+  Inc(p, (FFirstUsed + _Idx) * FElementSize);
+  Move(_Element, p^, FElementSize);
 end;
 
 procedure TdzCustomRingBuffer.GetFirst(var _Element);
@@ -270,37 +275,37 @@ end;
 
 function TdzCustomRingBuffer.IsFull: boolean;
 begin
-  Result := fElementCount >= fLength;
+  Result := FElementCount >= FLength;
 end;
 
 procedure TdzCustomRingBuffer.CheckFull;
 begin
   if IsFull then
-    raise EBufferFull.Create(RS_BUFFER_IS_FULL);
+    raise EBufferFull.Create('Buffer is full');
 end;
 
 function TdzCustomRingBuffer.IsEmpty: boolean;
 begin
-  Result := fElementCount = 0;
+  Result := FElementCount = 0;
 end;
 
 procedure TdzCustomRingBuffer.CheckEmpty;
 begin
   if IsEmpty then
-    raise EBufferEmpty.Create(RS_BUFFER_IS_EMPTY);
+    raise EBufferEmpty.Create('Buffer is empty');
 end;
 
 function TdzCustomRingBuffer.GetCount: integer;
 begin
-  Result := fElementCount;
+  Result := FElementCount;
 end;
 
 procedure TdzCustomRingBuffer.Clear;
 begin
   FinalizeElements;
-  fFirstUsed := 0;
-  fFirstFree := 0;
-  fElementCount := 0;
+  FFirstUsed := 0;
+  FFirstFree := 0;
+  FElementCount := 0;
 end;
 
 { TdzRingBuffer }
