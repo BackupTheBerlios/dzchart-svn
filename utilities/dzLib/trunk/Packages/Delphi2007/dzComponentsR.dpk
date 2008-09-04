@@ -33,11 +33,14 @@ requires
   vclx,
   vcljpg,
   vcldb,
-  dbrtl;
+  dbrtl,
+  vclshlctrls;
 
 contains
   c_dzShellControls in '..\..\components\c_dzShellControls.pas',
   c_dzVirtualStringGrid in '..\..\components\c_dzVirtualStringGrid.pas',
-  u_dzVclUtils in '..\..\src\u_dzVclUtils.pas';
+  u_dzVclUtils in '..\..\src\u_dzVclUtils.pas',
+  u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
+  u_dzStringUtils in '..\..\src\u_dzStringUtils.pas';
 
 end.

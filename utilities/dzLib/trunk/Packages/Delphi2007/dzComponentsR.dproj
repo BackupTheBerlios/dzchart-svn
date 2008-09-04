@@ -40,14 +40,6 @@
       
       
       
-      
-      
-      
-      
-      
-      
-      
-      
       <Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\dclofficexp100.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
     </Excluded_Packages></Delphi.Personality></BorlandProject></BorlandProject>
@@ -59,12 +51,15 @@
     </DelphiCompile>
     <DCCReference Include="..\..\components\c_dzShellControls.pas" />
     <DCCReference Include="..\..\components\c_dzVirtualStringGrid.pas" />
+    <DCCReference Include="..\..\src\dbrtl.dcp" />
+    <DCCReference Include="..\..\src\rtl.dcp" />
+    <DCCReference Include="..\..\src\u_dzConvertUtils.pas" />
+    <DCCReference Include="..\..\src\u_dzStringUtils.pas" />
     <DCCReference Include="..\..\src\u_dzVclUtils.pas" />
-    <DCCReference Include="C:\Documents and Settings\twm\dbrtl.dcp" />
-    <DCCReference Include="C:\Documents and Settings\twm\rtl.dcp" />
-    <DCCReference Include="C:\Documents and Settings\twm\vcl.dcp" />
-    <DCCReference Include="C:\Documents and Settings\twm\vcldb.dcp" />
-    <DCCReference Include="C:\Documents and Settings\twm\vcljpg.dcp" />
-    <DCCReference Include="C:\Documents and Settings\twm\vclx.dcp" />
+    <DCCReference Include="..\..\src\vcl.dcp" />
+    <DCCReference Include="..\..\src\vcldb.dcp" />
+    <DCCReference Include="..\..\src\vcljpg.dcp" />
+    <DCCReference Include="..\..\src\vclshlctrls.dcp" />
+    <DCCReference Include="..\..\src\vclx.dcp" />
   </ItemGroup>
 </Project>

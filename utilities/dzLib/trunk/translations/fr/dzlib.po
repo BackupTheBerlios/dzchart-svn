@@ -1,15 +1,15 @@
-# #-#-#-#-#  libs\dzlib\default.po (PACKAGE VERSION)  #-#-#-#-#
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# dzlib
+# Copyright (C) 2008
+# This file is distributed under the same license as the dzlib package.
+# Thomas Mueller <dzlib@dummzeuch.de>, 2008.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: dzlib\n"
-"POT-Creation-Date: 2008-07-18 15:02\n"
-"PO-Revision-Date: 2008-06-03 11:40+0100\n"
-"Last-Translator: Thomas Mueller <info@schniering.com>\n"
-"Language-Team: twm <dzlib@dummzeuch.de>\n"
+"Project-Id-Version: dzLib 1.0\n"
+"POT-Creation-Date: 2008-09-04 01:12\n"
+"PO-Revision-Date: 2008-07-18 15:04+0100\n"
+"Last-Translator: Thomas Mueller <dzlib@schniering.com>\n"
+"Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -212,19 +212,24 @@ msgstr "L'abscisse est invalide"
 msgid "Invalid value for DayOfWeek: %d"
 msgstr "Caractère  \"%s\" invalide dans  le champ  \"%s\""
 
+#: u_dzDefaultMain.pas:114 
+#, fuzzy
+msgid "Error: %s"
+msgstr "%1:s (%0:d)"
+
 #: u_dzDllLoader.pas:159 
 msgid "Could not load %s."
 msgstr ""
 
-#: u_dzDllLoader.pas:181 
+#: u_dzDllLoader.pas:180 
 msgid ""
 "Could not find entry point %s in %s\n"
 "ERROR= %%d, %%s"
 msgstr ""
 
-#: u_dzDllLoader.pas:195  u_dzDllLoader.pas:200 u_dzDllLoader.pas:205
-#: u_dzDllLoader.pas:210 u_dzDllLoader.pas:215 u_dzDllLoader.pas:220
-#: u_dzDllLoader.pas:225
+#: u_dzDllLoader.pas:194  u_dzDllLoader.pas:199 u_dzDllLoader.pas:204
+#: u_dzDllLoader.pas:209 u_dzDllLoader.pas:214 u_dzDllLoader.pas:219
+#: u_dzDllLoader.pas:224
 msgid "DLL entry point not initialized"
 msgstr ""
 
@@ -463,24 +468,24 @@ msgstr "Allocation du fichier de capture"
 
 #. Variant ist Null, sollte %s sein: %s
 #. Programmer's name for it: STR_VARIANT_IS_NULL_SHOULD_BE_SS
-#: u_dzVariantUtils.pas:191 
+#: u_dzVariantUtils.pas:192 
 msgid "Variant is Null, should be %s: %s"
 msgstr "La variation est nulle, devrait être %s: %s"
 
 #. Variant ist Empty, sollte %s sein: %s
 #. Programmer's name for it: STR_VARIANT_IS_EMPTY_SHOULD_BE_SS
-#: u_dzVariantUtils.pas:193 
+#: u_dzVariantUtils.pas:194 
 msgid "Variant is Empty, should be %s: %s"
 msgstr "La variation est vide, devrait être %s: %s"
 
 #. Variant kann nicht nach %s konvertiert werden: %s
 #. Programmer's name for it: STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_S
-#: u_dzVariantUtils.pas:195 
+#: u_dzVariantUtils.pas:196 
 msgid "Variant can not be converted to %s"
 msgstr "Un variant ne peut pas être converti en %s"
 
 #. Programmer's name for it: STR_VARIANT_CAN_NOT_BE_CONVERTED_TO_SS
-#: u_dzVariantUtils.pas:196 
+#: u_dzVariantUtils.pas:197 
 msgid "Variant can not be converted to %s: %s"
 msgstr "La variation ne peut pas être convertie de %s: %s"
 
@@ -525,17 +530,23 @@ msgid "Abort"
 msgstr "Annuler"
 
 #. f_dzWizard..p_Buttons..b_Next..Caption
-#: w_dzWizard.dfm:1210  w_dzWizard.pas:341
+#. f_dzWizardForm..p_Buttons..b_Next..Caption
+#: w_dzWizard.dfm:1210  w_dzWizardForm.dfm:1210 w_dzWizard.pas:341
+#: w_dzWizardForm.pas:222
 msgid "&Next >"
 msgstr ""
 
 #. f_dzWizard..p_Buttons..b_Cancel..Caption
-#: w_dzWizard.dfm:1223  w_dzWizard.pas:340
+#. f_dzWizardForm..p_Buttons..b_Cancel..Caption
+#: w_dzWizard.dfm:1223  w_dzWizardForm.dfm:1223 w_dzWizard.pas:340
+#: w_dzWizardForm.pas:221
 msgid "Cancel"
 msgstr "Annuler"
 
 #. f_dzWizard..p_Buttons..b_Prev..Caption
-#: w_dzWizard.dfm:1233  w_dzWizard.pas:339
+#. f_dzWizardForm..p_Buttons..b_Prev..Caption
+#: w_dzWizard.dfm:1233  w_dzWizardForm.dfm:1233 w_dzWizard.pas:339
+#: w_dzWizardForm.pas:220
 msgid "< &Previous"
 msgstr ""
 
@@ -604,7 +615,7 @@ msgstr ""
 msgid "too many parameters"
 msgstr ""
 
-#: w_dzWizard.pas:342 
+#: w_dzWizard.pas:342  w_dzWizardForm.pas:223
 msgid "&Finish"
 msgstr ""
 

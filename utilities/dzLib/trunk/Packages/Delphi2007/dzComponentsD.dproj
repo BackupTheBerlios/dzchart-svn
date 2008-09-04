@@ -32,14 +32,14 @@
     <DelphiCompile Include="dzComponentsD.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\..\components\dbrtl.dcp" />
-    <DCCReference Include="..\..\components\dzComponentsR.dcp" />
-    <DCCReference Include="..\..\components\rtl.dcp" />
     <DCCReference Include="..\..\components\u_dzShellControlsReg.pas" />
     <DCCReference Include="..\..\components\u_dzVirtualStringGridReg.pas" />
-    <DCCReference Include="..\..\components\vcl.dcp" />
-    <DCCReference Include="..\..\components\vcldb.dcp" />
-    <DCCReference Include="..\..\components\vcljpg.dcp" />
-    <DCCReference Include="..\..\components\vclx.dcp" />
+    <DCCReference Include="dbrtl.dcp" />
+    <DCCReference Include="dzComponentsR.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="vcldb.dcp" />
+    <DCCReference Include="vcljpg.dcp" />
+    <DCCReference Include="vclx.dcp" />
   </ItemGroup>
 </Project>
