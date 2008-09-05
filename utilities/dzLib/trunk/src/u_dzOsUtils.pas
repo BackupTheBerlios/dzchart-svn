@@ -101,7 +101,7 @@ uses
 
 function _(const _s: string): string; inline;
 begin
-  DGetText(_s, 'dzlib');
+  Result := DGetText(_s, 'dzlib');
 end;
 
 function GetComputerName: string;
