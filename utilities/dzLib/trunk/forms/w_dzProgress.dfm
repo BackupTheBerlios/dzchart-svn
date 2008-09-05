@@ -21,6 +21,7 @@ object f_dzProgress: Tf_dzProgress
     Top = 0
     Width = 30
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Action'
     Layout = tlCenter
   end
