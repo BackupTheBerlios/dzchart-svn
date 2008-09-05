@@ -15,10 +15,11 @@ uses
   Dialogs,
   StdCtrls,
   ExtCtrls,
+  u_dzTranslator,
   wf_dzWizardFrame;
 
 const
-  {: Sent as NewPageId if the old page is the first/last page in that direction }
+  ///<summary> Sent as NewPageId if the old page is the first/last page in that direction </summary>
   NO_MORE_PAGES = -1;
 
 type
@@ -81,33 +82,33 @@ type
   protected
     FPages: TPageList;
     procedure DoShow; override;
-    {: called before the new page is displayed
-       @param Direction gives the direction of the page change
-       @param OldPageId is the ID of the page we are about to leave
-       @param NewPageId is the ID of the page we are about to enter
-       @param OldPageData is the Data parameter of the page we are about to leave
-       @param NewPageData is the Data parameter of the page we are about to enter
-       @returns true if the page change is allowed
-       Note: This is also called on the last page when the user presses the
-       Finish button. }
+    ///<summary> called before the new page is displayed
+    ///          @param Direction gives the direction of the page change
+    ///          @param OldPageId is the ID of the page we are about to leave
+    ///          @param NewPageId is the ID of the page we are about to enter
+    ///          @param OldPageData is the Data parameter of the page we are about to leave
+    ///          @param NewPageData is the Data parameter of the page we are about to enter
+    ///          @returns true if the page change is allowed
+    ///          Note: This is also called on the last page when the user presses the
+    ///          Finish button. </summary>
     function DoBeforePageChange(_Direction: TPrevNext;
       _OldPageId: integer; var _NewPageId: integer;
       _OldPageData, _NewPageData: pointer): boolean; virtual;
-    {: called after the new page has been displayed
-       @param Direction gives the direction of the page change
-       @param OldPageId is the ID of the page we just left
-       @param NewPageId is the ID of the page we just entered
-       @param OldPageData is the Data parameter of the page we just left
-       @param NewPageData is the Data parameter of the page we just entered
-       Note: Is not called after the last page! }
+    ///<summary> called after the new page has been displayed
+    ///          @param Direction gives the direction of the page change
+    ///          @param OldPageId is the ID of the page we just left
+    ///          @param NewPageId is the ID of the page we just entered
+    ///          @param OldPageData is the Data parameter of the page we just left
+    ///          @param NewPageData is the Data parameter of the page we just entered
+    ///          Note: Is not called after the last page! </summary>
     procedure DoAfterPageChange(_Direction: TPrevNext;
       _OldPageId, _NewPageId: integer;
       _OldPageData, _NewPageData: pointer); virtual;
-    {: called after DoBeforePageChanged when the user presses the finish button
-       @returns true, if the dialog is done }
+    ///<summary> called after DoBeforePageChanged when the user presses the finish button
+    ///          @returns true, if the dialog is done </summary>
     function DoOnFinished: boolean; virtual;
-    {: Called when the user presses the cancel button.
-       @returns true, if canceling the dialog is allowed, false otherwise }
+    ///<summary> Called when the user presses the cancel button.
+    ///          @returns true, if canceling the dialog is allowed, false otherwise </summary>
     function DoOnCancel: boolean; virtual;
     procedure PageAdded(_PageFrame: Tfr_dzWizardFrame); virtual;
   public
@@ -148,8 +149,12 @@ implementation
 {$R *.DFM}
 
 uses
-  u_dzTranslator,
   u_dzVclUtils;
+
+function _(const _s: string): string; inline;
+begin
+  Result := dzDGetText(_s, 'dzlib');
+end;
 
 { TPageList }
 

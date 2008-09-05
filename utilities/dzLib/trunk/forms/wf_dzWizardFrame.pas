@@ -20,12 +20,12 @@ type
 
   TBeforePageChange = procedure(_Sender: TObject; _Direction: TPrevNext;
     _OldPageId: integer; var _NewPageId: integer;
-    _OldPage, _NewPage: Tfr_dzWizardFrame;
+    _OldPageData, _NewPageData: Pointer;
     var _CanChange: boolean) of object;
 
   TAfterPageChange = procedure(_Sender: TObject; _Direction: TPrevNext;
     _OldPageId, _NewPageId: integer;
-    _OldPage, _NewPage: Tfr_dzWizardFrame) of object;
+    _OldPageData, _NewPageData: Pointer) of object;
 
   Tfr_dzWizardFrame = class(TFrame)
   private
