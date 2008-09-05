@@ -26,6 +26,8 @@ uses
 function _(const _s: string): string;
 function GetText(const _s: string): string;
 function DGetText(const _s: string; const _TextDomain: string = ''): string;
+///<summary> use this if you pass variables rather than constants to avoid warnings in the dxgettext tool </summary>
+function dzDGetText(const _s: string; const _TextDomain: string = ''): string; inline;
 procedure TranslateComponent(_Object: TComponent; const _TextDomain: string = '');
 procedure RetranslateComponent(_Object: TComponent; const _TextDomain: string = '');
 procedure AddDomainForResourceString(const _Domain: string);
@@ -73,6 +75,11 @@ begin
 {$ELSE}
   Result := _s;
 {$ENDIF}
+end;
+
+function dzDGetText(const _s: string; const _TextDomain: string = ''): string; inline;
+begin
+  Result := DGetText(_s, _TextDomain);
 end;
 
 procedure TranslateComponent(_Object: TComponent; const _TextDomain: string = '');
