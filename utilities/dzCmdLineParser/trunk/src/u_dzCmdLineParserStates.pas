@@ -3,7 +3,8 @@ unit u_dzCmdLineParserStates;
 interface
 
 uses
-  u_dzCmdLineParser;
+  u_dzCmdLineParser,
+  u_dzTranslator;
 
 type
   TEngineStateAbstract = class(TInterfacedObject)
@@ -107,12 +108,11 @@ type
 implementation
 
 uses
-  SysUtils,
-  u_dzTranslator;
+  SysUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzCmdLineParser');
+  Result := dzDGetText(_s, 'dzCmdLineParser');
 end;
 
 { TEngineStateAbstract }

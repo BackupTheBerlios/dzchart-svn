@@ -5,6 +5,7 @@ interface
 uses
   SysUtils,
   Classes,
+  u_dzTranslator,
   u_dzParamDescList,
   u_dzParamFoundList,
   u_dzOptionDescList,
@@ -111,12 +112,11 @@ type
 implementation
 
 uses
-  u_dzCmdLineParser,
-  u_dzTranslator;
+  u_dzCmdLineParser;
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzCmdLineParser');
+  Result := dzDGetText(_s, 'dzCmdLineParser');
 end;
 
 { TdzGetOpt }

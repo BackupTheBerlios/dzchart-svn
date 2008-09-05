@@ -5,7 +5,7 @@
 set BASE=.
 
 @rem extract from subdirectories src and forms
-dxgettext --delphi -r -b %BASE%\src -b %BASE%\forms -o %BASE%
+dxgettext --delphi -r -b %BASE%\src -o %BASE%\
 
 @rem remove strings given in ignore.po
 msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po

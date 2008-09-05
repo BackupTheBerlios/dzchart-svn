@@ -5,6 +5,7 @@ interface
 uses
   SysUtils,
   Classes,
+  u_dzTranslator,
   u_dzQuicksort;
 
 type
@@ -51,12 +52,11 @@ type
 implementation
 
 uses
-  StrUtils,
-  u_dzTranslator;
+  StrUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzCmdLineParser');
+  Result := dzDGetText(_s, 'dzCmdLineParser');
 end;
 
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
