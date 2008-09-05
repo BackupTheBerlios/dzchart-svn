@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2008-09-04 05:40\n"
-"PO-Revision-Date: 2008-09-04 05:40-0800\n"
+"POT-Creation-Date: 2008-09-05 09:45\n"
+"PO-Revision-Date: 2008-09-05 09:50-0800\n"
 "Last-Translator: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
@@ -20,11 +20,6 @@ msgstr ""
 #: u_dzClassUtils.pas:308
 msgid "no matching object found"
 msgstr "kein passendes Objekt gefunden"
-
-#. Programmer's name for it: RS_INVALID_CHARACTER_S
-#: u_dzCmdLineParserStates.pas:113
-msgid "Invalid character \"%s\"."
-msgstr "Ungültiges Zeichen \"%s\""
 
 #: u_dzConvertUtils.pas:367
 msgid "Digit out of range %s"
@@ -98,95 +93,91 @@ msgstr "%ds"
 msgid "SetParamByName is not supported for a %s (only TQuery and TAdoDataset descendants)."
 msgstr "SetParamByName wird für %s nicht unterstützt (nur TQuery- und TAdoDataset-Abkömmlinge)"
 
-#: u_dzDateUtils.pas:93
+#: u_dzDateUtils.pas:95
 msgid "Monday"
 msgstr "Montag"
 
-#: u_dzDateUtils.pas:94
+#: u_dzDateUtils.pas:96
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: u_dzDateUtils.pas:95
+#: u_dzDateUtils.pas:97
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: u_dzDateUtils.pas:96
+#: u_dzDateUtils.pas:98
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: u_dzDateUtils.pas:97
+#: u_dzDateUtils.pas:99
 msgid "Friday"
 msgstr "Freitag"
 
-#: u_dzDateUtils.pas:98
+#: u_dzDateUtils.pas:100
 msgid "Saturday"
 msgstr "Samstag"
 
-#: u_dzDateUtils.pas:99
+#: u_dzDateUtils.pas:101
 msgid "Sunday"
 msgstr "Sonntag"
 
 #. should never happen ...
-#: u_dzDateUtils.pas:102
+#: u_dzDateUtils.pas:104
 msgid "Invalid value for DayOfWeek: %d"
 msgstr "Ungültiger Wert für DayOfWeek: %d"
 
-#: u_dzDateUtils.pas:109
+#: u_dzDateUtils.pas:111
 msgid "January"
 msgstr "Januar"
 
-#: u_dzDateUtils.pas:110
+#: u_dzDateUtils.pas:112
 msgid "February"
 msgstr "Februar"
 
-#: u_dzDateUtils.pas:111
+#: u_dzDateUtils.pas:113
 msgid "March"
 msgstr "März"
 
-#: u_dzDateUtils.pas:112
+#: u_dzDateUtils.pas:114
 msgid "April"
 msgstr "April"
 
-#: u_dzDateUtils.pas:113
+#: u_dzDateUtils.pas:115
 msgid "May"
 msgstr "Mai"
 
-#: u_dzDateUtils.pas:114
+#: u_dzDateUtils.pas:116
 msgid "June"
 msgstr "Juni"
 
-#: u_dzDateUtils.pas:115
+#: u_dzDateUtils.pas:117
 msgid "July"
 msgstr "Juli"
 
-#: u_dzDateUtils.pas:116
+#: u_dzDateUtils.pas:118
 msgid "August"
 msgstr "August"
 
-#: u_dzDateUtils.pas:117
+#: u_dzDateUtils.pas:119
 msgid "September"
 msgstr "September"
 
-#: u_dzDateUtils.pas:118
+#: u_dzDateUtils.pas:120
 msgid "October"
 msgstr "Oktober"
 
-#: u_dzDateUtils.pas:119
+#: u_dzDateUtils.pas:121
 msgid "November"
 msgstr "November"
 
-#: u_dzDateUtils.pas:120
+#: u_dzDateUtils.pas:122
 msgid "December"
 msgstr "Dezember"
 
 #. should never happen ...
-#: u_dzDateUtils.pas:123
+#: u_dzDateUtils.pas:125
 msgid "Invalid month number %d"
 msgstr "Ungültige Monatsnummer %d"
-
-#: u_dzDefaultMain.pas:114
-msgid "Error: %s"
-msgstr "Fehler: %s"
 
 #: u_dzDllLoader.pas:159
 msgid "Could not load %s."
@@ -379,7 +370,7 @@ msgstr "Keine Versionsinfirmationen fuer %s verfügbar"
 msgid "New capacity cannot be less than current length."
 msgstr "Neue Kapazität kann nicht kleiner sein als aktuelle Länge."
 
-#: u_dzRingBuffer.pas:249
+#: u_dzRingBuffer.pas:247
 msgid "Index %d out of bounds."
 msgstr "Index %d nicht im gültigen Bereich."
 
@@ -395,11 +386,11 @@ msgstr "Kann keinen String zentrieren, der länger als die maximale Länge ist."
 msgid "Strings do not have a 0th character."
 msgstr "Strings haben kein 0tes Zeichen."
 
-#: u_dzTextFile.pas:56
+#: u_dzTextFile.pas:54
 msgid "Invalid file access value (%d)"
 msgstr "Ungültiger Dateizugriffswert (%d)"
 
-#: u_dzTextFile.pas:60
+#: u_dzTextFile.pas:58
 msgid "%s accessing file %s"
 msgstr "%s beim Zugriff auf Datei %s"
 
@@ -467,45 +458,45 @@ msgid "Progress"
 msgstr "Fortschritt"
 
 #. f_dzProgress..l_Action..Caption
-#: w_dzProgress.dfm:24
+#: w_dzProgress.dfm:25
 msgid "Action"
 msgstr "Aktion"
 
 #. f_dzProgress..b_Cancel..Caption
-#: w_dzProgress.dfm:41
+#: w_dzProgress.dfm:42
 msgid "Abort"
 msgstr "Abbrechen"
 
 #. f_dzWizard..p_Buttons..b_Next..Caption
 #. f_dzWizardForm..p_Buttons..b_Next..Caption
 #: w_dzWizard.dfm:1210
-#: w_dzWizardForm.pas:222
+#: w_dzWizardForm.pas:227
 msgid "&Next >"
 msgstr "&Weiter >"
 
 #. f_dzWizard..p_Buttons..b_Cancel..Caption
 #. f_dzWizardForm..p_Buttons..b_Cancel..Caption
 #: w_dzWizard.dfm:1223
-#: w_dzWizardForm.pas:221
+#: w_dzWizardForm.pas:226
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #. f_dzWizard..p_Buttons..b_Prev..Caption
 #. f_dzWizardForm..p_Buttons..b_Prev..Caption
 #: w_dzWizard.dfm:1233
-#: w_dzWizardForm.pas:220
+#: w_dzWizardForm.pas:225
 msgid "< &Previous"
 msgstr "< &Zurück"
 
-#: w_dzDialog.pas:327
+#: w_dzDialog.pas:322
 msgid "Invalid modal result %d."
 msgstr "Ungültiger modaler Rückgabewert %d."
 
-#: w_dzDialog.pas:501
+#: w_dzDialog.pas:495
 msgid "Do not show again."
 msgstr "Nicht nochmal anzeigen."
 
-#: w_dzDialog.pas:582
+#: w_dzDialog.pas:576
 msgid ""
 "An error occurred:\n"
 "%s"
@@ -514,53 +505,41 @@ msgstr ""
 "%s"
 
 #. 400;
-#: w_dzDialog.pas:606
+#: w_dzDialog.pas:600
 msgid "Additional information:"
 msgstr "Erweiterte Informationen:"
 
-#: w_dzDialog.pas:626
+#: w_dzDialog.pas:620
 msgid "&Details >>"
 msgstr "&Details >>"
 
-#: w_dzDialog.pas:781
+#: w_dzDialog.pas:775
 msgid "&Details <<"
 msgstr "&Details <<"
 
-#. Wirklich abbrechen?
-#. Programmer's name for it: QuestionAbort
-#: w_dzProgress.pas:83
-msgid "Do you really want to abort?"
-msgstr "Wollen Sie wirklich abbrechen?"
-
-#. Fortschritt (%d%%)
-#. Programmer's name for it: FormCaptionD
-#: w_dzProgress.pas:85
+#: w_dzProgress.pas:90
 msgid "Progress (%d%%)"
 msgstr "Fortschritt (%d%%)"
 
-#. Tf_HkProgress.SetFormCaption: Ungültige FormCaption, %s.
-#. Programmer's name for it: InvalidFormCaptionS
-#: w_dzProgress.pas:87
-msgid "Tf_HkProgress.SetFormCaption: Invalid FormCaption, %s"
-msgstr "Tf_HkProgress.SetFormCaption: Invalid FormCaption, %s"
+#: w_dzProgress.pas:101
+msgid "Do you really want to abort?"
+msgstr "Wollen Sie wirklich abbrechen?"
 
-#. darf kein "%" am Ende haben
-#. Programmer's name for it: PercentAtEnd
-#: w_dzProgress.pas:89
+#: w_dzProgress.pas:153
 msgid "must not contain a % at the end"
 msgstr "darf am Ende kein % enthalten"
 
-#. auf "%" muß "d" oder "%" folgen
-#. Programmer's name for it: InvalidFormatChar
-#: w_dzProgress.pas:91
+#: w_dzProgress.pas:162
 msgid "\"%\" must be followed by \"d\" or \"%\"."
 msgstr "\"%\" muss von \"d\" or \"%\" gefolgt werden."
 
-#. zuviele Parameter
-#. Programmer's name for it: TooManyParameters
-#: w_dzProgress.pas:93
+#: w_dzProgress.pas:168
 msgid "too many parameters"
 msgstr "Zuviele Parameter"
+
+#: w_dzProgress.pas:180
+msgid "Invalid FormCaption, %s"
+msgstr "Ungültige Formularüberschrift \"%s\""
 
 #: w_dzWizard.pas:342
 msgid "&Finish"
@@ -570,6 +549,10 @@ msgstr "&Beenden"
 msgid "Already on first page."
 msgstr "Bereits auf erster Seite."
 
+#~ msgid "Tf_HkProgress.SetFormCaption: Invalid FormCaption, %s"
+#~ msgstr "Tf_HkProgress.SetFormCaption: Invalid FormCaption, %s"
+#~ msgid "Error: %s"
+#~ msgstr "Fehler: %s"
 #~ msgid "Error %1:s (%0:d)"
 #~ msgstr "Fehler %1:s (%0:d)"
 #~ msgid "Buffer is full"
