@@ -56,7 +56,7 @@ uses
 
 function _(const _s: string): string; inline;
 begin
-  DGetText(_s, 'dzCmdLineParser');
+  Result := DGetText(_s, 'dzCmdLineParser');
 end;
 
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
