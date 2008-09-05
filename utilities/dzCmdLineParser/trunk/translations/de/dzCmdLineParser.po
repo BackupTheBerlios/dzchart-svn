@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzCmdLineParser 1.0\n"
-"POT-Creation-Date: 2008-09-04 05:55\n"
-"PO-Revision-Date: 2008-04-23 16:06+0100\n"
-"Last-Translator: Thomas Mueller <info@schniering.com>\n"
+"POT-Creation-Date: 2008-09-05 06:02\n"
+"PO-Revision-Date: 2008-09-05 06:03-0800\n"
+"Last-Translator: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "Language-Team: twm <nospam@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,77 +17,78 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
+#: u_dzCmdLineParserStates.pas:197
+#: u_dzCmdLineParserStates.pas:231
+#: u_dzCmdLineParserStates.pas:254
+#: u_dzCmdLineParserStates.pas:270
+#: u_dzCmdLineParserStates.pas:313
+#: u_dzCmdLineParserStates.pas:335
+#: u_dzCmdLineParserStates.pas:377
+msgid "Invalid character \"%s\"."
+msgstr "Ungültiges Zeichen \"%s\""
+
 #. Programmer's name for it: RS_Error_S
-#: u_dzDefaultMain.pas:97 
+#: u_dzDefaultMain.pas:97
 msgid "Error: %s"
 msgstr "Fehler: %s"
 
 #. Programmer's name for it: RS_Synopsis_S_S
-#: u_dzDefaultMain.pas:98 
+#: u_dzDefaultMain.pas:98
 msgid "Synopsis: %s %s"
 msgstr "Aufruf: %s %s"
 
 #. Programmer's name for it: RS_Parameters
-#: u_dzDefaultMain.pas:99 
+#: u_dzDefaultMain.pas:99
 msgid "Parameters:"
 msgstr "Parameter:"
 
 #. Programmer's name for it: RS_Options
-#: u_dzDefaultMain.pas:100 
+#: u_dzDefaultMain.pas:100
 msgid "Options:"
 msgstr "Optionen:"
 
-#. Programmer's name for it: RS_NOT_A_REGISTERED_OPTION_S
-#: u_dzGetOpt.pas:116 
-msgid "%s is not a registered option."
-msgstr "%s ist keine registrierte Option"
-
-#. Programmer's name for it: RS_TOO_MANY_PARAMETERS
-#: u_dzGetOpt.pas:117 
-msgid "There are too many parameters."
-msgstr "Zuviele Parameter"
-
-#. Programmer's name for it: RS_NOT_ENOUGH_PARAMETERS_SD
-#: u_dzGetOpt.pas:118 
-msgid "There are not enough %s parameters (min: %d)"
-msgstr "Nicht genügend %s Parameter (min: %d)"
-
-#. Programmer's name for it: RS_DISPLAY_PARAMETER_HELP
-#: u_dzGetOpt.pas:119 
-msgid "display parameter help"
-msgstr "Parameter Hilfe anzeigen"
-
-#. Programmer's name for it: RS_OPTION_IS_UNKNOWN_S
-#: u_dzGetOpt.pas:120 
-msgid "Option %s is unknown"
-msgstr "Option %s ist nciht bekannt"
-
-#. Programmer's name for it: RS_OPTION_REQUIRES_VALUE_S
-#: u_dzGetOpt.pas:121 
-msgid "Option %s requires a value."
-msgstr "Option %s benötigt einen Wert."
-
-#. Programmer's name for it: RS_OPTIONS
-#: u_dzGetOpt.pas:122 
+#: u_dzGetOpt.pas:156
 msgid "[options]"
 msgstr "[Optionen]"
 
-#. Programmer's name for it: RS_OPTION_NAME_CANNOT_BE_EMPTY
-#: u_dzOptionDescList.pas:57 
+#: u_dzGetOpt.pas:215
+msgid "%s is not a registered option."
+msgstr "%s ist keine registrierte Option"
+
+#: u_dzGetOpt.pas:294
+msgid "There are too many parameters."
+msgstr "Zuviele Parameter"
+
+#: u_dzGetOpt.pas:304
+msgid "There are not enough %s parameters (min: %d)"
+msgstr "Nicht genügend %s Parameter (min: %d)"
+
+#: u_dzGetOpt.pas:317
+msgid "Option %s is unknown"
+msgstr "Option %s ist nciht bekannt"
+
+#: u_dzGetOpt.pas:321
+msgid "Option %s requires a value."
+msgstr "Option %s benötigt einen Wert."
+
+#: u_dzGetOpt.pas:365
+msgid "display parameter help"
+msgstr "Parameter Hilfe anzeigen"
+
+#: u_dzOptionDescList.pas:105
 msgid "Option name cannot be empty."
 msgstr "Optionsname kann nicht leer sein."
 
-#. Programmer's name for it: RS_OPTION_NAME_MUST_START_WITH_ALPHANUMERIC
-#: u_dzOptionDescList.pas:58 
+#: u_dzOptionDescList.pas:108
 msgid "Option name must start with an alphanumeric character."
 msgstr "Optionsname muss mit einem alphanumerischen Zeichen beginnen."
 
-#. Programmer's name for it: RS_OPTION_NAME_CONTAINS_INVALID_CHAR_SD
-#: u_dzOptionDescList.pas:59 
+#: u_dzOptionDescList.pas:111
 msgid "Option name contains invalid character \"%s\" (%d)."
 msgstr "Optionsname enthält ungültiges Zeichen \"%s\" (%d)"
 
-#. Programmer's name for it: RS_VALUE
-#: u_dzOptionDescList.pas:60 
+#. should never happen
+#: u_dzOptionDescList.pas:121
 msgid "value"
 msgstr "Wert"
+
