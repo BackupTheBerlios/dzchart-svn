@@ -1,9 +1,12 @@
+{GXFormatter.config=twm}
 {: Implements a simple commandline parser based on a state machine.
    To use, call one of the overloaded TCmdLineParser.Execute class methods.
    The state machine implementation is based on a concept described by
    Julian Bucknail in the Delphi Magazine, issue 115: "Object-Oriented State Machines"
    @author Thomas Mueller <http://www.dummzeuch.de> }
 unit u_dzCmdLineParser;
+
+{$I jedi.inc}
 
 interface
 
@@ -39,108 +42,9 @@ type
   end;
 
 type
-  TEngineStateAbstract = class(TInterfacedObject)
-  private
-    function GetClassName: string;
-  end;
-
-type
-  TEngineStateError = class(TEngineStateAbstract, IEngineState)
-  private
-    FError: string;
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-    constructor Create(const _Error: string);
-  end;
-
-type
-  TEngineStateSpace = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateDash = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateDoubleDash = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateLongOption = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateShortOption = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateShortSwitch = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateShortParam = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateQuotedShortParam = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateLongParam = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateQuotedLongParam = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateParam = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
-  TEngineStateQuotedParam = class(TEngineStateAbstract, IEngineState)
-  private
-    function Execute(const _Context: IEngineContext): IEngineState;
-  public
-  end;
-
-type
   TCmdLineParser = class
   public
-    {: parses the CmdLine string and returns the options and parameters
+    {: parses the CmdLine string and returns the options and paramteters
        @param CmdLine is a string with the commandline to parse
        @param Options is a TStrings instance which returns all options found as
               name=value pairs,
@@ -160,9 +64,18 @@ type
     class procedure Execute(const _CmdLine: string; _Options: TStrings; _Params: TStrings); overload;
     {: parses the application's commandline and returns the options and paramteters }
     class procedure Execute(_Options: TStrings; _Params: TStrings); overload;
+    {: Splits the given commandline into the program name and the parameters }
+    class procedure SplitCommandline(const _Commandline: string; out _Progname, _Parameters: string); overload;
+    {: splits System.CmdLine into the program name and the parameters }
+    class procedure SplitCommandline(out _Progname, _Parameters: string); overload;
   end;
 
 implementation
+
+uses
+  StrUtils,
+  u_dzStringUtils,
+  u_dzCmdLineParserStates;
 
 type
   IEngineContextEx = interface ['{CD19DB13-F344-4E1A-B97F-D235B445B463}']
@@ -210,272 +123,6 @@ type
     {: Stores the parameters, ordered as they appear on the commandline }
     property Params: TStringList read FParams;
   end;
-
-{ TEngineStateAbstract }
-
-function TEngineStateAbstract.GetClassName: string;
-begin
-  Result := ClassName;
-end;
-
-{ TEngineStateError }
-
-constructor TEngineStateError.Create(const _Error: string);
-begin
-  inherited Create;
-  FError := _Error;
-end;
-
-function TEngineStateError.Execute(const _Context: IEngineContext): IEngineState;
-begin
-  raise EStateEngineError.Create(FError);
-end;
-
-{ TEngineStateSpace }
-
-function TEngineStateSpace.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '-':
-      Result := TEngineStateDash.Create;
-    #0:
-      Result := nil; // end state
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateQuotedParam.Create;
-      end;
-    ' ':
-      Result := self;
-  else
-    _Context.AddToParameter(c);
-    Result := TEngineStateParam.Create;
-  end;
-end;
-
-{ TEngineStateParam }
-
-function TEngineStateParam.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateQuotedParam.Create;
-      end;
-    #0, ' ': begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateSpace.Create;
-      end;
-  else
-    _Context.AddToParameter(c);
-    Result := Self;
-  end;
-end;
-
-{ TEngineStateQuotedParam }
-
-function TEngineStateQuotedParam.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateParam.Create;
-      end;
-    #0:
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-  else
-    _Context.AddToParameter(c);
-    Result := self;
-  end;
-end;
-
-{ TEngineStateDash }
-
-function TEngineStateDash.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  if c in ALPHANUMERIC_CHARS then begin
-    _Context.AddToOption(c);
-    Result := TEngineStateShortOption.Create;
-  end else if c = '-' then
-    Result := TEngineStateDoubleDash.Create
-  else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-end;
-
-{ TEngineStateDoubleDash }
-
-function TEngineStateDoubleDash.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  if c in ALPHANUMERIC_CHARS then begin
-    _Context.AddToOption(c);
-    Result := TEngineStateLongOption.Create;
-  end else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-end;
-
-{ TEngineStateShortOption }
-
-function TEngineStateShortOption.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    ' ': begin
-        Result := TEngineStateShortParam.Create;
-      end;
-    '-', '+': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateShortSwitch.Create;
-      end;
-    #0: begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateSpace.Create;
-      end;
-  else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-  end;
-end;
-
-{ TEngineStateShortSwitch }
-
-function TEngineStateShortSwitch.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    ' ', #0: begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateSpace.Create;
-      end else
-    Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-  end;
-end;
-
-{ TEngineStateShortParam }
-
-function TEngineStateShortParam.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    ' ', #0: begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateSpace.Create;
-      end;
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateQuotedShortParam.Create;
-      end;
-    '-': begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateDash.Create;
-      end;
-  else
-    _Context.AddToParameter(c);
-    Result := self;
-  end;
-end;
-
-{ TEngineStateQuotedShortParam }
-
-function TEngineStateQuotedShortParam.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateShortParam.Create;
-      end;
-    #0:
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-  else
-    _Context.AddToParameter(c);
-    Result := self;
-  end;
-end;
-
-{ TEngineStateLongOption }
-
-function TEngineStateLongOption.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '=':
-      Result := TEngineStateLongParam.Create;
-    ' ', #0: begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateSpace.Create;
-      end;
-    '"', '''':
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-  else
-    _Context.AddToOption(c);
-    Result := TEngineStateLongOption.Create;
-  end;
-end;
-
-{ TEngineStateLongParam }
-
-function TEngineStateLongParam.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateQuotedLongParam.Create;
-      end;
-    ' ', #0: begin
-        _Context.HandleCmdLinePart;
-        Result := TEngineStateSpace.Create;
-      end;
-  else
-    _Context.AddToParameter(c);
-    Result := TEngineStateLongParam.Create;
-  end;
-end;
-
-{ TEngineStateQuotedLongParam }
-
-function TEngineStateQuotedLongParam.Execute(const _Context: IEngineContext): IEngineState;
-var
-  c: char;
-begin
-  c := _Context.GetNextChar;
-  case c of
-    '"': begin
-        _Context.AddToParameter(c);
-        Result := TEngineStateLongParam.Create;
-      end;
-    #0:
-      Result := TEngineStateError.Create(Format('Invalid character "%s".', [c]));
-  else
-    _Context.AddToParameter(c);
-    Result := TEngineStateQuotedLongParam.Create;
-  end;
-end;
 
 { TStateParams }
 
@@ -555,6 +202,38 @@ end;
 class procedure TCmdLineParser.Execute(_Options, _Params: TStrings);
 begin
   Execute(CmdLine, _Options, _Params);
+end;
+
+class procedure TCmdLineParser.SplitCommandline(out _Progname, _Parameters: string);
+begin
+  SplitCommandline(System.CmdLine, _Progname, _Parameters);
+end;
+
+class procedure TCmdLineParser.SplitCommandline(const _Commandline: string; out _Progname, _Parameters: string);
+var
+  i: integer;
+  Len: integer;
+  s: string;
+  NeedsClosingQuote: boolean;
+begin
+  s := Trim(_Commandline);
+  Len := Length(s);
+  NeedsClosingQuote := False;
+  for i := 1 to Len do begin
+    case s[i] of
+      ' ': begin
+          if not NeedsClosingQuote then begin
+            _ProgName := Trim(LeftStr(s, i));
+            _Parameters := Trim(TailStr(s, i + 1));
+            exit;
+          end;
+        end;
+      '"':
+        NeedsClosingQuote := not NeedsClosingQuote;
+    end;
+  end;
+  _Progname := s;
+  _Parameters := '';
 end;
 
 end.
