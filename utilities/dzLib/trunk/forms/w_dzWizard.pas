@@ -12,7 +12,8 @@ uses
   Forms,
   Dialogs,
   StdCtrls,
-  ExtCtrls;
+  ExtCtrls,
+  u_dzTranslator;
 
 const
   {: Sent as NewPageId if the old page is the first/last page in that direction }
@@ -174,8 +175,7 @@ implementation
 {$R *.DFM}
 
 uses
-  u_dzVclUtils,
-  u_dzTranslator;
+  u_dzVclUtils;
 
 type
   TWizardPage = class
@@ -198,7 +198,7 @@ type
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 constructor TWizardPage.Create(_Form: TForm; const _Description: string;
