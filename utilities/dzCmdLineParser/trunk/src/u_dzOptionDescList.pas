@@ -38,26 +38,26 @@ type
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
 
 type
-  {: List for storing TOptionDesc items sorted by String }
+  ///<summary> List for storing TOptionDesc items sorted by String </summary>
   TOptionDescList = class(_DZ_SORTED_OBJECT_LIST_TEMPLATE_)
   protected
-    {: return the key of an item for comparison }
+    ///<summary> return the key of an item for comparison </summary>
     function KeyOf(const _Item: TOptionDesc): string; override;
-    {: compare the keys of two items, must return a value
-       < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 }
+    ///<summary> compare the keys of two items, must return a value
+    ///          < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 </summary>
     function Compare(const _Key1, _Key2: string): integer; override;
   end;
 
 implementation
 
 uses
-  StrUtils;
+  StrUtils,
+  u_dzTranslator;
 
-resourcestring
-  RS_OPTION_NAME_CANNOT_BE_EMPTY = 'Option name cannot be empty.';
-  RS_OPTION_NAME_MUST_START_WITH_ALPHANUMERIC = 'Option name must start with an alphanumeric character.';
-  RS_OPTION_NAME_CONTAINS_INVALID_CHAR_SD = 'Option name contains invalid character "%s" (%d).';
-  RS_VALUE = 'value';
+function _(const _s: string): string; inline;
+begin
+  DGetText(_s, 'dzCmdLineParser');
+end;
 
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
 
@@ -102,13 +102,13 @@ var
   i: integer;
 begin
   if _Name = '' then
-    raise EOptionName.Create(RS_OPTION_NAME_CANNOT_BE_EMPTY);
+    raise EOptionName.Create(_('Option name cannot be empty.'));
   { TODO -otwm : Maybe '$', '#' and some other chars should be allowed }
   if not (_Name[1] in ['a'..'z', 'A'..'Z', '0'..'9', '?']) then
-    raise EOptionName.Create(RS_OPTION_NAME_MUST_START_WITH_ALPHANUMERIC);
+    raise EOptionName.Create(_('Option name must start with an alphanumeric character.'));
   for i := 2 to Length(_Name) do
     if not (_Name[i] in ['a'..'z', 'A'..'Z', '0'..'9', '-', '_']) then
-      raise EOptionName.CreateFmt(RS_OPTION_NAME_CONTAINS_INVALID_CHAR_SD, [_Name[i], Ord(_Name[i])]);
+      raise EOptionName.CreateFmt(_('Option name contains invalid character "%s" (%d).'), [_Name[i], Ord(_Name[i])]);
 end;
 
 function TOptionDesc.CreateDescription(const _OptionName: string): string;
@@ -118,12 +118,12 @@ begin
     1: begin
         Result := '-' + _OptionName;
         if FHasValue then
-          Result := Result + ' ' + RS_VALUE;
+          Result := Result + ' ' + _('value');
       end;
   else begin
       Result := '--' + _OptionName;
       if FHasValue then
-        Result := Result + '=' + RS_VALUE;
+        Result := Result + '=' + _('value');
     end
   end;
 end;

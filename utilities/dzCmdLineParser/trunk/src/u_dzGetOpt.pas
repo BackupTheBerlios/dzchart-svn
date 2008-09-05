@@ -29,80 +29,82 @@ type
     FOptionsFoundList: TOptionFoundList;
     procedure EvaluateCmdLine(_Options, _Params: TStrings);
   public
-    {: Creates a TdzGetOpt instance.
-       @param ProgName is an optional parameter, if not given, the value of
-                       ParamStr(0) is used. }
+    ///<summary> Creates a TdzGetOpt instance. </summary>
+    ///          @param ProgName is an optional parameter, if not given, the value of
+    ///                          ParamStr(0) is used. }
     constructor Create(const _ProgName: string = '');
-    {: standard destructor }
+    ///<summary> standard destructor </summary>
     destructor Destroy; override;
-    {: registers a program option
-       @param Names is an array of string containing the names of the option
-                    (usually one long, descriptive name and one short, one
-                    character name)
-       @param Description is a string describing the option for the usage string
-       @param HasValue is a boolean which tells the parser whether to expect
-                       a parameter for this option.
-       Note: One character option names are case sensitive, that is -o and -O
-             are not the same, but longer option names are not, that is
-             --help and --HELP are the same. }
+    ///<summary> registers a commandline option
+    ///          @param Names is an array of string containing the names of the option
+    ///                       (usually one long, descriptive name and one short, one
+    ///                       character name)
+    ///                       Note: One character option names are case sensitive,
+    ///                       that is -o and -O are not the same, but longer option
+    ///                       names are not, that is --help and --HELP are the same.
+    ///          @param Description is a string describing the option for the usage string
+    ///          @param HasValue is a boolean which tells the parser whether to expect
+    ///                          a parameter for this option. </summary>
     procedure RegisterOption(const _Names: array of string; const _Description: string; _HasValue: boolean = false); overload;
     procedure RegisterOption(const _Name, _Description: string; _HasValue: boolean = false); overload;
-    {: registers the options --help, -?, -h and -H for displaying help }
+    ///<summary> registers the standard options --help, -?, -h and -H for displaying help </summary>
     procedure RegisterHelpOptions;
-    {: registers a program parameter
-       @param Name is the name of the parameter as displayed in the usage string.
-       @param Description is the description of the parameter for the usage.
-       @param MinCount is the minimum number of parameters to expect
-       @param MaxCount is the maximum number of parameters to expect
-       Note: only the last parameter should really have MinCount and MaxCount <> 1 }
+    ///<summary> registers a commandline parameter
+    ///          @param Name is the name of the parameter as displayed in the usage string.
+    ///          @param Description is the description of the parameter for the usage.
+    ///          @param MinCount is the minimum number of parameters to expect
+    ///          @param MaxCount is the maximum number of parameters to expect
+    ///          Note: only the last parameter should really have MinCount and MaxCount <> 1 </summary>
     procedure RegisterParam(const _Name, _Description: string; _MinCount: integer = 1; _MaxCount: integer = 1);
-    {: parses the commandline
-       This method uses the information given to it via the RegisterOption and
-       RegisterParameter methods to parse the commandline. After it has been
-       called the methods OptionPassed and ParamPassed can be used to retrieve
-       the actual parameters.
-       @param CmdLine is a string giving the commandline.
-                      NOTE: Do not pass System.CmdLine since it contains the
-                      program's name as the first "parameter".
-                      If you want to parse the commandline as passed by
-                      windows, call the overloaded Parse method without
-                      parameters. It handles this. }
+    ///<summary> parses the commandline
+    ///          This method uses the information given to it via the RegisterOption and
+    ///          RegisterParameter methods to parse the commandline. After it has been
+    ///          called the methods OptionPassed and ParamPassed can be used to retrieve
+    ///          the actual parameters.
+    ///          @param CmdLine is a string giving the commandline.
+    ///                         NOTE: Do not pass System.CmdLine since it contains the
+    ///                         program's name as the first "parameter".
+    ///                         If you want to parse the commandline as passed by
+    ///                         windows, call the overloaded Parse method without
+    ///                         parameters. It handles this. </summary>
     procedure Parse(const _CmdLine: string); overload;
-    {: parses the commandline
-       This method uses the information given to it via the RegisterOption and
-       RegisterParameter methods to parse the commandline. After it has been
-       called the methods OptionPassed and ParamPassed can be used to retrieve
-       the actual parameters. }
+    ///<summary> parses the commandline
+    ///          This method uses the information given to it via the RegisterOption and
+    ///          RegisterParameter methods to parse the commandline. After it has been
+    ///          called the methods OptionPassed and ParamPassed can be used to retrieve
+    ///          the actual parameters. </summary>
     procedure Parse; overload;
-    {: checks whether the option given by the short or long name was passed on the commandline,
-       The order of the (same) options on the commandline is preserved,
-       eg: '-a abc -b -a def' will return ('abc', 'def') for OptionFound('a').
-       @param Name is one of the names of the option
-       @param Values is a TStrings class which will return the option's values, if any.
-                     It can be nil if the values are of no interest.
-       @returns the number of matching options found on the commandline, the
-                value -1 has a special meaning: The option name is unknown
-                to the parser. }
+    ///<summary> checks whether the option given by the short or long name was passed on the commandline,
+    ///          The order of the (same) options on the commandline is preserved,
+    ///          eg: '-a abc -b -a def' will return ('abc', 'def') for OptionFound('a').
+    ///          @param Name is one of the names of the option
+    ///          @param Values is a TStrings class which will return the option's values, if any.
+    ///                        It can be nil if the values are of no interest.
+    ///          @returns the number of matching options found on the commandline, the
+    ///                   value -1 has a special meaning: The option name is unknown
+    ///                   to the parser. </summary>
     function OptionPassed(const _Name: string; _Values: TStrings): integer; overload;
     function OptionPassed(const _Name: string; var _Value: string): boolean; overload;
     function OptionPassed(const _Name: string): boolean; overload;
-    {: returns true if any of the help options (--help, -?, -h, -H) was passed on the commandline. }
+    ///<summary> returns true if any of the help options (--help, -?, -h, -H) was passed on the commandline. </summary>
     function HelpOptionFound: boolean;
-    {: Same for parameters, note that parameters will be filled left to right,
-       eg. if you register a parameter that can be given 5 times and one that
-       can be given 2 times and then pass 4 parameters, you will get
-       4 values for the first parameter and none fo the second. }
+    ///<summary> checks whether the parameter given by the name was passed on the commandline,
+    ///          note that parameters will be filled left to right, eg. if you register
+    ///          a parameter that can be given 5 times and one that can be given 2
+    ///          times and then pass 4 parameters, you will get 4 values for the
+    ///          first parameter and none fo the second. </summary>
     function ParamPassed(const _ParamName: string; _Values: TStrings): integer; overload;
     function ParamPassed(const _ParamName: string; var _Value: string): boolean; overload;
-    {: returns a commandline with all the parameters and option, e.g. [--option1=value1] <param1> [<param2>] }
+    ///<summary> returns a commandline with all the parameters and option, e.g. [--option1=value1] <param1> [<param2>] </summary>
     function GetCmdLineDesc: string;
-    {: returns a description for all the options and parameters }
+    ///<summary> returns a description for all the options and parameters </summary>
     function GetOptionHelp(_Indent: integer = 20): string;
     function GetParamHelp(_Indent: integer = 20): string;
-    {: the program's name as either passed to the constructor or read from
-       ParamStr(0). }
+    ///<summary> the program's name as either passed to the constructor or read from ParamStr(0). </summary>
     property ProgName: string read FProgName;
+    ///<summary> List of all parameters found </summary>
     property ParamsFoundList: TParamFoundList read FParamsFoundList;
+    ///<summary> List of all Options found </summary>
     property OptionsFoundList: TOptionFoundList read FOptionsFoundList;
   end;
 
@@ -112,14 +114,10 @@ uses
   u_dzCmdLineParser,
   u_dzTranslator;
 
-resourcestring
-  RS_NOT_A_REGISTERED_OPTION_S = '%s is not a registered option.';
-  RS_TOO_MANY_PARAMETERS = 'There are too many parameters.';
-  RS_NOT_ENOUGH_PARAMETERS_SD = 'There are not enough %s parameters (min: %d)';
-  RS_DISPLAY_PARAMETER_HELP = 'display parameter help';
-  RS_OPTION_IS_UNKNOWN_S = 'Option %s is unknown';
-  RS_OPTION_REQUIRES_VALUE_S = 'Option %s requires a value.';
-  RS_OPTIONS = '[options]';
+function _(const _s: string): string; inline;
+begin
+  DGetText(_s, 'dzCmdLineParser');
+end;
 
 { TdzGetOpt }
 
@@ -155,7 +153,7 @@ var
   s: string;
 begin
   if FOptionDescList.Count <> 0 then
-    Result := RS_OPTIONS
+    Result := _('[options]')
   else
     Result := '';
   for i := 0 to FParamDescList.Count - 1 do begin
@@ -214,7 +212,7 @@ var
   PrimaryName: string;
 begin
   if not FOptionNameList.Find(PChar(_Name), Idx) then
-    raise EUnknownOption.CreateFmt(RS_NOT_A_REGISTERED_OPTION_S, [_Name]);
+    raise EUnknownOption.CreateFmt(_('%s is not a registered option.'), [_Name]);
 
   Result := 0;
   PrimaryName := FOptionNameList[Idx].GetPrimaryName;
@@ -293,7 +291,7 @@ begin
   while FoundIdx < _Params.Count do begin
     DesCount := FParamDescList.Count;
     if (DescIdx >= DesCount) then
-      raise ETooManyParams.Create(RS_TOO_MANY_PARAMETERS);
+      raise ETooManyParams.Create(_('There are too many parameters.'));
     pd := FParamDescList[DescIdx];
     Cnt := 0;
     while ((Cnt < pd.MaxCount) or (pd.MaxCount = -1)) and (FoundIdx < _Params.Count) do begin
@@ -303,24 +301,24 @@ begin
       Inc(FoundIdx);
     end;
     if Cnt < pd.MinCount then
-      raise ETooFewParams.CreateFmt(RS_NOT_ENOUGH_PARAMETERS_SD, [pd.Name, pd.MinCount]);
+      raise ETooFewParams.CreateFmt(_('There are not enough %s parameters (min: %d)'), [pd.Name, pd.MinCount]);
     Inc(DescIdx);
   end;
   while DescIdx < FParamDescList.Count do begin
     pd := FParamDescList[DescIdx];
     if pd.MinCount > 0 then
-      raise ETooFewParams.CreateFmt(RS_NOT_ENOUGH_PARAMETERS_SD, [pd.Name, pd.MinCount]);
+      raise ETooFewParams.CreateFmt(_('There are not enough %s parameters (min: %d)'), [pd.Name, pd.MinCount]);
     Inc(DescIdx);
   end;
 
   FoundIdx := 0;
   while FoundIdx < _Options.Count do begin
     if not FOptionNameList.Find(_Options.Names[FoundIdx], OptName) then
-      raise EUnknownOption.CreateFmt(RS_OPTION_IS_UNKNOWN_S, [_Options.Names[Foundidx]]);
+      raise EUnknownOption.CreateFmt(_('Option %s is unknown'), [_Options.Names[Foundidx]]);
     s := _Options.ValueFromIndex[FoundIdx];
     OptDesc := OptName.OptionDesc;
     if OptDesc.HasValue and (s = '') then
-      raise EOptionValue.CreateFmt(RS_OPTION_REQUIRES_VALUE_S, [OptName.Name]);
+      raise EOptionValue.CreateFmt(_('Option %s requires a value.'), [OptName.Name]);
     FOptionsFoundList.Add(TOptionFound.Create(OptDesc, OptName.Name, s));
     Inc(FoundIdx);
   end;
@@ -364,7 +362,7 @@ end;
 
 procedure TGetOpt.RegisterHelpOptions;
 begin
-  RegisterOption(['help', '?', 'h', 'H'], RS_DISPLAY_PARAMETER_HELP, false);
+  RegisterOption(['help', '?', 'h', 'H'], _('display parameter help'), false);
 end;
 
 procedure TGetOpt.RegisterOption(const _Name, _Description: string; _HasValue: boolean);
@@ -390,7 +388,5 @@ begin
   FParamDescList.Add(TParamDesc.Create(_Name, _Description, _MinCount, _MaxCount));
 end;
 
-initialization
-  AddDomainForResourceString('dzCmdLineParser');
 end.
 

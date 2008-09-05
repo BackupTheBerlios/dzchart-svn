@@ -20,13 +20,11 @@ type
 {$DEFINE __DZ_OBJECT_LIST_TEMPLATE__}
 type
   _LIST_ANCESTOR_ = TObject;
-//  _LIST_CONTAINER_ = TList;
-//  _LIST_CONTAINER_ITEM_TYPE_ = pointer;
   _ITEM_TYPE_ = TParamFound;
 {$INCLUDE 't_dzObjectListTemplate.tpl'}
 
 type
-  {: List for storing TParamFound items }
+  ///<summary> List for storing TParamFound items </summary>
   TParamFoundList = class(_DZ_OBJECT_LIST_TEMPLATE_)
 
   end;

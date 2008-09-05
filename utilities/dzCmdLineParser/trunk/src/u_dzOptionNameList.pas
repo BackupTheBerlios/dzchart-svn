@@ -28,13 +28,13 @@ type
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}
 
 type
-  {: List for storing TOptionName items sorted by string }
+  ///<summary> List for storing TOptionName items sorted by string </summary>
   TOptionNameList = class(_DZ_SORTED_OBJECT_LIST_TEMPLATE_)
   protected
-    {: return the key of an item for comparison }
+    ///<summary> return the key of an item for comparison </summary>
     function KeyOf(const _Item: TOptionName): string; override;
-    {: compare the keys of two items, must return a value
-       < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 }
+    ///<summary> compare the keys of two items, must return a value
+    ///          < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 </summary>
     function Compare(const _Key1, _Key2: string): integer; override;
   end;
 
