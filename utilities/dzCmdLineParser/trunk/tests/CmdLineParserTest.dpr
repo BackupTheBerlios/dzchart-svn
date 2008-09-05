@@ -28,8 +28,8 @@ uses
   u_dzOptionNameList in '..\src\u_dzOptionNameList.pas',
   u_dzOptionFoundList in '..\src\u_dzOptionFoundList.pas',
   u_dzGetOpt_UnitTest in 'u_dzGetOpt_UnitTest.pas',
-  u_dzCmdLineParser in '..\..\dzlib\src\u_dzCmdLineParser.pas',
-  u_dzCmdLineParserStates in '..\..\dzlib\src\u_dzCmdLineParserStates.pas';
+  u_dzCmdLineParserStates in '..\src\u_dzCmdLineParserStates.pas',
+  u_dzCmdLineParser in '..\src\u_dzCmdLineParser.pas';
 
 {$R *.RES}
 
