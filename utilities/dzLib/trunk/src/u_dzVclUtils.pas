@@ -17,7 +17,8 @@ uses
   StdCtrls,
   ExtCtrls,
   Grids,
-  DbGrids;
+  DbGrids,
+  u_dzTranslator;
 
 type
   ///<summary> Ancestor to all exceptions raised in this unit. </summary>
@@ -458,7 +459,6 @@ uses
   RxGConst,
   rxGif,
 {$ENDIF GIFByRx}
-  u_dzTranslator,
   u_dzConvertUtils,
   u_dzStringUtils;
 
@@ -469,7 +469,7 @@ type
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function TGrid_GetText(_Grid: TCustomGrid; _IncludeFixed: boolean = false): string;

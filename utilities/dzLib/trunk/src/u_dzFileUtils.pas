@@ -11,7 +11,8 @@ interface
 uses
   Windows,
   SysUtils,
-  Classes;
+  Classes,
+  u_dzTranslator;
 
 type
   EFileUtils = class(Exception);
@@ -688,14 +689,13 @@ function itpd(const _Dirname: string): string; inline;
 implementation
 
 uses
-  u_dzTranslator,
   u_dzMiscUtils,
   u_dzStringUtils,
   u_dzDateUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function itpd(const _Dirname: string): string; inline;

@@ -11,7 +11,8 @@ unit u_dzConvertUtils;
 interface
 
 uses
-  SysUtils;
+  SysUtils,
+  u_dzTranslator;
 
 var
   /// <summary>
@@ -327,12 +328,11 @@ uses
   Windows,
   DateUtils,
   StrUtils,
-  u_dzTranslator,
   u_dzStringUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function isDigit(_a: char; _Base: TBaseN): boolean;

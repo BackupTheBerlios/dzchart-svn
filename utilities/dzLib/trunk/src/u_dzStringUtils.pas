@@ -12,7 +12,8 @@ uses
   Windows,
   Classes,
   StrUtils,
-  SysUtils;
+  SysUtils,
+  u_dzTranslator;
 
 type
 ///<summary> Ancestor of all exceptions raised in u_dzStringUtils </summary>
@@ -363,12 +364,11 @@ type
 implementation
 
 uses
-  u_dzConvertUtils,
-  u_dzTranslator;
+  u_dzConvertUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function ForceExtension(const _Name, _Ext: string): string;

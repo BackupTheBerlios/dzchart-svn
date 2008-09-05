@@ -8,6 +8,9 @@ unit u_dzDateUtils;
 
 interface
 
+uses
+  u_dzTranslator;
+
 type
   ///<summary> Similar to the DayMonday etc. constants in DateUtils, but starting
   ///           with Monday rather than Sunday and also as a typesafe enum </summary>
@@ -70,12 +73,11 @@ implementation
 uses
   SysUtils,
   DateUtils,
-  u_dzTranslator,
   u_dzStringUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function GetDayOfTheWeek(_Date: TDateTime): TDayOfWeekEnum;

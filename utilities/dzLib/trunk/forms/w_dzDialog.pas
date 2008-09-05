@@ -1,12 +1,11 @@
 {GXFormatter.config=twm}
-{: Generic exception and message dialog.
-   This unit implements a generic Dialog to display exceptions and messages.
-   For exceptions, it only displays the exception's class name and a
-   Details button to get the message.
-   Most times all you need is calling one of the overloaded dzShowException
-   functions.
-   @author twm
-}
+///<summary> Generic exception and message dialog.
+///          This unit implements a generic Dialog to display exceptions and messages.
+///          For exceptions, it only displays the exception's class name and a
+///          Details button to get the message.
+///          Most times all you need is calling one of the overloaded dzShowException
+///          functions.
+///          @author twm </summary>
 unit w_dzDialog;
 
 interface
@@ -22,6 +21,7 @@ uses
   Dialogs,
   StdCtrls,
   ExtCtrls,
+  u_dzTranslator,
   Jcldebug;
 
 type
@@ -39,43 +39,43 @@ const
     mrYes, mrNo, mrOk, mrCancel, mrAbort, mrRetry, mrIgnore, mrAll, mrNoToAll,
     mrYesToAll, 0, -1);
 
-  {: converts the modal result returned by dzShowMessage to the button pressed }
+///<summary> converts the modal result returned by dzShowMessage to the button pressed </summary>
 function ModalResultToButton(_Result: integer): TDialogButtonEnum;
 
 type
-  {: whether to show the maximze button
-     <ul>
-       <li>smSmart - show only when details are visible</li>
-       <li>smShow - show always</li>
-       <li>smHide - don't show at all</li>
-     </ul>}
+  ///<summary> whether to show the maximze button
+  ///         <ul>
+  ///           <li>smSmart - show only when details are visible</li>
+  ///           <li>smShow - show always</li>
+  ///           <li>smHide - don't show at all</li>
+  ///         </ul> </summary>
   TShowMaximizeOption = (smSmart, smShow, smHide);
 
 type
-  { used for the property OnButtonClick in asyncronous mode
-    @param(Sender is the Exceptiondialog)
-    @param(Button is the ModalResult value of the button pressed)
-    @param(Action is a TCloseAction indicating whether the dialog can be closed,
-           it is initialized to caNone and can be set to caHide, caFree or caMinimize)}
+  ///<summary> used for the property OnButtonClick in asyncronous mode
+  ///          @param Sender is the Exceptiondialog
+  ///          @param Button is the ModalResult value of the button pressed
+  ///          @param Action is a TCloseAction indicating whether the dialog can be closed,
+  ///                        it is initialized to caNone and can be set to caHide, caFree or caMinimize </summary>
   TOnButtonClick = procedure(Sender: TObject; _Button: TModalResult; var _Action: TCloseAction);
 
 type
-  {: defines the exception and messsage dialog.
-     This dialog is used by the various dzShowException and the dzShowMessage
-     functions. It can of course also be created independently. The minimum
-     properties to set are
-     <ul>
-       <li>ExcecptionClass</li>
-       <li>ExceptionMessage</li>
-       <li>VisibleButtons</li>
-     </ul>
-     for showing an exception and
-     <ul>
-       <li>UserMessage</li>
-       <li>VisibleButtons</li>
-       <li>ShowDetailButton (to false)</li>
-     </ul>
-     for showing a message.}
+  ///<summary> defines the exception and messsage dialog.
+  ///          This dialog is used by the various dzShowException and the dzShowMessage
+  ///          functions. It can of course also be created independently. The minimum
+  ///          properties to set are
+  ///          <ul>
+  ///            <li>ExcecptionClass</li>
+  ///            <li>ExceptionMessage</li>
+  ///            <li>VisibleButtons</li>
+  ///          </ul>
+  ///          for showing an exception and
+  ///          <ul>
+  ///            <li>UserMessage</li>
+  ///            <li>VisibleButtons</li>
+  ///            <li>ShowDetailButton (to false)</li>
+  ///          </ul>
+  ///          for showing a message. </summary>
   Tf_dzDialog = class(TForm)
     p_Top: TPanel;
     l_Message: TLabel;
@@ -85,8 +85,8 @@ type
     im_Icon: TImage;
     procedure FormCreate(Sender: TObject);
   private
-    {: used to display it pseudo modally,
-       see dzShowNonModalMessage function and MakeModal/MakeNonmodal methods }
+    ///<summary> used to display the dialog pseudo modally,
+    ///          see dzShowNonModalMessage function and MakeModal/MakeNonmodal methods </summary>
     FWindowList: pointer;
     FOnButtonClick: TOnButtonClick;
   private
@@ -126,170 +126,166 @@ type
     destructor Destroy; override;
 
     procedure Hide;
-    {: class name of the exception }
+    ///<summary> class name of the exception </summary>
     property ExceptionClass: string read FExceptionClass write FExceptionClass;
-    {: message of the exception }
+    ///<summary> message of the exception </summary>
     property ExceptionMessage: string read FExceptionMessage write FExceptionMessage;
-    //    {: address of the exception }
-    //    property ExcptionAddress: pointer read fExceptionAddress write fExceptionAddress;
-        {: extended exception messsage, only available from EHeadworkException }
-    property ExceptionExtendedMessage: string read FExceptionExtendedMessage write FExceptionExtendedMessage;
-    {: exception procedure, only available from EHeadworkException }
+    ///<summary> exception address (initialized to ExcptAddr </summary>
     property ExceptionProcedure: string read FExceptionProcedure write FExceptionProcedure;
     property CallStack: TStrings read FCallStack write SetCallStack;
-    {: array of buttons to show, note that this is an array, not a set, so the
-       order matters }
+    ///<summary> array of buttons to show, note that this is an array, not a set, so the
+    ///          order matters </summary>
     property VisibleButtons: TDialogButtonArr read FVisibleButtons;
-    {: array of modal results for the custom buttons. Note: The length of this
-       array is set when VisibleButtons is updated (using SetVisibleButtons) }
+    ///<summary> array of modal results for the custom buttons. Note: The length of this
+    ///          array is set when VisibleButtons is updated (using SetVisibleButtons) </summary>
     property CustomModalResults: TIntegerArray read FCustomModalResults;
-    {: array of captions for the custom buttons Note: The length of this
-       array is set when VisibleButtons is updated (using SetVisibleButtons) }
+    ///<summary> array of captions for the custom buttons Note: The length of this
+    ///          array is set when VisibleButtons is updated (using SetVisibleButtons) </summary>
     property CustomButtonCaptions: TStringArray read FCustomButtonCaptions;
-    {: user message to show instead of 'An error <i>exceptionclass</i> occured.'
-       Can contain up to two %s wildcards, the first will be replaced with
-       the exception's class name the second with the exception's message
-       (not implemented) }
+    ///<summary> user message to show instead of 'An error <i>exceptionclass</i> occured.'
+    ///          Can contain up to two %s wildcards, the first will be replaced with
+    ///          the exception's class name the second with the exception's message
+    ///          (not implemented) </summary>
     property UserMessage: string read FUserMessage write FUserMessage;
-    {: description of the buttons (or some other text to be displayed) }
+    ///<summary> description of the buttons (or some other text to be displayed) </summary>
     property OptionDescription: string read FOptionDescription write FOptionDescription;
-    {: text to display instead of '<i>exceptionclass</i>'#13#10'<i>exceptionmessage</i>'#13#10 }
+    ///<summary> text to display instead of '<i>exceptionclass</i>'#13#10'<i>exceptionmessage</i>'#13#10 </summary>
     property Details: string read FDetails write FDetails;
-    {: determines the icon of the dialog }
+    ///<summary> determines the icon of the dialog </summary>
     property DialogType: TMsgDlgType read FDialogType write FDialogType;
-    {: if true the 'Details' button is shown }
+    ///<summary> if true the 'Details' button is shown </summary>
     property ShowDetailButton: boolean read FShowDetailButton write FShowDetailButton;
-    {: if true, the 'Do not show again' checkbox is shown.
-       Automatically set true, when DontShowAgainText is set to a nonempty string. }
+    ///<summary> if true, the 'Do not show again' checkbox is shown.
+    ///          Automatically set true, when DontShowAgainText is set to a nonempty string. </summary>
     property ShowDontShowAgain: boolean read FShowDontShowAgain write FShowDontShowAgain;
-    {: checkbox caption to show instead of 'Do not ask again.' }
+    ///<summary> checkbox caption to show instead of 'Do not ask again.' </summary>
     property DontShowAgainText: string read FDontShowAgainText write SetDontShowAgainText;
-    {: whether to show the maximze button
-       <ul>
-         <li>smSmart - show only when details are visible</li>
-         <li>smShow - show always</li>
-         <li>smHide - don't show at all</li>
-       </ul>}
+    ///<summary> whether to show the maximze button
+    ///          <ul>
+    ///            <li>smSmart - show only when details are visible</li>
+    ///            <li>smShow - show always</li>
+    ///            <li>smHide - don't show at all</li>
+    ///          </ul> </summary>
     property ShowMaximize: TShowMaximizeOption read FShowMaximize write FShowMaximize;
   public
-    {: Simple function to show an exception.
-       This will display a dialog with the exclamation mark (!) icon, an OK button,
-       the text 'An error <i>exceptionclass</i> occured.' and a Details button.
-       Pressing the details button will display<br>
-       <i>exceptionclass</i><br>
-       <i>exceptionmessage</i><br>
-       <i>call stack, if available</i><br>
-       @param e is the exception to display
-       @param Parent is the parent component to be used in the constructor, defaults
-                     to nil
-       @returns one of the mrXxxx values }
+    ///<summary> Simple function to show an exception.
+    ///          This will display a dialog with the exclamation mark (!) icon, an OK button,
+    ///          the text 'An error <i>exceptionclass</i> occured.' and a Details button.
+    ///          Pressing the details button will display<br>
+    ///          <i>exceptionclass</i><br>
+    ///          <i>exceptionmessage</i><br>
+    ///          <i>call stack, if available</i><br>
+    ///          @param e is the exception to display
+    ///          @param Parent is the parent component to be used in the constructor, defaults
+    ///                        to nil
+    ///          @returns one of the mrXxxx values </summary>
     class function ShowException(_e: Exception; _Parent: TComponent = nil): integer; overload;
-    {: Moderately complex function to show an exception.
-       This will display a dialog with the exclamation mark (!) icon, the Buttons
-       and OptionDesc specified,
-       the text 'An error <i>exceptionclass</i> occured.' and a Details button.
-       Pressing the details button will display<br>
-       <i>exceptionclass</i><br>
-       <i>exceptionmessage</i><br>
-       <i>call stack, if available</i><br>
-       @param e is the exception to display
-       @param Buttons is an array of buttons to show (Note: This is an array of
-                      buttons, not a set, so the order is important!)
-       @param OptionDesc gives the description for the Buttons, if not given,
-              defaults to an empty string
-       @param Parent is the parent component to be used in the constructor, defaults
-                     to nil
-       @returns one of the mrXxxx values }
+    ///<summary> Moderately complex function to show an exception.
+    ///          This will display a dialog with the exclamation mark (!) icon, the Buttons
+    ///          and OptionDesc specified,
+    ///          the text 'An error <i>exceptionclass</i> occured.' and a Details button.
+    ///          Pressing the details button will display<br>
+    ///          <i>exceptionclass</i><br>
+    ///          <i>exceptionmessage</i><br>
+    ///          <i>call stack, if available</i><br>
+    ///          @param e is the exception to display
+    ///          @param Buttons is an array of buttons to show (Note: This is an array of
+    ///                         buttons, not a set, so the order is important!)
+    ///          @param OptionDesc gives the description for the Buttons, if not given,
+    ///                            defaults to an empty string
+    ///          @param Parent is the parent component to be used in the constructor, defaults
+    ///                                      to nil
+    ///          @returns one of the mrXxxx values </summary>
     class function ShowException(_e: Exception; const _Buttons: array of TDialogButtonEnum;
       const _OptionDesc: string = ''; _Parent: TComponent = nil): integer; overload;
-    {: Complex function to show an exception.
-       This will display a dialog with the exclamation mark (!) icon, the Buttons
-       and OptionDesc specified, the Message passed and a Details button.
-       Pressing the details button will display<br>
-       <i>exceptionclass</i><br>
-       <i>exceptionmessage</i><br>
-       <i>call stack, if available</i><br>
-       @param e is the exception to display
-       @param Message is the message to display
-       @param Buttons is an array of buttons to show (Note: This is an array of
-                      buttons, not a set, so the order is important!)
-       @param OptionDesc gives the description for the Buttons, if not given,
-                         defaults to an empty string
-       @param Parent is the parent component to be used in the constructor, defaults
-                     to nil
-       @returns one of the mrXxxx values }
+    ///<summary> Complex function to show an exception.
+    ///          This will display a dialog with the exclamation mark (!) icon, the Buttons
+    ///          and OptionDesc specified, the Message passed and a Details button.
+    ///          Pressing the details button will display<br>
+    ///          <i>exceptionclass</i><br>
+    ///          <i>exceptionmessage</i><br>
+    ///          <i>call stack, if available</i><br>
+    ///          @param e is the exception to display
+    ///          @param Message is the message to display
+    ///          @param Buttons is an array of buttons to show (Note: This is an array of
+    ///                         buttons, not a set, so the order is important!)
+    ///          @param OptionDesc gives the description for the Buttons, if not given,
+    ///                            defaults to an empty string
+    ///          @param Parent is the parent component to be used in the constructor, defaults
+    ///                        to nil
+    ///          @returns one of the mrXxxx values }
     class function ShowException(_e: Exception; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = '';
       _Parent: TComponent = nil): integer; overload;
     class function ShowError(const _ErrorMsg, _Details: string; const _Buttons: array of TDialogButtonEnum;
       const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
-    {: Simple function to display a message.
-       This will display a dialog with the icon indicated by DialogType, the
-       Message given, containing the Buttons specified and optionally an
-       OptionDesc. In contrast to MessageDlg the dialog is centered on the owner.
-       @param DialogType gives the icon to display
-       @param Message is the message text to display
-       @param Buttons is an array of buttons to show (Note: This is an array of
-                      buttons, not a set, so the order is important!)
-       @param Owner is the owner component to be used in the constructor, defaults
-                     to nil
-       @param OptionDesc gives the description for the Buttons, if not given,
-                         defaults to an empty string
-       @returns one of the mrXxxx values }
+    ///<summary> Simple function to display a message.
+    ///          This will display a dialog with the icon indicated by DialogType, the
+    ///          Message given, containing the Buttons specified and optionally an
+    ///          OptionDesc. In contrast to MessageDlg the dialog is centered on the owner.
+    ///          @param DialogType gives the icon to display
+    ///          @param Message is the message text to display
+    ///          @param Buttons is an array of buttons to show (Note: This is an array of
+    ///                         buttons, not a set, so the order is important!)
+    ///          @param Owner is the owner component to be used in the constructor, defaults
+    ///                       to nil
+    ///          @param OptionDesc gives the description for the Buttons, if not given,
+    ///                            defaults to an empty string
+    ///          @returns one of the mrXxxx values </summary>
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; _Owner: TWinControl = nil;
       const _OptionDesc: string = ''): integer; overload;
-    {: Complex function to display a message.
-       This will display a dialog with the icon indicated by DialogType, the
-       Message given, containing the Buttons specified and optionally an
-       OptionDesc. In contrast to MessageDlg the dialog is centered on the owner.
-       @param DialogType gives the icon to display
-       @param Message is the message text to display
-       @param Buttons is an array of buttons to show (Note: This is an array of
-                      buttons, not a set, so the order is important!)
-       @param CustomButtons is an array of strings for the custom button captions,
-                            the number of entries must correspond to the number
-                            of dbeCustom entries in the Buttons array
-       @param CustomResults is an array of integers with the modal results for
-                           the custom buttons, the number of entries must
-                           correspond to the number of dbeCustom entries in the
-                           Buttons array
-       @param Owner is the owner component to be used in the constructor, defaults
-                     to nil
-       @param OptionDesc gives the description for the Buttons, if not given,
-                         defaults to an empty string
-       @returns one of the mrXxxx values }
+    ///<summary> Complex function to display a message.
+    ///          This will display a dialog with the icon indicated by DialogType, the
+    ///          Message given, containing the Buttons specified and optionally an
+    ///          OptionDesc. In contrast to MessageDlg the dialog is centered on the owner.
+    ///          @param DialogType gives the icon to display
+    ///          @param Message is the message text to display
+    ///          @param Buttons is an array of buttons to show (Note: This is an array of
+    ///                         buttons, not a set, so the order is important!)
+    ///          @param CustomButtons is an array of strings for the custom button captions,
+    ///                               the number of entries must correspond to the number
+    ///                               of dbeCustom entries in the Buttons array
+    ///          @param CustomResults is an array of integers with the modal results for
+    ///                               the custom buttons, the number of entries must
+    ///                               correspond to the number of dbeCustom entries in the
+    ///                               Buttons array
+    ///          @param Owner is the owner component to be used in the constructor, defaults
+    ///                       to nil
+    ///          @param OptionDesc gives the description for the Buttons, if not given,
+    ///                            defaults to an empty string
+    ///          @returns one of the mrXxxx values </summary>
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer;
       _Owner: TWinControl = nil;
       const _OptionDesc: string = ''): integer; overload;
-    {: Creates a Tf_dzDialog instance, shows it and returns it. The created
-       dialog instance must be freed by the caller. Nonmodal in this context
-       means that the call returns to the caller rather than waiting for the
-       dialog to be dismissed by the user, so processing can continue. But note
-       that the dialog is displayed on top of all application windows and
-       works just like a modal dialog by blocking input to all other windows.
-       You must free the dialog so is removed.
-       @param DialogType gives the icon to display
-       @param Message is the message text to display
-       @param Buttons is an array of buttons to show (Note: This is an array of
-                      buttons, not a set, so the order is important!)
-       @param CustomButton is an array of strings for the custom button captions,
-                           the number of entries must correspond to the number
-                           of debCustom entries in the Buttons array
-       @param CustomResults is an array of integers with the modal results for
-                           the custom buttons, the number of entries must
-                           correspond to the number of dbeCustom entries in the
-                           Buttons array
-       @param OnButtonClick is an event handler that will be called if one of the
-                            buttons is clicked
-       @param OptionDesc gives the description for the Buttons, if not given,
-                         defaults to an empty string
-       @param Parent is the parent component to be used in the constructor, defaults
-                     to nil
-       @returns the created Tf_dzDialog instance, the caller is responsible
-                for closing and freeing this instance. }
+    ///<summary> Creates a Tf_dzDialog instance, shows it and returns it. The created
+    ///          dialog instance must be freed by the caller. Nonmodal in this context
+    ///          means that the call returns to the caller rather than waiting for the
+    ///          dialog to be dismissed by the user, so processing can continue. But note
+    ///          that the dialog is displayed on top of all application windows and
+    ///          works just like a modal dialog by blocking input to all other windows.
+    ///          You must free the dialog so it is removed.
+    ///          @param DialogType gives the icon to display
+    ///          @param Message is the message text to display
+    ///          @param Buttons is an array of buttons to show (Note: This is an array of
+    ///                         buttons, not a set, so the order is important!)
+    ///          @param CustomButton is an array of strings for the custom button captions,
+    ///                              the number of entries must correspond to the number
+    ///                              of debCustom entries in the Buttons array
+    ///          @param CustomResults is an array of integers with the modal results for
+    ///                               the custom buttons, the number of entries must
+    ///                               correspond to the number of dbeCustom entries in the
+    ///                               Buttons array
+    ///          @param OnButtonClick is an event handler that will be called if one of the
+    ///                               buttons is clicked
+    ///          @param OptionDesc gives the description for the Buttons, if not given,
+    ///                            defaults to an empty string
+    ///          @param Parent is the parent component to be used in the constructor, defaults
+    ///                        to nil
+    ///          @returns the created Tf_dzDialog instance, the caller is responsible
+    ///                   for closing and freeing this instance. }
     class function ShowNonModalMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer; _OnButtonClick: TOnButtonClick;
@@ -304,15 +300,14 @@ uses
   Consts,
   Math,
   ShellApi,
-  u_dzVclUtils,
-  u_dzTranslator;
+  u_dzVclUtils;
 
 const
   CHECKBOX_WIDTH = 24;
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;  
 
 function ModalResultToButton(_Result: integer): TDialogButtonEnum;
@@ -412,8 +407,7 @@ begin
       frm.ExceptionClass := _e.ClassName;
       // frm.ExcptionAddress := ExceptAddr;
       frm.ExceptionMessage := _e.Message;
-      frm.ExceptionExtendedMessage := _e.Message;
-      frm.ExceptionProcedure := format('[%p]', [ExceptAddr]);
+      frm.ExceptionProcedure := Format('[%p]', [ExceptAddr]);
       frm.ExceptionProcedure := GetLocationInfoStr(ExceptAddr);
       sl := TStringList.Create;
       try

@@ -9,7 +9,8 @@ uses
   SysUtils,
   AdoDb,
   DB,
-  DBTables;
+  DBTables,
+  u_dzTranslator;
 
 type
   ///<summary> Interface definition for the Dataset-Helper, the idea is to have simplified
@@ -161,12 +162,11 @@ implementation
 uses
   Variants,
   u_dzTranslator,
-  u_dzVariantUtils,
   u_dzMiscUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 { TDatasetHelper }

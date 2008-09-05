@@ -10,7 +10,8 @@ interface
 uses
   SysUtils,
   Classes,
-  IniFiles;
+  IniFiles,
+  u_dzTranslator;
 
 // NOTE: The naming convention is <extended-class>_<Methodname>
 
@@ -144,12 +145,11 @@ implementation
 
 uses
   StrUtils,
-  u_dzTranslator,
   u_dzStringUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 procedure TList_FreeWithItems(var _List: TList);

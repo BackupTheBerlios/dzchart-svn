@@ -5,7 +5,8 @@ interface
 
 uses
   SysUtils,
-  Variants;
+  Variants,
+  u_dzTranslator;
 
 type
   ///<summary> raised if there is a conversion error in one of the Var2XxxEx functions </summary>
@@ -185,12 +186,11 @@ function Var2StrEx(_v: variant; const _Source: string): string;
 implementation
 
 uses
-  u_dzTranslator,
   u_dzConvertUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function toString(_v: OleVariant): string;

@@ -6,7 +6,8 @@ interface
 uses
   Windows,
   SysUtils,
-  Classes;
+  Classes,
+  u_dzTranslator;
 
 type
   EOsFunc = class(Exception);
@@ -96,12 +97,11 @@ implementation
 uses
   Registry,
   ShellApi,
-  u_dzMiscUtils,
-  u_dzTranslator;
+  u_dzMiscUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 function GetComputerName: string;

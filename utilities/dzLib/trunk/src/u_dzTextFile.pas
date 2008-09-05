@@ -3,7 +3,8 @@ unit u_dzTextFile;
 interface
 
 uses
-  SysUtils;
+  SysUtils,
+  u_dzTranslator;
 
 type
   ///<summary> defined the file access for TTextFile</summary>
@@ -30,14 +31,11 @@ type
 
 implementation
 
-uses
-  u_dzTranslator;
-
 { TTextFile }
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 constructor TTextFile.Create(const _Filename: string; _Access: TTextFileAccess);

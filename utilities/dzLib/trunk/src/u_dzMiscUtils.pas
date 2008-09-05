@@ -26,7 +26,8 @@ interface
 uses
   SysUtils,
   Windows,
-  Registry;
+  Registry,
+  u_dzTranslator;
 
 type
   ///<summary> raised by Max([array of const]) and Min([array of const]) if the passed
@@ -199,13 +200,12 @@ uses
 {$ENDIF}
   FileCtrl,
   StrUtils,
-  u_dzTranslator,
   u_dzStringUtils,
   u_dzConvertUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 {$IFDEF debug}

@@ -7,6 +7,7 @@ interface
 uses
   Windows,
   SysUtils,
+  u_dzTranslator,
   u_dzVersionInfo;
 
 type
@@ -106,12 +107,11 @@ implementation
 
 uses
   u_dzMiscUtils,
-  u_dzOsUtils,
-  u_dzTranslator;
+  u_dzOsUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 { TdzDllLoader }

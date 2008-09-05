@@ -12,7 +12,8 @@ interface
 uses
   Classes,
   SysUtils,
-  Windows;
+  Windows,
+  u_dzTranslator;
 
 type
   ///<summary> Parent of all exceptions raised in u_dzFiles </summary>
@@ -191,13 +192,12 @@ type
 implementation
 
 uses
-  u_dzTranslator,
   u_dzFileUtils,
   u_dzMiscUtils;
 
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 const

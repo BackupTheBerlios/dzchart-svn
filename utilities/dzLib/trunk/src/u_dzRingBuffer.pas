@@ -6,7 +6,8 @@ interface
 
 uses
   Windows,
-  SysUtils;
+  SysUtils,
+  u_dzTranslator;
 
 type
   EdzRingBuffer = class(Exception);
@@ -159,12 +160,9 @@ type
 
 implementation
 
-uses
-  u_dzTranslator;
-
 function _(const _s: string): string; inline;
 begin
-  Result := u_dzTranslator.DGetText(_s, 'dzlib');
+  Result := dzDGetText(_s, 'dzlib');
 end;
 
 { TdzCustomRingBuffer }
