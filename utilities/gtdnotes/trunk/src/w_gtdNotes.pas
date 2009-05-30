@@ -164,6 +164,7 @@ type
     FPlaces: TGtdPlaces;
     FProjects: TGtdProjects;
     FLabels: TGtdLabels;
+    FFilename: string;
     procedure SetDoneVisible(_Visible: boolean);
     procedure HideNodes(_Sender: TBaseVirtualTree; _Node: PVirtualNode;
       _Data: Pointer; var _Abort: Boolean);
@@ -204,7 +205,9 @@ begin
   FProjects := TGtdProjects.Create;
   FLabels := TGtdLabels.Create;
 
-  LoadXml('data.gtdnote');
+  FFilename := ChangeFileExt(Application.ExeName, '.gtdnote');
+  if FileExists(FFilename) then
+    LoadXml(FFilename);
 
   VST.NodeDataSize := SizeOf(TGtdLabelRec);
 
@@ -286,72 +289,9 @@ begin
   finally
     FreeAndNil(XmlDoc);
   end;
+
+  Caption := ChangeFileExt(ExtractFileName(_Filename), '') + ' - GTD Notes'
 end;
-//procedure Tf_gtdNotes.LoadXml(const _Filename: string);
-//var
-//  XmlDoc: TXMLDocument;
-//  LabelNode: IDOMNode;
-//  RootNode: IDOMNode;
-//  PlaceNode: IDOMNode;
-//  ProjectNode: IDOMNode;
-//  Node: IDOMNode;
-//  doc: IDOMDocument;
-//  Project: TGtdProject;
-//  xmlnode: IXMLNode;
-//begin
-//  // owner must NOT be nil, otherwise we get an access violation
-//  XmlDoc := TXMLDocument.Create(self);
-//  try
-//    XmlDoc.Active := false;
-//    XmlDoc.DOMVendor := GetDOMVendor('MSXML');
-//    XmlDoc.LoadFromFile(_Filename);
-//    XmlDoc.Active := true;
-//
-//    if XmlDoc.ChildNodes.Count < 1 then
-//      raise Exception.Create('Document must contain at least one child node.');
-//    xmlnode := XmlDoc.ChildNodes[0];
-//    WriteLn(xmlnode.NodeName);
-//
-//    doc := XmlDoc.DOMDocument;
-//    if doc.childNodes.length <> 1 then
-//      raise Exception.Create('Document must contain one child node.');
-//    RootNode := doc.firstChild;
-//    if RootNode.nodeName <> 'gtdnotes' then
-//      raise Exception.Create('no "gtdnotes" node found');
-//    Node := RootNode.firstChild;
-//    while Assigned(Node) do begin
-//      if Node.nodeName = 'places' then begin
-//        PlaceNode := Node.firstChild;
-//        while Assigned(PlaceNode) do begin
-//          if PlaceNode.nodeName = 'place' then begin
-//            FPlaces.Add(TGtdPlace.Create(PlaceNode));
-//          end;
-//          PlaceNode := PlaceNode.nextSibling;
-//        end;
-//      end else if Node.nodeName = 'labels' then begin
-//        LabelNode := Node.firstChild;
-//        while Assigned(LabelNode) do begin
-//          if LabelNode.nodeName = 'label' then begin
-//            FLabels.Add(TGtdLabel.Create(LabelNode));
-//          end;
-//          LabelNode := LabelNode.nextSibling;
-//        end;
-//      end else if Node.nodeName = 'projects' then begin
-//        ProjectNode := Node.firstChild;
-//        while Assigned(ProjectNode) do begin
-//          if ProjectNode.nodeName = 'project' then begin
-//            Project := TGtdProject.Create(ProjectNode, FPlaces, FLabels);
-//            FProjects.Add(Project);
-//          end;
-//          ProjectNode := ProjectNode.nextSibling;
-//        end;
-//      end;
-//      Node := Node.nextSibling;
-//    end;
-//  finally
-//    FreeAndNil(XmlDoc);
-//  end;
-//end;
 
 procedure Tf_gtdNotes.SaveXml(const _Filename: string);
 var
