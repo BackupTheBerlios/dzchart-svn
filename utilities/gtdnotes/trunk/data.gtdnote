@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <gtdnotes>
 <places>
   <place name="atHome" id="1"/>
@@ -20,8 +21,8 @@
     </action>
     <action name="decide on next action for each project" isnext="1">
       <place id="2"/>
-      <label id="1"/>
       <place id="3"/>
+      <label id="1"/>
     </action>
   </project>
 </projects>

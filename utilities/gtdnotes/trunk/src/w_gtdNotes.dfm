@@ -155,9 +155,4 @@ object f_gtdNotes: Tf_gtdNotes
       Caption = 'Delete Action'
     end
   end
-  object TheXmlDocument: TXMLDocument
-    Left = 176
-    Top = 224
-    DOMVendorDesc = 'MSXML'
-  end
 end

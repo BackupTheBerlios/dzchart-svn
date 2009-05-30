@@ -70,9 +70,10 @@ type
     function GetCount: integer; override;
   public
     constructor Create(const _Name: string; _Id: string); overload;
-    constructor Create(_Node: IDOMNode); overload;
+    constructor Create(_Node: IXMLNode); overload;
     destructor Destroy; override;
     function Add(_Node: TGtdNode): integer; override;
+    function Find(_Node: TGtdNode): boolean;
     property Id: string read FId write FId;
   end;
 
@@ -86,7 +87,7 @@ type
     function GetIsNextAction: boolean; override;
     procedure SetIsNextAction(const _Value: boolean); override;
   public
-    constructor Create(_Node: IDOMNode); overload;
+    constructor Create(_Node: IXMLNode); overload;
   end;
 
   TGtdPlace = class(TGtdFilter)
@@ -112,7 +113,7 @@ type
 
   TGtdProject = class(TGtdContainer)
   public
-    constructor Create(_Node: IDOMNode; _Places: TGtdPlaces; _Labels: TGtdLabels); overload;
+    constructor Create(_Node: IXMLNode; _Places: TGtdPlaces; _Labels: TGtdLabels); overload;
   end;
 
   TGtdProjects = class(TGtdContainer)
@@ -142,7 +143,6 @@ type
     act_AddAction: TAction;
     tb_DeleteAction: TToolButton;
     act_DeleteAction: TAction;
-    TheXmlDocument: TXMLDocument;
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode;
       var InitialStates: TVirtualNodeInitStates);
@@ -175,6 +175,7 @@ type
     function GetFocusedProjectAction(out _Node: PVirtualNode;
       out _GtdNode: TGtdNode): boolean;
     procedure LoadXml(const _Filename: string);
+    procedure SaveXml(const _Filename: string);
   public
     constructor Create(_Owner: TComponent); override;
     destructor Destroy; override;
@@ -203,7 +204,7 @@ begin
   FProjects := TGtdProjects.Create;
   FLabels := TGtdLabels.Create;
 
-  LoadXml('data.gtdnotes');
+  LoadXml('data.gtdnote');
 
   VST.NodeDataSize := SizeOf(TGtdLabelRec);
 
@@ -220,51 +221,214 @@ begin
 end;
 
 procedure Tf_gtdNotes.LoadXml(const _Filename: string);
+
+  function FindRootNode(_XmlDoc: TXMLDocument; const _Name: string): IXMLNode;
+  begin
+    Result := _XmlDoc.ChildNodes.First;
+    while Assigned(Result) do begin
+      if Result.NodeName = 'gtdnotes' then
+        exit;
+      Result := Result.NextSibling;
+    end;
+    raise Exception.Create('no "gtdnotes" node found');
+  end;
+
 var
-  LabelNode: IDOMNode;
-  RootNode: IDOMNode;
-  PlaceNode: IDOMNode;
-  ProjectNode: IDOMNode;
-  Node: IDOMNode;
-  doc: IDOMDocument;
+  XmlDoc: TXMLDocument;
+  LabelNode: IXMLNode;
+  RootNode: IXMLNode;
+  PlaceNode: IXMLNode;
+  ProjectNode: IXMLNode;
+  Node: IXMLNode;
   Project: TGtdProject;
 begin
-  TheXmlDocument.LoadFromFile('data.gtdnotes');
-  doc := TheXmlDocument.DOMDocument;
-  if doc.childNodes.length <> 1 then
-    raise Exception.Create('Document must contain one child node.');
-  RootNode := doc.firstChild;
-  if RootNode.nodeName <> 'gtdnotes' then
-    raise Exception.Create('no "gtdnotes" node found');
-  Node := RootNode.firstChild;
-  while Assigned(Node) do begin
-    if Node.nodeName = 'places' then begin
-      PlaceNode := Node.firstChild;
-      while Assigned(PlaceNode) do begin
-        if PlaceNode.nodeName = 'place' then begin
-          FPlaces.Add(TGtdPlace.Create(PlaceNode));
+  // Owner must NOT be nil, otherwise we get an access violation when accessing
+  // the ChildNodes collection.
+  XmlDoc := TXMLDocument.Create(self);
+  try
+    XmlDoc.DOMVendor := GetDOMVendor('MSXML');
+    XmlDoc.Options := XmlDoc.Options - [doAttrNull];
+    XmlDoc.LoadFromFile(_Filename);
+    XmlDoc.Active := true;
+
+    RootNode := FindRootNode(XmlDoc, 'gtdnotes');
+
+    Node := RootNode.ChildNodes.First;
+    while Assigned(Node) do begin
+      if Node.NodeName = 'places' then begin
+        PlaceNode := Node.ChildNodes.First;
+        while Assigned(PlaceNode) do begin
+          if PlaceNode.NodeName = 'place' then begin
+            FPlaces.Add(TGtdPlace.Create(PlaceNode));
+          end;
+          PlaceNode := PlaceNode.NextSibling;
         end;
-        PlaceNode := PlaceNode.nextSibling;
+      end else if Node.nodeName = 'labels' then begin
+        LabelNode := Node.ChildNodes.First;
+        while Assigned(LabelNode) do begin
+          if LabelNode.NodeName = 'label' then begin
+            FLabels.Add(TGtdLabel.Create(LabelNode));
+          end;
+          LabelNode := LabelNode.NextSibling;
+        end;
+      end else if Node.nodeName = 'projects' then begin
+        ProjectNode := Node.ChildNodes.First;
+        while Assigned(ProjectNode) do begin
+          if ProjectNode.NodeName = 'project' then begin
+            Project := TGtdProject.Create(ProjectNode, FPlaces, FLabels);
+            FProjects.Add(Project);
+          end;
+          ProjectNode := ProjectNode.nextSibling;
+        end;
       end;
-    end else if Node.nodeName = 'labels' then begin
-      LabelNode := Node.firstChild;
-      while Assigned(LabelNode) do begin
-        if LabelNode.nodeName = 'label' then begin
-          FLabels.Add(TGtdLabel.Create(LabelNode));
+      Node := Node.nextSibling;
+    end;
+  finally
+    FreeAndNil(XmlDoc);
+  end;
+end;
+//procedure Tf_gtdNotes.LoadXml(const _Filename: string);
+//var
+//  XmlDoc: TXMLDocument;
+//  LabelNode: IDOMNode;
+//  RootNode: IDOMNode;
+//  PlaceNode: IDOMNode;
+//  ProjectNode: IDOMNode;
+//  Node: IDOMNode;
+//  doc: IDOMDocument;
+//  Project: TGtdProject;
+//  xmlnode: IXMLNode;
+//begin
+//  // owner must NOT be nil, otherwise we get an access violation
+//  XmlDoc := TXMLDocument.Create(self);
+//  try
+//    XmlDoc.Active := false;
+//    XmlDoc.DOMVendor := GetDOMVendor('MSXML');
+//    XmlDoc.LoadFromFile(_Filename);
+//    XmlDoc.Active := true;
+//
+//    if XmlDoc.ChildNodes.Count < 1 then
+//      raise Exception.Create('Document must contain at least one child node.');
+//    xmlnode := XmlDoc.ChildNodes[0];
+//    WriteLn(xmlnode.NodeName);
+//
+//    doc := XmlDoc.DOMDocument;
+//    if doc.childNodes.length <> 1 then
+//      raise Exception.Create('Document must contain one child node.');
+//    RootNode := doc.firstChild;
+//    if RootNode.nodeName <> 'gtdnotes' then
+//      raise Exception.Create('no "gtdnotes" node found');
+//    Node := RootNode.firstChild;
+//    while Assigned(Node) do begin
+//      if Node.nodeName = 'places' then begin
+//        PlaceNode := Node.firstChild;
+//        while Assigned(PlaceNode) do begin
+//          if PlaceNode.nodeName = 'place' then begin
+//            FPlaces.Add(TGtdPlace.Create(PlaceNode));
+//          end;
+//          PlaceNode := PlaceNode.nextSibling;
+//        end;
+//      end else if Node.nodeName = 'labels' then begin
+//        LabelNode := Node.firstChild;
+//        while Assigned(LabelNode) do begin
+//          if LabelNode.nodeName = 'label' then begin
+//            FLabels.Add(TGtdLabel.Create(LabelNode));
+//          end;
+//          LabelNode := LabelNode.nextSibling;
+//        end;
+//      end else if Node.nodeName = 'projects' then begin
+//        ProjectNode := Node.firstChild;
+//        while Assigned(ProjectNode) do begin
+//          if ProjectNode.nodeName = 'project' then begin
+//            Project := TGtdProject.Create(ProjectNode, FPlaces, FLabels);
+//            FProjects.Add(Project);
+//          end;
+//          ProjectNode := ProjectNode.nextSibling;
+//        end;
+//      end;
+//      Node := Node.nextSibling;
+//    end;
+//  finally
+//    FreeAndNil(XmlDoc);
+//  end;
+//end;
+
+procedure Tf_gtdNotes.SaveXml(const _Filename: string);
+var
+  XmlDoc: TXMLDocument;
+  RootNode: IXMLNode;
+  PlacesNode: IXMLNode;
+  i: Integer;
+  PlaceNode: IXMLNode;
+  Place: TGtdPlace;
+  LabelsNode: IXMLNode;
+  LabelNode: IXMLNode;
+  GtdLabel: TGtdLabel;
+  ProjectsNode: IXMLNode;
+  ProjectNode: IXMLNode;
+  Project: TGtdProject;
+  ProjIdx: Integer;
+  ActIdx: Integer;
+  ActionNode: IXMLNode;
+  Action: TGtdAction;
+begin
+  XmlDoc := TXMLDocument.Create(nil);
+  try
+    XmlDoc.Active := true;
+    XmlDoc.Version := '1.0';
+    XmlDoc.Encoding := 'UTF-8';
+    XmlDoc.StandAlone := 'no';
+    XmlDoc.Options := XmlDoc.Options + [doNodeAutoIndent];
+
+    RootNode := XmlDoc.AddChild('gtdnotes');
+    PlacesNode := RootNode.AddChild('places');
+    for i := 0 to FPlaces.Count - 1 do begin
+      PlaceNode := PlacesNode.AddChild('place');
+      Place := FPlaces.Items[i] as TGtdPlace;
+      PlaceNode.Attributes['name'] := Place.Name;
+      PlaceNode.Attributes['id'] := Place.Id;
+    end;
+
+    LabelsNode := RootNode.AddChild('labels');
+    for i := 0 to FLabels.Count - 1 do begin
+      LabelNode := LabelsNode.AddChild('label');
+      GtdLabel := FLabels.Items[i] as TGtdLabel;
+      LabelNode.Attributes['name'] := GtdLabel.Name;
+      LabelNode.Attributes['id'] := GtdLabel.Id;
+    end;
+
+    ProjectsNode := RootNode.AddChild('projects');
+    for ProjIdx := 0 to FProjects.Count - 1 do begin
+      Project := FProjects.Items[ProjIdx] as TGtdProject;
+      ProjectNode := ProjectsNode.AddChild('project');
+      ProjectNode.Attributes['name'] := Project.Name;
+      for ActIdx := 0 to Project.Count - 1 do begin
+        Action := Project.Items[ActIdx] as TGtdAction;
+        ActionNode := ProjectNode.AddChild('action');
+        ActionNode.Attributes['name'] := Action.Name;
+        if Action.IsDone then
+          ActionNode.Attributes['isdone'] := '1';
+        if Action.IsNextAction then
+          ActionNode.Attributes['isnext'] := '1';
+        for i := 0 to FPlaces.Count - 1 do begin
+          Place := FPlaces.Items[i] as TGtdPlace;
+          if Place.Find(Action) then begin
+            PlaceNode := ActionNode.AddChild('place');
+            PlaceNode.Attributes['id'] := Place.Id;
+          end;
         end;
-        LabelNode := LabelNode.nextSibling;
-      end;
-    end else if Node.nodeName = 'projects' then begin
-      ProjectNode := Node.firstChild;
-      while Assigned(ProjectNode) do begin
-        if ProjectNode.nodeName = 'project' then begin
-          Project := TGtdProject.Create(ProjectNode, FPlaces, FLabels);
-          FProjects.Add(Project);
+        for i := 0 to FLabels.Count - 1 do begin
+          GtdLabel := FLabels.Items[i] as TGtdLabel;
+          if GtdLabel.Find(Action) then begin
+            LabelNode := ActionNode.AddChild('label');
+            LabelNode.Attributes['id'] := GtdLabel.Id;
+          end;
         end;
-        ProjectNode := ProjectNode.nextSibling;
       end;
     end;
-    Node := Node.nextSibling;
+    XmlDoc.SaveToFile(_Filename);
+  finally
+    FreeAndNil(XmlDoc);
   end;
 end;
 
@@ -477,7 +641,7 @@ end;
 
 procedure Tf_gtdNotes.act_SaveExecute(Sender: TObject);
 begin
-//
+  SaveXml('test.gtdnote');
 end;
 
 procedure Tf_gtdNotes.act_SetNextActionExecute(Sender: TObject);
@@ -495,6 +659,8 @@ end;
 constructor TGtdNode.Create(const _Name: string);
 begin
   inherited Create;
+  if _Name = '' then
+    raise Exception.Create('Name must not be empty.');
   FName := _Name;
 end;
 
@@ -533,20 +699,26 @@ end;
 constructor TGtdFilter.Create(const _Name: string; _Id: string);
 begin
   inherited Create(_Name);
+  if _Id = '' then
+    raise Exception.Create('Id must not be empty.');
   FId := _Id;
   FItems := TList.Create;
 end;
 
-constructor TGtdFilter.Create(_Node: IDOMNode);
+constructor TGtdFilter.Create(_Node: IXMLNode);
 begin
-  Create(_Node.attributes.getNamedItem('name').nodeValue,
-    _Node.attributes.getNamedItem('id').nodeValue);
+  Create(_Node.Attributes['name'], _Node.Attributes['id']);
 end;
 
 destructor TGtdFilter.Destroy;
 begin
   FItems.Free;
   inherited;
+end;
+
+function TGtdFilter.Find(_Node: TGtdNode): boolean;
+begin
+  Result := (FItems.IndexOf(_Node) <> -1);
 end;
 
 function TGtdFilter.Add(_Node: TGtdNode): integer;
@@ -618,16 +790,12 @@ end;
 
 { TGtdAction }
 
-constructor TGtdAction.Create(_Node: IDOMNode);
-var
-  AttrNode: IDOMNode;
+constructor TGtdAction.Create(_Node: IXMLNode);
 begin
-  Create(_Node.attributes.getNamedItem('name').nodeValue);
-  AttrNode := _Node.attributes.getNamedItem('isnext');
-  if Assigned(AttrNode) and (AttrNode.nodeValue = '1') then
+  Create(_Node.Attributes['name']);
+  if _Node.Attributes['isnext'] = '1' then
     IsNextAction := true;
-  AttrNode := _Node.attributes.getNamedItem('isdone');
-  if Assigned(AttrNode) and (AttrNode.nodeValue = '1') then
+  if _Node.Attributes['isdone'] = '1' then
     IsDone := true;
 end;
 
@@ -666,28 +834,28 @@ end;
 
 { TGtdProject }
 
-constructor TGtdProject.Create(_Node: IDOMNode; _Places: TGtdPlaces; _Labels: TGtdLabels);
+constructor TGtdProject.Create(_Node: IXMLNode; _Places: TGtdPlaces; _Labels: TGtdLabels);
 var
-  ActionNode: IDOMNode;
+  ActionNode: IXMLNode;
   Action: TGtdAction;
-  FilterNode: IDOMNode;
+  FilterNode: IXMLNode;
   Filter: TGtdFilter;
   FilterId: string;
 begin
-  Create(_Node.attributes.getNamedItem('name').nodeValue);
+  Create(_Node.Attributes['name']);
 
-  ActionNode := _Node.firstChild;
+  ActionNode := _Node.ChildNodes.First;
   while Assigned(ActionNode) do begin
     if ActionNode.nodeName = 'action' then begin
       Action := TGtdAction.Create(ActionNode);
       Add(Action);
-      FilterNode := ActionNode.firstChild;
+      FilterNode := ActionNode.ChildNodes.First;
       while Assigned(FilterNode) do begin
-        FilterId := FilterNode.attributes.getNamedItem('id').nodeValue;
-        if FilterNode.nodeName = 'label' then begin
+        FilterId := FilterNode.Attributes['id'];
+        if FilterNode.NodeName = 'label' then begin
           if _Labels.FindId(FilterId, Filter) then
             Filter.Add(Action);
-        end else if FilterNode.nodeName = 'place' then begin
+        end else if FilterNode.NodeName = 'place' then begin
           if _Places.FindId(FilterId, Filter) then
             Filter.Add(Action);
         end;
