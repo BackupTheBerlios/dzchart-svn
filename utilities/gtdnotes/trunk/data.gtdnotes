@@ -15,10 +15,10 @@
     <action name="enter projects">
       <place id="2"/>
     </action>
-    <action name="enter project actions">
+    <action name="enter project actions" isdone="1">
       <place id="2"/>
     </action>
-    <action name="decide on next action for each project">
+    <action name="decide on next action for each project" isnext="1">
       <place id="2"/>
       <label id="1"/>
       <place id="3"/>

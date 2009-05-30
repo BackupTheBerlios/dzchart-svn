@@ -343,10 +343,26 @@ end;
 procedure Tf_gtdNotes.VSTChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   Data: PGtdLabelRec;
+  vn: PVirtualNode;
 begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
-  Data.GtdNode.IsDone := (Node.CheckState = csCheckedNormal);
+  VST.BeginUpdate;
+  try
+    Data.GtdNode.IsDone := (Node.CheckState = csCheckedNormal);
+    vn := VST.GetFirstChild(nil);
+    while assigned(vn) do begin
+      Data := Sender.GetNodeData(vn);
+      Assert(Assigned(Data));
+      if Data.GtdNode.IsDone then
+        vn.CheckState := csCheckedNormal
+      else
+        vn.CheckState := csUncheckedNormal;
+      vn := VST.GetNext(vn);
+    end;
+  finally
+    VST.EndUpdate;
+  end;
 end;
 
 procedure Tf_gtdNotes.UnsetNextAction(_Sender: TBaseVirtualTree; _Node: PVirtualNode; _Data: Pointer; var _Abort: Boolean);
@@ -398,8 +414,11 @@ begin
   end;
   VST.ChildCount[Node] := Data.GtdNode.Count;
   VST.Expanded[Node] := (Data.GtdNode.Count > 0);
-  if Level = 2 then
+  if Level = 2 then begin
     VST.CheckType[Node] := ctCheckBox;
+    if Data.GtdNode.IsDone then
+      VST.CheckState[Node] := csCheckedNormal;
+  end;
 end;
 
 procedure Tf_gtdNotes.VSTKeyPress(Sender: TObject; var Key: Char);
@@ -600,8 +619,16 @@ end;
 { TGtdAction }
 
 constructor TGtdAction.Create(_Node: IDOMNode);
+var
+  AttrNode: IDOMNode;
 begin
   Create(_Node.attributes.getNamedItem('name').nodeValue);
+  AttrNode := _Node.attributes.getNamedItem('isnext');
+  if Assigned(AttrNode) and (AttrNode.nodeValue = '1') then
+    IsNextAction := true;
+  AttrNode := _Node.attributes.getNamedItem('isdone');
+  if Assigned(AttrNode) and (AttrNode.nodeValue = '1') then
+    IsDone := true;
 end;
 
 function TGtdAction.GetIsDone: boolean;
