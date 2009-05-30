@@ -20,6 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_ConsoleTarget>true</DCC_ConsoleTarget>
 			<DCC_DcuOutput>..\dcu</DCC_DcuOutput>
 			<DCC_ExeOutput>..</DCC_ExeOutput>
 			<DCC_UnitSearchPath>..\libs\virtualtreeview\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>

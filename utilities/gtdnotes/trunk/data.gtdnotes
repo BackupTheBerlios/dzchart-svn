@@ -1,0 +1,28 @@
+<gtdnotes>
+<places>
+  <place name="atHome" id="1"/>
+  <place name="atWork" id="2"/>
+  <place name="onTheRoad" id="3"/>
+</places>
+<labels>
+  <label name="custom Label" id="1"/>
+</labels>
+<projects>
+  <project name="get used to GTD">
+    <action name="set up gtdnotes">
+      <place id="2"/>
+    </action>
+    <action name="enter projects">
+      <place id="2"/>
+    </action>
+    <action name="enter project actions">
+      <place id="2"/>
+    </action>
+    <action name="decide on next action for each project">
+      <place id="2"/>
+      <label id="1"/>
+      <place id="3"/>
+    </action>
+  </project>
+</projects>
+</gtdnotes>

@@ -48,7 +48,6 @@ object f_gtdNotes: Tf_gtdNotes
     OnPaintText = VSTPaintText
     OnInitNode = VSTInitNode
     OnKeyPress = VSTKeyPress
-    ExplicitWidth = 456
     Columns = <>
   end
   object tb_Main: TToolBar
@@ -56,6 +55,7 @@ object f_gtdNotes: Tf_gtdNotes
     Top = 0
     Width = 532
     Height = 19
+    AutoSize = True
     ButtonHeight = 19
     ButtonWidth = 86
     Caption = 'GTD Notes Toolbar'
@@ -63,7 +63,6 @@ object f_gtdNotes: Tf_gtdNotes
     ShowCaptions = True
     AllowTextButtons = True
     TabOrder = 1
-    ExplicitWidth = 456
     object tb_Load: TToolButton
       Left = 0
       Top = 0
@@ -155,5 +154,10 @@ object f_gtdNotes: Tf_gtdNotes
     object act_DeleteAction: TAction
       Caption = 'Delete Action'
     end
+  end
+  object TheXmlDocument: TXMLDocument
+    Left = 176
+    Top = 224
+    DOMVendorDesc = 'MSXML'
   end
 end

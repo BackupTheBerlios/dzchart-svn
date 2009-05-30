@@ -17,7 +17,11 @@ uses
   Contnrs,
   ActnList,
   ComCtrls,
-  ToolWin;
+  ToolWin,
+  xmldom,
+  XMLIntf,
+  msxmldom,
+  XMLDoc;
 
 type
   TGtdNode = class
@@ -60,13 +64,16 @@ type
   TGtdFilter = class(TGtdMiddleNode)
   strict private
     FItems: TList;
+    FId: string;
   strict protected
     function GetItems(_Idx: integer): TGtdNode; override;
     function GetCount: integer; override;
   public
-    constructor Create(const _Name: string);
+    constructor Create(const _Name: string; _Id: string); overload;
+    constructor Create(_Node: IDOMNode); overload;
     destructor Destroy; override;
     function Add(_Node: TGtdNode): integer; override;
+    property Id: string read FId write FId;
   end;
 
   TGtdAction = class(TGtdNode)
@@ -78,9 +85,8 @@ type
     function GetIsDone: boolean; override;
     function GetIsNextAction: boolean; override;
     procedure SetIsNextAction(const _Value: boolean); override;
-  end;
-
-  TGtdProject = class(TGtdContainer)
+  public
+    constructor Create(_Node: IDOMNode); overload;
   end;
 
   TGtdPlace = class(TGtdFilter)
@@ -89,19 +95,30 @@ type
   TGtdLabel = class(TGtdFilter)
   end;
 
-  TGtdPlaces = class(TGtdContainer)
+  TGtdFilterContainer = class(TGtdContainer)
+  public
+    function FindId(const _Id: string; out _Filter: TGtdFilter): boolean;
+  end;
+
+  TGtdPlaces = class(TGtdFilterContainer)
   public
     constructor Create;
+  end;
+
+  TGtdLabels = class(TGtdFilterContainer)
+  public
+    constructor Create;
+  end;
+
+  TGtdProject = class(TGtdContainer)
+  public
+    constructor Create(_Node: IDOMNode; _Places: TGtdPlaces; _Labels: TGtdLabels); overload;
   end;
 
   TGtdProjects = class(TGtdContainer)
   public
     constructor Create;
-  end;
-
-  TGtdLabels = class(TGtdContainer)
-  public
-    constructor Create;
+    function FindName(const _Name: string; out _Project: TGtdProject): boolean;
   end;
 
 type
@@ -125,6 +142,7 @@ type
     act_AddAction: TAction;
     tb_DeleteAction: TToolButton;
     act_DeleteAction: TAction;
+    TheXmlDocument: TXMLDocument;
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode;
       var InitialStates: TVirtualNodeInitStates);
@@ -156,6 +174,7 @@ type
       out _GtdNode: TGtdNode): boolean;
     function GetFocusedProjectAction(out _Node: PVirtualNode;
       out _GtdNode: TGtdNode): boolean;
+    procedure LoadXml(const _Filename: string);
   public
     constructor Create(_Owner: TComponent); override;
     destructor Destroy; override;
@@ -177,41 +196,14 @@ type
 { Tf_gtdNotes }
 
 constructor Tf_gtdNotes.Create(_Owner: TComponent);
-var
-  AtWork: TGtdPlace;
-  Project: TGtdProject;
-  Action: TGtdAction;
 begin
   inherited;
 
   FPlaces := TGtdPlaces.Create;
-  FPlaces.Add(TGtdPlace.Create('atHome'));
-  AtWork := TGtdPlace.Create('atWork');
-  FPlaces.Add(AtWork);
-  FPlaces.Add(TGtdPlace.Create('onTheRoad'));
-
   FProjects := TGtdProjects.Create;
-  Project := TGtdProject.Create('get used to GTD');
-  FProjects.Add(Project);
-
-  Action := TGtdAction.Create('set up gtdnotes');
-  Action.isNextAction := true;
-  Project.Add(Action);
-  AtWork.Add(Action);
-
-  Action := TGtdAction.Create('Enter projects');
-  Project.Add(Action);
-  AtWork.Add(Action);
-
-  Action := TGtdAction.Create('Enter project actions');
-  Project.Add(Action);
-  AtWork.Add(Action);
-
-  Action := TGtdAction.Create('Decide on next action for each project');
-  Project.Add(Action);
-  AtWork.Add(Action);
-
   FLabels := TGtdLabels.Create;
+
+  LoadXml('data.gtdnotes');
 
   VST.NodeDataSize := SizeOf(TGtdLabelRec);
 
@@ -225,6 +217,55 @@ begin
   FPlaces.Free;
   FProjects.Free;
   inherited;
+end;
+
+procedure Tf_gtdNotes.LoadXml(const _Filename: string);
+var
+  LabelNode: IDOMNode;
+  RootNode: IDOMNode;
+  PlaceNode: IDOMNode;
+  ProjectNode: IDOMNode;
+  Node: IDOMNode;
+  doc: IDOMDocument;
+  Project: TGtdProject;
+begin
+  TheXmlDocument.LoadFromFile('data.gtdnotes');
+  doc := TheXmlDocument.DOMDocument;
+  if doc.childNodes.length <> 1 then
+    raise Exception.Create('Document must contain one child node.');
+  RootNode := doc.firstChild;
+  if RootNode.nodeName <> 'gtdnotes' then
+    raise Exception.Create('no "gtdnotes" node found');
+  Node := RootNode.firstChild;
+  while Assigned(Node) do begin
+    if Node.nodeName = 'places' then begin
+      PlaceNode := Node.firstChild;
+      while Assigned(PlaceNode) do begin
+        if PlaceNode.nodeName = 'place' then begin
+          FPlaces.Add(TGtdPlace.Create(PlaceNode));
+        end;
+        PlaceNode := PlaceNode.nextSibling;
+      end;
+    end else if Node.nodeName = 'labels' then begin
+      LabelNode := Node.firstChild;
+      while Assigned(LabelNode) do begin
+        if LabelNode.nodeName = 'label' then begin
+          FLabels.Add(TGtdLabel.Create(LabelNode));
+        end;
+        LabelNode := LabelNode.nextSibling;
+      end;
+    end else if Node.nodeName = 'projects' then begin
+      ProjectNode := Node.firstChild;
+      while Assigned(ProjectNode) do begin
+        if ProjectNode.nodeName = 'project' then begin
+          Project := TGtdProject.Create(ProjectNode, FPlaces, FLabels);
+          FProjects.Add(Project);
+        end;
+        ProjectNode := ProjectNode.nextSibling;
+      end;
+    end;
+    Node := Node.nextSibling;
+  end;
 end;
 
 function Tf_gtdNotes.GetFocusedProjectAction(out _Node: PVirtualNode; out _GtdNode: TGtdNode): boolean;
@@ -470,10 +511,17 @@ end;
 
 { TGtdFilter }
 
-constructor TGtdFilter.Create(const _Name: string);
+constructor TGtdFilter.Create(const _Name: string; _Id: string);
 begin
   inherited Create(_Name);
+  FId := _Id;
   FItems := TList.Create;
+end;
+
+constructor TGtdFilter.Create(_Node: IDOMNode);
+begin
+  Create(_Node.attributes.getNamedItem('name').nodeValue,
+    _Node.attributes.getNamedItem('id').nodeValue);
 end;
 
 destructor TGtdFilter.Destroy;
@@ -551,6 +599,11 @@ end;
 
 { TGtdAction }
 
+constructor TGtdAction.Create(_Node: IDOMNode);
+begin
+  Create(_Node.attributes.getNamedItem('name').nodeValue);
+end;
+
 function TGtdAction.GetIsDone: boolean;
 begin
   Result := FIsDone;
@@ -569,6 +622,68 @@ end;
 procedure TGtdAction.SetIsNextAction(const _Value: boolean);
 begin
   FIsNextAction := _Value;
+end;
+
+function TGtdProjects.FindName(const _Name: string; out _Project: TGtdProject): boolean;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do begin
+    _Project := Items[i] as TGtdProject;
+    Result := (_Project.Name = _Name);
+    if Result then
+      exit;
+  end;
+  Result := false;
+end;
+
+{ TGtdProject }
+
+constructor TGtdProject.Create(_Node: IDOMNode; _Places: TGtdPlaces; _Labels: TGtdLabels);
+var
+  ActionNode: IDOMNode;
+  Action: TGtdAction;
+  FilterNode: IDOMNode;
+  Filter: TGtdFilter;
+  FilterId: string;
+begin
+  Create(_Node.attributes.getNamedItem('name').nodeValue);
+
+  ActionNode := _Node.firstChild;
+  while Assigned(ActionNode) do begin
+    if ActionNode.nodeName = 'action' then begin
+      Action := TGtdAction.Create(ActionNode);
+      Add(Action);
+      FilterNode := ActionNode.firstChild;
+      while Assigned(FilterNode) do begin
+        FilterId := FilterNode.attributes.getNamedItem('id').nodeValue;
+        if FilterNode.nodeName = 'label' then begin
+          if _Labels.FindId(FilterId, Filter) then
+            Filter.Add(Action);
+        end else if FilterNode.nodeName = 'place' then begin
+          if _Places.FindId(FilterId, Filter) then
+            Filter.Add(Action);
+        end;
+        FilterNode := FilterNode.nextSibling;
+      end;
+    end;
+    ActionNode := ActionNode.nextSibling;
+  end;
+end;
+
+{ TGtdFilterContainer }
+
+function TGtdFilterContainer.FindId(const _Id: string; out _Filter: TGtdFilter): boolean;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do begin
+    _Filter := Items[i] as TGtdFilter;
+    Result := (_Filter.Id = _Id);
+    if Result then
+      exit;
+  end;
+  Result := false;
 end;
 
 end.
