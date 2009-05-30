@@ -24,6 +24,7 @@ object f_gtdNotes: Tf_gtdNotes
     BiDiMode = bdLeftToRight
     Colors.BorderColor = clWindowText
     Colors.HotColor = clBlack
+    DragType = dtVCL
     Header.AutoSizeIndex = 0
     Header.DefaultHeight = 17
     Header.Font.Charset = DEFAULT_CHARSET
@@ -43,6 +44,9 @@ object f_gtdNotes: Tf_gtdNotes
     OnChange = VSTChange
     OnChecked = VSTChecked
     OnDblClick = VSTDblClick
+    OnDragAllowed = VSTDragAllowed
+    OnDragOver = VSTDragOver
+    OnDragDrop = VSTDragDrop
     OnFreeNode = VSTFreeNode
     OnGetText = VSTGetText
     OnPaintText = VSTPaintText

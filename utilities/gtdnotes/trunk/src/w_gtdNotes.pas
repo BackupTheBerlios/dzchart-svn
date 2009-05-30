@@ -11,6 +11,7 @@ uses
   Controls,
   Forms,
   Dialogs,
+  ActiveX,
   VirtualTrees,
   StdCtrls,
   ExtCtrls,
@@ -59,6 +60,7 @@ type
     constructor Create(const _Name: string);
     destructor Destroy; override;
     function Add(_Node: TGtdNode): integer; override;
+    procedure Extract(_Node: TGtdNode);
   end;
 
   TGtdFilter = class(TGtdMiddleNode)
@@ -73,6 +75,7 @@ type
     constructor Create(_Node: IXMLNode); overload;
     destructor Destroy; override;
     function Add(_Node: TGtdNode): integer; override;
+    procedure Extract(_Node: TGtdNode);
     function Find(_Node: TGtdNode): boolean;
     property Id: string read FId write FId;
   end;
@@ -160,11 +163,21 @@ type
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
     procedure act_SetNextActionExecute(Sender: TObject);
     procedure VSTChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure VSTDragOver(Sender: TBaseVirtualTree; Source: TObject;
+      Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode;
+      var Effect: Integer; var Accept: Boolean);
+    procedure VSTDragAllowed(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var Allowed: Boolean);
+    procedure VSTDragDrop(Sender: TBaseVirtualTree; Source: TObject;
+      DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
+      Pt: TPoint; var Effect: Integer; Mode: TDropMode);
   private
     FPlaces: TGtdPlaces;
     FProjects: TGtdProjects;
     FLabels: TGtdLabels;
     FFilename: string;
+    FDraggedAction: TGtdNode;
+    FDragSource: TGtdNode;
     procedure SetDoneVisible(_Visible: boolean);
     procedure HideNodes(_Sender: TBaseVirtualTree; _Node: PVirtualNode;
       _Data: Pointer; var _Abort: Boolean);
@@ -190,8 +203,8 @@ implementation
 {$R *.DFM}
 
 type
-  PGtdLabelRec = ^TGtdLabelRec;
-  TGtdLabelRec = record
+  PGtdDataRec = ^TGtdDataRec;
+  TGtdDataRec = record
     GtdNode: TGtdNode;
   end;
 
@@ -209,7 +222,7 @@ begin
   if FileExists(FFilename) then
     LoadXml(FFilename);
 
-  VST.NodeDataSize := SizeOf(TGtdLabelRec);
+  VST.NodeDataSize := SizeOf(TGtdDataRec);
 
   // Places / Projects / Labels
   VST.RootNodeCount := 3;
@@ -317,7 +330,7 @@ begin
     XmlDoc.Active := true;
     XmlDoc.Version := '1.0';
     XmlDoc.Encoding := 'UTF-8';
-    XmlDoc.StandAlone := 'no';
+    XmlDoc.StandAlone := 'yes';
     XmlDoc.Options := XmlDoc.Options + [doNodeAutoIndent];
 
     RootNode := XmlDoc.AddChild('gtdnotes');
@@ -374,7 +387,7 @@ end;
 
 function Tf_gtdNotes.GetFocusedProjectAction(out _Node: PVirtualNode; out _GtdNode: TGtdNode): boolean;
 var
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
 begin
   Result := GetFocusedNode(_Node, _GtdNode);
   if Result then begin
@@ -389,7 +402,7 @@ end;
 
 function Tf_gtdNotes.GetFocusedNode(out _Node: PVirtualNode; out _GtdNode: TGtdNode): boolean;
 var
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
 begin
   Result := false;
   _Node := VST.FocusedNode;
@@ -420,7 +433,7 @@ end;
 procedure Tf_gtdNotes.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
 begin
   Data := Sender.GetNodeData(Node);
   if not Assigned(Data) then
@@ -446,7 +459,7 @@ end;
 
 procedure Tf_gtdNotes.VSTChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
   vn: PVirtualNode;
 begin
   Data := Sender.GetNodeData(Node);
@@ -471,7 +484,7 @@ end;
 
 procedure Tf_gtdNotes.UnsetNextAction(_Sender: TBaseVirtualTree; _Node: PVirtualNode; _Data: Pointer; var _Abort: Boolean);
 var
-  NodeData: PGtdLabelRec;
+  NodeData: PGtdDataRec;
 begin
   NodeData := VST.GetNodeData(_Node);
   Assert(Assigned(NodeData.GtdNode));
@@ -484,9 +497,94 @@ begin
   MakeFocusedActionNext;
 end;
 
+procedure Tf_gtdNotes.VSTDragAllowed(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+var
+  Data: PGtdDataRec;
+begin
+  if not Assigned(Node.Parent) then
+    Allowed := false
+  else begin
+    Data := Sender.GetNodeData(Node);
+    Assert(Assigned(Data));
+    Assert(Assigned(Data.GtdNode));
+    if Data.GtdNode is TGtdAction then begin
+      FDraggedAction := Data.GtdNode;
+      Data := Sender.GetNodeData(Node.Parent);
+      Assert(Assigned(Data));
+      Assert(Assigned(Data.GtdNode));
+      FDragSource := Data.GtdNode;
+      Allowed := true;
+    end else begin
+      FDraggedAction := nil;
+      Allowed := false;
+    end;
+  end;
+end;
+
+procedure Tf_gtdNotes.VSTDragDrop(Sender: TBaseVirtualTree; Source: TObject;
+  DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
+  Pt: TPoint; var Effect: Integer; Mode: TDropMode);
+var
+  Node: PVirtualNode;
+  Data: PGtdDataRec;
+  GtdNode: TGtdNode;
+begin
+  Node := Sender.DropTargetNode;
+  if Assigned(Node) and Assigned(FDraggedAction) and Assigned(FDragSource) then begin
+    Data := Sender.GetNodeData(Node);
+    Assert(Assigned(Data));
+    Assert(Assigned(Data.GtdNode));
+    GtdNode := Data.GtdNode;
+    if GtdNode is TGtdFilter then begin
+      if FDragSource is TGtdFilter then begin
+        if Shift * [ssShift, ssCtrl] = [] then begin
+          (FDragSource as TGtdFilter).Extract(FDraggedAction);
+          'den Node ebenfalls loeschen
+        end;
+        (GtdNode as TGtdFilter).Add(FDraggedAction);
+        ' einen neuen Node einfuegen
+
+      end;
+    end else if GtdNode is TGtdProject then begin
+      if FDragSource is TGtdProject then begin
+                                    'fertigstellen
+      end;
+    end;
+  end;
+end;
+
+procedure Tf_gtdNotes.VSTDragOver(Sender: TBaseVirtualTree; Source: TObject;
+  Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode;
+  var Effect: Integer; var Accept: Boolean);
+var
+  Data: PGtdDataRec;
+  Node: PVirtualNode;
+  GtdNode: TGtdNode;
+begin
+  Node := Sender.DropTargetNode;
+  if Assigned(Node) then begin
+    Data := Sender.GetNodeData(Node);
+    Assert(Assigned(Data));
+    Assert(Assigned(Data.GtdNode));
+    GtdNode := Data.GtdNode;
+    if GtdNode is TGtdProject then begin
+      if FDragSource is TGtdProject then begin
+        Effect := DROPEFFECT_MOVE;
+        Accept := true;
+      end else
+        Accept := false;
+    end else if GtdNode is TGtdFilter then begin
+      Effect := DROPEFFECT_LINK;
+      Accept := true;
+    end;
+  end else
+    Accept := false;
+end;
+
 procedure Tf_gtdNotes.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
 begin
   Data := Sender.GetNodeData(Node);
   if Assigned(Data) then
@@ -497,9 +595,9 @@ procedure Tf_gtdNotes.VSTInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PV
   var InitialStates: TVirtualNodeInitStates);
 var
   Level: integer;
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
   Index: integer;
-  ParentData: PGtdLabelRec;
+  ParentData: PGtdDataRec;
 begin
   Data := Sender.GetNodeData(Node);
   Level := Sender.GetNodeLevel(Node);
@@ -516,12 +614,12 @@ begin
       raise Exception.Create('Programmer Error: Node index must not be greater or equal item count.');
     Data.GtdNode := ParentData.GtdNode.Items[Index] as TGtdNode;
   end;
-  VST.ChildCount[Node] := Data.GtdNode.Count;
-  VST.Expanded[Node] := (Data.GtdNode.Count > 0);
+  Sender.ChildCount[Node] := Data.GtdNode.Count;
+  Sender.Expanded[Node] := (Data.GtdNode.Count > 0);
   if Level = 2 then begin
-    VST.CheckType[Node] := ctCheckBox;
+    Sender.CheckType[Node] := ctCheckBox;
     if Data.GtdNode.IsDone then
-      VST.CheckState[Node] := csCheckedNormal;
+      Sender.CheckState[Node] := csCheckedNormal;
   end;
 end;
 
@@ -535,7 +633,7 @@ procedure Tf_gtdNotes.VSTPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
 var
-  Data: PGtdLabelRec;
+  Data: PGtdDataRec;
 begin
   Data := Sender.GetNodeData(Node);
   if Data.GtdNode.isNextAction then
@@ -546,7 +644,7 @@ end;
 
 procedure Tf_gtdNotes.HideNodes(_Sender: TBaseVirtualTree; _Node: PVirtualNode; _Data: Pointer; var _Abort: Boolean);
 var
-  NodeData: PGtdLabelRec;
+  NodeData: PGtdDataRec;
 begin
   NodeData := _Sender.GetNodeData(_Node);
   Assert(Assigned(NodeData));
