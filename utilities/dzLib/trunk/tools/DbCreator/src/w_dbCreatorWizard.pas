@@ -29,7 +29,7 @@ type
   ECreateDelphiCode = class(Exception);
 
 type
-  Tf_dbCreatorWizard = class(Tf_HkWizard)
+  Tf_dbCreatorWizard = class(Tf_dzWizard)
     chk_Console: TCheckBox;
     TheAppRegistryStorage: TJvAppRegistryStorage;
     procedure chk_ConsoleClick(Sender: TObject);
@@ -581,10 +581,7 @@ var
       end;
     end;
 
-    if FOptions.chk_BuggyChecksum.Checked then
-      ImplementationSection.Add('  Result := TV2kUtils.V2kCrcl(s);')
-    else
-      ImplementationSection.Add('  Result := TV2kUtils.Crc32l(Trim(s));');
+    ImplementationSection.Add('  Result := TV2kUtils.Crc32l(Trim(s));');
     ImplementationSection.Add('end;');
     ImplementationSection.Add('');
   end;

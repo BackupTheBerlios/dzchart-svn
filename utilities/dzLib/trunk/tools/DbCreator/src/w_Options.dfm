@@ -31,7 +31,7 @@ object f_Options: Tf_Options
     Left = 0
     Top = 24
     Width = 273
-    Height = 81
+    Height = 49
     Caption = 'Checksum options'
     TabOrder = 1
     object Label2: TLabel
@@ -50,14 +50,6 @@ object f_Options: Tf_Options
       TabOrder = 0
       OnClick = chk_AddChecksumClick
     end
-    object chk_BuggyChecksum: TCheckBox
-      Left = 8
-      Top = 40
-      Width = 257
-      Height = 17
-      Caption = 'use original Validat checksums (with bug)'
-      TabOrder = 2
-    end
     object chk_RemoveChksum: TCheckBox
       Left = 136
       Top = 16
@@ -70,7 +62,7 @@ object f_Options: Tf_Options
   end
   object grp_GraphViz: TGroupBox
     Left = 0
-    Top = 112
+    Top = 88
     Width = 273
     Height = 81
     Caption = 'GraphViz options'
@@ -94,7 +86,7 @@ object f_Options: Tf_Options
   end
   object grp_HtmlOptions: TGroupBox
     Left = 0
-    Top = 264
+    Top = 256
     Width = 273
     Height = 105
     Caption = 'HTML Options'
@@ -119,7 +111,7 @@ object f_Options: Tf_Options
   end
   object rg_AccessOptions: TRadioGroup
     Left = 0
-    Top = 200
+    Top = 184
     Width = 273
     Height = 57
     Caption = 'MS Access Options'
@@ -137,7 +129,6 @@ object f_Options: Tf_Options
       'ed_Prefix.Text'
       'chk_AddChecksum.Checked'
       'chk_RemoveChksum.Checked'
-      'chk_BuggyChecksum.Checked'
       'rg_AccessOptions.ItemIndex')
     StoredValues = <>
     Left = 200

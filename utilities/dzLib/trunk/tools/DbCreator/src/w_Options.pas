@@ -25,7 +25,6 @@ type
     ed_Prefix: TEdit;
     grp_Checksum: TGroupBox;
     chk_AddChecksum: TCheckBox;
-    chk_BuggyChecksum: TCheckBox;
     TheFormStorage: TJvFormStorage;
     chk_RemoveChksum: TCheckBox;
     Label2: TLabel;
