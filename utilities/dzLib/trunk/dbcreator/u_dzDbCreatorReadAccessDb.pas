@@ -114,6 +114,7 @@ begin
     adDate: Result := dtDate;
     adChar, adVarChar, adWChar, adVarWChar: Result := dtText;
     adLongVarChar, adLongVarWChar: Result := dtMemo;
+    adGUID: Result := dtGUID;
   else
     raise exception.CreateFmt('unsupported type %s', [DataTypeToName(_DataType)]);
   end;
