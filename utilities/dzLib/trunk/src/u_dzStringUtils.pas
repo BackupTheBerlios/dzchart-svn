@@ -26,7 +26,7 @@ type
   ECharIndexOutOfRange = class(EStringfunc);
 
 type
-  TCharSet = set of char;
+  TCharSet = set of ansichar;
 
 const
   ///<summary> Characters that are usually used as word delimiters.
