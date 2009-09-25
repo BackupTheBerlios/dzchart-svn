@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2008-09-05 09:45\n"
-"PO-Revision-Date: 2008-09-05 09:50-0800\n"
-"Last-Translator: Thomas Mueller <dzlib@dummzeuch.de>\n"
+"POT-Creation-Date: 2009-08-04 13:39\n"
+"PO-Revision-Date: 2009-08-04 13:41+0100\n"
+"Last-Translator: \n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,79 +17,84 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
-#: u_dzClassUtils.pas:308
+#: u_dzClassUtils.pas:365
 msgid "no matching object found"
 msgstr "kein passendes Objekt gefunden"
 
-#: u_dzConvertUtils.pas:367
+#: u_dzConvertUtils.pas:397
 msgid "Digit out of range %s"
 msgstr "Ungültige Ziffer %s"
 
-#: u_dzConvertUtils.pas:380
+#: u_dzConvertUtils.pas:410
 msgid "Digit #%d (%s) out of range"
 msgstr "Ungültige Ziffer #%d (%s)"
 
-#: u_dzConvertUtils.pas:582
+#: u_dzConvertUtils.pas:612
 msgid "\"%s\" is not a valid integer value: %s"
 msgstr "\"%s\" ist kein gültiger Integerwert: %s"
 
-#: u_dzConvertUtils.pas:600
+#: u_dzConvertUtils.pas:630
 msgid "\"%s\" is not a valid Int64 value: %s"
 msgstr "\"%s\" ist kein gültiger Int64 Wert: %s"
 
-#: u_dzConvertUtils.pas:671
+#: u_dzConvertUtils.pas:701
 msgid "\"%s\" is not a valid floating point value: %s"
 msgstr "\"%s\" ist kein gültiger Fließkommawert: %s"
 
-#: u_dzConvertUtils.pas:677
+#: u_dzConvertUtils.pas:707
 msgid "%.2f EiB"
 msgstr "%.2f EiB"
 
-#: u_dzConvertUtils.pas:679
+#: u_dzConvertUtils.pas:709
 msgid "%.2f PiB"
 msgstr "%.2f PiB"
 
-#: u_dzConvertUtils.pas:681
+#: u_dzConvertUtils.pas:711
 msgid "%.2f TiB"
 msgstr "%.2f TiB"
 
-#: u_dzConvertUtils.pas:683
+#: u_dzConvertUtils.pas:713
 msgid "%.2f GiB"
 msgstr "%.2f GiB"
 
-#: u_dzConvertUtils.pas:685
+#: u_dzConvertUtils.pas:715
 msgid "%.2f MiB"
 msgstr "%.2f MiB"
 
-#: u_dzConvertUtils.pas:687
+#: u_dzConvertUtils.pas:717
 msgid "%.2f KiB"
 msgstr "%.2f KiB"
 
-#: u_dzConvertUtils.pas:689
+#: u_dzConvertUtils.pas:719
 msgid "%d Bytes"
 msgstr "%d Bytes"
 
 #. Days and hours, ignore minutes and seconds
-#: u_dzConvertUtils.pas:696
+#: u_dzConvertUtils.pas:726
 msgid "%dd %dh"
 msgstr "%dd %dh"
 
 #. Hours and minutes, ignore seconds
-#: u_dzConvertUtils.pas:699
+#: u_dzConvertUtils.pas:729
 msgid "%dh %dm"
 msgstr "%dh %dm"
 
 #. Minutes and seconds
-#: u_dzConvertUtils.pas:702
+#: u_dzConvertUtils.pas:732
 msgid "%dm %ds"
 msgstr "%dm %ds"
 
 #. Seconds only
-#: u_dzConvertUtils.pas:705
+#: u_dzConvertUtils.pas:735
 msgid "%ds"
 msgstr "%ds"
 
-#: u_dzDatasetHelpers.pas:335
+#: u_dzConvertUtils.pas:767
+msgid "Length of byte array (%d) does not match size of a LongWord (%d)"
+msgstr "Länge des Byte-Arrays (%d) stimmt nicht mit der Größe eines Longwords (%d) überein"
+
+#. Do not use ParamByName -> only works if param is unique
+#: u_dzDatasetHelpers.pas:462
 msgid "SetParamByName is not supported for a %s (only TQuery and TAdoDataset descendants)."
 msgstr "SetParamByName wird für %s nicht unterstützt (nur TQuery- und TAdoDataset-Abkömmlinge)"
 
@@ -263,79 +268,79 @@ msgid "Cannot change filename when file is open."
 msgstr "Kann Dateinamen nicht ändern wenn Datei geöffnet ist."
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:834
+#: u_dzFileUtils.pas:854
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) beim Aufruf von Windows.GetTempPath"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:842
+#: u_dzFileUtils.pas:862
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) beim Aufruf von Windows.GetTempPath (zweiter)"
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:859
+#: u_dzFileUtils.pas:879
 msgid "Error %%1:s (%%0:d) creating directory \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Erstellen des Verzeichnisses \"%s\""
 
-#: u_dzFileUtils.pas:883
+#: u_dzFileUtils.pas:903
 msgid "Could not find a unique directory name based on \"%s\""
 msgstr "Konnte keinen eindeutigen Verzeichnisnamen basierend auf \"%s\" finden."
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:901
+#: u_dzFileUtils.pas:921
 msgid "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 msgstr "TFileSystem.GetTempFilename: %1:s (Code: %0:d) beim Aufruf von Windows.GetTempFileName"
 
-#: u_dzFileUtils.pas:928
+#: u_dzFileUtils.pas:948
 msgid "File not found: \"%s\""
 msgstr "Datei nicht gefunden: \"%s\""
 
-#: u_dzFileUtils.pas:979
+#: u_dzFileUtils.pas:999
 msgid "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) beim Aufruf von Windows.GetShortPathname"
 
-#: u_dzFileUtils.pas:981
+#: u_dzFileUtils.pas:1001
 msgid "Short pathname is longer than MAX_PATH (%d) characters"
 msgstr "Kurzer Pfad ist länger als MAX_PATH (%d) Zeichen"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:993
+#: u_dzFileUtils.pas:1013
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to \"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Verschieben von \"%s\" nach \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1011
+#: u_dzFileUtils.pas:1031
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Ändern des Schreibschutz-Flags von \"%s\""
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1031
+#: u_dzFileUtils.pas:1051
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to \"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Kopieren von \"%s\" nach \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1241
+#: u_dzFileUtils.pas:1261
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen der Datei \"%s\""
 
 #. ForceDirectories can raise EInOutError if the directory path contains empty parts
-#: u_dzFileUtils.pas:1302
+#: u_dzFileUtils.pas:1337
 msgid "Error creating directory \"%s\": %s (%s)"
 msgstr "Fehler beim Erstellen des Verzeichnisses \"%s\": %s (%s)"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1329
+#: u_dzFileUtils.pas:1364
 msgid "Error %%1:s (%%0:d) deleting directory \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen des Verzeichnisses \"%s\""
 
-#: u_dzFileUtils.pas:1347
+#: u_dzFileUtils.pas:1382
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" existiert nicht oder ist kein Verzeichnis"
 
-#: u_dzFileUtils.pas:1564
+#: u_dzFileUtils.pas:1610
 msgid "Combination of ResultContainsNumber and KeepOriginal is not allowed"
 msgstr "Kombination von ResultContainsNumber und KeepOriginal ist nicht erlaubt"
 
@@ -353,16 +358,16 @@ msgstr "unbekannter RegDataType"
 msgid "unknown OS error"
 msgstr "Unbekannter Betriebssystemfehler"
 
-#: u_dzOsUtils.pas:130
+#: u_dzOsUtils.pas:134
 msgid "%s (code %d) calling Windows.GetUsername"
 msgstr "%s (Code %d) beim Aufruf von Windows.GetUsername"
 
 #. 16 KB should be enough for everybody... ;-)
-#: u_dzOsUtils.pas:150
+#: u_dzOsUtils.pas:154
 msgid "Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings"
 msgstr "Fehler %%1:s (%%0:d) beim Aufruf von Windows.ExpandEnvironmentStrings"
 
-#: u_dzOsUtils.pas:308
+#: u_dzOsUtils.pas:312
 msgid "No version information available for %s"
 msgstr "Keine Versionsinfirmationen fuer %s verfügbar"
 
@@ -374,15 +379,15 @@ msgstr "Neue Kapazität kann nicht kleiner sein als aktuelle Länge."
 msgid "Index %d out of bounds."
 msgstr "Index %d nicht im gültigen Bereich."
 
-#: u_dzStringUtils.pas:415
+#: u_dzStringUtils.pas:425
 msgid "nthWord: 0th word not available"
 msgstr "nthWord: 0tes Wort ist nicht verfügbar"
 
-#: u_dzStringUtils.pas:883
+#: u_dzStringUtils.pas:913
 msgid "Cannot center string that is larger than the maximum length."
 msgstr "Kann keinen String zentrieren, der länger als die maximale Länge ist."
 
-#: u_dzStringUtils.pas:972
+#: u_dzStringUtils.pas:1002
 msgid "Strings do not have a 0th character."
 msgstr "Strings haben kein 0tes Zeichen."
 
@@ -400,55 +405,59 @@ msgstr "%s beim Zugriff auf Datei %s"
 #. do not translate
 #. do not translate
 #. do not translate
-#: u_dzVariantUtils.pas:284
-#: u_dzVariantUtils.pas:339
-#: u_dzVariantUtils.pas:426
-#: u_dzVariantUtils.pas:442
-#: u_dzVariantUtils.pas:488
+#: u_dzVariantUtils.pas:292
+#: u_dzVariantUtils.pas:347
+#: u_dzVariantUtils.pas:434
+#: u_dzVariantUtils.pas:450
+#: u_dzVariantUtils.pas:502
 msgid "Variant is Null, should be %s: %s"
 msgstr "Variant ist Null, sollte %s sein: %s"
 
-#: u_dzVariantUtils.pas:286
-#: u_dzVariantUtils.pas:341
-#: u_dzVariantUtils.pas:428
-#: u_dzVariantUtils.pas:444
-#: u_dzVariantUtils.pas:490
+#: u_dzVariantUtils.pas:294
+#: u_dzVariantUtils.pas:349
+#: u_dzVariantUtils.pas:436
+#: u_dzVariantUtils.pas:452
+#: u_dzVariantUtils.pas:504
 msgid "Variant is Empty, should be %s: %s"
 msgstr "Variant ist leer, sollte %s sein: %s"
 
-#: u_dzVariantUtils.pas:291
-#: u_dzVariantUtils.pas:346
-#: u_dzVariantUtils.pas:433
-#: u_dzVariantUtils.pas:449
-#: u_dzVariantUtils.pas:495
+#: u_dzVariantUtils.pas:299
+#: u_dzVariantUtils.pas:354
+#: u_dzVariantUtils.pas:441
+#: u_dzVariantUtils.pas:457
+#: u_dzVariantUtils.pas:509
 msgid "Variant can not be converted to %s: %s"
 msgstr "Variant kann nicht nach %s konvertiert werden: %s"
 
 #. do not translate
 #. do not translate
 #. do not translate
-#: u_dzVariantUtils.pas:397
-#: u_dzVariantUtils.pas:473
+#: u_dzVariantUtils.pas:405
+#: u_dzVariantUtils.pas:487
 msgid "Variant can not be converted to %s"
 msgstr "Variant kann nicht nach %s konvertiert werden"
 
-#: u_dzVclUtils.pas:685
+#: u_dzVclUtils.pas:586
+msgid "Glyph string contained invalid character at position %d."
+msgstr "Der Glyph-Text beinhaltet ein ungültiges Zeichen an Position %d."
+
+#: u_dzVclUtils.pas:812
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" ist kein gültiger Fließkommawert."
 
-#: u_dzVclUtils.pas:700
+#: u_dzVclUtils.pas:827
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" ist kein gültiger Integerwert."
 
-#: u_dzVclUtils.pas:1090
+#: u_dzVclUtils.pas:1263
 msgid "No item selected in combobox"
 msgstr "Kein Eintrag der Combobox ausgewählt"
 
-#: u_dzVclUtils.pas:1109
+#: u_dzVclUtils.pas:1282
 msgid "No item selected in listbox"
 msgstr "Kein Eintrag der Listbox ausgewählt"
 
-#: u_dzVclUtils.pas:1541
+#: u_dzVclUtils.pas:1809
 msgid "JPEG Files"
 msgstr "JPEG Dateien"
 
@@ -470,33 +479,33 @@ msgstr "Abbrechen"
 #. f_dzWizard..p_Buttons..b_Next..Caption
 #. f_dzWizardForm..p_Buttons..b_Next..Caption
 #: w_dzWizard.dfm:1210
-#: w_dzWizardForm.pas:227
+#: w_dzWizardForm.pas:226
 msgid "&Next >"
 msgstr "&Weiter >"
 
 #. f_dzWizard..p_Buttons..b_Cancel..Caption
 #. f_dzWizardForm..p_Buttons..b_Cancel..Caption
 #: w_dzWizard.dfm:1223
-#: w_dzWizardForm.pas:226
+#: w_dzWizardForm.pas:225
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #. f_dzWizard..p_Buttons..b_Prev..Caption
 #. f_dzWizardForm..p_Buttons..b_Prev..Caption
 #: w_dzWizard.dfm:1233
-#: w_dzWizardForm.pas:225
+#: w_dzWizardForm.pas:224
 msgid "< &Previous"
 msgstr "< &Zurück"
 
-#: w_dzDialog.pas:322
+#: w_dzDialog.pas:328
 msgid "Invalid modal result %d."
 msgstr "Ungültiger modaler Rückgabewert %d."
 
-#: w_dzDialog.pas:495
+#: w_dzDialog.pas:505
 msgid "Do not show again."
 msgstr "Nicht nochmal anzeigen."
 
-#: w_dzDialog.pas:576
+#: w_dzDialog.pas:587
 msgid ""
 "An error occurred:\n"
 "%s"
@@ -505,15 +514,15 @@ msgstr ""
 "%s"
 
 #. 400;
-#: w_dzDialog.pas:600
+#: w_dzDialog.pas:611
 msgid "Additional information:"
 msgstr "Erweiterte Informationen:"
 
-#: w_dzDialog.pas:620
+#: w_dzDialog.pas:631
 msgid "&Details >>"
 msgstr "&Details >>"
 
-#: w_dzDialog.pas:775
+#: w_dzDialog.pas:791
 msgid "&Details <<"
 msgstr "&Details <<"
 
@@ -543,7 +552,7 @@ msgstr "Ungültige Formularüberschrift \"%s\""
 
 #: w_dzWizard.pas:342
 msgid "&Finish"
-msgstr "&Beenden"
+msgstr "&Fertigstellen"
 
 #: w_dzWizard.pas:478
 msgid "Already on first page."
