@@ -28,6 +28,10 @@ type
     destructor Destroy; override;
   end;
 
+const
+  DbLevelAccess97 = 4;
+  DbLevelAccess2000 = 5;
+
 type
   TAccessDbCreator = class(TInterfacedObject, IdzDbCreator)
   private
@@ -52,6 +56,7 @@ type
   protected // implements IdzDbCreator
     procedure WriteDbDesc(const _DbDescription: IdzDbDescription; const _Version: IdzDbVersionNTypeAncestor);
   public
+     ///<summary> Level: 4 = Access 97, 5 = Access 2000 </summary>
     constructor Create(const _Filename: string; _Level: integer;
       const _DbPassword: string = ''; _AutoAdddzSystemTable: boolean = false);
     destructor Destroy; override;
@@ -76,7 +81,7 @@ type
 
 const
   DATA_TYPE_MAPPING: TDataTypeMapping = (
-    adInteger, adDouble, adVarWChar, adLongVarWChar, adDate);
+    adInteger, adDouble, adVarWChar, adLongVarWChar, adDate, adGUID);
   SORT_ORDER_MAPPING: TSortOrderMapping = (adSortAscending, adSortDescending);
 
 const
@@ -221,7 +226,10 @@ begin
       ForTabName := Format('%s%s', [FPrefix, ForTable.Name]);
       ForColName := Format('%s%s', [FPrefix, ForTable.PrimaryKey.Column[0].Name]);
       dzAssert(Column.ForeignKeyColumn.DataType = Column.DataType, 'data type of foreign key and primary key of referenced table do not match');
-      KeyName := Format('FK_%s%s_%s_%s', [FPrefix, _Table.Name, Column.Name, ForColName]);
+      KeyName := Format('%s%s_%s_%s', [FPrefix, _Table.Name, Column.Name, ForColName]);
+      if Length(KeyName) > 50 - 4 then
+        KeyName := TailStr(KeyName, 50 - 4);
+      KeyName := 'FK_' + KeyName;
 
       ComKey.Name := KeyName;
       ComKey.Type_ := adKeyForeign;
@@ -389,8 +397,10 @@ begin
             Row := _Table.Rows[RowIdx];
             for FieldIdx := 0 to Row.Count - 1 do begin
               if Row.IsNull(FieldIdx) then
-                tbl.Fields[FieldIdx].Value := null
-              else
+                // in theory it should be possible to set the field to NULL, but apparently
+                // Access distinguishes between NULL and not assigned
+//                tbl.Fields[FieldIdx].Value := null
+              else if not _Table.Columns[FieldIdx].AutoInc then
                 tbl.Fields[FieldIdx].Value := Row.Value[FieldIdx];
             end;
             tbl.Post;
@@ -457,7 +467,7 @@ begin
   finally
     for i := 0 to _DbDescription.TableCount - 1 do begin
       Table := _DbDescription.Tables[i];
-        // free COM Object
+      // free COM Object
       TInterfaceContainer(Table.Data).Free;
       Table.Data := nil;
     end;
@@ -471,7 +481,7 @@ begin
   Sleep(1000);
 
   for i := 0 to _DbDescription.TableCount - 1 do begin
-    Table := _DbDescription.Tables[i];
+    Table := _DbDescription.TopologicalSortedTables[i];
     InsertTableData(_DbDescription, Table);
   end;
 
