@@ -44,6 +44,7 @@ contains
   u_dzVclUtils in '..\..\src\u_dzVclUtils.pas',
   u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
   u_dzStringUtils in '..\..\src\u_dzStringUtils.pas',
-  u_dzTranslator in '..\..\src\u_dzTranslator.pas';
+  u_dzTranslator in '..\..\src\u_dzTranslator.pas',
+  u_dzClassUtils in '..\..\src\u_dzClassUtils.pas';
 
 end.

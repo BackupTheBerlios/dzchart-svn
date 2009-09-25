@@ -122,6 +122,7 @@
     <DCCReference Include="..\..\components\c_dzVirtualStringGrid.pas" />
     <DCCReference Include="..\..\src\dbrtl.dcp" />
     <DCCReference Include="..\..\src\rtl.dcp" />
+    <DCCReference Include="..\..\src\u_dzClassUtils.pas" />
     <DCCReference Include="..\..\src\u_dzConvertUtils.pas" />
     <DCCReference Include="..\..\src\u_dzStringUtils.pas" />
     <DCCReference Include="..\..\src\u_dzTranslator.pas" />
