@@ -34,9 +34,6 @@ type
 
   TOnFinished = procedure(_Sender: TObject; var _CanClose: boolean) of object;
 
-  TWizardButtons = (wbPrev, wbNext, wbCancel);
-  TWizardButtonSet = set of TWizardButtons;
-
   Tf_dzWizardForm = class(TForm)
     p_Client: TPanel;
     p_Buttons: TPanel;
@@ -118,6 +115,7 @@ type
     function GoBack: integer; virtual;
     function GetEnabledButtons: TWizardButtonSet;
     procedure SetEnabledButtons(const _Buttons: TWizardButtonSet; _Enabled: boolean);
+    procedure UpdateButtonState;
     property Pages: TPageList read FPages;
     property Picture: TPicture read GetPicture write SetPicture;
     property CurrentPageNo: integer read FCurrentPageNo write SetCurrentPageNo;
@@ -135,13 +133,14 @@ type
     FNextId: integer;
     FList: TList;
     FWizard: Tf_dzWizardForm;
-    function GetPage(_Idx: integer): pointer;
+    function GetPages(_Idx: integer): Tfr_dzWizardFrame;
     function PageById(_PageId: integer): Tfr_dzWizardFrame;
   public
     constructor Create(_Wizard: Tf_dzWizardForm);
     destructor Destroy; override;
     function AddPage(_Frame: Tfr_dzWizardFrame; const _Description: string; _Data: pointer = nil): integer;
     function PageCount: integer;
+    property Pages[_Idx: integer]: Tfr_dzWizardFrame read GetPages; default;
   end;
 
 implementation
@@ -205,7 +204,7 @@ begin
   Result := nil;
 end;
 
-function TPageList.GetPage(_Idx: integer): pointer;
+function TPageList.GetPages(_Idx: integer): Tfr_dzWizardFrame;
 begin
   Result := FList[_Idx];
 end;
@@ -392,6 +391,7 @@ begin
   if Assigned(FCurrentPage) then
     FCurrentPage.PageDeactivate;
   FCurrentPage := _NextPage;
+  CurrentPageNo := FPages.FList.IndexOf(_NextPage);
   FCurrentPage.PageActivate;
   s := _NextPage.Description;
   if s = '' then
@@ -405,7 +405,6 @@ begin
     l_Description.Caption := s;
     p_Description.Visible := true;
   end;
-  CurrentPageNo := FPages.FList.IndexOf(_NextPage);
 end;
 
 procedure Tf_dzWizardForm.b_CancelClick(Sender: TObject);
@@ -426,8 +425,15 @@ begin
 end;
 
 function Tf_dzWizardForm.DoOnCancel: boolean;
+var
+  i: Integer;
 begin
   Result := true;
+  for i := 0 to FPages.PageCount - 1 do
+    FPages[i].CancelPressed(Result);
+  if Result then
+    for i := 0 to FPages.PageCount - 1 do
+      FPages[i].Cancelling;
 end;
 
 procedure Tf_dzWizardForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -464,6 +470,34 @@ procedure Tf_dzWizardForm.SetPrevButtonCaption(const _Caption: string);
 begin
   FPrevButtonCaption := _Caption;
   b_Prev.Caption := _Caption;
+end;
+
+procedure Tf_dzWizardForm.UpdateButtonState;
+var
+  Buttons: TWizardButtonSet;
+
+  procedure CheckButton(_Button: TWizardButtons; _Default: boolean);
+  var
+    Allowed: boolean;
+  begin
+    Allowed := _Default;
+    FCurrentPage.ButtonAllowed(_Button, Allowed);
+    if Allowed then
+      Include(Buttons, _Button)
+    else
+      Exclude(Buttons, _Button);
+  end;
+
+begin
+  Buttons := GetEnabledButtons;
+  if Assigned(FCurrentPage) then begin
+    if FCurrentPageNo > 0 then
+      CheckButton(wbPrev, true);
+    CheckButton(wbNext, true);
+    CheckButton(wbCancel, true);
+  end;
+  SetEnabledButtons(Buttons, true);
+  SetEnabledButtons([wbPrev, wbNext, wbCancel] - Buttons, false);
 end;
 
 function Tf_dzWizardForm.GetEnabledButtons: TWizardButtonSet;
