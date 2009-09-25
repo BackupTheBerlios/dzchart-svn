@@ -73,7 +73,7 @@ type
     /// but the special '.' and '..' directories
     /// @param Mask is the file search mask and should include a path
     /// </summary>
-    constructor Create(const _Mask: string);
+    constructor Create(const _Mask: string; _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]);
     /// <summary>
     /// Destructor, will call FindClose if necessary
     /// </summary>
@@ -81,7 +81,7 @@ type
     /// <summary>
     /// creates a TSimpleDirEnumerator, calls its FindAll method and frees it
     /// </summary>
-    class function Execute(const _Mask: string; _List: TStrings): integer;
+    class function Execute(const _Mask: string; _List: TStrings; _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]): integer;
     /// <summary>
     /// Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
     /// calls.
@@ -431,10 +431,10 @@ type
     ///   the file is skipped or an exception is raised
     /// * If cfFailIfExists is not set and cfForceOverwrite is set, the function
     ///   will also try to overwrite readonly files.
-    /// if FilesSkipped is given, all skipped files will be added to that list
+    /// if FilesSkipped is given, all skipped files will be added to that list (may be nil)
     ///</summary>
     class function CopyMatchingFiles(const _Mask, _SrcDir, _DestDir: string; _Flags: TCopyFileFlagset;
-      _FilesSkipped: TStrings): integer;
+      _FilesSkipped: TStrings = nil): integer;
 
     /// <summary>
     /// Copies the file Source to Dest using the Windows MoveFileWithProgress function which
@@ -513,11 +513,14 @@ type
     /// @param Force is a boolean which controls whether this function will try to delete
     ///              readonly files, If true, it will use SetFileAttr to reset the
     ///              readonly attribut and try to delete the file again.
+    /// @param ExceptMask is a string contaning a mask for files not to delete even if they
+    ///                   match the Mask, defaults to an empty string meaning no exceptions.
+    ///                   The comparison is case insensitive.
     /// @returns the number of files that could not be deleted.
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
     class function DeleteMatchingFiles(const _Dir, _Mask: string;
-      _RaiseException: boolean = true; _Force: boolean = false): integer;
+      _RaiseException: boolean = true; _Force: boolean = false; _ExceptMask: string = ''): integer;
 
     /// <summary>
     /// tries to find a matching file
@@ -527,6 +530,8 @@ type
     ///          describing the type of the file which has been found
     /// </summary>
     class function FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
+
+    class function FileExists(const _Filename: string): boolean;
 
     /// <summary>
     /// deletes an empty directory using the SysUtils function RemoveDir
@@ -594,6 +599,9 @@ type
     /// @returns true, if the string is a valid filename, false otherwise
     /// </summary>
     class function IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean; overload;
+
+    /// <summary> Returns true if the file exists and is readonly </summary>
+    class function IsFileReadonly(const _Filename: string): boolean;
 
     /// <summary>
     /// creates a backup of the file appending the current date and time to the base
@@ -686,9 +694,15 @@ type
 /// </summary>
 function itpd(const _Dirname: string): string; inline;
 
+///<summary>
+/// This is an abbreviation for ExcludeTrailingPathDelimiter
+///</summary>
+function etpd(const _Dirname: string): string; inline;
+
 implementation
 
 uses
+  Masks,
   u_dzMiscUtils,
   u_dzStringUtils,
   u_dzDateUtils;
@@ -703,13 +717,18 @@ begin
   Result := IncludeTrailingPathDelimiter(_Dirname);
 end;
 
+function etpd(const _Dirname: string): string; inline;
+begin
+  Result := ExcludeTrailingPathDelimiter(_Dirname);
+end;
+
 { TSimpleDirEnumerator }
 
-constructor TSimpleDirEnumerator.Create(const _Mask: string);
+constructor TSimpleDirEnumerator.Create(const _Mask: string; _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]);
 begin
   FMask := _Mask;
   FMustHaveAttr := [];
-  FMayHaveAttr := [faHidden, faSysFile, faVolumeID, faDirectory, faArchive];
+  FMayHaveAttr := _MayHaveAttr;
 end;
 
 destructor TSimpleDirEnumerator.Destroy;
@@ -718,15 +737,16 @@ begin
   inherited;
 end;
 
-class function TSimpleDirEnumerator.Execute(const _Mask: string; _List: TStrings): integer;
+class function TSimpleDirEnumerator.Execute(const _Mask: string; _List: TStrings;
+  _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]): integer;
 var
   enum: TSimpleDirEnumerator;
 begin
-  enum := TSimpleDirEnumerator.Create(_Mask);
+  enum := TSimpleDirEnumerator.Create(_Mask, _MayHaveAttr);
   try
     Result := enum.FindAll(_List);
   finally
-    enum.Free;
+    FreeAndNil(enum);
   end;
 end;
 
@@ -1142,12 +1162,12 @@ begin
     end else
       Result := cfwOK;
   finally
-    Redir.Free;
+    FreeAndNil(Redir);
   end;
 end;
 
 class function TFileSystem.CopyMatchingFiles(const _Mask, _SrcDir, _DestDir: string;
-  _Flags: TCopyFileFlagset; _FilesSkipped: TStrings): integer;
+  _Flags: TCopyFileFlagset; _FilesSkipped: TStrings = nil): integer;
 var
   Files: TStringList;
   s: string;
@@ -1159,7 +1179,7 @@ begin
   DestDirBs := itpd(_DestDir);
   Files := TStringList.Create;
   try
-    TSimpleDirEnumerator.Execute(SrcDirBs + _Mask, Files);
+    TSimpleDirEnumerator.Execute(SrcDirBs + _Mask, Files, [faHidden, faSysFile, faArchive]);
     for s in Files do begin
       if CopyFile(SrcDirBs + s, DestDirBs + s, _Flags) then
         Inc(Result)
@@ -1169,7 +1189,7 @@ begin
       end;
     end;
   finally
-    Files.Free;
+    FreeAndNil(Files);
   end;
 end;
 
@@ -1218,7 +1238,7 @@ begin
     end else
       Result := cfwOK;
   finally
-    Redir.Free;
+    FreeAndNil(Redir);
   end;
 end;
 
@@ -1243,7 +1263,7 @@ begin
 end;
 
 class function TFileSystem.DeleteMatchingFiles(const _Dir, _Mask: string;
-  _RaiseException: boolean = true; _Force: boolean = false): integer;
+  _RaiseException: boolean = true; _Force: boolean = false; _ExceptMask: string = ''): integer;
 var
   sr: TSearchRec;
   Dir: string;
@@ -1251,18 +1271,33 @@ begin
   Assert(_Dir <> '', 'Dir parameter must not be an empty string');
   Assert(_Mask <> '', 'Dir parameter must not be an empty string');
 
+  _ExceptMask := LowerCase(_ExceptMask);
   Result := 0;
   Dir := IncludeTrailingPathDelimiter(_Dir);
   if 0 = FindFirst(Dir + _Mask, faAnyFile, sr) then
     try
       repeat
-        if (sr.Name <> '.') and (sr.Name <> '..') and ((sr.Attr and (SysUtils.faVolumeID or SysUtils.faDirectory)) = 0) then
-          if not DeleteFile(Dir + sr.Name, _RaiseException, _Force) then
-            Inc(Result);
+        if (sr.Name <> '.') and (sr.Name <> '..') then
+          if ((sr.Attr and (SysUtils.faVolumeID or SysUtils.faDirectory)) = 0) then
+            if (_ExceptMask = '') or not MatchesMask(LowerCase(sr.Name), _ExceptMask) then
+              if not DeleteFile(Dir + sr.Name, _RaiseException, _Force) then
+                Inc(Result);
       until 0 <> FindNext(sr);
     finally
       FindClose(sr);
     end;
+end;
+
+class function TFileSystem.FileExists(const _Filename: string): boolean;
+var
+  OldErrorMode: Cardinal;
+begin
+  OldErrorMode := SetErrorMode(SEM_NOOPENFILEERRORBOX);
+  try
+    Result := SysUtils.FileExists(_Filename);
+  finally
+    SetErrorMode(OldErrorMode)
+  end;
 end;
 
 class function TFileSystem.FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
@@ -1380,7 +1415,18 @@ begin
     sl.LoadFromFile(_Filename);
     Result := sl.Text;
   finally
-    sl.Free;
+    FreeAndNil(sl);
+  end;
+end;
+
+class function TFileSystem.IsFileReadonly(const _Filename: string): boolean;
+var
+  Attributes: Word;
+begin
+  Result := False;
+  if FileExists(_Filename) then begin
+    Attributes := FileGetAttr(_Filename);
+    Result := ((Attributes and SysUtils.faReadOnly) <> 0);
   end;
 end;
 
@@ -1658,7 +1704,7 @@ begin
       end;
     end;
   finally
-    EnumA.Free;
+    FreeAndNil(EnumA);
   end;
 end;
 
@@ -1699,7 +1745,7 @@ begin
       end;
     end;
   finally
-    EnumA.Free;
+    FreeAndNil(EnumA);
   end;
 end;
 
