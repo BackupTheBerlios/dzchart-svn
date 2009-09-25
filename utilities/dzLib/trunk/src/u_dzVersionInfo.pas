@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 unit u_dzVersionInfo;
 
 interface
@@ -13,8 +13,11 @@ type
   EAIInvalidVersionInfo = class(EApplicationInfo);
 
 type
-  TFileProperty = (FpProductName, FpProductVersion, FpFileDescription, FpFileVersion);
+  TFileProperty = (FpProductName, FpProductVersion, FpFileDescription, FpFileVersion, FpCopyright, FpCompanyName);
   TFilePropertySet = set of TFileProperty;
+
+type
+  TVersionParts = (vpMajor, vpMajorMinor, vpMajorMinorRevision, vpFull);
 
 type
   TFileVersionRec = record
@@ -45,14 +48,18 @@ type
     function FileDir: string;
     ///<summary> The file description from the version resource </summary>
     function FileDescription: string;
-    ///<summary> The file version from the file properties.</summary>
+    ///<summary> The file version from the file version resource </summary>
     function FileVersion: string;
     function FileVersionRec: TFileVersionRec;
-    ///<summary> The file's product name from the resources </summary>
+    function FileVersionStr(_Parts: TVersionParts = vpMajorMinorRevision): string;
+    ///<summary> The file's product name from the version resource </summary>
     function ProductName: string;
-    ///<summary> The the product version from the file properties.</summary>
+    ///<summary> The the product version from the version resource </summary>
     function ProductVersion: string;
-
+    ///<summary> The company name from the version resource </summary>
+    function Company: string;
+    ///<summary> The LegalCopyRight string from the file version resources </summary>
+    function LegalCopyRight: string;
   end;
 
 type
@@ -74,9 +81,14 @@ type
     function FileDescription: string;
     function FileVersion: string;
     function FileVersionRec: TFileVersionRec;
+    function FileVersionStr(_Parts: TVersionParts = vpMajorMinorRevision): string;
 
     function ProductName: string;
     function ProductVersion: string;
+    ///<summary> The company name from the version resource </summary>
+    function Company: string;
+    ///<summary> The LegalCopyRight string from the file version resources </summary>
+    function LegalCopyRight: string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -162,39 +174,52 @@ var
 begin
   result := '';
 
-  if not (_Property in FFilePropertiesRead) then
-    begin
-      try
-        case _Property of
-          FpProductName,
-            FpProductVersion,
-            FpFileDescription,
-            FpFileVersion:
-            begin
-              fi := TJclFileVersionInfo.Create(FileName);
-              try
-                FFileProperties[FpFileVersion] := fi.FileVersion;
-                FFileProperties[FpFileDescription] := fi.FileDescription;
-                FFileProperties[FpProductName] := fi.ProductName;
-                FFileProperties[FpProductVersion] := fi.ProductVersion;
+  if not (_Property in FFilePropertiesRead) then begin
+    try
+      case _Property of
+        FpProductName,
+          FpProductVersion,
+          FpFileDescription,
+          FpFileVersion,
+          FpCopyright: begin
+            fi := TJclFileVersionInfo.Create(FileName);
+            try
+              FFileProperties[FpFileVersion] := fi.FileVersion;
+              FFileProperties[FpFileDescription] := fi.FileDescription;
+              FFileProperties[FpProductName] := fi.ProductName;
+              FFileProperties[FpProductVersion] := fi.ProductVersion;
+              FFileProperties[FpCopyright] := fi.LegalCopyright;
+              FFileProperties[FpCompanyName] := fi.CompanyName;
 
-                Include(FFilePropertiesRead, FpFileVersion);
-                Include(FFilePropertiesRead, FpFileDescription);
-                Include(FFilePropertiesRead, FpProductVersion);
-                Include(FFilePropertiesRead, FpProductName);
-              finally
-                fi.Free;
-              end;
+              Include(FFilePropertiesRead, FpFileVersion);
+              Include(FFilePropertiesRead, FpFileDescription);
+              Include(FFilePropertiesRead, FpProductVersion);
+              Include(FFilePropertiesRead, FpProductName);
+              Include(FFilePropertiesRead, FpCopyright);
+              Include(FFilePropertiesRead, FpCompanyName);
+            finally
+              fi.Free;
             end;
-        end;
-      except
-        if FAllowExceptions then
-          raise;
-        exit;
+          end;
       end;
+    except
+      if FAllowExceptions then
+        raise;
+      exit;
     end;
+  end;
 
   Result := FFileProperties[_Property];
+end;
+
+function TCustomFileInfo.Company: string;
+begin
+  Result := GetFileProperty(FpCompanyName);
+end;
+
+function TCustomFileInfo.LegalCopyRight: string;
+begin
+  Result := GetFileProperty(FpCopyright);
 end;
 
 function TCustomFileInfo.FileVersion: string;
@@ -205,6 +230,21 @@ end;
 function TCustomFileInfo.FileVersionRec: TFileVersionRec;
 begin
   Result.IsValid := GetFileBuildInfo(FFileName, Result.Major, Result.Minor, Result.Revision, Result.Build);
+end;
+
+function TCustomFileInfo.FileVersionStr(_Parts: TVersionParts = vpMajorMinorRevision): string;
+var
+  Rec: TFileVersionRec;
+begin
+  Rec := FileVersionRec;
+  case _Parts of
+    vpMajor: Result := IntToStr(Rec.Major);
+    vpMajorMinor: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor);
+    vpMajorMinorRevision: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor) + '.' + IntToStr(Rec.Revision);
+    vpFull: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor) + '.' + IntToStr(Rec.Revision) + '.' + IntToStr(Rec.Build)
+  else
+    raise Exception.CreateFmt('Invalid version part (%d)', [Ord(_Parts)]);
+  end;
 end;
 
 function TCustomFileInfo.ProductName: string;
@@ -263,16 +303,14 @@ begin
   _b.CheckValid;
 
   Result := _a.Major > _b.Major;
-  if not Result and (_a.Major = _b.Major) then
-    begin
-      Result := _a.Minor > _b.Minor;
-      if not Result and (_a.Minor = _b.Minor) then
-        begin
-          Result := _a.Revision > _b.Revision;
-          if not Result and (_a.Revision = _b.Revision) then
-            Result := _a.Build > _b.Build;
-        end;
+  if not Result and (_a.Major = _b.Major) then begin
+    Result := _a.Minor > _b.Minor;
+    if not Result and (_a.Minor = _b.Minor) then begin
+      Result := _a.Revision > _b.Revision;
+      if not Result and (_a.Revision = _b.Revision) then
+        Result := _a.Build > _b.Build;
     end;
+  end;
 end;
 
 class operator TFileVersionRec.GreaterThanOrEqual(_a, _b: TFileVersionRec): boolean;
@@ -297,16 +335,14 @@ begin
   _b.CheckValid;
 
   Result := _a.Major < _b.Major;
-  if not Result and (_a.Major = _b.Major) then
-    begin
-      Result := _a.Minor < _b.Minor;
-      if not Result and (_a.Minor = _b.Minor) then
-        begin
-          Result := _a.Revision < _b.Revision;
-          if not Result and (_a.Revision = _b.Revision) then
-            Result := _a.Build < _b.Build;
-        end;
+  if not Result and (_a.Major = _b.Major) then begin
+    Result := _a.Minor < _b.Minor;
+    if not Result and (_a.Minor = _b.Minor) then begin
+      Result := _a.Revision < _b.Revision;
+      if not Result and (_a.Revision = _b.Revision) then
+        Result := _a.Build < _b.Build;
     end;
+  end;
 end;
 
 class operator TFileVersionRec.LessThanOrEqual(_a, _b: TFileVersionRec): boolean;
@@ -326,5 +362,4 @@ begin
 end;
 
 end.
-
 
