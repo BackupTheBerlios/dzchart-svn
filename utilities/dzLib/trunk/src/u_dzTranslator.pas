@@ -24,7 +24,8 @@ uses
   Classes;
 
 function _(const _s: string): string;
-function GetText(const _s: string): string;
+function GetText(const _s: string): string; inline;
+function dzGetText(const _s: string): string; inline;
 function DGetText(const _s: string; const _TextDomain: string = ''): string;
 ///<summary> use this if you pass variables rather than constants to avoid warnings in the dxgettext tool </summary>
 function dzDGetText(const _s: string; const _TextDomain: string = ''): string; inline;
@@ -52,7 +53,8 @@ implementation
 uses
   Controls,
   ActnList,
-  Graphics;
+  Graphics,
+  ExtCtrls;
 
 function _(const _s: string): string;
 begin
@@ -64,6 +66,11 @@ begin
 end;
 
 function GetText(const _s: string): string;
+begin
+  Result := u_dzTranslator._(_s);
+end;
+
+function dzGetText(const _s: string): string;
 begin
   Result := u_dzTranslator._(_s);
 end;
@@ -114,6 +121,15 @@ procedure TP_GlobalIgnoreClass(_IgnClass: TClass);
 begin
 {$IFDEF gnugettext}
   gnugettext.TP_GlobalIgnoreClass(_IgnClass);
+{$ENDIF}
+end;
+
+function TP_TryGlobalIgnoreClass(_IgnClass: TClass): boolean;
+begin
+{$IFDEF gnugettext}
+  Result := gnugettext.TP_TryGlobalIgnoreClass(_IgnClass);
+{$ELSE}
+  Result := true;
 {$ENDIF}
 end;
 
@@ -212,10 +228,11 @@ initialization
   AddDomainForResourceString('dzlib');
 
   // ignore these VCL properties / classes
+  TP_GlobalIgnoreClassProperty(TAction, 'Category');
   TP_GlobalIgnoreClassProperty(TControl, 'ImeName');
   TP_GlobalIgnoreClassProperty(TControl, 'HelpKeyword');
-  TP_GlobalIgnoreClassProperty(TAction, 'Category');
-  TP_GlobalIgnoreClass(TFont);
+  TP_TryGlobalIgnoreClass(TFont);
+  TP_GlobalIgnoreClassProperty(TNotebook, 'Pages');
 
 {$IFDEF TranslateReporting}
   { TODO -otwm -ccheck : This should not always be called because it links in all ReportBuilder units. }
