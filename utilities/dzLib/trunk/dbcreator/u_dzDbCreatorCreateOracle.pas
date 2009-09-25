@@ -44,7 +44,8 @@ const
     'FLOAT', {dtDouble}
     'VARCHAR2', {dtText}
     'LONG', {dtMemo}
-    'DATE'); {dtDate}
+    'DATE', {dtDate}
+    'GUID'); {dtGuid} { TODO -otwm -ccheck : does Oracle actually support this type?? }
 
   NULL_ALLOWED_MAPPING: TNullAllowedMapping = (
     'NOT NULL', 'NULL');

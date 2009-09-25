@@ -28,7 +28,7 @@ uses
 
 const
   DATA_TYPE_MAPPING: TDataTypeMapping = (
-    'int', 'float', 'nvarchar', 'ntext', 'datetime');
+    'int', 'float', 'nvarchar', 'ntext', 'datetime', 'uniqueidentifier');
   NULL_ALLOWED_MAPPING: TNullAllowedMapping = (
     'NOT NULL', 'NULL');
   DATA_TYPES_WITH_SIZE = [dtText];
