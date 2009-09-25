@@ -18,6 +18,9 @@ type
   TdzTestCase = class(TTestcase)
   protected
   public
+    procedure CheckEquals(_Expected, _Actual: single; _Msg: string = ''); overload;
+    procedure CheckEquals(_Expected, _Actual: double; _Msg: string = ''); overload;
+    procedure CheckEquals(_Expected, _Actual: extended; _Msg: string = ''); overload;
     /// <summary>
     /// Checks whether the value is a variant of a floating point type (includes integer)
     /// </summary>
@@ -45,7 +48,7 @@ type
     /// <summary>
     /// Checks whether the value is a variant of a string type
     /// </summary>
-    procedure CheckVariantIsString(_Value: variant; _Msg: string='');
+    procedure CheckVariantIsString(_Value: variant; _Msg: string = '');
     /// <summary>
     /// Called by the CheckVAriantIsXxxx functions to show errors
     /// </summary>
@@ -83,6 +86,7 @@ type
 implementation
 
 uses
+  Math,
   Variants,
   DateUtils,
   u_dzVariantUtils;
@@ -105,6 +109,24 @@ procedure TdzTestCase.CheckVariantIsLongWord(_Value: variant; _Msg: string);
 begin
   if not VarIsLongWord(_Value) then
     FailNotVarType('longword', VarTypeAsText(VarType(_Value)), _Msg, CallerAddr);
+end;
+
+procedure TdzTestCase.CheckEquals(_Expected, _Actual: single; _Msg: string);
+begin
+  if not Math.SameValue(_Expected, _Actual) then
+    FailNotEquals(FloatToStr(_Expected), FloatToStr(_Actual), _Msg, CallerAddr);
+end;
+
+procedure TdzTestCase.CheckEquals(_Expected, _Actual: double; _Msg: string);
+begin
+  if not Math.SameValue(_Expected, _Actual) then
+    FailNotEquals(FloatToStr(_Expected), FloatToStr(_Actual), _Msg, CallerAddr);
+end;
+
+procedure TdzTestCase.CheckEquals(_Expected, _Actual: extended; _Msg: string);
+begin
+  if not Math.SameValue(_Expected, _Actual) then
+    FailNotEquals(FloatToStr(_Expected), FloatToStr(_Actual), _Msg, CallerAddr);
 end;
 
 procedure TdzTestCase.CheckEqualsDate(_Expected, _Actual: TDateTime; const _Message: string);
