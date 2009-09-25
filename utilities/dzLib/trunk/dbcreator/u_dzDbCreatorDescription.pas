@@ -23,7 +23,7 @@ type
 
   TNullAllowed = (naNotNull, naNull);
   TSortOrder = (soAscending, soDescending);
-  TFieldDataType = (dtLongInt, dtDouble, dtText, dtMemo, dtDate);
+  TFieldDataType = (dtLongInt, dtDouble, dtText, dtMemo, dtDate, dtGUID);
 
 const
   CHKSUM_FIELD = 'chksum';
@@ -171,7 +171,8 @@ type
     function GetColumns(_Idx: integer): IdzDbColumnDescription;
     function GetColumnsSortorder(_Idx: integer): TSortOrder;
     procedure AlterColumnSortOrder(_ColumnName: string; _SortOrder: TSortOrder);
-    procedure AppendColumn(_ColumnName: string; _SortOrder: TSortOrder = soAscending);
+    procedure AppendColumn(_ColumnName: string; _SortOrder: TSortOrder = soAscending); overload;
+    procedure AppendColumn(_Column: IdzDbColumnDescription; _SortOrder: TSortOrder = soAscending); overload;
     function GetName: string;
     procedure SetName(const _Name: string);
 
@@ -206,7 +207,8 @@ type
     function GetRefTable: string;
 
     function GetColumns(_Idx: integer): IdzDbColumnDescription; virtual;
-    procedure AppendColumn(_ColumnName: string; _SortOrder: TSortOrder = soAscending); virtual;
+    procedure AppendColumn(_ColumnName: string; _SortOrder: TSortOrder = soAscending); overload;
+    procedure AppendColumn(_Column: IdzDbColumnDescription; _SortOrder: TSortOrder = soAscending); overload;
     procedure AlterColumnSortOrder(_ColumnName: string; _SortOrder: TSortOrder); virtual;
   public
     constructor Create(const _Table: IdzDbTableDescription; const _Name: string;
@@ -791,6 +793,7 @@ begin
     dtText: Result := 'Text';
     dtMemo: Result := 'Memo';
     dtDate: Result := 'Date';
+    dtGuid: Result := 'GUID';
   else
     raise EConvertError.Create(_('Invalid TFieldDataType value'));
   end;
@@ -808,6 +811,8 @@ begin
     Result := dtMemo
   else if AnsiSameText(_s, 'Date') then
     Result := dtDate
+  else if AnsiSameText(_s, 'GUID') then
+    Result := dtGuid
   else
     raise EConvertError.CreateFmt(_('%s is not a valid TFieldDataType name'), [_s]);
 end;
@@ -881,6 +886,9 @@ end;
 procedure TdzDbColumnDescription.SetForeignKey(const _ForeignKeyColumn: IdzDbColumnDescription;
   const _ForeignKeyTable: IdzDbTableDescription);
 begin
+  Assert(Assigned(_ForeignKeyColumn), 'ForeignKeyColumn must not be NIL');
+  Assert(Assigned(_ForeignKeyTable), 'ForeignKeyTable must not be NIL');
+
   FIsForeignKey := true;
   FForeignKeyTable := _ForeignKeyTable;
   FForeignKeyColumn := _ForeignKeyColumn;
@@ -1623,11 +1631,28 @@ var
   Column: IdzDbColumnDescription;
 begin
   Column := FTable.ColumnByName(_ColumnName);
-
   if not Assigned(Column) then
-    raise EdzDbNoSuchColumn.CreateFmt(_('Table already has a column with name "%s"'), [_ColumnName]);
-
+    raise EdzDbNoSuchColumn.CreateFmt(_('Table has no column with name "%s"'), [_ColumnName]);
   FColumns.Add(TdzDbColNSortorder.Create(Column, _SortOrder));
+end;
+
+procedure TdzDbIndexDescription.AppendColumn(_Column: IdzDbColumnDescription; _SortOrder: TSortOrder);
+begin
+  Assert(Assigned(_Column), 'Column must not be NIL');
+
+
+  // workaround
+  // Wenn die Spalte einem Index hinzugefügt wird
+  // der einen Primary Key beschreibt, dann muss
+  // die Spalte ebenfalls als PrimaryKey markiert werden
+  if self.FIsPrimaryKey then
+    _Column.SetIndexType(itPrimaryKey)
+  else if self.FIsForeignKey and (not _Column.IsPrimaryKey) then
+    _Column.SetIndexType(itForeignKey)
+  else if self.FIsUniq and (not _Column.IsPrimaryKey) and (not _Column.IsUniqueIndex) then
+    _Column.SetIndexType(itUnique);
+
+  FColumns.Add(TdzDbColNSortorder.Create(_Column, _SortOrder));
 end;
 
 constructor TdzDbIndexDescription.Create(const _Table: IdzDbTableDescription;
@@ -1726,7 +1751,7 @@ constructor TdzDbColNSortorder.Create(const _Column: IdzDbColumnDescription;
 begin
   inherited Create;
   FColumn := _Column;
-  FSortOrder := _SortOrder
+  FSortOrder := _SortOrder;
 end;
 
 { TdzDbVersionNTypeAncestor }
