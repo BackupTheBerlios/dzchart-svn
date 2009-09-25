@@ -2,7 +2,7 @@
 ///<summary> implements an object with utility functions regarding the ShellAPI </summary>
 unit u_dzShellApiUtils;
 
-{$i jedi.inc}
+{$I jedi.inc}
 
 interface
 
@@ -46,9 +46,21 @@ type
     ///<summary> returns the 'common files' folder </summary>
     function GetCommonFiles: string;
     class function GetCommonFilesDir(_ApplicationHandle: THandle = 0): string;
-    ///<summary> returngs the 'program files' folder </summary>
+    ///<summary> returns the 'program files' folder </summary>
     function GetProgramFiles: string;
     class function GetProgramFilesDir(_ApplicationHandle: THandle = 0): string;
+    ///<summary> @returns the 'common files\Application Data' folder </summary>
+    function GetCommonAppData: string;
+    class function GetCommonAppDataDir(_ApplicationHandle: THandle = 0): string;
+
+    ///<summary> @returns the '<home>\Local Settings\Application Data' folder,
+    ///          or '' for oder Windows versions </summary>
+    function GetLocalAppData: string;
+    class function GetLocalAppDataDir(_ApplicationHandle: THandle = 0): string;
+
+    ///<summary> @returns the '<home>\Application Data' folder </summary>
+    function GetAppData: string;
+    class function GetAppDataDir(_ApplicationHandle: THandle = 0): string;
 
     function GetSystem32: string;
     class function GetSystem32Dir: string;
@@ -77,12 +89,11 @@ var
 begin
   Result := 0;
   Hdl := LoadLibrary('SHFOLDER.DLL');
-  if Hdl <> 0 then
-    begin
-      @SHGetFolderPath := GetProcAddress(Hdl, 'SHGetFolderPathA');
-      if @SHGetFolderPath <> nil then
-        Result := Hdl;
-    end;
+  if Hdl <> 0 then begin
+    @SHGetFolderPath := GetProcAddress(Hdl, 'SHGetFolderPathA');
+    if @SHGetFolderPath <> nil then
+      Result := Hdl;
+  end;
 end;
 
 function TWindowsShell.GetSpecialFolder(_CSIDL: Integer): string;
@@ -94,18 +105,15 @@ var
 begin
   ZeroMemory(@Path, SizeOf(Path));
   Hdl := LoadSHFolder(SHGetFolderPath);
-  if Hdl <> 0 then
-    begin
-      if Succeeded(SHGetFolderPath(Application.Handle, _CSIDL, 0, SHGFP_TYPE_CURRENT, Path)) then
-        Result := Path;
-      FreeLibrary(Hdl);
-    end
-  else
-    begin
-      if Succeeded(SHGetspecialfolderLocation(Application.Handle, _CSIDL, PIdl)) then
-        SHGetPathFromIDList(Pidl, Path);
+  if Hdl <> 0 then begin
+    if Succeeded(SHGetFolderPath(Application.Handle, _CSIDL, 0, SHGFP_TYPE_CURRENT, Path)) then
       Result := Path;
-    end;
+    FreeLibrary(Hdl);
+  end else begin
+    if Succeeded(SHGetspecialfolderLocation(Application.Handle, _CSIDL, PIdl)) then
+      SHGetPathFromIDList(Pidl, Path);
+    Result := Path;
+  end;
 end;
 
 { TWindowsShell }
@@ -160,6 +168,36 @@ begin
   Result := GetSpecialFolder(CSIDL_MYPICTURES);
 end;
 
+function TWindowsShell.GetAppData: string;
+begin
+  Result := GetSpecialFolder(CSIDL_APPDATA);
+end;
+
+class function TWindowsShell.GetAppDataDir(_ApplicationHandle: THandle): string;
+begin
+  with TWindowsShell.Create(_ApplicationHandle) do
+    try
+      Result := GetAppData;
+    finally
+      Free;
+    end;
+end;
+
+function TWindowsShell.GetCommonAppData: string;
+begin
+  Result := GetSpecialFolder(CSIDL_COMMON_APPDATA);
+end;
+
+class function TWindowsShell.GetCommonAppDataDir(_ApplicationHandle: THandle): string;
+begin
+  with TWindowsShell.Create(_ApplicationHandle) do
+    try
+      Result := GetCommonAppData;
+    finally
+      Free;
+    end;
+end;
+
 function TWindowsShell.GetCommonFiles: string;
 begin
   Result := GetSpecialFolder(CSIDL_PROGRAM_FILES_COMMON);
@@ -170,6 +208,21 @@ begin
   with TWindowsShell.Create(_ApplicationHandle) do
     try
       Result := GetCommonFiles;
+    finally
+      Free;
+    end;
+end;
+
+function TWindowsShell.GetLocalAppData: string;
+begin
+  Result := GetSpecialFolder(CSIDL_LOCAL_APPDATA);
+end;
+
+class function TWindowsShell.GetLocalAppDataDir(_ApplicationHandle: THandle): string;
+begin
+  with TWindowsShell.Create(_ApplicationHandle) do
+    try
+      Result := GetLocalAppData;
     finally
       Free;
     end;
@@ -235,18 +288,16 @@ var
   GetSystemWindowsDirectoryA: TGetSystemWindowsDirectoryA;
 begin
   HModule := LoadLibrary(kernel32);
-  if HModule = 0 then
-    begin
+  if HModule = 0 then begin
+    Result := GetSysWindowsDir;
+    exit;
+  end;
+  try
+    GetSystemWindowsDirectoryA := GetProcAddress(HModule, 'GetSystemWindowsDirectoryA');
+    if not Assigned(GetSystemWindowsDirectoryA) then begin
       Result := GetSysWindowsDir;
       exit;
     end;
-  try
-    GetSystemWindowsDirectoryA := GetProcAddress(HModule, 'GetSystemWindowsDirectoryA');
-    if not Assigned(GetSystemWindowsDirectoryA) then
-      begin
-        Result := GetSysWindowsDir;
-        exit;
-      end;
     SetLength(Result, MAX_PATH);
     GetSystemWindowsDirectoryA(PChar(Result), Length(Result));
     Result := PChar(Result);
