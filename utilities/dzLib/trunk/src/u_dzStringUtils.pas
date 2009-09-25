@@ -227,8 +227,13 @@ function TailStrOf(const _s: string; _c: char): string;
 function PosStr(const _SubStr, _s: string; _Start: integer): integer; deprecated;
 
 ///<summary> Replaces all occurences of characters in Search in S with the corresponding
-///          character in Replace. </summary>
-function ReplaceChars(const _s, _Search, _Replace: string): string;
+///          character in Replace. If there is no matching character in Replace,
+///          the character will be omitted. </summary>
+function ReplaceChars(const _s, _Search, _Replace: string): string; overload;
+
+///<summary> Replaces all occurences of characters in Search in S with the Replace string.
+///          If Replace is an empty string, the characters will be omitted. </summary>
+function ReplaceChars(const _s: string; _Search: TCharSet; const _Replace: string; _RemoveDuplicates: boolean = true): string; overload;
 
 ///<summary> Replaces all control characters (ord(c) < ord(' ')) with ReplaceChar.
 ///          If RemoveDuplicates is true, a sequence of control characters is replaced
@@ -322,6 +327,11 @@ function StringOrNull(_P: PChar): string;
 function GetUserDefaultLocaleSettings: TFormatSettings;
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 
+///<summary> Read the content of the file into a string and return it </summary>
+function LoadStringFromFile(const _Filename: string): string;
+///<summary> Write the content of the string to a file </summary>
+procedure SaveStringToFile(const _Filename: string; const _Content: string);
+
 type
   ///<summary> Helper class for building a text line </summary>
   TLineBuilder = class
@@ -329,6 +339,7 @@ type
     FListSeparator: string;
     FContent: string;
     FFormatSettings: TFormatSettings;
+    FQuoteChar: char;
   public
     ///<summary> Creates a TLineBuilder instance with the given separator
     ///          @param ListSeparator is the separator string to use, defaults to TAB (#9)
@@ -339,12 +350,19 @@ type
     procedure Assign(_Source: TLineBuilder);
     ///<summary> Adds a string column </summary>
     procedure Add(const _Column: string); overload;
+    ///<summary> Adds a string column, putting it in quotes </summary>
+    procedure AddQuoted(const _Column: string);
     ///<summary> Adds an integer value column </summary>
     procedure Add(_IntValue: integer); overload;
     ///<summary> Adds a floating point value column with the given number of decimals </summary>
     procedure Add(_FloatValue: extended; _Decimals: integer); overload;
+    ///<summary> Adds a floating point value column with the given number of integer digits
+    ///          and the given number of fractional digits </summary>
+    procedure Add(_FloatValue: extended; _IntDigits, _FracDigits: integer); overload;
     ///<summary> Adds a column with a time in hh:mm:ss format </summary>
     procedure Add(_Hours, _Minutes, _Seconds: integer); overload;
+    ///<summary> Adds a column with a time in hh:mm:ss:tt format </summary>
+    procedure Add(_Hours, _Minutes, _Seconds, _Hundredth: integer); overload;
     ///<summary> Adds a boolean column, with 'Y' for true and 'N' for false </summary>
     procedure Add(_b: Boolean); overload;
     ///<summary> Clears the line </summary>
@@ -359,6 +377,8 @@ type
     property Content: string read FContent;
     property DecimalSeparator: char read FFormatSettings.DecimalSeparator write FFormatSettings.DecimalSeparator default '.';
     property ListSeparator: string read FListSeparator write FListSeparator;
+    property QuoteChar: char read FQuoteChar write FQuoteChar;
+    property FormatSettings: TFormatSettings read FFormatSettings;
   end;
 
 implementation
@@ -433,7 +453,7 @@ begin
 end;
 
 function nthWordStartAndEnd(const _s: string; _WordNo: integer;
-  const _Delimiter: string; var _Start, _Ende: integer): boolean; overload;
+  const _Delimiter: AnsiString; var _Start, _Ende: integer): boolean; overload;
 var
   i: integer;
   DelimiterSet: TCharSet;
@@ -464,7 +484,7 @@ begin
     Result := '';
 end;
 
-function ExtractFirstWord(var _s: string; _Delimiter: TCharSet): string; overload;
+function ExtractFirstWord(var _s: string; _Delimiter: TCharSet): string;
 begin
   if not ExtractFirstWord(_s, _Delimiter, Result) then begin // s contained only Delimiters
     Result := '';
@@ -480,7 +500,7 @@ begin
   end;
 end;
 
-function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWord: string): boolean; overload;
+function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWord: string): boolean;
 var
   Start, Ende: integer;
 begin
@@ -491,7 +511,7 @@ begin
   end;
 end;
 
-function ExtractFirstWord(var _s: string; _Delimiter: TCharSet; out _FirstWord: string): boolean; overload;
+function ExtractFirstWord(var _s: string; _Delimiter: TCharSet; out _FirstWord: string): boolean;
 var
   Start, Ende: integer;
 begin
@@ -541,6 +561,26 @@ begin
   SetLength(Result, j - 1);
 end;
 
+function ReplaceChars(const _s: string; _Search: TCharSet; const _Replace: string; _RemoveDuplicates: boolean = true): string;
+var
+  i: LongInt;
+  Dup: boolean;
+begin
+  Result := '';
+  Dup := false;
+  for i := 1 to Length(_s) do begin
+    if _s[i] in _Search then begin
+      if not Dup or not _RemoveDuplicates then begin
+        Result := Result + _Replace;
+        Dup := true;
+      end;
+    end else begin
+      Result := Result + _s[i];
+      Dup := false;
+    end;
+  end;
+end;
+
 function ReplaceCtrlChars(const _s: string; _ReplaceChar: char; _RemoveDuplicates: boolean = true): string;
 var
   i: integer;
@@ -575,12 +615,12 @@ begin
   Result := ReplaceCtrlChars(_s, ' ', _RemoveDuplicates);
 end;
 
-function HexEncodeControlChars(_Prefix: char; const _s: string; _ControlChars: TCharSet): string;
+function HexEncodeControlChars(_Prefix: Char; const _s: string; _ControlChars: TCharSet): string;
 var
   i: integer;
 begin
   Result := '';
-  Include(_ControlChars, _Prefix);
+  Include(_ControlChars, AnsiChar(_Prefix));
   for i := 1 to Length(_s) do begin
     if _s[i] in _ControlChars then
       Result := Result + Format('%s%.2x', [_Prefix, Ord(_s[i])]) // do not translate
@@ -857,7 +897,7 @@ begin
   Result := ExtractStr(_Source, _Delimiters, _Substr, b);
 end;
 
-function ExtractStr(var _Source: string; _Delimiter: char; out _Substr: string; var _LastWasDelimiter: boolean): boolean; overload;
+function ExtractStr(var _Source: string; _Delimiter: char; out _Substr: string; var _LastWasDelimiter: boolean): boolean;
 begin
   Result := ExtractStr(_Source, [_Delimiter], _SubStr, _LastWasDelimiter);
 end;
@@ -1050,6 +1090,7 @@ begin
   FFormatSettings := GetUserDefaultLocaleSettings;
   FFormatSettings.DecimalSeparator := _DecimalSeparator;
   FFormatSettings.ThousandSeparator := #0;
+  FQuoteChar := '"';
 end;
 
 procedure TLineBuilder.Add(_IntValue: integer);
@@ -1062,6 +1103,11 @@ begin
   Add(FloatToStrF(_FloatValue, ffFixed, 18, _Decimals, FFormatSettings));
 end;
 
+procedure TLineBuilder.Add(_FloatValue: extended; _IntDigits, _FracDigits: integer);
+begin
+  Add(Format('%*.*f', [_IntDigits, _FracDigits, _FloatValue], FFormatSettings));
+end;
+
 procedure TLineBuilder.Add(const _Column: string);
 begin
   if FContent <> '' then
@@ -1069,22 +1115,32 @@ begin
   FContent := FContent + _Column;
 end;
 
+function ZeroPadLeft(_Value: Integer; _Len: Integer): string;
+begin
+  Str(_Value, Result);
+  while Length(Result) < _Len do
+    Result := '0' + Result;
+end;
+
 procedure TLineBuilder.Add(_Hours, _Minutes, _Seconds: integer);
-
-  function ZeroPadLeft(_Value: Integer; _Len: Integer): string;
-  begin
-    Str(_Value, Result);
-    while Length(Result) < _Len do
-      Result := '0' + Result;
-  end;
-
 begin
   Add(ZeroPadLeft(_Hours, 2) + ':' + ZeroPadLeft(_Minutes, 2) + ':' + ZeroPadLeft(_Seconds, 2));
+end;
+
+procedure TLineBuilder.Add(_Hours, _Minutes, _Seconds, _Hundredth: integer);
+begin
+  Add(ZeroPadLeft(_Hours, 2) + ':' + ZeroPadLeft(_Minutes, 2) + ':' + ZeroPadLeft(_Seconds, 2)
+    + ':' + ZeroPadLeft(_Hundredth, 2));
 end;
 
 procedure TLineBuilder.Add(_b: Boolean);
 begin
   Add(IfThen(_B, 'Y', 'N'));
+end;
+
+procedure TLineBuilder.AddQuoted(const _Column: string);
+begin
+  Add(FQuoteChar + _Column + FQuoteChar);
 end;
 
 procedure TLineBuilder.Append(_Line: TLineBuilder);
@@ -1133,6 +1189,32 @@ begin
     FContent := s + FListSeparator + FContent
   else
     FContent := s;
+end;
+
+function LoadStringFromFile(const _Filename: string): string;
+var
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    sl.LoadFromFile(_Filename);
+    Result := sl.Text;
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure SaveStringToFile(const _Filename: string; const _Content: string);
+var
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Text := _Content;
+    sl.SaveToFile(_Filename);
+  finally
+    sl.Free;
+  end;
 end;
 
 end.
