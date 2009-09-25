@@ -18,6 +18,7 @@ uses
   ExtCtrls,
   Grids,
   DbGrids,
+  Buttons,
   u_dzTranslator;
 
 type
@@ -51,6 +52,17 @@ type
 
 ///<summary> returns the global file formats list </summary>
 function GetFileFormats: TFileFormatsList;
+
+///<summary> Assigns the TBitBtn's glyph from the hex string (e.g. copied from .dfm)
+///          if ContainsLength is true, the first 4 bytes (8 characters) contain the length of the
+///          data (as is the case with the strings stored in the .dfm file) </summary>
+procedure TBitBtn_GlyphFromString(_btn: TBitBtn; const _GlyphStr: AnsiString; _ContainsLength: boolean = true);
+
+///<summary> This is meant as a replacement to the LockWindowUpate function which shouldn't really be used
+///          any more.
+///          @param Ctrl is a TWinControl which should be locked
+///          @returns an interface, if that interface is released, it will automatically unlock the control </summary>
+function TWinControl_Lock(_Ctrl: TWinControl): IInterface;
 
 ///<summary> checks whether the integer array contains the given element
 ///          @param Element is the integer to check for
@@ -195,6 +207,12 @@ procedure TEdit_SetTextNoChange(_ed: TCustomEdit; const _Text: string);
 ///          @raises EConvertError if the controls content could not be converted </summary>
 function TEdit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double;
 
+///<summary> Tries to convert the edit control text to a double, if an error occurs, it changes it's
+///          color to ErrColor and returns false, otherwise it changes the color to OkColor and
+///          returns true. </summary>
+function TEdit_TryTextToDouble(_ed: TEdit; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+function TEdit_TryTextToDouble(_ed: TEdit; out _Value: double; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+
 ///<summary> Tries to convert the edit control text to an integer, if an error occurs, it raises
 ///          an exception and optionally focuses the control.
 ///          @param ed is the edit control
@@ -243,6 +261,34 @@ procedure TTabControl_DrawTab(_TabControl: TTabControl; _TabIndex: integer;
 ///          to display horizontal text in tabs on the left or right hand side </summary>
 procedure TTabControl_AdjustTabWidth(_TabControl: TTabControl; _Form: TForm; _MinWidth: integer = 80);
 
+///<summary> Enables longer SimpleText (longer than 127 characters)
+///          Call once to enable. Works, by adding a single panel with owner drawing and
+///          setting the StatusBar's OnDrawPanel to a custom drawing method.
+///          To make it work, you must use TStatusBar_SetLongSimpleText to set
+///          the text, or use TLongSimpleTextStatusBar as an interposer class. </summary>
+procedure TStatusBar_EnableLongSimpleText(_StatusBar: TStatusBar);
+
+///<summary> Set the SimpleText of the StatusBar and invalidate it to enforce a redraw </summary>
+procedure TStatusBar_SetLongSimpleText(_StatusBar: TStatusBar; const _Text: string);
+
+///<summary> call this function to determine which panel of a TStatusBar has been clicked
+//           Note: This assumes, that the status bar actually was clicked, so only call it
+//           from the status bar's OnClick, OnMouseDown or OnMouseUp event handlers
+//           If the status bar does not have any panels (e.g. SimplePanel=true), this function
+//           will return 0.
+function TStatusBar_GetClickedPanel(_sb: TStatusBar): integer;
+
+type
+  ///<summary> Interposer class for TStatusBar to allow longer than 127 characters in SimpleText </summary>
+  TLongSimpleTextStatusBar = class(TStatusBar)
+  private
+    function GetSimpleText: string;
+    procedure SetSimpleText(const Value: string);
+  published
+  public
+    property SimpleText: string read GetSimpleText write SetSimpleText;
+  end;
+
 ///<summary> sets the control and all its child controls Enabled property and changes their
 ///          caption to reflect this
 ///          @param Control is the TControl to change
@@ -273,8 +319,9 @@ function TComboBox_GetObjectCaption(_cmb: TCustomCombobox; _Obj: pointer; out _s
 ///          @param FocusControl is a boolean which determines whether to focus the control
 ///                              if it does not contain a valid value, default = false
 ///          @returns true, if these out parameters are valid </summary>
+function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Obj: pointer; _FocusControl: boolean = false): boolean; overload; inline;
 function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
-  out _Obj: pointer; _FocusControl: boolean = false): boolean;
+  out _Obj: pointer; _FocusControl: boolean = false): boolean; overload;
 
 ///<summary> Gets the caption of the selected combobox item
 ///          @param cmb is the TCustomCombobox (descendant) to read from
@@ -292,6 +339,14 @@ function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
 ///          @param DefaultIdx is the ItemIndex to use if no item matches.
 ///          @returns the index of the newly selected item or -1 if it doesn't exist </summary>
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
+
+///<summary> Selects an item (or no Item, if Idx = -1) without triggering an OnChange event </summary>
+procedure TComboBox_SelectWithoutChangeEvent(_cmb: TComboBox; _Idx: integer);
+
+///<summary> Sets the control to readonly by adding a TPanel as parent and disable it. Note that this does
+///          not grey out the control as the Enabled property would.
+///          This is meant for controls that do not have a readonly property like TComboBox or TCheckBox. </summary>
+procedure TControl_SetReadonly(_ctrl: TControl; _ReadOnly: boolean);
 
 ///<summary> Gets the object pointer of the selected listbox item
 ///          @param lst is the TCustomListbox (descendant) to read from
@@ -311,6 +366,12 @@ function TListBox_GetSelected(_lb: TCustomListBox; out _Item: string;
   _FocusControl: boolean = false): boolean; overload;
 function TListBox_GetSelected(_lb: TCustomListBox): string; overload;
 
+///<summary> @Returns the number of selected items in the ListBox
+///          @param Selected will contain the selected items as well as the
+///                          associated objects. May be passed as NIL if only the count
+///                          is required. </summary>
+function TListBox_GetSelected(_lb: TCustomListBox; _Selected: TStrings): integer; overload;
+
 ///<summary> Selects the item if it is in the list and returns the new ItemIndex
 ///          @param lb is the TCustomListbox (descendant) to use
 ///          @param Item is the item to select
@@ -326,17 +387,33 @@ function TListBox_DeleteSelected(_lst: TCustomListbox; out _Idx: integer): boole
 function TListBox_DeleteSelected(_lst: TCustomListbox): boolean; overload;
 function TListBox_DeleteSelected(_lst: TCustomListBox; out _s: string): boolean; overload;
 
+procedure TListBox_UnselectAll(_lb: TCustomListbox);
+
+///<summary> Frees all objects assigned to the list and then clears the list </summary>
+procedure TListbox_ClearWithObjects(_lst: TCustomListBox);
+
 ///<summary> Returns the nunber of items that are checked </summary>
 function TCheckListBox_GetCheckedCount(_clb: TCheckListBox): integer;
 procedure TCheckListBox_DeleteDisabled(_clb: TCheckListBox);
 procedure TCheckListBox_InvertCheckmarks(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
 procedure TCheckListBox_UncheckAll(_clb: TCheckListBox);
 procedure TCheckListBox_CheckAll(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+///<summary> Returns the checked items and the objects associated in them
+///          @param clb is the TCheckListBox
+///          @param Checked is a TStrings to which the selected items and objects are to be added
+///          @param IncludeDisabled determines whether the disabled items should also be returned if they are checked
+///          @returns the number of Items in Checked </summary>
 function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer;
+///<summary> Returns the objects associated with the checked items
+///          @param clb is the TCheckListBox
+///          @param Objects is a TList to which the selected objects are to be added
+///          @param IncludeDisabled determines whether the disabled items should also be returned if they are checked
+///          @returns the number of Items in Objects </summary>
+function TCheckListBox_GetCheckedObjects(_clb: TCheckListBox; _Objects: TList; _IncludeDisabled: boolean = false): integer;
 ///<summary> Checks all items contained in the Checked string list
 ///          @param clb is the TCheckListBox to modify
 ///          @param Checked is a string list containing the items to be checked
-///          @param UnchekOthers determines whether any items not in the list should
+///          @param UncheckOthers determines whether any items not in the list should
 ///                 be unchecked (defaults to true).
 ///          @returns the number of items that have been checked. </summary>
 function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings; _UncheckOthers: boolean = true): integer;
@@ -447,6 +524,34 @@ procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign; Show: Bo
 ///          @param Form is the TForm to unmerge </summary>
 procedure UnMergeForm(_Form: TCustomForm); deprecated; // use a frame instead
 
+///<summary> free all lv.Items[n].Data objects and then clear the items </summary>
+procedure TListView_ClearWithObjects(_lv: TListView);
+
+///<summary> Unselect all items, if WithSelectEvents is false, OnSelectItem events will be temporarily
+///          disabled. </summary>
+procedure TListView_UnselectAll(_lv: TListView; _WithSelectEvents: boolean = true);
+
+///<summary> Returns the number of selected items in the ListView </summary>
+function TListView_GetSelectedCount(_lv: TListView): integer;
+
+///<summary> Returns the first item in the radio group with the caption ItemText </summary>
+function TRadioGroup_GetButton(_rg: TRadioGroup; _ItemText: string): TRadioButton; overload;
+///<summary> Returns the ItemIdx'th item in the radio group </summary>
+function TRadioGroup_GetButton(_rg: TRadioGroup; _ItemIdx: integer): TRadioButton; overload;
+
+///<summary> Returns the Checked value of a TCheckbox or TRadioButton (which both descend from TButtonControl) </summary>
+function TButtonControl_GetChecked(_bctrl: TButtonControl): boolean;
+
+///<summary> Sets the Checked value of a TCheckbox or TRadioButton (which both descend from TButtonControl) </summary>
+procedure TButtonControl_SetChecked(_bctrl: TButtonControl; _Value: boolean);
+
+///<summary> Sets the Caption value of a TCheckbox or TRadioButton (which both descend from TButtonControl) </summary>
+procedure TButtonControl_SetCaption(_bctrl: TButtonControl; _Value: string);
+
+///<summary> sets Screen.Cursor to NewCursor and restores it automatically when the returned interface
+///          goes out of scope </summary>
+function TCursor_TemporaryChange(_NewCursor: TCursor): IInterface;
+
 implementation
 
 uses
@@ -460,17 +565,45 @@ uses
   rxGif,
 {$ENDIF GIFByRx}
   u_dzConvertUtils,
-  u_dzStringUtils;
-
-// we need this to access protected methods
-type
-  TGridHack = class(TCustomGrid);
-  TDbGridHack = class(TCustomDbGrid);
+  u_dzStringUtils,
+  u_dzClassUtils;
 
 function _(const _s: string): string; inline;
 begin
   Result := dzDGetText(_s, 'dzlib');
 end;
+
+procedure TBitBtn_GlyphFromString(_btn: TBitBtn; const _GlyphStr: AnsiString; _ContainsLength: boolean = true);
+var
+  st: TMemoryStream;
+  s: AnsiString;
+  Buf: array of byte;
+  res: Integer;
+  Size: integer;
+begin
+  if _ContainsLength then
+    s := LowerCase(Copy(_GlyphStr, 9))
+  else
+    s := LowerCase(_GlyphStr);
+  Size := Length(s) div 2;
+  SetLength(Buf, Size);
+  res := HexToBin(PAnsiChar(s), @Buf[0], Size);
+  if res <> Size then
+    raise Exception.CreateFmt(_('Glyph string contained invalid character at position %d.'), [res]);
+  st := TMemoryStream.Create;
+  try
+    st.Write(Buf[0], Size);
+    st.Position := 0;
+    _btn.Glyph.LoadFromStream(st);
+  finally
+    FreeAndNil(st);
+  end;
+end;
+
+// we need this to access protected methods
+type
+  TGridHack = class(TCustomGrid);
+  TDbGridHack = class(TCustomDbGrid);
 
 function TGrid_GetText(_Grid: TCustomGrid; _IncludeFixed: boolean = false): string;
 var
@@ -512,11 +645,11 @@ begin
         Content.Add(Line.Content);
       end;
     finally
-      Line.Free;
+      FreeAndNil(Line);
     end;
     Result := Content.Content;
   finally
-    Content.Free;
+    FreeAndNil(Content);
   end;
 end;
 
@@ -731,6 +864,25 @@ begin
     end;
     raise EConvertError.CreateFmt(_('"%s" is not a valid floating point value.'), [s]);
   end;
+end;
+
+function TEdit_TryTextToDouble(_ed: TEdit; out _Value: double; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  s: string;
+begin
+  s := _ed.Text;
+  Result := TryStr2Float(s, _Value, #0);
+  if Result then
+    _ed.Color := _OkColor
+  else
+    _ed.Color := _ErrColor;
+end;
+
+function TEdit_TryTextToDouble(_ed: TEdit; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  Value: double;
+begin
+  Result := TEdit_TryTextToDouble(_ed, Value, _OkColor, _ErrColor);
 end;
 
 function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
@@ -1010,6 +1162,45 @@ begin
   end;
 end;
 
+type
+  // Note: This class is never instantiated, only the DrawPanel method will be used
+  //       without ever referencing the self pointer (which is NIL), so it should work
+  TStatusBarPainter = class
+  public
+    procedure DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
+  end;
+
+procedure TStatusBarPainter.DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
+var
+  cnv: TCanvas;
+  s: string;
+  h: Integer;
+begin
+  s := StatusBar.SimpleText;
+  cnv := StatusBar.Canvas;
+  h := cnv.TextHeight(s);
+  cnv.TextRect(Rect, 2, (StatusBar.ClientHeight - h) div 2, StatusBar.SimpleText);
+end;
+
+procedure TStatusBar_EnableLongSimpleText(_StatusBar: TStatusBar);
+var
+  Painter: TStatusBarPainter;
+  pnl: TStatusPanel;
+begin
+  _StatusBar.SimplePanel := false;
+  _StatusBar.Panels.Clear;
+  pnl := _StatusBar.Panels.Add;
+  pnl.Style := psOwnerDraw;
+  Painter := nil;
+  _StatusBar.OnDrawPanel := Painter.DrawPanel;
+end;
+
+procedure TStatusBar_SetLongSimpleText(_StatusBar: TStatusBar; const _Text: string);
+begin
+  _StatusBar.SimpleText := _Text;
+  _StatusBar.Invalidate;
+end;
+
 procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
 var
   i: integer;
@@ -1058,6 +1249,13 @@ begin
     end;
   end;
   Result := false;
+end;
+
+function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Obj: pointer; _FocusControl: boolean = false): boolean;
+var
+  Idx: integer;
+begin
+  Result := TComboBox_GetSelectedObject(_cmb, Idx, _Obj, _FocusControl);
 end;
 
 function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
@@ -1109,6 +1307,20 @@ begin
     raise EdzListBoxNoSelection(_('No item selected in listbox'));
 end;
 
+function TListBox_GetSelected(_lb: TCustomListBox; _Selected: TStrings): integer;
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := 0 to _lb.Items.Count - 1 do begin
+    if _lb.Selected[i] then begin
+      Inc(Result);
+      if Assigned(_Selected) then
+        _Selected.AddObject(_lb.Items[i], _lb.Items.Objects[i]);
+    end;
+  end;
+end;
+
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;
 begin
   _Idx := _lst.ItemIndex;
@@ -1142,6 +1354,20 @@ var
   Idx: integer;
 begin
   Result := TListBox_DeleteSelected(_lst, Idx);
+end;
+
+procedure TListBox_UnselectAll(_lb: TCustomListbox);
+var
+  i: Integer;
+begin
+  for i := 0 to _lb.Items.count - 1 do
+    _lb.Selected[i] := false;
+end;
+
+procedure TListbox_ClearWithObjects(_lst: TCustomListBox);
+begin
+  TStrings_FreeAllObjects(_lst.Items);
+  _lst.Items.Clear;
 end;
 
 function TCheckListBox_GetCheckedCount(_clb: TCheckListBox): integer;
@@ -1227,8 +1453,21 @@ var
 begin
   for i := 0 to _clb.Items.Count - 1 do
     if _clb.Checked[i] and (_IncludeDisabled or _clb.ItemEnabled[i]) then
-      _Checked.Add(_clb.Items[i]);
+      _Checked.AddObject(_clb.Items[i], _clb.Items.Objects[i]);
   Result := _Checked.Count;
+end;
+
+function TCheckListBox_GetCheckedObjects(_clb: TCheckListBox; _Objects: TList; _IncludeDisabled: boolean = false): integer;
+var
+  i: Integer;
+begin
+  Assert(Assigned(_clb));
+  Assert(Assigned(_Objects));
+
+  for i := 0 to _clb.Items.Count - 1 do
+    if _clb.Checked[i] and (_IncludeDisabled or _clb.ItemEnabled[i]) then
+      _Objects.Add(_clb.Items.Objects[i]);
+  Result := _Objects.Count;
 end;
 
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
@@ -1237,6 +1476,58 @@ begin
   if Result = -1 then
     Result := _DefaultIdx;
   _Cmb.ItemIndex := Result;
+end;
+
+procedure TComboBox_SelectWithoutChangeEvent(_cmb: TComboBox; _Idx: integer);
+var
+  Event: TNotifyEvent;
+begin
+  Event := _cmb.OnChange;
+  try
+    _cmb.OnChange := nil;
+    _cmb.ItemIndex := _Idx;
+  finally
+    _cmb.OnChange := Event;
+  end;
+end;
+
+procedure TControl_SetReadonly(_ctrl: TControl; _ReadOnly: boolean);
+var
+  Panel: TPanel;
+  comp: TComponent;
+  PanelName: string;
+begin
+  if _ctrl.Name = '' then
+    raise Exception.Create('Combobox must have a name to be set readonly');
+  PanelName := 'p_dzVclUtils' + _ctrl.Name;
+  comp := _ctrl.Owner.FindComponent(PanelName);
+  if Assigned(comp) then begin
+    if not (comp is TPanel) then
+      raise Exception.Create(PanelName + ' is not a TPanel');
+    Panel := comp as TPanel;
+    if _ReadOnly then
+      exit; // assume it is already readonly
+    _ctrl.Parent := Panel.Parent;
+    _ctrl.Top := Panel.Top;
+    _ctrl.Left := Panel.Left;
+    FreeAndNil(Panel);
+    exit;
+  end;
+  if not _ReadOnly then
+    exit; // assume it is not readonly
+
+  Panel := TPanel.Create(_ctrl.Owner);
+  Panel.Name := PanelName;
+  Panel.Parent := _ctrl.Parent;
+  Panel.Top := _ctrl.Top;
+  Panel.Left := _ctrl.Left;
+  Panel.Height := _ctrl.Height;
+  Panel.Width := _ctrl.Width;
+  Panel.BevelOuter := bvNone;
+  _ctrl.Top := 0;
+  _ctrl.Left := 0;
+  _ctrl.Parent := Panel;
+  Panel.Enabled := false;
 end;
 
 function TListBox_Select(_lb: TCustomListBox; const _Item: string; _DefaultIdx: integer = -1): integer;
@@ -1299,7 +1590,7 @@ begin
     _Re.Lines.SaveToStream(st);
     Result := PChar(st.Memory);
   finally
-    st.Free;
+    FreeAndNil(st);
   end;
 end;
 
@@ -1313,7 +1604,7 @@ begin
     st.Position := 0;
     _Re.Lines.LoadFromStream(st);
   finally
-    st.Free;
+    FreeAndNil(st);
   end;
 end;
 
@@ -1330,7 +1621,7 @@ begin
       Result := Result + #26 + st.DataString;
     end
   finally
-    st.Free;
+    FreeAndNil(st);
   end;
 end;
 
@@ -1360,7 +1651,7 @@ begin
       _Pic.Graphic := GraphicObj;
     end;
   finally
-    st.Free;
+    FreeAndNil(st);
   end;
 end;
 
@@ -1492,9 +1783,11 @@ end;
 
 procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
 begin
-  Assert(Assigned(_Center), 'Center is not assigned'); // do not translate
-
-  TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)));
+  if Assigned(_Center) then
+    TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)))
+  else begin
+    TForm_CenterOn(_frm, Point(Screen.Width div 2, Screen.Height div 2));
+  end;
 end;
 
 function TWinControl_SetFocus(_Ctrl: TWinControl): boolean;
@@ -1730,6 +2023,191 @@ begin
   _Form.Hide;
   TControlHack(_Form).DestroyHandle;
   _Form.Parent := nil;
+end;
+
+procedure TListView_ClearWithObjects(_lv: TListView);
+var
+  i: Integer;
+begin
+  for i := 0 to _lv.Items.Count - 1 do begin
+    TObject(_lv.Items[i].Data).Free;
+    _lv.Items[i].Data := nil;
+  end;
+  _lv.Clear;
+end;
+
+function TRadioGroup_GetButton(_rg: TRadioGroup; _ItemIdx: integer): TRadioButton;
+// taken from http://delphi.about.com/od/adptips2006/qt/radiogroupbtns.htm
+begin
+  if (_ItemIdx < 0) or (_ItemIdx >= _rg.Items.Count) then
+    Result := nil
+  else
+    Result := _rg.Controls[_ItemIdx] as TRadioButton;
+end;
+
+function TRadioGroup_GetButton(_rg: TRadioGroup; _ItemText: string): TRadioButton;
+// taken from http://delphi.about.com/od/adptips2006/qt/radiogroupbtns.htm
+var
+  cnt: integer;
+  Idx: integer;
+begin
+  Idx := -1;
+  for cnt := 0 to -1 + _rg.Items.Count do begin
+    if _rg.Items[cnt] = _ItemText then begin
+      Idx := cnt;
+      break;
+    end;
+  end;
+  Result := TRadioGroup_GetButton(_rg, Idx);
+end;
+
+type
+  THackButtonControl = class(TButtonControl)
+  end;
+
+function TButtonControl_GetChecked(_bctrl: TButtonControl): boolean;
+begin
+  Result := THackButtonControl(_bctrl).Checked;
+end;
+
+procedure TButtonControl_SetChecked(_bctrl: TButtonControl; _Value: boolean);
+begin
+  THackButtonControl(_bctrl).Checked := _Value;
+end;
+
+procedure TButtonControl_SetCaption(_bctrl: TButtonControl; _Value: string);
+begin
+  THackButtonControl(_bctrl).Caption := _Value;
+end;
+
+procedure TListView_UnselectAll(_lv: TListView; _WithSelectEvents: boolean = true);
+var
+  i: Integer;
+  Event: TLVSelectItemEvent;
+begin
+  Event := _lv.OnSelectItem;
+  if not _WithSelectEvents then
+    _lv.OnSelectItem := nil;
+  try
+    for i := 0 to _lv.Items.Count - 1 do
+      _lv.Items[i].Selected := false;
+  finally
+    _lv.OnSelectItem := Event;
+  end;
+end;
+
+function TListView_GetSelectedCount(_lv: TListView): integer;
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := 0 to _lv.Items.Count - 1 do
+    if _lv.Items[i].Selected then
+      Inc(Result);
+end;
+
+function TStatusBar_GetClickedPanel(_sb: TStatusBar): integer;
+// call this to determine which panel of a TStatusBar has been clicked
+// Note: This assumes, that the status bar actually was clicked, so only call it
+//       from the status bar's OnClick, OnMouseDown or OnMouseUp event handlers
+// If the status bar does not have any panels (e.g. SimplePanel=true), this function
+// will return 0.
+var
+  mpt: TPoint;
+  x: Integer;
+  j: Integer;
+  cnt: Integer;
+begin
+  cnt := _sb.Panels.Count;
+  if _sb.SimplePanel then
+    cnt := 0;
+
+  mpt := _sb.ScreenToClient(Mouse.CursorPos);
+
+  Result := -1;
+  x := 0;
+  for j := 0 to cnt - 1 do begin
+    x := x + _sb.Panels[j].Width;
+    if mpt.X < x then begin
+      Result := j;
+      Break;
+    end;
+  end;
+
+  //clicked "after" the last panel -
+  //fake it as if the last one was clicked
+  if Result = -1 then
+    Result := _sb.Panels.Count - 1;
+end;
+
+{ TLongSimpleTextStatusBar }
+
+function TLongSimpleTextStatusBar.GetSimpleText: string;
+begin
+  Result := inherited SimpleText;
+end;
+
+procedure TLongSimpleTextStatusBar.SetSimpleText(const Value: string);
+begin
+  TStatusBar_SetLongSimpleText(Self, Value);
+end;
+
+type
+  TCursorRestorer = class(TInterfacedObject, IInterface)
+  private
+    FOldCursor: TCursor;
+    constructor Create(_NewCursor: TCursor);
+    destructor Destroy; override;
+  end;
+
+{ TCursorRestorer }
+
+constructor TCursorRestorer.Create(_NewCursor: TCursor);
+begin
+  inherited Create;
+  FOldCursor := Screen.Cursor;
+  Screen.Cursor := _NewCursor;
+end;
+
+destructor TCursorRestorer.Destroy;
+begin
+  Screen.Cursor := FOldCursor;
+  inherited;
+end;
+
+function TCursor_TemporaryChange(_NewCursor: TCursor): IInterface;
+begin
+  Result := TCursorRestorer.Create(_NewCursor);
+end;
+
+type
+  TWinControlLocker = class(TInterfacedObject, IInterface)
+  private
+    FCtrl: TWinControl;
+  public
+    constructor Create(_Ctrl: TWinControl);
+    destructor Destroy; override;
+  end;
+
+function TWinControl_Lock(_Ctrl: TWinControl): IInterface;
+begin
+  Result := TWinControlLocker.Create(_Ctrl);
+end;
+
+{ TWinControlLocker }
+
+constructor TWinControlLocker.Create(_Ctrl: TWinControl);
+begin
+  inherited Create;
+  FCtrl := _Ctrl;
+  SendMessage(FCtrl.Handle, WM_SETREDRAW, integer(LongBool(false)), 0);
+end;
+
+destructor TWinControlLocker.Destroy;
+begin
+  SendMessage(FCtrl.Handle, WM_SETREDRAW, integer(LongBool(true)), 0);
+  RedrawWindow(FCtrl.Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN);
+  inherited;
 end;
 
 end.
