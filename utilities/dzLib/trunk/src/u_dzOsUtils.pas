@@ -84,8 +84,12 @@ function GetModuleFilename(const _Module: Cardinal): string; overload;
 
 procedure RegisterFileAssociation(const _Extension, _DocumentName, _OpenCommand: string);
 
-///<summary> Checks whether the currently logged on user (the one who runs this process) is an Administrator }
-function CurrentUserIsAdmin: Boolean;
+function OsHasNTSecurity: boolean;
+
+///<summary> Checks whether the currently logged on user (the one who runs this process) has administrator rights
+///          (In Win9x this always returns true, in WinNT+ it checks whether the user is member of the
+///          administrators group </summary>
+function CurrentUserHasAdminRights: Boolean;
 
 ///<summary> tries to open a file with the associated application
 ///          @param Filename is the name of the file to open
@@ -325,6 +329,16 @@ begin
     Result := 'unknown';
 end;
 
+function OsHasNTSecurity: boolean;
+var
+  vi: TOSVersionInfo;
+begin
+  FillChar(vi, SizeOf(vi), 0);
+  vi.dwOSVersionInfoSize := SizeOf(vi);
+  GetVersionEx(vi);
+  Result := (vi.dwPlatformId = VER_PLATFORM_WIN32_NT);
+end;
+
 const
   SECURITY_NT_AUTHORITY: SID_IDENTIFIER_AUTHORITY = (Value: (0, 0, 0, 0, 0, 5)); // ntifs
 
@@ -334,43 +348,55 @@ const
   DOMAIN_ALIAS_RID_GUESTS: DWORD = $00000222;
   DOMAIN_ALIAS_RID_POWER_: DWORD = $00000223;
 
-function CurrentUserIsAdmin: Boolean;
+function CurrentUserIsInAdminGroup: boolean;
 var
-  hAccessToken: THandle;
-  ptgGroups: PTokenGroups;
-  dwInfoBufferSize: DWORD;
-  psidAdministrators: PSID;
+  bSuccess: Boolean;
+  psidAdministrators: Pointer;
   x: Integer;
-  bSuccess: BOOL;
+  ptgGroups: PTokenGroups;
+  hAccessToken: Cardinal;
+  dwInfoBufferSize: Cardinal;
 begin
   Result := False;
-  bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True,
-    hAccessToken);
+  bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True, hAccessToken);
   if not bSuccess then begin
     if GetLastError = ERROR_NO_TOKEN then
-      bSuccess := OpenProcessToken(GetCurrentProcess, TOKEN_QUERY,
-        hAccessToken);
+      bSuccess := OpenProcessToken(GetCurrentProcess, TOKEN_QUERY, hAccessToken);
   end;
   if bSuccess then begin
-    GetMem(ptgGroups, 1024);
-    bSuccess := GetTokenInformation(hAccessToken, TokenGroups,
-      ptgGroups, 1024, dwInfoBufferSize);
-    CloseHandle(hAccessToken);
-    if bSuccess then begin
-      AllocateAndInitializeSid(SECURITY_NT_AUTHORITY, 2,
-        SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-        0, 0, 0, 0, 0, 0, psidAdministrators);
+    try
+      GetMem(ptgGroups, 1024);
+      try
+        bSuccess := GetTokenInformation(hAccessToken, TokenGroups, ptgGroups, 1024, dwInfoBufferSize);
+        if bSuccess then begin
+          AllocateAndInitializeSid(SECURITY_NT_AUTHORITY, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, psidAdministrators);
+          try
 {$R-}
-      for x := 0 to ptgGroups.GroupCount - 1 do
-        if EqualSid(psidAdministrators, ptgGroups.Groups[x].Sid) then begin
-          Result := True;
-          Break;
-        end;
+            for x := 0 to ptgGroups.GroupCount - 1 do
+              if EqualSid(psidAdministrators, ptgGroups.Groups[x].Sid) then begin
+                Result := True;
+                Break;
+              end;
+          finally
 {$R+}
-      FreeSid(psidAdministrators);
+            FreeSid(psidAdministrators);
+          end;
+        end;
+      finally
+        FreeMem(ptgGroups);
+      end;
+    finally
+      CloseHandle(hAccessToken);
     end;
-    FreeMem(ptgGroups);
   end;
+end;
+
+function CurrentUserHasAdminRights: Boolean;
+begin
+  if OsHasNTSecurity then
+    Result := CurrentUserIsInAdminGroup
+  else
+    Result := true;
 end;
 
 function ShellExecEx(const FileName: string; const Parameters: string;
