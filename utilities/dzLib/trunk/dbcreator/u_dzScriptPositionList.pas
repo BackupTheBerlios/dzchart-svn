@@ -9,6 +9,7 @@ uses
 type
   // Note: The order of these constants is important, because the objects can be dependent on each other
   TScriptPosition = (
+    spUseDatabase,
     spDropReferences,
     spDropPrimaryKeys,
     spDropIndices,
@@ -44,8 +45,6 @@ type
 {$DEFINE __DZ_SORTED_OBJECT_LIST_TEMPLATE__}
 type
   _LIST_ANCESTOR_ = TObject;
-  _LIST_CONTAINER_ = TList;
-  _LIST_CONTAINER_ITEM_TYPE_ = pointer;
   _ITEM_TYPE_ = TScriptPositionDesc;
   _KEY_TYPE_ = TScriptPosition;
 {$INCLUDE 't_dzSortedObjectListTemplate.tpl'}

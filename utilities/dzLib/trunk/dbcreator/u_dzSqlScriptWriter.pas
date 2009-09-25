@@ -148,21 +148,21 @@ begin
 
   // die Reihenfolge der Sections hier entspricht der im Script
   FScriptSections.Append(SCRIPT_NAME_DROPTABLES);
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spDropSequences, SCRIPT_NAME_DROPTABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spDropPrimaryKeys, SCRIPT_NAME_DROPTABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spDropIndices, SCRIPT_NAME_DROPTABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spDropReferences, SCRIPT_NAME_DROPTABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spDropTables, SCRIPT_NAME_DROPTABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spDropSequences, SCRIPT_NAME_DROPTABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spDropPrimaryKeys, SCRIPT_NAME_DROPTABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spDropIndices, SCRIPT_NAME_DROPTABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spDropReferences, SCRIPT_NAME_DROPTABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spDropTables, SCRIPT_NAME_DROPTABLES));
 
   FScriptSections.Append(SCRIPT_NAME_CREATETABLES);
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spCreateSequences, SCRIPT_NAME_CREATETABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spCreateTables, SCRIPT_NAME_CREATETABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spCreateIndices, SCRIPT_NAME_CREATETABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spCreatePrimaryKeys, SCRIPT_NAME_CREATETABLES));
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spCreateReferences, SCRIPT_NAME_CREATETABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spCreateSequences, SCRIPT_NAME_CREATETABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spCreateTables, SCRIPT_NAME_CREATETABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spCreateIndices, SCRIPT_NAME_CREATETABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spCreatePrimaryKeys, SCRIPT_NAME_CREATETABLES));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spCreateReferences, SCRIPT_NAME_CREATETABLES));
 
   FScriptSections.Append(SCRIPT_NAME_INSERTDATA);
-  FScriptPositions.Insert(TScriptPositionDesc.Create(spInsertData, SCRIPT_NAME_INSERTDATA));
+  FScriptPositions.Add(TScriptPositionDesc.Create(spInsertData, SCRIPT_NAME_INSERTDATA));
 end;
 
 destructor TdzSqlScriptWriter.Destroy;
@@ -295,7 +295,7 @@ end;
 
 procedure TdzSqlScriptWriter.AddSetting(const _Name, _Value: string);
 begin
-  FConfigSettings.Insert(TdzConfigSetting.Create(_Name, _Value));
+  FConfigSettings.Add(TdzConfigSetting.Create(_Name, _Value));
 end;
 
 procedure TdzSqlScriptWriter.Clear;
