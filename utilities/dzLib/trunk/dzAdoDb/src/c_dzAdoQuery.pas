@@ -22,11 +22,25 @@ type
   private
   protected
   public
+    procedure Prepare;
+    procedure Unprepare;
   published
     property Active stored false;
   end;
 
 implementation
+
+{ TdzAdoQuery }
+
+procedure TdzAdoQuery.Prepare;
+begin
+  Prepared := true;
+end;
+
+procedure TdzAdoQuery.Unprepare;
+begin
+  Prepared := false;
+end;
 
 end.
 
