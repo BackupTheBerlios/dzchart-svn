@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 ///<summary> Generic exception and message dialog.
 ///          This unit implements a generic Dialog to display exceptions and messages.
 ///          For exceptions, it only displays the exception's class name and a
@@ -7,6 +7,8 @@
 ///          functions.
 ///          @author twm </summary>
 unit w_dzDialog;
+
+{$INCLUDE jedi.inc}
 
 interface
 
@@ -21,8 +23,10 @@ uses
   Dialogs,
   StdCtrls,
   ExtCtrls,
-  u_dzTranslator,
-  Jcldebug;
+{$IFNDEF no_jcl}
+  Jcldebug,
+{$ENDIF}
+  u_dzTranslator;
 
 type
   EInvalidModalResult = class(Exception);
@@ -52,11 +56,11 @@ type
   TShowMaximizeOption = (smSmart, smShow, smHide);
 
 type
-  ///<summary> used for the property OnButtonClick in asyncronous mode
-  ///          @param Sender is the Exceptiondialog
-  ///          @param Button is the ModalResult value of the button pressed
-  ///          @param Action is a TCloseAction indicating whether the dialog can be closed,
-  ///                        it is initialized to caNone and can be set to caHide, caFree or caMinimize </summary>
+  { used for the property OnButtonClick in asyncronous mode
+    @param(Sender is the Exceptiondialog)
+    @param(Button is the ModalResult value of the button pressed)
+    @param(Action is a TCloseAction indicating whether the dialog can be closed,
+           it is initialized to caNone and can be set to caHide, caFree or caMinimize)}
   TOnButtonClick = procedure(Sender: TObject; _Button: TModalResult; var _Action: TCloseAction);
 
 type
@@ -99,6 +103,7 @@ type
     FVisibleButtons: TDialogButtonArr;
     FUserMessage: string;
     FDetails: string;
+    FFocusButton: Integer;
     FDialogType: TMsgDlgType;
     FShowDetailButton: boolean;
     FDontShowAgainText: string;
@@ -117,6 +122,7 @@ type
     procedure MakeNonModal;
     procedure ButtonClick(_Sender: TObject);
     procedure SetVisibleButtons(const _Buttons: array of TDialogButtonEnum);
+    procedure SetFocusButton(_ButtonIndex: Integer);
   protected
     procedure b_DetailsClick(Sender: TObject);
     procedure DoShow; override;
@@ -130,7 +136,11 @@ type
     property ExceptionClass: string read FExceptionClass write FExceptionClass;
     ///<summary> message of the exception </summary>
     property ExceptionMessage: string read FExceptionMessage write FExceptionMessage;
-    ///<summary> exception address (initialized to ExcptAddr </summary>
+    ///<summary> exception address (initialized to ExcptAddr) </summary>
+    //    property ExcptionAddress: pointer read fExceptionAddress write fExceptionAddress;
+    {: extended exception messsage }
+    property ExceptionExtendedMessage: string read FExceptionExtendedMessage write FExceptionExtendedMessage;
+    {: exception procedure }
     property ExceptionProcedure: string read FExceptionProcedure write FExceptionProcedure;
     property CallStack: TStrings read FCallStack write SetCallStack;
     ///<summary> array of buttons to show, note that this is an array, not a set, so the
@@ -234,7 +244,7 @@ type
     ///          @returns one of the mrXxxx values </summary>
     class function ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; _Owner: TWinControl = nil;
-      const _OptionDesc: string = ''): integer; overload;
+      const _OptionDesc: string = ''; _FocusButton: Integer = -1): integer; overload;
     ///<summary> Complex function to display a message.
     ///          This will display a dialog with the icon indicated by DialogType, the
     ///          Message given, containing the Buttons specified and optionally an
@@ -259,7 +269,7 @@ type
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer;
       _Owner: TWinControl = nil;
-      const _OptionDesc: string = ''): integer; overload;
+      const _OptionDesc: string = ''; _FocusButton: Integer = -1): integer; overload;
     ///<summary> Creates a Tf_dzDialog instance, shows it and returns it. The created
     ///          dialog instance must be freed by the caller. Nonmodal in this context
     ///          means that the call returns to the caller rather than waiting for the
@@ -308,7 +318,7 @@ const
 function _(const _s: string): string; inline;
 begin
   Result := dzDGetText(_s, 'dzlib');
-end;  
+end;
 
 function ModalResultToButton(_Result: integer): TDialogButtonEnum;
 var
@@ -325,7 +335,7 @@ end;
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType;
   const _Message: string; const _Buttons: array of TDialogButtonEnum;
   const _CustomButtons: array of string; const _CustomResults: array of integer;
-  _Owner: TWinControl = nil;  const _OptionDesc: string=''): integer;
+  _Owner: TWinControl = nil; const _OptionDesc: string = ''; _FocusButton: Integer = -1): integer;
 var
   frm: Tf_dzDialog;
   i: Integer;
@@ -336,6 +346,7 @@ begin
       TForm_CenterOn(frm, _Owner);
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
+    frm.SetFocusButton(_FocusButton);
     Assert(Length(_CustomButtons) = Length(frm.CustomButtonCaptions));
     for i := Low(_CustomButtons) to High(_CustomButtons) do
       frm.CustomButtonCaptions[i] := _CustomButtons[i];
@@ -352,7 +363,7 @@ begin
 end;
 
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType; const _Message: string;
-  const _Buttons: array of TDialogButtonEnum; _Owner: TWinControl = nil; const _OptionDesc: string = ''): integer;
+  const _Buttons: array of TDialogButtonEnum; _Owner: TWinControl = nil; const _OptionDesc: string = ''; _FocusButton: Integer = -1): integer;
 var
   frm: Tf_dzDialog;
 begin
@@ -362,6 +373,7 @@ begin
       TForm_CenterOn(frm, _Owner);
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
+    frm.SetFocusButton(_FocusButton);
     frm.UserMessage := _Message;
     frm.OptionDescription := _OptionDesc;
     frm.DialogType := _DialogType;
@@ -381,12 +393,12 @@ begin
   Result := Tf_dzDialog.Create(_Parent);
   Result.ShowDetailButton := false;
   Result.SetVisibleButtons(_Buttons);
-    Assert(Length(_CustomButtons) = Length(Result.CustomButtonCaptions));
-    for i := Low(_CustomButtons) to High(_CustomButtons) do
-      Result.CustomButtonCaptions[i] := _CustomButtons[i];
-    Assert(Length(_CustomResults) = Length(Result.CustomModalResults));
-    for i := Low(_CustomResults) to High(_CustomResults) do
-      Result.CustomModalResults[i] := _CustomResults[i];
+  Assert(Length(_CustomButtons) = Length(Result.CustomButtonCaptions));
+  for i := Low(_CustomButtons) to High(_CustomButtons) do
+    Result.CustomButtonCaptions[i] := _CustomButtons[i];
+  Assert(Length(_CustomResults) = Length(Result.CustomModalResults));
+  for i := Low(_CustomResults) to High(_CustomResults) do
+    Result.CustomModalResults[i] := _CustomResults[i];
   Result.UserMessage := _Message;
   Result.OptionDescription := _OptionDesc;
   Result.DialogType := _DialogType;
@@ -399,7 +411,9 @@ class function Tf_dzDialog.ShowException(_e: Exception; const _Message: string;
 var
   frm: Tf_dzDialog;
   sl: TStringList;
+{$IFNDEF no_jcl}
   StackList: TJclStackInfoList;
+{$ENDIF}
 begin
   frm := Tf_dzDialog.Create(_Parent);
   try
@@ -407,7 +421,9 @@ begin
       frm.ExceptionClass := _e.ClassName;
       // frm.ExcptionAddress := ExceptAddr;
       frm.ExceptionMessage := _e.Message;
-      frm.ExceptionProcedure := Format('[%p]', [ExceptAddr]);
+      frm.ExceptionExtendedMessage := _e.Message;
+      frm.ExceptionProcedure := format('[%p]', [ExceptAddr]);
+{$IFNDEF no_jcl}
       frm.ExceptionProcedure := GetLocationInfoStr(ExceptAddr);
       sl := TStringList.Create;
       try
@@ -419,6 +435,7 @@ begin
       finally
         sl.Free;
       end;
+{$ENDIF}
     end else
       frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
@@ -490,6 +507,7 @@ const
 constructor Tf_dzDialog.Create(_Owner: TComponent);
 begin
   inherited;
+  FFocusButton := 0;
   FDialogType := mtError;
   FShowDetailButton := true;
   FDontShowAgainText := _('Do not show again.');
@@ -569,6 +587,7 @@ var
   IconID: PChar;
   btn: TButton;
   CustomCount: integer;
+  FocusButton: TButton;
 begin
   inherited;
   EnableMenuItem(GetSystemMenu(Handle, LongBool(false)), SC_MAXIMIZE, MF_BYCOMMAND or MF_GRAYED);
@@ -680,6 +699,7 @@ begin
   end;
   X := (ClientWidth - ButtonGroupWidth - ButtonSpacing) {div 2};
   CustomCount := 0;
+  FocusButton := nil;
   for i := Low(FVisibleButtons) to High(FVisibleButtons) do begin
     b := FVisibleButtons[i];
     btn := TButton.Create(self);
@@ -705,7 +725,11 @@ begin
     btn.Anchors := [akTop, akRight];
     btn.OnClick := ButtonClick;
     Inc(X, ButtonWidth + ButtonSpacing);
+    if i = FFocusButton then
+      FocusButton := btn;
   end;
+  if Assigned(FocusButton) then
+    FocusButton.SetFocus;
 
   if FShowDontShowAgain then begin
     chk_DontAskAgain := TCheckBox.Create(self);
@@ -782,6 +806,11 @@ begin
   FShowDontShowAgain := FDontShowAgainText <> '';
 end;
 
+procedure Tf_dzDialog.SetFocusButton(_ButtonIndex: Integer);
+begin
+  FFocusButton := _ButtonIndex;
+end;
+
 procedure Tf_dzDialog.SetVisibleButtons(const _Buttons: array of TDialogButtonEnum);
 var
   i: integer;
@@ -835,8 +864,10 @@ begin
   end;
 end;
 
+{$IFDEF use_jcl}
 initialization
   JclStartExceptionTracking;
   Include(JclStackTrackingOptions, stRawMode);
+{$ENDIF}
 end.
 
