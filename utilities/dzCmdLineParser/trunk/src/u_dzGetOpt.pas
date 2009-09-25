@@ -45,16 +45,20 @@ type
     ///                       names are not, that is --help and --HELP are the same.
     ///          @param Description is a string describing the option for the usage string
     ///          @param HasValue is a boolean which tells the parser whether to expect
-    ///                          a parameter for this option. </summary>
+    ///                          a parameter for this option.
+    ///   Note: One character option names are case sensitive, that is -o and -O
+    ///         are not the same, but longer option names are not, that is
+    ///         --help and --HELP are the same. </summary>
     procedure RegisterOption(const _Names: array of string; const _Description: string; _HasValue: boolean = false); overload;
     procedure RegisterOption(const _Name, _Description: string; _HasValue: boolean = false); overload;
+    procedure RegisterHiddenOption(const _Name: string; _HasValue: boolean = false);
     ///<summary> registers the standard options --help, -?, -h and -H for displaying help </summary>
     procedure RegisterHelpOptions;
     ///<summary> registers a commandline parameter
     ///          @param Name is the name of the parameter as displayed in the usage string.
     ///          @param Description is the description of the parameter for the usage.
     ///          @param MinCount is the minimum number of parameters to expect
-    ///          @param MaxCount is the maximum number of parameters to expect
+    ///          @param MaxCount is the maximum number of parameters to expect, -1 for infinite
     ///          Note: only the last parameter should really have MinCount and MaxCount <> 1 </summary>
     procedure RegisterParam(const _Name, _Description: string; _MinCount: integer = 1; _MaxCount: integer = 1);
     ///<summary> parses the commandline
@@ -138,11 +142,11 @@ end;
 
 destructor TGetOpt.Destroy;
 begin
-  FOptionDescList.Free;
-  FOptionNameList.Free;
-  FOptionsFoundList.Free;
-  FParamDescList.Free;
-  FParamsFoundList.Free;
+  FreeAndNil(FOptionDescList);
+  FreeAndNil(FOptionNameList);
+  FreeAndNil(FOptionsFoundList);
+  FreeAndNil(FParamDescList);
+  FreeAndNil(FParamsFoundList);
   inherited;
 end;
 
@@ -152,7 +156,7 @@ var
   ParamDesc: TParamDesc;
   s: string;
 begin
-  if FOptionDescList.Count <> 0 then
+  if FOptionDescList.NonHiddenCount <> 0 then
     Result := _('[options]')
   else
     Result := '';
@@ -174,9 +178,12 @@ begin
   Result := '';
   for i := 0 to FOptionDescList.Count - 1 do begin
     OptionDesc := FOptionDescList[i];
-    if Result <> '' then
-      Result := Result + #13#10;
-    Result := Result + OptionDesc.GetDescription(_Indent);
+    if not OptionDesc.isHidden then begin
+
+      if Result <> '' then
+        Result := Result + #13#10;
+      Result := Result + OptionDesc.GetDescription(_Indent);
+    end;
   end;
 end;
 
@@ -194,7 +201,12 @@ begin
 end;
 
 function TGetOpt.HelpOptionFound: boolean;
+var
+  Idx: integer;
 begin
+  Result := False;
+  if not FOptionNameList.Find(PChar('help'), Idx) then
+    exit;
   Result := OptionPassed('help', nil) <> 0;
 end;
 
@@ -232,15 +244,15 @@ end;
 
 function TGetOpt.OptionPassed(const _Name: string; var _Value: string): boolean;
 var
-  st: TStringList;
+  sl: TStringList;
 begin
-  st := TStringList.Create;
+  sl := TStringList.Create;
   try
-    Result := OptionPassed(_Name, st) = 1;
+    Result := OptionPassed(_Name, sl) = 1;
     if Result then
-      _Value := st[0];
+      _Value := sl[0];
   finally
-    st.Free;
+    FreeAndNil(sl);
   end;
 end;
 
@@ -263,15 +275,15 @@ end;
 
 function TGetOpt.ParamPassed(const _ParamName: string; var _Value: string): boolean;
 var
-  st: TStringList;
+  sl: TStringList;
 begin
-  st := TStringList.Create;
+  sl := TStringList.Create;
   try
-    Result := ParamPassed(_ParamName, st) = 1;
+    Result := ParamPassed(_ParamName, sl) = 1;
     if Result then
-      _Value := st[0];
+      _Value := sl[0];
   finally
-    st.Free;
+    FreeAndNil(sl);
   end;
 end;
 
@@ -338,8 +350,8 @@ begin
     Params.Delete(0);
     EvaluateCmdLine(Options, Params);
   finally
-    Options.Free;
-    Params.Free;
+    FreeAndNil(Options);
+    FreeAndNil(Params);
   end;
 end;
 
@@ -355,8 +367,8 @@ begin
     TCmdLineParser.Execute(_CmdLine, Options, Params);
     EvaluateCmdLine(Options, Params);
   finally
-    Params.Free;
-    Options.Free;
+    FreeAndNil(Params);
+    FreeAndNil(Options);
   end;
 end;
 
@@ -380,6 +392,15 @@ begin
   FOptionDescList.Add(Desc);
   for i := 0 to High(_Names) do
     FOptionNameList.Add(TOptionName.Create(_Names[i], Desc));
+end;
+
+procedure TGetOpt.RegisterHiddenOption(const _Name: string; _HasValue: boolean = false);
+var
+  Desc: TOptionDesc;
+begin
+  Desc := TOptionDesc.Create([_Name], '', _HasValue, true);
+  FOptionDescList.Add(Desc);
+  FOptionNameList.Add(TOptionName.Create(_Name, Desc));
 end;
 
 procedure TGetOpt.RegisterParam(const _Name, _Description: string;

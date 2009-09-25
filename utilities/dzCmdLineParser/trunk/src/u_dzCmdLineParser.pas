@@ -12,7 +12,9 @@ interface
 
 uses
   SysUtils,
-  Classes;
+  Classes,
+  u_dzTranslator;
+
 
 type
   EStateEngineError = class(exception);
@@ -76,6 +78,11 @@ uses
   StrUtils,
   u_dzStringUtils,
   u_dzCmdLineParserStates;
+
+function _(const _s: string): string; inline;
+begin
+  Result := dzDGetText(_s, 'dzCmdLineParser');
+end;
 
 type
   IEngineContextEx = interface ['{CD19DB13-F344-4E1A-B97F-D235B445B463}']

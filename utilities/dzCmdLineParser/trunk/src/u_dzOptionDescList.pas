@@ -15,8 +15,9 @@ type
 type
   TOptionDesc = class
   private
+    FIsHidden: boolean;
     function CreateDescription(const _OptionName: string): string;
-    procedure AssertValidOptionName(_Name: string);
+    procedure AssertValidOptionName(_Name: ansistring);
   protected
     FPrimaryName: string;
     FDescription: string;
@@ -24,11 +25,12 @@ type
     FNames: TStringList;
   public
     constructor Create(const _Names: array of string; const _Description: string;
-      _HasValue: boolean = false);
+      _HasValue: boolean = false; _IsHidden: boolean = false);
     destructor Destroy; override;
     function GetDescription(_Indent: integer): string;
     property HasValue: boolean read FHasValue;
     property PrimaryName: string read FPrimaryName;
+    property isHidden: boolean read FIsHidden write FIsHidden;
   end;
 
 {$DEFINE __DZ_SORTED_OBJECT_LIST_TEMPLATE__}
@@ -47,6 +49,8 @@ type
     ///<summary> compare the keys of two items, must return a value
     ///          < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 </summary>
     function Compare(const _Key1, _Key2: string): integer; override;
+  public
+    function NonHiddenCount: integer;
   end;
 
 implementation
@@ -66,13 +70,23 @@ begin
   Result := _Item.PrimaryName;
 end;
 
+function TOptionDescList.NonHiddenCount: integer;
+var
+  i: Integer;
+begin
+  result := 0;
+  for i := 0 to Count - 1 do
+    if not Items[i].isHidden then
+      Inc(Result);
+end;
+
 function TOptionDescList.Compare(const _Key1, _Key2: string): integer;
 begin
   Result := CompareText(_Key1, _Key2);
 end;
 
-constructor TOptionDesc.Create(const _Names: array of string;
-  const _Description: string; _HasValue: boolean = false);
+constructor TOptionDesc.Create(const _Names: array of string; const _Description: string;
+  _HasValue: boolean = false; _IsHidden: boolean = false);
 var
   i: integer;
   s: string;
@@ -80,35 +94,36 @@ begin
   inherited Create;
   FDescription := _Description;
   FHasValue := _HasValue;
+  FIsHidden := _IsHidden;
   Assert(Length(_Names) > 0);
   FPrimaryName := _Names[0];
-  AssertValidOptionName(FPrimaryName);
+  AssertValidOptionName(AnsiString(FPrimaryName));
   FNames := TStringList.Create;
   for i := 0 to high(_Names) do begin
     s := _Names[i];
-    AssertValidOptionName(s);
+    AssertValidOptionName(AnsiString(s));
     fNames.Add(s);
   end;
 end;
 
 destructor TOptionDesc.Destroy;
 begin
-  FNames.Free;
+  FreeAndNil(FNames);
   inherited;
 end;
 
-procedure TOptionDesc.AssertValidOptionName(_Name: string);
+procedure TOptionDesc.AssertValidOptionName(_Name: ansistring);
 var
   i: integer;
 begin
   if _Name = '' then
     raise EOptionName.Create(_('Option name cannot be empty.'));
-  { TODO -otwm : Maybe '$', '#' and some other chars should be allowed }
+  { TODO -otwm : Maybe '$', '#' and some other special chars should be allowed }
   if not (_Name[1] in ['a'..'z', 'A'..'Z', '0'..'9', '?']) then
     raise EOptionName.Create(_('Option name must start with an alphanumeric character.'));
   for i := 2 to Length(_Name) do
     if not (_Name[i] in ['a'..'z', 'A'..'Z', '0'..'9', '-', '_']) then
-      raise EOptionName.CreateFmt(_('Option name contains invalid character "%s" (%d).'), [_Name[i], Ord(_Name[i])]);
+      raise EOptionName.CreateFmt(_('Option name contains invalid character "%s" at position %d.'), [_Name[i], Ord(_Name[i])]);
 end;
 
 function TOptionDesc.CreateDescription(const _OptionName: string): string;
