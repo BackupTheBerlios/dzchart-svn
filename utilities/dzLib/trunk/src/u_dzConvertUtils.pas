@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 /// <summary>
 /// Integer to string and string to integer conversion functions for decimal
 /// hexadecimal and custom number bases. This was taken from u_dzStringUtils
@@ -41,6 +41,7 @@ type
 const
   MinInt64 = Int64($8000000000000000);
   MaxInt64 = Int64($7FFFFFFFFFFFFFFF);
+  MaxLongWord = $FFFFFFFF;
 
 const
   /// <summary>
@@ -86,7 +87,7 @@ function Long2Dec(_l: ULong): string;
 
 // Str <-> Hex conversion
 /// <summary>
-/// Returns true if A is a valid hexadecimal (base 16) digit 
+/// Returns true if A is a valid hexadecimal (base 16) digit
 /// </summary>
 function isHexDigit(_a: char): boolean;
 /// <summary>
@@ -321,6 +322,35 @@ function GetUserDefaultLocaleSettings: TFormatSettings;
 /// returns the default locale settings as read from the system's regional settings }
 /// </summary>
 function GetSystemDefaultLocaleSettings: TFormatSettings;
+
+///<summary>
+/// returns the long word split into an array of byte
+/// @param Value is the LongWord value to split
+/// @param MsbFirst, if true the most significant byte is the first in the array (Motorola format)
+///                  if false the least significatn byte is the first in the array (Intel format)
+///</summary>
+function LongWord2ByteArr(_Value: LongWord; _MsbFirst: boolean = false): TBytes;
+
+///<summary>
+/// returns the the array of byte combined into a LongWord
+/// @param Value is the array to combine
+/// @param MsbFirst, if true the most significant byte is the first in the array (Motorola format)
+///                  if false the least significatn byte is the first in the array (Intel format)
+///</summary>
+function ByteArr2LongWord(const _Arr: array of byte; _MsbFirst: boolean = false): LongWord;
+
+///<summary>
+/// returns a 16 bit in reversed byte order, e.g. $1234 => $3412)
+/// aka converts intel (little endian) to motorola (big endian) byte order format
+/// (This is just an alias for system.swap for consistency with Swap32.)
+///</summary
+function Swap16(_Value: word): word; inline;
+
+///<summary>
+/// returns a 32 bit value in reversed byte order e.g. $12345678 -> $78563412
+/// aka converts intel (little endian) to motorola (big endian) byte order format
+///</summary>
+function Swap32(_Value: LongWord): LongWord;
 
 implementation
 
@@ -714,6 +744,44 @@ function GetUserDefaultLocaleSettings: TFormatSettings;
 begin
   GetLocaleFormatSettings(GetUserDefaultLCID, Result);
 end;
+
+function LongWord2ByteArr(_Value: LongWord; _MsbFirst: boolean = false): TBytes;
+begin
+  SetLength(Result, SizeOf(_Value));
+  if _MsbFirst then begin
+    Result[0] := _Value shr 24 and $FF;
+    Result[1] := _Value shr 16 and $FF;
+    Result[2] := _Value shr 8 and $FF;
+    Result[3] := _Value shr 0 and $FF;
+  end else begin
+    Result[3] := _Value shr 24 and $FF;
+    Result[2] := _Value shr 16 and $FF;
+    Result[1] := _Value shr 8 and $FF;
+    Result[0] := _Value shr 0 and $FF;
+  end;
+end;
+
+function ByteArr2LongWord(const _Arr: array of byte; _MsbFirst: boolean = false): LongWord;
+begin
+  if Length(_Arr) <> SizeOf(Result) then
+    raise Exception.CreateFmt(_('Length of byte array (%d) does not match size of a LongWord (%d)'), [Length(_Arr), SizeOf(Result)]);
+  if _MsbFirst then begin
+    Result := _Arr[0] shl 24 + _Arr[1] shl 16 + _Arr[2] shl 8 + _Arr[3];
+  end else begin
+    Result := _Arr[3] shl 24 + _Arr[2] shl 16 + _Arr[1] shl 8 + _Arr[0];
+  end;
+end;
+
+function Swap16(_Value: word): word; inline;
+begin
+  Result := swap(_Value);
+end;
+
+function Swap32(_Value: LongWord): LongWord;
+asm
+  bswap eax
+end;
+
 
 initialization
   DZ_FORMAT_DECIMAL_POINT := GetUserDefaultLocaleSettings;
