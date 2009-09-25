@@ -24,6 +24,8 @@ type
     procedure TestLong2Dec4(_l: ULong);
     procedure TestLong2DecN(_l: ULong; _n: ULong);
     procedure TestLong2Dec(_l: ULong);
+    procedure TestSwap16;
+    procedure TestSwap32;
   end;
 
 implementation
@@ -97,6 +99,30 @@ end;
 procedure TestDecimalConversion.TestLong2DecN(_l, _n: ULong);
 begin
 
+end;
+
+procedure TestDecimalConversion.TestSwap16;
+var
+  i: Integer;
+begin
+  for i := 0 to $FFFF do begin
+    CheckEquals(i shr 8 + ((i and $FF) shl 8), Swap16(i));
+  end;
+end;
+
+procedure TestDecimalConversion.TestSwap32;
+var
+  i: LongWord;
+begin
+  i := 0;
+  // to prevent an integer overflow we can not use while i <= $FFFFFFFF do
+  while true do begin
+    CheckEquals(i shr 24 + ((i shr 16) and $FF) shl 8 + ((i shr 8 and $FF) shl 16) + ((i and $FF) shl 24), Swap32(i));
+    if i <= $FFFFFFFF then
+      Inc(i)
+    else
+      break;
+  end;
 end;
 
 initialization
