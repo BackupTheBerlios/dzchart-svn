@@ -208,6 +208,7 @@ type
     procedure RefreshEvent;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Refresh(Node: TTreeNode);
     function SelectedFolder: TShellFolder;
     property AutoRefresh: boolean read FAutoRefresh write SetAutoRefresh;
@@ -1595,6 +1596,12 @@ begin
   FNotifier.FComponentStyle := FNotifier.FComponentStyle + [ csSubComponent ];
   FRoot := SRFDesktop;
   FLoadingRoot := False;
+end;
+
+destructor TdzCustomShellTreeView.Destroy;
+begin
+   FRootFolder.Free;
+  inherited;
 end;
 
 procedure TdzCustomShellTreeView.ClearItems;
