@@ -10,6 +10,7 @@ interface
 uses
   SysUtils,
   Classes,
+  Contnrs,
   IniFiles,
   u_dzTranslator;
 
@@ -48,11 +49,23 @@ function TStrings_FreeAllObjects(_Strings: TStrings): TStrings;
 /// </summary>
 procedure TStrings_DeleteAndFreeObject(_Strings: TStrings; _Idx: integer);
 
+///<summary>
+/// searches the given Obj in _Strings.Objects (does a linear search)
+/// @param Obj is the object to search for
+/// @param Idx will contain the index of the item, if found. Only valid if result is true
+/// @returns true, if found, false otherwise
+function TStrings_GetObjectIndex(_Strings: TStrings; _Obj: pointer; out _Idx: integer): boolean;
+
 /// <summary>
 /// Free a TList object an all TObjects it contains
 /// NOTE: this function is obsolete, use contnrs.TObjectList instead!
 /// </summary>
 procedure TList_FreeWithItems(var _List: TList); deprecated; // use contnrs.TObjectList
+
+/// <summary>
+/// Extracts the Idx'th item from the list without freeing it.
+/// </summary>
+function TObjectList_Extract(_lst: TObjectList; _Idx: integer): TObject;
 
 /// <summary>
 /// Write a string to the stream
@@ -129,7 +142,11 @@ function TStrings_TryStringByObj(_Strings: TStrings; _Obj: pointer; out _Value: 
 /// reads a char from an ini file, if the value is longer than one char, it returns
 /// the first char, if it is empty, it returns the default
 /// </summary>
-function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
+function TIniFile_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
+
+///<summary> Like TIniFile.ReadString but allows to specify whether to use the Default if the read string
+///          is empty. </summary>
+function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: string; const _Default: string; _DefaultIfEmtpy: boolean = false): string;
 
 ///<summary>
 /// reads a string list from an ini file section of the form
@@ -139,12 +156,24 @@ function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string
 /// Item1=blub
 /// @returns the number of strings read
 /// </summary>
-function TIniFiles_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
+function TIniFile_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
+
+///<summary>
+/// Tries to read a floating point value from the ini-file, always using '.' as decimal separator.
+/// @returns true, if a value could be read and converted
+///</summary>
+function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
+
+///<summary>
+/// Writes a floating point value to the ini-file, always using '.' as decimal separator.
+///</summary>
+procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; _Value: extended);
 
 implementation
 
 uses
   StrUtils,
+  u_dzConvertUtils,
   u_dzStringUtils;
 
 function _(const _s: string): string; inline;
@@ -161,6 +190,20 @@ begin
       TObject(_List[i]).Free;
     _List.Free;
     _List := nil;
+  end;
+end;
+
+function TObjectList_Extract(_lst: TObjectList; _Idx: integer): TObject;
+var
+  b: boolean;
+begin
+  b := _lst.OwnsObjects;
+  _lst.OwnsObjects := false;
+  try
+    Result := _lst[_Idx];
+    _lst.Delete(_Idx);
+  finally
+    _lst.OwnsObjects := b;
   end;
 end;
 
@@ -214,6 +257,20 @@ begin
   _Strings.Delete(_Idx);
 end;
 
+function TStrings_GetObjectIndex(_Strings: TStrings; _Obj: pointer; out _Idx: integer): boolean;
+var
+  i: integer;
+begin
+  Result := false;
+  for i := 0 to _Strings.Count - 1 do begin
+    Result := (_Strings.Objects[i] = _Obj);
+    if Result then begin
+      _Idx := i;
+      exit;
+    end;
+  end;
+end;
+
 function TStream_WriteString(_Stream: TStream; const _s: string): integer;
 begin
   Result := _Stream.Write(pChar(_s)^, Length(_s));
@@ -234,7 +291,7 @@ var
   Len: byte;
 begin
   _Stream.Read(Len, SizeOf(Len));
-  Result[0] := Chr(Len);
+  Result[0] := AnsiChar(Chr(Len));
   if Len > 0 then
     _Stream.Read(Result[1], Len);
 end;
@@ -310,7 +367,7 @@ begin
   end;
 end;
 
-function TIniFiles_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
+function TIniFile_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string; _Default: char): char;
 var
   s: string;
 begin
@@ -320,13 +377,33 @@ begin
   Result := s[1];
 end;
 
-function TIniFiles_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
+function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: string; const _Default: string; _DefaultIfEmtpy: boolean = false): string;
+begin
+  Result := _Ini.ReadString(_Section, _Ident, _Default);
+  if (Result = '') and _DefaultIfEmtpy then
+    Result := _Default;
+end;
+
+function TIniFile_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
 var
   i: integer;
 begin
   Result := _Ini.ReadInteger(_Section, 'Count', 0);
   for i := 0 to Result - 1 do
     _st.Add(_Ini.ReadString(_Section, 'Item' + IntToStr(i), ''));
+end;
+
+function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
+var
+  s: string;
+begin
+  s := _Ini.ReadString(_Section, _Ident, '');
+  Result := TryStr2Float(s, _Value);
+end;
+
+procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; _Value: extended);
+begin
+  _Ini.WriteString(_Section, _Ident, Float2Str(_Value));
 end;
 
 end.
