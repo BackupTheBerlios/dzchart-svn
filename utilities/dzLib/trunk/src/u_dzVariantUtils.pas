@@ -134,6 +134,13 @@ function TryVar2Ext(const _v: variant; out _Value: extended): boolean;
 ///          @raises EVariantConvertError if there is some other conversion error </summary>
 function Var2ExtEx(const _v: variant; const _Source: string): extended;
 
+///<summary> Converts a variant to an extended.
+///          If v is null or empty, it returns the Default.
+///          @param v Variant value to convert
+///          @param Default Value to return if v is empty or null
+///          @returns the extended value of v or the Default if v can not be converted </summary>
+function Var2Ext(const _v: variant; const _Default: extended): extended;
+
 ///<summary> Converts a variant to a TDateTime.
 ///          Raises an exception if v can not be converted.
 ///          @param v Variant value to convert
@@ -448,6 +455,12 @@ begin
     on e: EVariantError do
       raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s: %s'), [EXPECTED, _Source]);
   end;
+end;
+
+function Var2Ext(const _v: variant; const _Default: extended): extended;
+begin
+  if not TryVar2Ext(_v, Result) then
+    Result := _Default
 end;
 
 function Var2DblStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
