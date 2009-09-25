@@ -80,6 +80,15 @@ function Var2BoolEx(const _v: variant; const _Source: string): boolean;
 ///                   NullValue if v can not be converted </summary>
 function Var2IntStr(const _v: variant; const _NullValue: string = '*NULL*'): string;
 
+///<summary> tries to convert a variant to a single
+///          If v is null or empty, it returns false.
+///          @param v Variant value to convert
+///          @param Value is the variant's single value, only valid if the function
+///                       returns true.
+///          @returns true, if the variant could be converted to single, false if not
+///          @raises EVariantConvertError if there is some other conversion error </summary>
+function TryVar2Single(const _v: variant; out _Value: single): boolean;
+
 ///<summary> tries to convert a variant to a double
 ///          If v is null or empty, it returns false.
 ///          @param v Variant value to convert
@@ -388,6 +397,20 @@ begin
       Result := FormatDateTime('yyyy-mm-dd', Value); // do not translate
     except
       Result := _NullValue;
+    end;
+end;
+
+function TryVar2Single(const _v: variant; out _Value: single): boolean;
+const
+  EXPECTED = 'single'; // do not translate
+begin
+  Result := not VarIsNull(_v) and not VarIsEmpty(_v);
+  if Result then
+    try
+      _Value := _v;
+    except
+      on e: EVariantError do
+        raise EVariantConvertError.CreateFmt(_('Variant can not be converted to %s'), [EXPECTED]);
     end;
 end;
 
