@@ -34,6 +34,7 @@ procedure RetranslateComponent(_Object: TComponent; const _TextDomain: string = 
 procedure AddDomainForResourceString(const _Domain: string);
 procedure SelectTextDomain(const _Domain: string);
 procedure TP_GlobalIgnoreClass(_IgnClass: TClass);
+function TP_TryGlobalIgnoreClass(_IgnClass: TClass): boolean;
 procedure TP_GlobalIgnoreClassProperty(_IgnClass: TClass; const _PropertyName: string);
 procedure UseLanguage(_LanguageCode: string);
 function GetCurrentLanguage: string;
@@ -216,16 +217,19 @@ initialization
 {$ELSE}{$IFDEF DELPHI10}
   AddDomainForResourceString('delphi2006');
 {$ELSE}{$IFDEF DELPHI11}
-  // currently we don't have translations for Delphi2007, so we use the ones from Delphi2006 and pray... ;-)
-  AddDomainForResourceString('delphi2006');
+  AddDomainForResourceString('delphi2007');
+{$ELSE}{$IFDEF DELPHI12}
+  AddDomainForResourceString('delphi2009');
+{$ELSE}{$IFDEF DELPHI14}
+  AddDomainForResourceString('delphi2010');
 {$ELSE}
   'unknown Delphi version!';
 {$ENDIF}
 {$ENDIF}
 {$ENDIF}
 {$ENDIF}
-
-  AddDomainForResourceString('dzlib');
+{$ENDIF}
+{$ENDIF}
 
   // ignore these VCL properties / classes
   TP_GlobalIgnoreClassProperty(TAction, 'Category');
@@ -234,24 +238,7 @@ initialization
   TP_TryGlobalIgnoreClass(TFont);
   TP_GlobalIgnoreClassProperty(TNotebook, 'Pages');
 
-{$IFDEF TranslateReporting}
-  { TODO -otwm -ccheck : This should not always be called because it links in all ReportBuilder units. }
-  // Report-Builder Components / Properties to ignore
-  TP_GlobalIgnoreClassProperty(TppField, 'FieldAlias');
-  TP_GlobalIgnoreClassProperty(TppField, 'FieldName');
-  TP_GlobalIgnoreClassProperty(TppField, 'DisplayFormat');
-  TP_GlobalIgnoreClassProperty(TppField, 'SortExpression');
-  TP_GlobalIgnoreClassProperty(TppField, 'TableAlias');
-  TP_GlobalIgnoreClassProperty(TppField, 'TableName');
-  TP_GlobalIgnoreClassProperty(TppBackgroundPrintSettings, 'BinName');
-  TP_GlobalIgnoreClassProperty(TppBackgroundPrintSettings, 'PrinterName');
-  TP_GlobalIgnoreClassProperty(TppBackgroundPrintSettings, 'PaperName');
-
-  TP_GlobalIgnoreClassProperty(TppChildReport, 'DeviceType');
-  TP_GlobalIgnoreClassProperty(TppChildReport, 'Version');
-
-  TP_GlobalIgnoreClassProperty(TPsRBExportComponent, 'Version');
-{$ENDIF TranslateReporting}
+// for more ignores, see u_dzTranslatorDB and u_dzTranslatorADO
 
 {$IFDEF DXGETTEXTDEBUG}
   gnugettext.DefaultInstance.DebugLogToFile(ExtractFilePath(GetModuleName(HInstance)) + 'dxgettext.log');

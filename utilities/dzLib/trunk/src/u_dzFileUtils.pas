@@ -27,12 +27,12 @@ type
 
 type
   TFileAttributes = (
-    faReadonly,
-    faHidden, // Hidden files
-    faSysFile, //	System files
-    faVolumeID, //	Volume ID files
-    faDirectory, //	Directory files
-    faArchive // Archive files
+    dfaReadonly,
+    dfaHidden, // Hidden files
+    dfaSysFile, //	System files
+    dfaVolumeID, //	Volume ID files
+    dfaDirectory, //	Directory files
+    dfaArchive // Archive files
     );
 
   TFileAttributeSet = set of TFileAttributes;
@@ -73,15 +73,19 @@ type
     /// but the special '.' and '..' directories
     /// @param Mask is the file search mask and should include a path
     /// </summary>
-    constructor Create(const _Mask: string; _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]);
+    constructor Create(const _Mask: string; _MayHaveAttr: TFileAttributeSet =
+      [dfaHidden, dfaSysFile, dfaVolumeID, dfaDirectory, dfaArchive]);
     /// <summary>
     /// Destructor, will call FindClose if necessary
     /// </summary>
     destructor Destroy; override;
     /// <summary>
     /// creates a TSimpleDirEnumerator, calls its FindAll method and frees it
+    /// @param IncludePath determines whether the List of filenames includes the full path or not
     /// </summary>
-    class function Execute(const _Mask: string; _List: TStrings; _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]): integer;
+    class function Execute(const _Mask: string; _List: TStrings;
+      _MayHaveAttr: TFileAttributeSet = [dfaHidden, dfaSysFile, dfaVolumeID, dfaDirectory, dfaArchive];
+      _IncludePath: boolean = False): integer;
     /// <summary>
     /// Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
     /// calls.
@@ -104,9 +108,10 @@ type
     /// returns the number of files found.
     /// @param List is a TStrings object which will be filled with the filenames
     ///        of matching files, may be nil.
+    /// @param IncludePath determines whether the List of filenames includes the full path or not
     /// @returns the number of matching files
     /// </summary>
-    function FindAll(_List: TStrings = nil): integer;
+    function FindAll(_List: TStrings = nil; _IncludePath: boolean = false): integer;
     /// <summary>
     /// Calls FindClose so FindNext will start again. Reset does not change any
     /// properties (e.g. Mask, MustHaveAttr, MayHaveAttr)
@@ -724,7 +729,8 @@ end;
 
 { TSimpleDirEnumerator }
 
-constructor TSimpleDirEnumerator.Create(const _Mask: string; _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]);
+constructor TSimpleDirEnumerator.Create(const _Mask: string;
+  _MayHaveAttr: TFileAttributeSet = [dfaHidden, dfaSysFile, dfaVolumeID, dfaDirectory, dfaArchive]);
 begin
   FMask := _Mask;
   FMustHaveAttr := [];
@@ -738,27 +744,33 @@ begin
 end;
 
 class function TSimpleDirEnumerator.Execute(const _Mask: string; _List: TStrings;
-  _MayHaveAttr: TFileAttributeSet = [faHidden, faSysFile, faVolumeID, faDirectory, faArchive]): integer;
+  _MayHaveAttr: TFileAttributeSet = [dfaHidden, dfaSysFile, dfaVolumeID, dfaDirectory, dfaArchive];
+  _IncludePath: boolean = false): integer;
 var
   enum: TSimpleDirEnumerator;
 begin
   enum := TSimpleDirEnumerator.Create(_Mask, _MayHaveAttr);
   try
-    Result := enum.FindAll(_List);
+    Result := enum.FindAll(_List, _IncludePath);
   finally
     FreeAndNil(enum);
   end;
 end;
 
-function TSimpleDirEnumerator.FindAll(_List: TStrings): integer;
+function TSimpleDirEnumerator.FindAll(_List: TStrings = nil; _IncludePath: boolean = false): integer;
 var
   s: string;
+  Path: string;
 begin
+  if _IncludePath then
+    Path := ExtractFilePath(FMask)
+  else
+    Path := '';
   Result := 0;
   while FindNext(s) do begin
     Inc(Result);
     if Assigned(_List) then
-      _List.Add(s);
+      _List.Add(Path + s);
   end;
 end;
 
@@ -786,12 +798,12 @@ begin
     if not FActive then begin
       FMatchCount := 0;
       Attr := 0;
-      CondAddAttr(faReadOnly, SysUtils.faReadOnly);
-      CondAddAttr(faHidden, SysUtils.faHidden);
-      CondAddAttr(faSysFile, SysUtils.faSysFile);
-      CondAddAttr(faVolumeID, SysUtils.faVolumeID);
-      CondAddAttr(faDirectory, SysUtils.faDirectory);
-      CondAddAttr(faArchive, SysUtils.faArchive);
+      CondAddAttr(dfaReadOnly, SysUtils.faReadOnly);
+      CondAddAttr(dfaHidden, SysUtils.faHidden);
+      CondAddAttr(dfaSysFile, SysUtils.faSysFile);
+      CondAddAttr(dfaVolumeID, SysUtils.faVolumeID);
+      CondAddAttr(dfaDirectory, SysUtils.faDirectory);
+      CondAddAttr(dfaArchive, SysUtils.faArchive);
       Res := FindFirst(FMask, Attr, FSr);
       Result := (Res = 0);
       if Result then
@@ -806,17 +818,17 @@ begin
       Continue;
     if FMustHaveAttr <> [] then begin
       Attr := FSr.Attr;
-      if not AttrOk(faReadonly, SysUtils.faReadOnly) then
+      if not AttrOk(dfaReadonly, SysUtils.faReadOnly) then
         Continue;
-      if not AttrOk(faHidden, SysUtils.faHidden) then
+      if not AttrOk(dfaHidden, SysUtils.faHidden) then
         Continue;
-      if not AttrOk(faSysFile, SysUtils.faSysFile) then
+      if not AttrOk(dfaSysFile, SysUtils.faSysFile) then
         Continue;
-      if not AttrOk(faVolumeID, SysUtils.faVolumeID) then
+      if not AttrOk(dfaVolumeID, SysUtils.faVolumeID) then
         Continue;
-      if not AttrOk(faDirectory, SysUtils.faDirectory) then
+      if not AttrOk(dfaDirectory, SysUtils.faDirectory) then
         Continue;
-      if not AttrOk(faArchive, SysUtils.faArchive) then
+      if not AttrOk(dfaArchive, SysUtils.faArchive) then
         Continue;
     end;
     Inc(FMatchCount);
@@ -1179,7 +1191,7 @@ begin
   DestDirBs := itpd(_DestDir);
   Files := TStringList.Create;
   try
-    TSimpleDirEnumerator.Execute(SrcDirBs + _Mask, Files, [faHidden, faSysFile, faArchive]);
+    TSimpleDirEnumerator.Execute(SrcDirBs + _Mask, Files, [dfaHidden, dfaSysFile, dfaArchive]);
     for s in Files do begin
       if CopyFile(SrcDirBs + s, DestDirBs + s, _Flags) then
         Inc(Result)

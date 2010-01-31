@@ -271,13 +271,13 @@ function nthWord(const _s: string; _WordNo: integer; _Delimiter: TCharSet): stri
 function nthCharOf(const _s: string; _n: integer): Char;
 
 ///<summary> Extract the first word of S using the given delimiters. The word is deleted
-///          from S.
+///          from S. See also ExtractStr.
 ///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
 ///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
 ///          (which you might not expect) </summary>
 function ExtractFirstWord(var _s: string; const _Delimiter: string): string; overload;
 ///<summary> Extract the first word of S using the given delimiters. The word is deleted
-///          from S.
+///          from S. See also ExtractStr.
 ///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
 ///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
 ///          (which you might not expect) </summary>
@@ -290,7 +290,7 @@ function ExtractFirstWord(var _s: string; _Delimiter: TCharSet): string; overloa
 ///          @returns true, if a word could be extracted, false otherwise </summary>
 function ExtractFirstWord(var _s: string; const _Delimiter: string; out _FirstWord: string): boolean; overload;
 ///<summary> Extract the first word of S using the given delimiters. The word is deleted
-///          from S.
+///          from S. See also ExtractStr.
 ///          NOTE: duplicate delimiters are ignored, so 'abc  def' will be split
 ///          into two words (which you would expect), but also 'abc'#9#9'def' is two words
 ///          (which you might not expect)

@@ -13,6 +13,10 @@ function TRect_Width(_Rect: TRect): integer; inline;
 ///<summary> Returns the Rect's height </summary>
 function TRect_Height(_Rect: TRect): integer; inline;
 
+///<summary> Returns the bounding box of the active clipping region </summary>
+function TCanvas_GetClipRect(_Canvas: TCanvas): TRect;
+procedure TCanvas_SetClipRect(_Canvas: TCanvas; _Rect: TRect);
+
 ///<summary> abbreviation for StretchBlt that takes TRect </summary>
 function dzStretchBlt(_DestHandle: HDC; _DestRect: TRect; _SrcHandle: HDC; _SrcRect: TRect; _Rop: DWORD): LongBool; inline; overload;
 
@@ -59,6 +63,28 @@ function dzBitBlt(_DestHandle: HDC; _DestRect: TRect; _Src: TBitmap; _Rop: DWORD
 begin
   Result := BitBlt(_DestHandle, _DestRect.Left, _DestRect.Top, _DestRect.Right, _DestRect.Bottom,
     _Src.Canvas.Handle, 0, 0, SRCCOPY);
+end;
+
+function TCanvas_GetClipRect(_Canvas: TCanvas): TRect;
+var
+  RGN: THandle;
+begin
+  RGN := CreateRectRgn(0, 0, 0, 0);
+  try
+    GetClipRgn(_Canvas.Handle, RGN);
+    GetRgnBox(RGN, Result);
+  finally
+    DeleteObject(RGN);
+  end;
+end;
+
+procedure TCanvas_SetClipRect(_Canvas: TCanvas; _Rect: TRect);
+var
+  RGN: THandle;
+begin
+  RGN := CreateRectRgn(_Rect.Left, _Rect.Top, _Rect.Right, _Rect.Bottom);
+  SelectClipRgn(_Canvas.Handle, RGN);
+  DeleteObject(RGN);
 end;
 
 end.

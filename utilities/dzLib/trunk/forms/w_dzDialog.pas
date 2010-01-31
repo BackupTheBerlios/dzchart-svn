@@ -125,7 +125,7 @@ type
     procedure SetFocusButton(_ButtonIndex: Integer);
   protected
     procedure b_DetailsClick(Sender: TObject);
-    procedure DoShow; override;
+    procedure GenerateControls;
     procedure CreateParams(var Params: TCreateParams); override;
   public
     constructor Create(_Owner: TComponent); override;
@@ -138,9 +138,9 @@ type
     property ExceptionMessage: string read FExceptionMessage write FExceptionMessage;
     ///<summary> exception address (initialized to ExcptAddr) </summary>
     //    property ExcptionAddress: pointer read fExceptionAddress write fExceptionAddress;
-    {: extended exception messsage }
+    ///<summary> extended exception messsage </summary>
     property ExceptionExtendedMessage: string read FExceptionExtendedMessage write FExceptionExtendedMessage;
-    {: exception procedure }
+    ///<summary> exception procedure </summary>
     property ExceptionProcedure: string read FExceptionProcedure write FExceptionProcedure;
     property CallStack: TStrings read FCallStack write SetCallStack;
     ///<summary> array of buttons to show, note that this is an array, not a set, so the
@@ -186,10 +186,10 @@ type
     ///          <i>exceptionmessage</i><br>
     ///          <i>call stack, if available</i><br>
     ///          @param e is the exception to display
-    ///          @param Parent is the parent component to be used in the constructor, defaults
-    ///                        to nil
+    ///          @param Owner is used as owner in the constructor and also set as Parent, defaults
+    ///                       to nil
     ///          @returns one of the mrXxxx values </summary>
-    class function ShowException(_e: Exception; _Parent: TComponent = nil): integer; overload;
+    class function ShowException(_e: Exception; _Owner: TWinControl = nil): integer; overload;
     ///<summary> Moderately complex function to show an exception.
     ///          This will display a dialog with the exclamation mark (!) icon, the Buttons
     ///          and OptionDesc specified,
@@ -203,11 +203,11 @@ type
     ///                         buttons, not a set, so the order is important!)
     ///          @param OptionDesc gives the description for the Buttons, if not given,
     ///                            defaults to an empty string
-    ///          @param Parent is the parent component to be used in the constructor, defaults
-    ///                                      to nil
+    ///          @param Owner is used as owner in the constructor and also set as Parent, defaults
+    ///                       to nil
     ///          @returns one of the mrXxxx values </summary>
     class function ShowException(_e: Exception; const _Buttons: array of TDialogButtonEnum;
-      const _OptionDesc: string = ''; _Parent: TComponent = nil): integer; overload;
+      const _OptionDesc: string = ''; _Owner: TWinControl = nil): integer; overload;
     ///<summary> Complex function to show an exception.
     ///          This will display a dialog with the exclamation mark (!) icon, the Buttons
     ///          and OptionDesc specified, the Message passed and a Details button.
@@ -221,14 +221,14 @@ type
     ///                         buttons, not a set, so the order is important!)
     ///          @param OptionDesc gives the description for the Buttons, if not given,
     ///                            defaults to an empty string
-    ///          @param Parent is the parent component to be used in the constructor, defaults
-    ///                        to nil
+    ///          @param Owner is used as owner in the constructor and also set as Parent, defaults
+    ///                       to nil
     ///          @returns one of the mrXxxx values }
     class function ShowException(_e: Exception; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = '';
-      _Parent: TComponent = nil): integer; overload;
+      _Owner: TWinControl = nil): integer; overload;
     class function ShowError(const _ErrorMsg, _Details: string; const _Buttons: array of TDialogButtonEnum;
-      const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
+      const _OptionDesc: string = ''; _Owner: TWinControl = nil): integer;
     ///<summary> Simple function to display a message.
     ///          This will display a dialog with the icon indicated by DialogType, the
     ///          Message given, containing the Buttons specified and optionally an
@@ -292,14 +292,14 @@ type
     ///                               buttons is clicked
     ///          @param OptionDesc gives the description for the Buttons, if not given,
     ///                            defaults to an empty string
-    ///          @param Parent is the parent component to be used in the constructor, defaults
-    ///                        to nil
+    ///          @param Owner is used as owner in the constructor and also set as Parent, defaults
+    ///                       to nil
     ///          @returns the created Tf_dzDialog instance, the caller is responsible
     ///                   for closing and freeing this instance. }
     class function ShowNonModalMessage(_DialogType: TMsgDlgType; const _Message: string;
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer; _OnButtonClick: TOnButtonClick;
-      const _OptionDesc: string = ''; _Parent: TComponent = nil): Tf_dzDialog;
+      const _OptionDesc: string = ''; _Owner: TWinControl = nil): Tf_dzDialog;
   end;
 
 implementation
@@ -342,8 +342,6 @@ var
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
-    if Assigned(_Owner) then
-      TForm_CenterOn(frm, _Owner);
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
     frm.SetFocusButton(_FocusButton);
@@ -356,6 +354,8 @@ begin
     frm.UserMessage := _Message;
     frm.OptionDescription := _OptionDesc;
     frm.DialogType := _DialogType;
+    frm.GenerateControls;
+    TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
     frm.Free;
@@ -369,14 +369,14 @@ var
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
-    if Assigned(_Owner) then
-      TForm_CenterOn(frm, _Owner);
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
     frm.SetFocusButton(_FocusButton);
     frm.UserMessage := _Message;
     frm.OptionDescription := _OptionDesc;
     frm.DialogType := _DialogType;
+    frm.GenerateControls;
+    TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
     frm.Free;
@@ -386,11 +386,11 @@ end;
 class function Tf_dzDialog.ShowNonModalMessage(_DialogType: TMsgDlgType; const _Message: string;
   const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
   const _CustomResults: array of integer; _OnButtonClick: TOnButtonClick;
-  const _OptionDesc: string = ''; _Parent: TComponent = nil): Tf_dzDialog;
+  const _OptionDesc: string = ''; _Owner: TWinControl = nil): Tf_dzDialog;
 var
   i: Integer;
 begin
-  Result := Tf_dzDialog.Create(_Parent);
+  Result := Tf_dzDialog.Create(_Owner);
   Result.ShowDetailButton := false;
   Result.SetVisibleButtons(_Buttons);
   Assert(Length(_CustomButtons) = Length(Result.CustomButtonCaptions));
@@ -402,20 +402,22 @@ begin
   Result.UserMessage := _Message;
   Result.OptionDescription := _OptionDesc;
   Result.DialogType := _DialogType;
+  Result.GenerateControls;
+  TForm_CenterOn(Result, _Owner);
   Result.MakeModal;
   Result.Show;
 end;
 
 class function Tf_dzDialog.ShowException(_e: Exception; const _Message: string;
-  const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
+  const _Buttons: array of TDialogButtonEnum; const _OptionDesc: string = ''; _Owner: TWinControl = nil): integer;
 var
   frm: Tf_dzDialog;
-  sl: TStringList;
 {$IFNDEF no_jcl}
+  sl: TStringList;
   StackList: TJclStackInfoList;
 {$ENDIF}
 begin
-  frm := Tf_dzDialog.Create(_Parent);
+  frm := Tf_dzDialog.Create(_Owner);
   try
     if Assigned(_e) then begin
       frm.ExceptionClass := _e.ClassName;
@@ -441,6 +443,8 @@ begin
     frm.SetVisibleButtons(_Buttons);
     frm.UserMessage := _Message;
     frm.OptionDescription := _OptionDesc;
+    frm.GenerateControls;
+    TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
     frm.Free;
@@ -448,28 +452,30 @@ begin
 end;
 
 class function Tf_dzDialog.ShowException(_e: Exception; const _Buttons: array of TDialogButtonEnum;
-  const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
+  const _OptionDesc: string = ''; _Owner: TWinControl = nil): integer;
 begin
-  Result := ShowException(_e, '', _Buttons, _OptionDesc, _Parent);
+  Result := ShowException(_e, '', _Buttons, _OptionDesc, _Owner);
 end;
 
-class function Tf_dzDialog.ShowException(_e: Exception; _Parent: TComponent = nil): integer;
+class function Tf_dzDialog.ShowException(_e: Exception; _Owner: TWinControl = nil): integer;
 begin
-  Result := ShowException(_e, '', [dbeOk], '', _Parent);
+  Result := ShowException(_e, '', [dbeOk], '', _Owner);
 end;
 
 class function Tf_dzDialog.ShowError(const _ErrorMsg, _Details: string; const _Buttons: array of TDialogButtonEnum;
-  const _OptionDesc: string = ''; _Parent: TComponent = nil): integer;
+  const _OptionDesc: string = ''; _Owner: TWinControl = nil): integer;
 var
   frm: Tf_dzDialog;
 begin
-  frm := Tf_dzDialog.Create(_Parent);
+  frm := Tf_dzDialog.Create(_Owner);
   try
     frm.UserMessage := _ErrorMsg;
     frm.Details := _Details;
     frm.ShowDetailButton := true;
     frm.SetVisibleButtons(_Buttons);
     frm.OptionDescription := _OptionDesc;
+    frm.GenerateControls;
+    TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
     frm.Free;
@@ -542,7 +548,7 @@ begin
   EnableTaskWindows(FWindowList);
 end;
 
-procedure Tf_dzDialog.DoShow;
+procedure Tf_dzDialog.GenerateControls;
 const
   mcHorzMargin = 8;
   mcVertMargin = 8;
@@ -717,7 +723,7 @@ begin
     end;
     if B = DefaultButton then begin
       btn.Default := True;
-      btn.SetFocus;
+      FocusButton := btn;
     end;
     if B = CancelButton then
       btn.Cancel := True;
@@ -729,7 +735,7 @@ begin
       FocusButton := btn;
   end;
   if Assigned(FocusButton) then
-    FocusButton.SetFocus;
+    ActiveControl := FocusButton;
 
   if FShowDontShowAgain then begin
     chk_DontAskAgain := TCheckBox.Create(self);

@@ -816,6 +816,9 @@ var
   Color: TColor;
   Font: TFont;
 begin
+  HAlign := taLeftJustify;
+  VAlign := cvTop;
+  Color := clBlack;
   Font := TFont.Create;
   try
     GetData(_Col, _Row, [], Result, HAlign, VAlign, Font, Color);

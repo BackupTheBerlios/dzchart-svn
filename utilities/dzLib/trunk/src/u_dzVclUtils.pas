@@ -220,7 +220,8 @@ function TEdit_TryTextToDouble(_ed: TEdit; out _Value: double; _OkColor: TColor 
 ///                              if it does not contain a valid value
 ///          @returns the controls content as an integer
 ///          @raises EConvertError if the controls content could not be converted </summary>
-function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
+function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer; overload;
+function TEdit_TextToInt(_ed: TLabeledEdit; _FocusControl: boolean = true): integer; overload;
 
 ///<summary> returns the contents of the tree view as a string with indentations
 ///          @param Tree is the TTreeView to process
@@ -293,7 +294,8 @@ type
 ///          caption to reflect this
 ///          @param Control is the TControl to change
 ///          @param Enabled is a boolean with the new value for the Enabled property. </summary>
-procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
+procedure TControl_SetEnabled(_Control: TControl; _Enabled: boolean);
+procedure SetControlEnabled(_Control: TControl; _Enabled: boolean); deprecated; // use TControl_SetEnabled instead
 
 ///<summary> sets the with of a ComboBox's dropdown  in pixels </summary>
 procedure TComboBox_SetDropdownWidth(_cmb: TCustomCombobox; _Pixels: integer);
@@ -550,7 +552,7 @@ procedure TButtonControl_SetCaption(_bctrl: TButtonControl; _Value: string);
 
 ///<summary> sets Screen.Cursor to NewCursor and restores it automatically when the returned interface
 ///          goes out of scope </summary>
-function TCursor_TemporaryChange(_NewCursor: TCursor): IInterface;
+function TCursor_TemporaryChange(_NewCursor: TCursor = crHourGlass): IInterface;
 
 implementation
 
@@ -898,6 +900,19 @@ begin
   end;
 end;
 
+function TEdit_TextToInt(_ed: TLabeledEdit; _FocusControl: boolean = true): integer;
+var
+  s: string;
+begin
+  s := _ed.Text;
+  if not TryStrToInt(s, Result) then begin
+    if _FocusControl then begin
+      _ed.SetFocus;
+    end;
+    raise EConvertError.CreateFmt(_('"%s" is not a valid integer value.'), [s]);
+  end;
+end;
+
 function TTreeView_GetAsText(_Tree: TTreeView; _Indentation: integer = 2; _Marker: char = #0): string;
 var
   Level: integer;
@@ -1202,6 +1217,11 @@ begin
 end;
 
 procedure SetControlEnabled(_Control: TControl; _Enabled: boolean);
+begin
+  TControl_SetEnabled(_Control, _Enabled);
+end;
+
+procedure TControl_SetEnabled(_Control: TControl; _Enabled: boolean);
 var
   i: integer;
   Container: TWinControl;
@@ -1211,7 +1231,7 @@ begin
     Container := _Control as TWinControl;
     for i := 0 to Container.ControlCount - 1 do begin
       ctrl := Container.Controls[i];
-      SetControlEnabled(Ctrl, _Enabled);
+      TControl_SetEnabled(Ctrl, _Enabled);
     end;
   end;
   _Control.Enabled := _Enabled;
@@ -1783,9 +1803,12 @@ end;
 
 procedure TForm_CenterOn(_frm: TForm; _Center: TWinControl); overload;
 begin
-  if Assigned(_Center) then
-    TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)))
-  else begin
+  if Assigned(_Center) then begin
+    if Assigned(_Center.Parent) then
+      TForm_CenterOn(_frm, _Center.ClientToScreen(Point(_Center.Width div 2, _Center.Height div 2)))
+    else
+      TForm_CenterOn(_frm, Point(_Center.Left + _Center.Width div 2, _Center.Top + _Center.Height div 2));
+  end else begin
     TForm_CenterOn(_frm, Point(Screen.Width div 2, Screen.Height div 2));
   end;
 end;
@@ -2175,7 +2198,7 @@ begin
   inherited;
 end;
 
-function TCursor_TemporaryChange(_NewCursor: TCursor): IInterface;
+function TCursor_TemporaryChange(_NewCursor: TCursor = crHourGlass): IInterface;
 begin
   Result := TCursorRestorer.Create(_NewCursor);
 end;

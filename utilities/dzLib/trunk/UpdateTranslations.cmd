@@ -1,22 +1,24 @@
 @rem This batch will
 @rem * call dxgettext to extract all strings to translate
 @rem * call msgremove remove any strings stored in the ignore.po file
+@rem * call msgmerge to merge the new template with the existing translations into
+@rem   - German (full)
+@rem   - English (dummy)
+@rem   - French (partial)
 
-set BASE=.
-
-@rem extract from subdirectories src and forms
-dxgettext --delphi -r -b %BASE%\src -b %BASE%\forms -o %BASE%
+@rem extract from subdirectories src, forms, adodb, components, dbcreator, dzAdoDb, IniFileFormatter, lockfree
+buildtools\dxgettext *.dfm *.pas *.inc *.dpr -r -b src -b forms -b adodb -b components -b dbcreator -b dzAdoDb -b IniFileFormatter -b lockfree -o .
 
 @rem remove strings given in ignore.po
-msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
+buildtools\msgremove default.po -i ignore.po -o filtered.po
 
 @rem merge German translations
-msgmerge --no-wrap --update %BASE%\translations\de\dzlib.po %BASE%\filtered.po
+buildtools\msgmerge --no-wrap --update translations\de\dzlib.po filtered.po
 
 @rem merge French translations
-msgmerge --no-wrap --update %BASE%\translations\fr\dzlib.po %BASE%\filtered.po
+buildtools\msgmerge --no-wrap --update translations\fr\dzlib.po filtered.po
 
 @rem merge English "translations"
-msgmerge --no-wrap --update %BASE%\translations\en\dzlib.po %BASE%\filtered.po
+buildtools\msgmerge --no-wrap --update translations\en\dzlib.po filtered.po
 
 pause

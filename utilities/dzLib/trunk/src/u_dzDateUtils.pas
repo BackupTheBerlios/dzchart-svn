@@ -1,7 +1,7 @@
 {.GXFormatter.config=twm}
-/// implements some utility functions for converting TDateTime to and from strings
-/// in ISO 6801 format (note that these function do not implement the complete
-/// standard but only the extended form without omitting date parts.
+/// <summary> implements some utility functions for converting TDateTime to and from strings
+///           in ISO 6801 format (note that these functions do not implement the complete
+///           standard but only the extended form without omitting date parts). </summary>
 unit u_dzDateUtils;
 
 {$I jedi.inc}

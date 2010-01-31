@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2009-08-04 13:39\n"
-"PO-Revision-Date: 2009-08-04 13:41+0100\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2009-10-12 17:00\n"
+"PO-Revision-Date: 2009-10-12 17:01+0100\n"
+"Last-Translator: twm <info@schniering.com>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -94,7 +94,7 @@ msgid "Length of byte array (%d) does not match size of a LongWord (%d)"
 msgstr "Länge des Byte-Arrays (%d) stimmt nicht mit der Größe eines Longwords (%d) überein"
 
 #. Do not use ParamByName -> only works if param is unique
-#: u_dzDatasetHelpers.pas:462
+#: u_dzDatasetHelpers.pas:470
 msgid "SetParamByName is not supported for a %s (only TQuery and TAdoDataset descendants)."
 msgstr "SetParamByName wird für %s nicht unterstützt (nur TQuery- und TAdoDataset-Abkömmlinge)"
 
@@ -204,13 +204,11 @@ msgstr ""
 msgid "DLL entry point not initialized"
 msgstr "DLL Einsprungpunkt nicht initialisiert"
 
-#. Programmer's name for it: RS_CANNOT_FREE_EXECUTOR
-#: u_dzExecutor.pas:204
+#: u_dzExecutor.pas:227
 msgid "Can not free Executor while a process using redirection is still running."
 msgstr "Kann Executor nicht freigeben während noch ein Prozess mit Ein-/Ausgabeumleitung läuft."
 
-#. Programmer's name for it: RS_PROCESS_HAS_NOT_YET_BEEN_STARTED_S
-#: u_dzExecutor.pas:205
+#: u_dzExecutor.pas:265
 msgid ""
 "Process has not yet been started.\n"
 "%s"
@@ -218,8 +216,7 @@ msgstr ""
 "Prozess wurde noch nicht gestarted.\n"
 "%s"
 
-#. Programmer's name for it: RS_PROCESS_IS_STILL_RUNNING_S
-#: u_dzExecutor.pas:206
+#: u_dzExecutor.pas:266
 msgid ""
 "Process is still running.\n"
 "%s"
@@ -227,8 +224,7 @@ msgstr ""
 "Prozess läuft noch.\n"
 "%s"
 
-#. Programmer's name for it: RS_PROCESS_HAS_TERMINATED_S
-#: u_dzExecutor.pas:207
+#: u_dzExecutor.pas:267
 msgid ""
 "Process has terminated.\n"
 "%s"
@@ -236,18 +232,19 @@ msgstr ""
 "Prozess ist beendet.\n"
 "%s"
 
-#. Programmer's name for it: RS_PROCESS_HAS_NOT_YET_BEEN_STARTED
-#: u_dzExecutor.pas:208
+#: u_dzExecutor.pas:298
 msgid "Process has not yet been started"
 msgstr "Prozess wurde noch nicht gestartet"
 
-#. Programmer's name for it: RS_STDERR_WAS_NOT_REDIRECTED
-#: u_dzExecutor.pas:209
+#: u_dzExecutor.pas:413
+msgid "%1:s (%0:d) in CreateProcess(\"%s\", \"%s\")"
+msgstr "%1:s (%0:d) in CreateProcess(\"%s\", \"%s\")"
+
+#: u_dzExecutor.pas:435
 msgid "StdErr was not redirected"
 msgstr "StdErr wurde nicht umgeleitet"
 
-#. Programmer's name for it: RS_STDOUT_WAS_NOT_REDIRECTED
-#: u_dzExecutor.pas:210
+#: u_dzExecutor.pas:451
 msgid "StdOut was not redirected"
 msgstr "StdOut wurde nicht umgeleitet"
 
@@ -268,79 +265,79 @@ msgid "Cannot change filename when file is open."
 msgstr "Kann Dateinamen nicht ändern wenn Datei geöffnet ist."
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:854
+#: u_dzFileUtils.pas:857
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) beim Aufruf von Windows.GetTempPath"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:862
+#: u_dzFileUtils.pas:865
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) beim Aufruf von Windows.GetTempPath (zweiter)"
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:879
+#: u_dzFileUtils.pas:882
 msgid "Error %%1:s (%%0:d) creating directory \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Erstellen des Verzeichnisses \"%s\""
 
-#: u_dzFileUtils.pas:903
+#: u_dzFileUtils.pas:906
 msgid "Could not find a unique directory name based on \"%s\""
 msgstr "Konnte keinen eindeutigen Verzeichnisnamen basierend auf \"%s\" finden."
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:921
+#: u_dzFileUtils.pas:924
 msgid "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 msgstr "TFileSystem.GetTempFilename: %1:s (Code: %0:d) beim Aufruf von Windows.GetTempFileName"
 
-#: u_dzFileUtils.pas:948
+#: u_dzFileUtils.pas:951
 msgid "File not found: \"%s\""
 msgstr "Datei nicht gefunden: \"%s\""
 
-#: u_dzFileUtils.pas:999
+#: u_dzFileUtils.pas:1002
 msgid "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) beim Aufruf von Windows.GetShortPathname"
 
-#: u_dzFileUtils.pas:1001
+#: u_dzFileUtils.pas:1004
 msgid "Short pathname is longer than MAX_PATH (%d) characters"
 msgstr "Kurzer Pfad ist länger als MAX_PATH (%d) Zeichen"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1013
+#: u_dzFileUtils.pas:1016
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to \"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Verschieben von \"%s\" nach \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1031
+#: u_dzFileUtils.pas:1034
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Ändern des Schreibschutz-Flags von \"%s\""
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1051
+#: u_dzFileUtils.pas:1054
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to \"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Kopieren von \"%s\" nach \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1261
+#: u_dzFileUtils.pas:1264
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen der Datei \"%s\""
 
 #. ForceDirectories can raise EInOutError if the directory path contains empty parts
-#: u_dzFileUtils.pas:1337
+#: u_dzFileUtils.pas:1340
 msgid "Error creating directory \"%s\": %s (%s)"
 msgstr "Fehler beim Erstellen des Verzeichnisses \"%s\": %s (%s)"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1364
+#: u_dzFileUtils.pas:1367
 msgid "Error %%1:s (%%0:d) deleting directory \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen des Verzeichnisses \"%s\""
 
-#: u_dzFileUtils.pas:1382
+#: u_dzFileUtils.pas:1385
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" existiert nicht oder ist kein Verzeichnis"
 
-#: u_dzFileUtils.pas:1610
+#: u_dzFileUtils.pas:1613
 msgid "Combination of ResultContainsNumber and KeepOriginal is not allowed"
 msgstr "Kombination von ResultContainsNumber und KeepOriginal ist nicht erlaubt"
 
@@ -379,15 +376,19 @@ msgstr "Neue Kapazität kann nicht kleiner sein als aktuelle Länge."
 msgid "Index %d out of bounds."
 msgstr "Index %d nicht im gültigen Bereich."
 
-#: u_dzStringUtils.pas:425
+#: u_dzStatistics.pas:69
+msgid "Cannot calculate moving average on zero elements"
+msgstr "Kann gleitenden Mittelwert nicht für Null Elemente berechnen"
+
+#: u_dzStringUtils.pas:435
 msgid "nthWord: 0th word not available"
 msgstr "nthWord: 0tes Wort ist nicht verfügbar"
 
-#: u_dzStringUtils.pas:913
+#: u_dzStringUtils.pas:923
 msgid "Cannot center string that is larger than the maximum length."
 msgstr "Kann keinen String zentrieren, der länger als die maximale Länge ist."
 
-#: u_dzStringUtils.pas:1002
+#: u_dzStringUtils.pas:1012
 msgid "Strings do not have a 0th character."
 msgstr "Strings haben kein 0tes Zeichen."
 
@@ -437,29 +438,53 @@ msgstr "Variant kann nicht nach %s konvertiert werden: %s"
 msgid "Variant can not be converted to %s"
 msgstr "Variant kann nicht nach %s konvertiert werden"
 
-#: u_dzVclUtils.pas:586
+#: u_dzVclUtils.pas:593
 msgid "Glyph string contained invalid character at position %d."
 msgstr "Der Glyph-Text beinhaltet ein ungültiges Zeichen an Position %d."
 
-#: u_dzVclUtils.pas:812
+#: u_dzVclUtils.pas:819
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" ist kein gültiger Fließkommawert."
 
-#: u_dzVclUtils.pas:827
+#: u_dzVclUtils.pas:834
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" ist kein gültiger Integerwert."
 
-#: u_dzVclUtils.pas:1263
+#: u_dzVclUtils.pas:1294
 msgid "No item selected in combobox"
 msgstr "Kein Eintrag der Combobox ausgewählt"
 
-#: u_dzVclUtils.pas:1282
+#: u_dzVclUtils.pas:1313
 msgid "No item selected in listbox"
 msgstr "Kein Eintrag der Listbox ausgewählt"
 
-#: u_dzVclUtils.pas:1809
+#: u_dzVclUtils.pas:1840
 msgid "JPEG Files"
 msgstr "JPEG Dateien"
+
+#. f_dzInputDialog..Caption
+#: w_dzInputDialog.dfm:5
+msgid "InputQuery"
+msgstr "InputQuery"
+
+#. f_dzInputDialog..l_Query..Caption
+#: w_dzInputDialog.dfm:25
+msgid "Query goes here"
+msgstr "Die Frage kommt hierher"
+
+#. f_dzInputDialog..b_Ok..Caption
+#: w_dzInputDialog.dfm:41
+msgid "OK"
+msgstr "OK"
+
+#. f_dzInputDialog..b_Cancel..Caption
+#. f_dzWizard..p_Buttons..b_Cancel..Caption
+#. f_dzWizardForm..p_Buttons..b_Cancel..Caption
+#: w_dzInputDialog.dfm:53
+#: w_dzWizard.pas:340
+#: w_dzWizardForm.pas:225
+msgid "Cancel"
+msgstr "Abbrechen"
 
 #. f_dzProgress..Caption
 #: w_dzProgress.dfm:6
@@ -497,15 +522,15 @@ msgstr "Abbrechen"
 msgid "< &Previous"
 msgstr "< &Zurück"
 
-#: w_dzDialog.pas:328
+#: w_dzDialog.pas:332
 msgid "Invalid modal result %d."
 msgstr "Ungültiger modaler Rückgabewert %d."
 
-#: w_dzDialog.pas:505
+#: w_dzDialog.pas:513
 msgid "Do not show again."
 msgstr "Nicht nochmal anzeigen."
 
-#: w_dzDialog.pas:587
+#: w_dzDialog.pas:595
 msgid ""
 "An error occurred:\n"
 "%s"
@@ -514,15 +539,15 @@ msgstr ""
 "%s"
 
 #. 400;
-#: w_dzDialog.pas:611
+#: w_dzDialog.pas:619
 msgid "Additional information:"
 msgstr "Erweiterte Informationen:"
 
-#: w_dzDialog.pas:631
+#: w_dzDialog.pas:639
 msgid "&Details >>"
 msgstr "&Details >>"
 
-#: w_dzDialog.pas:791
+#: w_dzDialog.pas:799
 msgid "&Details <<"
 msgstr "&Details <<"
 
@@ -557,6 +582,66 @@ msgstr "&Fertigstellen"
 #: w_dzWizard.pas:478
 msgid "Already on first page."
 msgstr "Bereits auf erster Seite."
+
+#: u_dzDbCreatorDescription.pas:754
+msgid "Invalid TNullAllowed value"
+msgstr "Ungültiger TNullAllowed Wert"
+
+#: u_dzDbCreatorDescription.pas:765
+msgid "%s is not in 'yes'/'no'"
+msgstr "%s ist nicht in 'yes'/'no'"
+
+#: u_dzDbCreatorDescription.pas:774
+msgid "Invalid TSortOrder value"
+msgstr "Ungültiger TSortOrder Wert"
+
+#: u_dzDbCreatorDescription.pas:785
+msgid "%s is not a valid TSortOrder name"
+msgstr "\"%s\" ist kein gültiger TSortOrder Name"
+
+#: u_dzDbCreatorDescription.pas:798
+msgid "Invalid TFieldDataType value"
+msgstr "Ungültiger TFieldDataType-Wert"
+
+#: u_dzDbCreatorDescription.pas:817
+msgid "%s is not a valid TFieldDataType name"
+msgstr "%s ist kein gültiger TFieldDataTyp-Name"
+
+#: u_dzDbCreatorDescription.pas:835
+msgid "Invalid boolean value"
+msgstr "Ungültiger Wahrheitswert"
+
+#: u_dzDbCreatorDescription.pas:896
+msgid "Data type of foreign key and primary key of referenced table do not match"
+msgstr "Datentyp des Fremdschlüssels und des Primärschlüssels der referenzierten Tabelle sind unterschiedlich"
+
+#: u_dzDbCreatorDescription.pas:1181
+msgid "Could not append index %s. Table %s already has a primary key."
+msgstr "Konnte Index %s nicht hinzufügen. Tabelle %s hat schon einen Primärschlüssel."
+
+#: u_dzDbCreatorDescription.pas:1186
+msgid "Could not append index %s. Table %s already has a index with that name."
+msgstr "Konnte Index %s nicht hinzufügen. Tabelle %s hat schon einen Index mit diesem Namen."
+
+#: u_dzDbCreatorDescription.pas:1536
+msgid "Cyclic table references detected"
+msgstr "Zyklische Tabellenreferenz gefunden"
+
+#: u_dzDbCreatorDescription.pas:1626
+msgid "Table has no column with name \"%s\""
+msgstr "Tabelle hat keine Spalte mit dem Namen \"%s\""
+
+#: u_dzDbCreatorDescription.pas:1797
+msgid "Can not apply default %s, no variable with that name."
+msgstr "Kann Default %s nicht benutzen, es gibt keine Variable mit diesem Namen."
+
+#: u_dzDbCreatorDescription.pas:2196
+msgid "There is no script named %s in this db type"
+msgstr "Es gibt kein Script mit dem Namen %s für diesen DB-Typ"
+
+#: u_dzNameValueList.pas:96
+msgid "Entry \"%s\" not found."
+msgstr "Eintrag \"%s\" nicht gefunden."
 
 #~ msgid "Tf_HkProgress.SetFormCaption: Invalid FormCaption, %s"
 #~ msgstr "Tf_HkProgress.SetFormCaption: Invalid FormCaption, %s"

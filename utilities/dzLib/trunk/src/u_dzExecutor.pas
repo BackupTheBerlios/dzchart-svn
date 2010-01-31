@@ -1,4 +1,4 @@
-{GXFormatter.config=twm}
+{.GXFormatter.config=twm}
 {: Implements a wrapper object around the Win32 API CreateProcess and
    related functions.
    @author twm
@@ -13,6 +13,7 @@ uses
   Windows,
   SysUtils,
   Classes,
+  u_dzTranslator,
   u_dzFileStreams;
 
 type
@@ -200,14 +201,10 @@ uses
   JclSysInfo,
   u_dzMiscUtils;
 
-resourcestring
-  RS_CANNOT_FREE_EXECUTOR = 'Can not free Executor while a process using redirection is still running.';
-  RS_PROCESS_HAS_NOT_YET_BEEN_STARTED_S = 'Process has not yet been started.'#13#10'%s';
-  RS_PROCESS_IS_STILL_RUNNING_S = 'Process is still running.'#13#10'%s';
-  RS_PROCESS_HAS_TERMINATED_S = 'Process has terminated.'#13#10'%s';
-  RS_PROCESS_HAS_NOT_YET_BEEN_STARTED = 'Process has not yet been started';
-  RS_STDERR_WAS_NOT_REDIRECTED = 'StdErr was not redirected';
-  RS_STDOUT_WAS_NOT_REDIRECTED = 'StdOut was not redirected';
+function _(const _s: string): string; inline;
+begin
+  Result := dzDGetText(_s, 'dzlib');
+end;
 
 { TExecutor }
 
@@ -227,7 +224,7 @@ begin
   inherited;
   if (Status = esRunning) and
     (RedirectStdIn or RedirectStdOut or RedirectStdErr) then
-    raise ERedirectedProcess.Create(RS_CANNOT_FREE_EXECUTOR);
+    raise ERedirectedProcess.Create(_('Can not free Executor while a process using redirection is still running.'));
   fInputFile.Free;
   fOutputFile.Free;
   fErrorFile.Free;
@@ -265,9 +262,9 @@ begin
   Stat := GetStatus;
   if not (Stat in _ValidStatusSet) then
     case Stat of
-      esInvalid: raise ENoProcess.CreateFmt(RS_PROCESS_HAS_NOT_YET_BEEN_STARTED_S, [_Method]);
-      esRunning: raise EProcessRunning.CreateFmt(RS_PROCESS_IS_STILL_RUNNING_S, [_Method]);
-      esTerminated: raise EProcessTerminated.CreateFmt(RS_PROCESS_HAS_TERMINATED_S, [_Method]);
+      esInvalid: raise ENoProcess.CreateFmt(_('Process has not yet been started.'#13#10'%s'), [_Method]);
+      esRunning: raise EProcessRunning.CreateFmt(_('Process is still running.'#13#10'%s'), [_Method]);
+      esTerminated: raise EProcessTerminated.CreateFmt(_('Process has terminated.'#13#10'%s'), [_Method]);
     end;
 end;
 
@@ -298,7 +295,7 @@ end;
 function TExecutor.Kill: boolean;
 begin
   case GetStatus of
-    esInvalid: raise ENoProcess.Create(RS_PROCESS_HAS_NOT_YET_BEEN_STARTED);
+    esInvalid: raise ENoProcess.Create(_('Process has not yet been started'));
     esRunning: Result := TerminateProcess(fProcessInfo.hProcess, $FFFFFFFF);
   else
     Result := true;
@@ -329,6 +326,7 @@ var
   Cmdline: string;
   env: string;
   i: Integer;
+  LastError: LongWord;
 begin
   // prepare SecurityAttribute, set InheritHandle to true
   FillChar(SecurityAttributes, SizeOf(SecurityAttributes), #0);
@@ -410,8 +408,10 @@ begin
 
   if Result then
     fStatus := esRunning
-  else
-    RaiseLastOsErrorEx('%1:s (%0:d) in CreateProcess("' + fExeName + '","' + CmdLine + '")');
+  else begin
+    LastError := GetLastError;
+    RaiseLastOsErrorEx(LastError, Format(_('%1:s (%0:d) in CreateProcess("%s", "%s")'), [fExeName, CmdLine]));
+  end;
 end; // TExecutor.Execute
 
 procedure TExecutor.ResetStatus;
@@ -432,7 +432,7 @@ begin
       fErrorFile.Read(Result[1], Size);
     end;
   end else
-    raise ENotRedirected.Create(RS_STDERR_WAS_NOT_REDIRECTED);
+    raise ENotRedirected.Create(_('StdErr was not redirected'));
 end;
 
 function TExecutor.GetStdOut: string;
@@ -448,7 +448,7 @@ begin
       fOutputFile.Read(Result[1], Size);
     end;
   end else
-    raise ENotRedirected.Create(RS_STDOUT_WAS_NOT_REDIRECTED);
+    raise ENotRedirected.Create(_('StdOut was not redirected'));
 end;
 
 end.

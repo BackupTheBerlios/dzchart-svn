@@ -527,7 +527,13 @@ end;
 
 procedure TDatasetHelper.Post;
 begin
-  FDataset.Post;
+  try
+    FDataset.Post;
+  except
+    on e: Exception do begin
+      raise Exception.CreateFmt(_('Error posting a dataset to "%s". (%s)'), [FTableName, e.Message]);
+    end;
+  end;
 end;
 
 end.

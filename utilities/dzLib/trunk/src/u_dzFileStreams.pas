@@ -256,7 +256,7 @@ var
 begin
   if not OpenNoException then begin
     LastError := GetLastError;
-    RaiseLastOSErrorEx(LastError, _('%1:s (%0:d)'));
+    RaiseLastOSErrorEx(LastError, Format(_('%%1:s (%%0:d) trying to open "%s"'), [FFilename]));
   end;
 end;
 
