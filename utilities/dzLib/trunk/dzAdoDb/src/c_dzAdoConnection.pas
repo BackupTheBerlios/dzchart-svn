@@ -102,6 +102,9 @@ var
   s: string;
   i: Integer;
 begin
+  Result.Username := '';
+  Result.Database := '';
+  Result.ServerName := '';
   Result.ServerType := DetermineServerType(_ConnectionString);
   sl := TStringList.Create;
   try
