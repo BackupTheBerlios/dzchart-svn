@@ -74,7 +74,9 @@ type
   IStatusListener = interface;
 
   TTestResult   = class;
+{$TYPEINFO ON}
   TAbstractTest = class;
+{$TYPEINFO OFF}
   TTestCase     = class;
   TTestSuite    = class;
   TTestFailure  = class;
@@ -357,7 +359,6 @@ type
     property OverRides: integer read FOverRides write FOverRides;
   end;
 
-
   TAbstractTest = class(TInterfacedObject, ITest)
   protected
     FTestName: string;
@@ -549,7 +550,6 @@ type
       read GetIgnoreSetUpTearDownLeaks
       write SetIgnoreSetUpTearDownLeaks;
   end;
-
 
   TTestCase = class(TAbstractTest, ITest)
   protected
