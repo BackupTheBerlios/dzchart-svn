@@ -525,7 +525,11 @@ type
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
     class function DeleteMatchingFiles(const _Dir, _Mask: string;
-      _RaiseException: boolean = true; _Force: boolean = false; _ExceptMask: string = ''): integer;
+      _RaiseException: boolean = true; _Force: boolean = false): integer; overload;
+    class function DeleteMatchingFiles(const _Dir, _Mask: string; _ExceptMask: string = '';
+      _RaiseException: boolean = true; _Force: boolean = false): integer; overload; deprecated;
+    class function DeleteMatchingFiles(const _Dir, _Mask: string; const _ExceptMasks: array of string;
+      _RaiseException: boolean = true; _Force: boolean = false): integer; overload;
 
     /// <summary>
     /// tries to find a matching file
@@ -1275,7 +1279,36 @@ begin
 end;
 
 class function TFileSystem.DeleteMatchingFiles(const _Dir, _Mask: string;
-  _RaiseException: boolean = true; _Force: boolean = false; _ExceptMask: string = ''): integer;
+  _RaiseException, _Force: boolean): integer;
+begin
+  Result := DeleteMatchingFiles(_Dir, _Mask, [], _RaiseException, _Force);
+end;
+
+class function TFileSystem.DeleteMatchingFiles(const _Dir, _Mask: string;
+  _ExceptMask: string; _RaiseException, _Force: boolean): integer;
+begin
+  Result := DeleteMatchingFiles(_Dir, _Mask, [_ExceptMask], _RaiseException, _Force);
+end;
+
+class function TFileSystem.DeleteMatchingFiles(const _Dir, _Mask: string;
+  const _ExceptMasks: array of string; _RaiseException,
+  _Force: boolean): integer;
+
+  function MatchesAnyExceptMask(const _s: string): boolean;
+  var
+    i: Integer;
+    Mask: string;
+  begin
+    for i := Low(_ExceptMasks) to High(_ExceptMasks) do begin
+      Mask := LowerCase(_ExceptMasks[i]);
+      if MatchesMask(_s, Mask) then begin
+        Result := true;
+        exit;
+      end;
+    end;
+    Result := false;
+  end;
+
 var
   sr: TSearchRec;
   Dir: string;
@@ -1283,21 +1316,21 @@ begin
   Assert(_Dir <> '', 'Dir parameter must not be an empty string');
   Assert(_Mask <> '', 'Dir parameter must not be an empty string');
 
-  _ExceptMask := LowerCase(_ExceptMask);
   Result := 0;
   Dir := IncludeTrailingPathDelimiter(_Dir);
-  if 0 = FindFirst(Dir + _Mask, faAnyFile, sr) then
+  if 0 = FindFirst(Dir + _Mask, faAnyFile, sr) then begin
     try
       repeat
         if (sr.Name <> '.') and (sr.Name <> '..') then
           if ((sr.Attr and (SysUtils.faVolumeID or SysUtils.faDirectory)) = 0) then
-            if (_ExceptMask = '') or not MatchesMask(LowerCase(sr.Name), _ExceptMask) then
+            if not MatchesAnyExceptMask(LowerCase(sr.Name)) then
               if not DeleteFile(Dir + sr.Name, _RaiseException, _Force) then
                 Inc(Result);
       until 0 <> FindNext(sr);
     finally
       FindClose(sr);
     end;
+  end;
 end;
 
 class function TFileSystem.FileExists(const _Filename: string): boolean;
