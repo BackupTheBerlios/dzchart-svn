@@ -118,11 +118,17 @@ function TGrid_GetText(_Grid: TCustomGrid; _Selection: TGridRect): string; overl
 ///          @param IncludeFixed determines whether the fixed rows/columns are also exported </summary>
 procedure TGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string; _IncludeFixed: boolean = false);
 
-///<summary> sets the row count, taking the fixed rows into account </summary>
-procedure TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
+///<summary> sets the row count, taking the fixed rows into account
+///          @returns the new RowCount </summary>
+function TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer): integer;
 
-///<summary> sets the column count, taking the fixed columns into account </summary>
-procedure TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
+///<summary> sets the column count, taking the fixed columns into account
+///          @returns the new ColCount </summary>
+function TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
+
+///<summary> sets the nonfixd column count
+///          @returns the new ColCount </summary>
+function TGrid_SetNonfixedColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
 
 ///<summary> sets the row count to FixedRows + 1 and clears all non-fixed cells </summary>
 procedure TStringGrid_Clear(_Grid: TStringGrid);
@@ -670,26 +676,37 @@ begin
   end;
 end;
 
-procedure TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
+function TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer): integer;
 var
   Grid: TGridHack;
 begin
   Grid := TGridHack(_Grid);
   if Grid.FixedRows >= _RowCount then
-    Grid.RowCount := Grid.FixedRows + 1
+    Result := Grid.FixedRows + 1
   else
-    Grid.RowCount := _RowCount;
+    Result := _RowCount;
+  Grid.RowCount := Result;
 end;
 
-procedure TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
+function TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
 var
   Grid: TGridHack;
 begin
   Grid := TGridHack(_Grid);
   if Grid.FixedCols >= _ColCount then
-    Grid.ColCount := Grid.FixedCols + 1
+    Result := Grid.FixedCols + 1
   else
-    Grid.ColCount := _ColCount;
+    Result := _ColCount;
+  Grid.ColCount := Result;
+end;
+
+function TGrid_SetNonfixedColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
+var
+  Grid: TGridHack;
+begin
+  Grid := TGridHack(_Grid);
+  Result := Grid.FixedCols + _ColCount;
+  Grid.ColCount := Result;
 end;
 
 procedure TStringGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
