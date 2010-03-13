@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2010-02-12 15:20\n"
+"POT-Creation-Date: 2010-03-13 12:46\n"
 "PO-Revision-Date: 2009-10-12 17:01+0100\n"
 "Last-Translator: twm <info@schniering.com>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
@@ -18,13 +18,13 @@ msgstr "Project-Id-Version: dzLib 1.0\n"
 
 #: w_dzProgress.pas:162
 msgid "\"%\" must be followed by \"d\" or \"%\"."
-msgstr "\"%\" muss von \"d\" or \"%\" gefolgt werden."
+msgstr "Auf \"%\" muss \"d\" oder \"%\" folgen"
 
-#: u_dzFileUtils.pas:1427
+#: u_dzFileUtils.pas:1461
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" existiert nicht oder ist kein Verzeichnis"
 
-#: u_dzVclUtils.pas:820  u_dzVclUtils.pas:867
+#: u_dzVclUtils.pas:837  u_dzVclUtils.pas:884
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" ist kein gültiger Fließkommawert."
 
@@ -38,7 +38,7 @@ msgstr "\"%s\" ist kein gültiger Fließkommawert: "
 msgid "\"%s\" is not a valid Int64 value: %s"
 msgstr "\"%s\" ist kein gültiger Int64 Wert: %s"
 
-#: u_dzVclUtils.pas:835  u_dzVclUtils.pas:899 u_dzVclUtils.pas:912
+#: u_dzVclUtils.pas:852  u_dzVclUtils.pas:916 u_dzVclUtils.pas:929
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" ist kein gültiger Integerwert."
 
@@ -220,7 +220,7 @@ msgid "Cannot change filename when file is "
 msgstr "Kann Dateinamen nicht ändern wenn Datei geöffnet "
 "ist."
 
-#: u_dzFileUtils.pas:1655
+#: u_dzFileUtils.pas:1689
 msgid "Combination of ResultContainsNumber and KeepOriginal is not "
 "allowed"
 msgstr "Kombination von ResultContainsNumber und KeepOriginal ist nicht "
@@ -238,7 +238,7 @@ msgid "Could not append index %s. Table %s already has a primary "
 msgstr "Konnte Index %s nicht hinzufügen. Tabelle %s hat schon einen "
 "Primärschlüssel."
 
-#: u_dzFileUtils.pas:919
+#: u_dzFileUtils.pas:929
 msgid "Could not find a unique directory name based on "
 "\"%s\""
 msgstr "Konnte keinen eindeutigen Verzeichnisnamen basierend auf \"%s\" "
@@ -309,27 +309,27 @@ msgstr "Eintrag \"%s\" nicht gefunden."
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:895  u_dzFileUtils.pas:1390
+#: u_dzFileUtils.pas:905  u_dzFileUtils.pas:1424
 msgid "Error %%1:s (%%0:d) creating directory "
 "\"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Erstellen des Verzeichnisses "
 "\"%s\""
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1409
+#: u_dzFileUtils.pas:1443
 msgid "Error %%1:s (%%0:d) deleting directory "
 "\"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen des Verzeichnisses "
 "\"%s\""
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1277
+#: u_dzFileUtils.pas:1311
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Löschen der Datei "
 "\"%s\""
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1047
+#: u_dzFileUtils.pas:1081
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of "
 "\"%s\""
 msgstr "Fehler %%1:s (%%0:d) beim Ändern des Schreibschutz-Flags von "
@@ -338,14 +338,14 @@ msgstr "Fehler %%1:s (%%0:d) beim Ändern des Schreibschutz-Flags von "
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1067  u_dzFileUtils.pas:1174 u_dzFileUtils.pas:1247
+#: u_dzFileUtils.pas:1101  u_dzFileUtils.pas:1208 u_dzFileUtils.pas:1281
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to "
 "\"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Kopieren von \"%s\" nach "
 "\"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1029
+#: u_dzFileUtils.pas:1063
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to "
 "\"%s\"."
 msgstr "Fehler %%1:s (%%0:d) beim Verschieben von \"%s\" nach "
@@ -358,12 +358,12 @@ msgstr "Fehler %%1:s (%%0:d) beim Aufruf von "
 "Windows.ExpandEnvironmentStrings"
 
 #. ForceDirectories can raise EInOutError if the directory path contains empty parts
-#: u_dzFileUtils.pas:1382
+#: u_dzFileUtils.pas:1416
 msgid "Error creating directory \"%s\": %s (%s)"
 msgstr "Fehler beim Erstellen des Verzeichnisses \"%s\": %s "
 "(%s)"
 
-#: u_dzDatasetHelpers.pas:534
+#: u_dzDatasetHelpers.pas:538
 msgid "Error posting a dataset to \"%s\". (%s)"
 msgstr "Fehler beim Schreiben eines Datensatzes nach \"%s\". "
 "(%s)"
@@ -372,7 +372,7 @@ msgstr "Fehler beim Schreiben eines Datensatzes nach \"%s\". "
 msgid "February"
 msgstr "Februar"
 
-#: u_dzFileUtils.pas:964  u_dzFileUtils.pas:970
+#: u_dzFileUtils.pas:998  u_dzFileUtils.pas:1004
 msgid "File not found: \"%s\""
 msgstr "Datei nicht gefunden: \"%s\""
 
@@ -380,7 +380,7 @@ msgstr "Datei nicht gefunden: \"%s\""
 msgid "Friday"
 msgstr "Freitag"
 
-#: u_dzVclUtils.pas:594
+#: u_dzVclUtils.pas:600
 msgid "Glyph string contained invalid character at position "
 "%d."
 msgstr "Der Glyph-Text beinhaltet ein ungültiges Zeichen an Position "
@@ -445,7 +445,7 @@ msgstr "Ungültiger Wert für DayOfWeek: %d"
 msgid "January"
 msgstr "Januar"
 
-#: u_dzVclUtils.pas:1857
+#: u_dzVclUtils.pas:1874
 msgid "JPEG Files"
 msgstr "JPEG Dateien"
 
@@ -485,11 +485,11 @@ msgid "New capacity cannot be less than current "
 msgstr "Neue Kapazität kann nicht kleiner sein als aktuelle "
 "Länge."
 
-#: u_dzVclUtils.pas:1308
+#: u_dzVclUtils.pas:1325
 msgid "No item selected in combobox"
 msgstr "Kein Eintrag der Combobox ausgewählt"
 
-#: u_dzVclUtils.pas:1327
+#: u_dzVclUtils.pas:1344
 msgid "No item selected in listbox"
 msgstr "Kein Eintrag der Listbox ausgewählt"
 
@@ -583,13 +583,13 @@ msgid "September"
 msgstr "September"
 
 #. Do not use ParamByName -> only works if param is unique
-#: u_dzDatasetHelpers.pas:470  u_dzDatasetHelpers.pas:489
+#: u_dzDatasetHelpers.pas:474  u_dzDatasetHelpers.pas:493
 msgid "SetParamByName is not supported for a %s (only TQuery and TAdoDataset "
 "descendants)."
 msgstr "SetParamByName wird für %s nicht unterstützt (nur TQuery- und "
 "TAdoDataset-Abkömmlinge)"
 
-#: u_dzFileUtils.pas:1017
+#: u_dzFileUtils.pas:1051
 msgid "Short pathname is longer than MAX_PATH (%d) "
 "characters"
 msgstr "Kurzer Pfad ist länger als MAX_PATH (%d) "
@@ -616,28 +616,28 @@ msgid "Table has no column with name \"%s\""
 msgstr "Tabelle hat keine Spalte mit dem Namen "
 "\"%s\""
 
-#: u_dzFileUtils.pas:1015
+#: u_dzFileUtils.pas:1049
 msgid "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling "
 "Windows.GetShortPathname"
 msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) beim Aufruf von "
 "Windows.GetShortPathname"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:937
+#: u_dzFileUtils.pas:947
 msgid "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling "
 "Windows.GetTempFileName"
 msgstr "TFileSystem.GetTempFilename: %1:s (Code: %0:d) beim Aufruf von "
 "Windows.GetTempFileName"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:870
+#: u_dzFileUtils.pas:880
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling "
 "Windows.GetTempPath"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) beim Aufruf von "
 "Windows.GetTempPath"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:878
+#: u_dzFileUtils.pas:888
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling "
 "Windows.GetTempPath (2nd)"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) beim Aufruf von "

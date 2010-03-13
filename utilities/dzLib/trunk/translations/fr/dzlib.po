@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr "Project-Id-Version: dzLib 1.0\n"
-"POT-Creation-Date: 2010-02-12 15:20\n"
+"POT-Creation-Date: 2010-03-13 12:46\n"
 "PO-Revision-Date: 2008-09-04 05:41-0800\n"
 "Last-Translator: Thomas Mueller <dzlib@dummzeuch.de>\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
@@ -18,13 +18,13 @@ msgstr "Project-Id-Version: dzLib 1.0\n"
 
 #: w_dzProgress.pas:162
 msgid "\"%\" must be followed by \"d\" or \"%\"."
-msgstr ""
+msgstr "\"%\" Doit être suivi par \"d\" ou \"%\"."
 
-#: u_dzFileUtils.pas:1427
+#: u_dzFileUtils.pas:1461
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" n'existe pas ou n'est pas un répértoire"
 
-#: u_dzVclUtils.pas:820  u_dzVclUtils.pas:867
+#: u_dzVclUtils.pas:837  u_dzVclUtils.pas:884
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
@@ -39,7 +39,7 @@ msgid "\"%s\" is not a valid Int64 value: %s"
 msgstr "\"%s\" n'est pas une valeur Int64 correcte: "
 "%s"
 
-#: u_dzVclUtils.pas:835  u_dzVclUtils.pas:899 u_dzVclUtils.pas:912
+#: u_dzVclUtils.pas:852  u_dzVclUtils.pas:916 u_dzVclUtils.pas:929
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
@@ -79,8 +79,10 @@ msgid "%.2f TiB"
 msgstr "%.2f Goctets"
 
 #: u_dzExecutor.pas:413
+#, fuzzy
 msgid "%1:s (%0:d) in CreateProcess(\"%s\", \"%s\")"
-msgstr ""
+msgstr "% 1: s (% 0: d) dans CreateProcess ( %s "
+"%s"
 
 #: u_dzConvertUtils.pas:719
 msgid "%d Bytes"
@@ -116,18 +118,17 @@ msgid "%s accessing file %s"
 msgstr "Allocation du fichier de capture"
 
 #: u_dzDbCreatorDescription.pas:817
-#, fuzzy
 msgid "%s is not a valid TFieldDataType name"
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
 #: u_dzDbCreatorDescription.pas:785
-#, fuzzy
 msgid "%s is not a valid TSortOrder name"
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
 #: u_dzDbCreatorDescription.pas:765
+#, fuzzy
 msgid "%s is not in 'yes'/'no'"
-msgstr ""
+msgstr "%s n'est pas en «oui» / «non»"
 
 #: w_dzDialog.pas:805
 msgid "&Details <<"
@@ -139,21 +140,21 @@ msgstr "&Détails >>"
 
 #: w_dzWizard.pas:342  w_dzWizardForm.pas:227
 msgid "&Finish"
-msgstr ""
+msgstr "&Terminer"
 
 #. f_dzWizard..p_Buttons..b_Next..Caption
 #. f_dzWizardForm..p_Buttons..b_Next..Caption
 #: w_dzWizard.dfm:1210  w_dzWizardForm.dfm:1210 w_dzWizard.pas:341
 #: w_dzWizardForm.pas:226
 msgid "&Next >"
-msgstr ""
+msgstr "&Suivant>"
 
 #. f_dzWizard..p_Buttons..b_Prev..Caption
 #. f_dzWizardForm..p_Buttons..b_Prev..Caption
 #: w_dzWizard.dfm:1233  w_dzWizardForm.dfm:1233 w_dzWizard.pas:339
 #: w_dzWizardForm.pas:224
 msgid "< &Previous"
-msgstr ""
+msgstr "<&Précédent"
 
 #. f_dzProgress..b_Cancel..Caption
 #: w_dzProgress.dfm:42
@@ -162,17 +163,18 @@ msgstr "Annuler"
 
 #. f_dzProgress..l_Action..Caption
 #: w_dzProgress.dfm:25
+#, fuzzy
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #. 400;
 #: w_dzDialog.pas:625
 msgid "Additional information:"
-msgstr ""
+msgstr "Informations complémentaires:"
 
 #: w_dzWizard.pas:478
 msgid "Already on first page."
-msgstr ""
+msgstr "Déjà à la première page."
 
 #: w_dzDialog.pas:601
 #, fuzzy
@@ -189,14 +191,18 @@ msgid "August"
 msgstr "Août"
 
 #: u_dzDbCreatorDescription.pas:1797
+#, fuzzy
 msgid "Can not apply default %s, no variable with that "
 "name."
-msgstr ""
+msgstr "Impossible %s par défaut %s aucune variable avec ce "
+"nom."
 
 #: u_dzExecutor.pas:227
+#, fuzzy
 msgid "Can not free Executor while a process using redirection is still "
 "running."
-msgstr ""
+msgstr "Impossible de libérer Executor tout un processus utilisant la "
+"redirection fonctionne toujours."
 
 #. f_dzInputDialog..b_Cancel..Caption
 #. f_dzWizard..p_Buttons..b_Cancel..Caption
@@ -207,9 +213,11 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: u_dzStatistics.pas:69
+#, fuzzy
 msgid "Cannot calculate moving average on zero "
 "elements"
-msgstr ""
+msgstr "Impossible de calculer la moyenne mobile sur des éléments "
+"zéro"
 
 #: u_dzStringUtils.pas:923
 msgid "Cannot center string that is larger than the maximum "
@@ -220,59 +228,71 @@ msgstr "Impossible de centrer une chaine qui est plus longue que la longueur "
 #: u_dzFileStreams.pas:338
 msgid "Cannot change filename when file is "
 "open."
-msgstr ""
+msgstr "Ne peut pas changer le nom de fichier quand le fichier est "
+"ouvert."
 
-#: u_dzFileUtils.pas:1655
+#: u_dzFileUtils.pas:1689
 msgid "Combination of ResultContainsNumber and KeepOriginal is not "
 "allowed"
-msgstr ""
+msgstr "Combinaison de ResultContainsNumber et KeepOriginal n'est pas "
+"possible"
 
 #: u_dzDbCreatorDescription.pas:1186
+#, fuzzy
 msgid "Could not append index %s. Table %s already has a index with that "
 "name."
-msgstr ""
+msgstr "Impossible de %s l'indice %s"
 
 #: u_dzDbCreatorDescription.pas:1181
+#, fuzzy
 msgid "Could not append index %s. Table %s already has a primary "
 "key."
-msgstr ""
+msgstr "Impossible de %s l'indice %s"
 
-#: u_dzFileUtils.pas:919
-#, fuzzy
+#: u_dzFileUtils.pas:929
 msgid "Could not find a unique directory name based on "
 "\"%s\""
 msgstr "Impossible de trouver un nom de répertoire unique sur la base de "
 "\"%s\""
 
 #: u_dzDllLoader.pas:119  u_dzResourceDllLoader.pas:383
+#, fuzzy
 msgid "Could not find entry point %s in %s\n"
 "ERROR= %%d, %%s"
-msgstr ""
+msgstr "Impossible de trouver le point d'entrée %s en %s\n"
+"ERROR= %%d, %%s"
 
 #: u_dzResourceDllLoader.pas:196
 msgid "Could not find RESOURCEDLL \"%s\""
-msgstr ""
+msgstr "Impossible de trouver RESOURCEDLL %s"
 
 #: u_dzDllLoader.pas:98
+#, fuzzy
 msgid "Could not load %s."
-msgstr ""
+msgstr "Impossible de %s"
 
 #: u_dzResourceDllLoader.pas:200
+#, fuzzy
 msgid "Could not load RESOURCEDLL \"%s\""
-msgstr ""
+msgstr "Impossible de charger RESOURCEDLL %s"
 
 #: u_dzResourceDllLoader.pas:204
+#, fuzzy
 msgid "Could not lock RESOURCEDLL \"%s\""
-msgstr ""
+msgstr "Impossible de verrouiller RESOURCEDLL "
+"%s"
 
 #: u_dzDbCreatorDescription.pas:1536
+#, fuzzy
 msgid "Cyclic table references detected"
-msgstr ""
+msgstr "Tableau de références cycliques détectées"
 
 #: u_dzDbCreatorDescription.pas:896
+#, fuzzy
 msgid "Data type of foreign key and primary key of referenced table do not "
 "match"
-msgstr ""
+msgstr "Type de données de clé étrangère et clé primaire de la table "
+"référencée ne correspondent pas"
 
 #: u_dzDateUtils.pas:122
 msgid "December"
@@ -290,44 +310,48 @@ msgstr "Chiffre hors d'echelle %s"
 #: u_dzCustomDllLoader.pas:125 u_dzCustomDllLoader.pas:130
 #: u_dzCustomDllLoader.pas:135 u_dzCustomDllLoader.pas:140
 #: u_dzCustomDllLoader.pas:145
+#, fuzzy
 msgid "DLL entry point not initialized"
-msgstr ""
+msgstr "DLL entrée non initialisée"
 
 #: w_dzDialog.pas:519
+#, fuzzy
 msgid "Do not show again."
-msgstr ""
+msgstr "Ne pas afficher de nouveau."
 
 #: w_dzProgress.pas:101
+#, fuzzy
 msgid "Do you really want to abort?"
-msgstr ""
+msgstr "Voulez-vous vraiment faire avorter?"
 
 #: u_dzNameValueList.pas:96
+#, fuzzy
 msgid "Entry \"%s\" not found."
-msgstr ""
+msgstr "%s introuvable."
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:895  u_dzFileUtils.pas:1390
+#: u_dzFileUtils.pas:905  u_dzFileUtils.pas:1424
 msgid "Error %%1:s (%%0:d) creating directory "
 "\"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de la création du répertoire "
 "\"%s\""
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1409
+#: u_dzFileUtils.pas:1443
 msgid "Error %%1:s (%%0:d) deleting directory "
 "\"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de l'effacement du répertoire "
 "\"%s\""
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1277
+#: u_dzFileUtils.pas:1311
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de l'effacement du fichier "
 "\"%s\""
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1047
+#: u_dzFileUtils.pas:1081
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of "
 "\"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors du changement de l'indicateur lecture seule "
@@ -336,14 +360,14 @@ msgstr "Erreur %%1:s (%%0:d) lors du changement de l'indicateur lecture seule "
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1067  u_dzFileUtils.pas:1174 u_dzFileUtils.pas:1247
+#: u_dzFileUtils.pas:1101  u_dzFileUtils.pas:1208 u_dzFileUtils.pas:1281
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to "
 "\"%s\"."
 msgstr "Erreur %%1:s (%%0:d) lors de la copie de \"%s\" vers "
 "\"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1029
+#: u_dzFileUtils.pas:1063
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to "
 "\"%s\"."
 msgstr "Erreur %%1:s (%%0:d) lors du déplacement de \"%s\" vers "
@@ -355,12 +379,12 @@ msgid "Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings"
 msgstr "Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings"
 
 #. ForceDirectories can raise EInOutError if the directory path contains empty parts
-#: u_dzFileUtils.pas:1382
+#: u_dzFileUtils.pas:1416
 #, fuzzy
 msgid "Error creating directory \"%s\": %s (%s)"
 msgstr "Erreur Temps dépassé dans %s"
 
-#: u_dzDatasetHelpers.pas:534
+#: u_dzDatasetHelpers.pas:538
 #, fuzzy
 msgid "Error posting a dataset to \"%s\". (%s)"
 msgstr "Erreur Temps dépassé dans %s"
@@ -369,7 +393,7 @@ msgstr "Erreur Temps dépassé dans %s"
 msgid "February"
 msgstr "Février"
 
-#: u_dzFileUtils.pas:964  u_dzFileUtils.pas:970
+#: u_dzFileUtils.pas:998  u_dzFileUtils.pas:1004
 msgid "File not found: \"%s\""
 msgstr "Fichier non trouvé: \"%s\""
 
@@ -377,19 +401,23 @@ msgstr "Fichier non trouvé: \"%s\""
 msgid "Friday"
 msgstr "Vendredi"
 
-#: u_dzVclUtils.pas:594
+#: u_dzVclUtils.pas:600
+#, fuzzy
 msgid "Glyph string contained invalid character at position "
 "%d."
-msgstr ""
+msgstr "Glyph chaîne contenue à caractère non %d position "
+"%d"
 
 #: u_dzRingBuffer.pas:247  u_dzRingBuffer.pas:258
+#, fuzzy
 msgid "Index %d out of bounds."
-msgstr ""
+msgstr "%d out of bounds."
 
 #. f_dzInputDialog..Caption
 #: w_dzInputDialog.dfm:5
+#, fuzzy
 msgid "InputQuery"
-msgstr ""
+msgstr "InputQuery"
 
 #: u_dzDbCreatorDescription.pas:835
 #, fuzzy
@@ -397,8 +425,9 @@ msgid "Invalid boolean value"
 msgstr "Allocation du fichier de capture"
 
 #: u_dzTextFile.pas:54
+#, fuzzy
 msgid "Invalid file access value (%d)"
-msgstr ""
+msgstr "Blancs accès au fichier valeur %d"
 
 #: u_dzFileStreams.pas:307
 #, fuzzy
@@ -427,16 +456,19 @@ msgid "Invalid month number %d"
 msgstr "L'abscisse est invalide"
 
 #: u_dzDbCreatorDescription.pas:798
+#, fuzzy
 msgid "Invalid TFieldDataType value"
-msgstr ""
+msgstr "Valeur incorrecte TFieldDataType"
 
 #: u_dzDbCreatorDescription.pas:754
+#, fuzzy
 msgid "Invalid TNullAllowed value"
-msgstr ""
+msgstr "Valeur incorrecte TNullAllowed"
 
 #: u_dzDbCreatorDescription.pas:774
+#, fuzzy
 msgid "Invalid TSortOrder value"
-msgstr ""
+msgstr "Valeur incorrecte TSortOrder"
 
 #. should never happen ...
 #: u_dzDateUtils.pas:104
@@ -449,7 +481,7 @@ msgstr "Caractère  \"%s\" invalide dans  le champ  "
 msgid "January"
 msgstr "Janvier"
 
-#: u_dzVclUtils.pas:1857
+#: u_dzVclUtils.pas:1874
 msgid "JPEG Files"
 msgstr "Fichiers JPEG"
 
@@ -462,9 +494,11 @@ msgid "June"
 msgstr "Juin"
 
 #: u_dzConvertUtils.pas:767
+#, fuzzy
 msgid "Length of byte array (%d) does not match size of a LongWord "
 "(%d)"
-msgstr ""
+msgstr "Longueur du tableau d'octets %d ne correspond pas à la taille d'un "
+"LongWord %d"
 
 #: u_dzDateUtils.pas:113
 msgid "March"
@@ -479,30 +513,38 @@ msgid "Monday"
 msgstr "Lundi"
 
 #: w_dzProgress.pas:153
+#, fuzzy
 msgid "must not contain a % at the end"
-msgstr ""
+msgstr "ne doit pas contenir un% à la fin"
 
 #: u_dzRecordArray.pas:67
+#, fuzzy
 msgid "New capacity cannot be less than current "
 "length."
-msgstr ""
+msgstr "Ces nouvelles capacités ne peuvent pas être inférieure à la longueur "
+"actuelle."
 
-#: u_dzVclUtils.pas:1308
+#: u_dzVclUtils.pas:1325
+#, fuzzy
 msgid "No item selected in combobox"
-msgstr ""
+msgstr "Aucun élément sélectionné dans ComboBox"
 
-#: u_dzVclUtils.pas:1327
+#: u_dzVclUtils.pas:1344
+#, fuzzy
 msgid "No item selected in listbox"
-msgstr ""
+msgstr "Aucun élément sélectionné dans ListBox"
 
 #: u_dzClassUtils.pas:365
+#, fuzzy
 msgid "no matching object found"
-msgstr ""
+msgstr "aucun objet correspondant trouvé"
 
 #: u_dzOsUtils.pas:312  u_dzOsUtils.pas:327
+#, fuzzy
 msgid "No version information available for "
 "%s"
-msgstr ""
+msgstr "Aucune information disponible pour la "
+"%s"
 
 #: u_dzDateUtils.pas:121
 msgid "November"
@@ -518,27 +560,32 @@ msgstr "Octobre"
 
 #. f_dzInputDialog..b_Ok..Caption
 #: w_dzInputDialog.dfm:41
+#, fuzzy
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: u_dzExecutor.pas:298
+#, fuzzy
 msgid "Process has not yet been started"
-msgstr ""
+msgstr "Processus n'a pas encore commencé"
 
 #: u_dzExecutor.pas:265
+#, fuzzy
 msgid "Process has not yet been started.\n"
 "%s"
-msgstr ""
+msgstr "Processus n'a pas encore %s"
 
 #: u_dzExecutor.pas:267
+#, fuzzy
 msgid "Process has terminated.\n"
 "%s"
-msgstr ""
+msgstr "Processus a pris %s"
 
 #: u_dzExecutor.pas:266
+#, fuzzy
 msgid "Process is still running.\n"
 "%s"
-msgstr ""
+msgstr "Le processus est toujours en %s"
 
 #. f_dzProgress..Caption
 #: w_dzProgress.dfm:6
@@ -551,23 +598,30 @@ msgstr "Avancement (%d%%)"
 
 #. f_dzInputDialog..l_Query..Caption
 #: w_dzInputDialog.dfm:25
+#, fuzzy
 msgid "Query goes here"
-msgstr ""
+msgstr "Requête goes here"
 
 #: u_dzResourceDllLoader.pas:209
+#, fuzzy
 msgid "RESOURCEDLL \"%s\" is not valid (Check "
 "#1)"
-msgstr ""
+msgstr "RESOURCEDLL %s n'est pas valide (Check # "
+"1)"
 
 #: u_dzResourceDllLoader.pas:213
+#, fuzzy
 msgid "RESOURCEDLL \"%s\" is not valid (Check "
 "#2)"
-msgstr ""
+msgstr "RESOURCEDLL %s n'est pas valide (Check # "
+"2)"
 
 #: u_dzResourceDllLoader.pas:218
+#, fuzzy
 msgid "RESOURCEDLL \"%s\" is not valid (Check "
 "#3)"
-msgstr ""
+msgstr "RESOURCEDLL %s n'est pas valide (Check # "
+"3)"
 
 #: u_dzDateUtils.pas:100
 msgid "Saturday"
@@ -578,23 +632,27 @@ msgid "September"
 msgstr "Septembre"
 
 #. Do not use ParamByName -> only works if param is unique
-#: u_dzDatasetHelpers.pas:470  u_dzDatasetHelpers.pas:489
+#: u_dzDatasetHelpers.pas:474  u_dzDatasetHelpers.pas:493
+#, fuzzy
 msgid "SetParamByName is not supported for a %s (only TQuery and TAdoDataset "
 "descendants)."
-msgstr ""
+msgstr "SetParamByName n'est pas supporté pour %s (seulement TQuery "
+"TAdoDataset et descendants)."
 
-#: u_dzFileUtils.pas:1017
+#: u_dzFileUtils.pas:1051
 msgid "Short pathname is longer than MAX_PATH (%d) "
 "characters"
 msgstr "La longueur du chemin de fichier dépasse MAX_PATH (%d) caractères "
 
 #: u_dzExecutor.pas:435
+#, fuzzy
 msgid "StdErr was not redirected"
-msgstr ""
+msgstr "StdErr n'a pas été redirigé"
 
 #: u_dzExecutor.pas:451
+#, fuzzy
 msgid "StdOut was not redirected"
-msgstr ""
+msgstr "StdOut n'a pas été redirigé"
 
 #: u_dzStringUtils.pas:1012
 msgid "Strings do not have a 0th character."
@@ -605,48 +663,53 @@ msgid "Sunday"
 msgstr "Dimance"
 
 #: u_dzDbCreatorDescription.pas:1626  u_dzDbCreatorDescription.pas:1635
+#, fuzzy
 msgid "Table has no column with name \"%s\""
-msgstr ""
+msgstr "Le tableau n'a pas de colonne avec le nom "
+"%s"
 
-#: u_dzFileUtils.pas:1015
+#: u_dzFileUtils.pas:1049
 msgid "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling "
 "Windows.GetShortPathname"
 msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling "
 "Windows.GetShortPathname"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:937
+#: u_dzFileUtils.pas:947
 msgid "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling "
 "Windows.GetTempFileName"
 msgstr "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling "
 "Windows.GetTempFileName"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:870
+#: u_dzFileUtils.pas:880
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling "
 "Windows.GetTempPath"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) calling "
 "Windows.GetTempPath"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:878
+#: u_dzFileUtils.pas:888
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling "
 "Windows.GetTempPath (2nd)"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) calling "
 "Windows.GetTempPath (2nd)"
 
 #: u_dzDbCreatorDescription.pas:2196
+#, fuzzy
 msgid "There is no script named %s in this db "
 "type"
-msgstr ""
+msgstr "Il n'ya pas de script %s dans ce type "
+"db"
 
 #: u_dzDateUtils.pas:98
 msgid "Thursday"
 msgstr "Jeudi"
 
 #: w_dzProgress.pas:168
+#, fuzzy
 msgid "too many parameters"
-msgstr ""
+msgstr "trop de paramètres"
 
 #: u_dzDateUtils.pas:96
 msgid "Tuesday"
@@ -664,8 +727,9 @@ msgstr "commande inconnue \"%s\""
 
 #. do not translate
 #: u_dzMiscUtils.pas:253
+#, fuzzy
 msgid "unknown Registry Root Key %x"
-msgstr ""
+msgstr "inconnu registre Root% Principales x"
 
 #. do not translate
 #. do not translate
