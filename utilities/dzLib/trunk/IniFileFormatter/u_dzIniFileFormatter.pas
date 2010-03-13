@@ -141,14 +141,17 @@ begin
       Comment.Clear;
       FSections.Add(Section);
     end else begin
-      if (Copy(s, 1, 2) = '//') or (Copy(s, 1, 1) = ';')
-        or (Copy(s, 1, 1) = '#') or (Section = nil) then begin
-        Comment.Add(s);
-      end else if (s <> '') then begin
-        Item := TIniItem.Create(s);
-        Item.Comment := Trim(Comment.Text);
-        Comment.Clear;
-        Section.Items.Add(Item);
+      if (s <> '') then begin
+        if (Copy(s, 1, 2) = '//') or (Copy(s, 1, 1) = ';')
+          or (Copy(s, 1, 1) = '#') or (Section = nil)
+          or (Pos('=', s) = 0) then begin
+          Comment.Add(s);
+        end else begin
+          Item := TIniItem.Create(s);
+          Item.Comment := Trim(Comment.Text);
+          Comment.Clear;
+          Section.Items.Add(Item);
+        end;
       end;
     end;
   end;
