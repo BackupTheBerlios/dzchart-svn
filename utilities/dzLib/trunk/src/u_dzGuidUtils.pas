@@ -30,6 +30,8 @@ type
     function Value: TGuid;
     ///<summary> returns true, if valid, false otherwise </summary>
     function IsValid: boolean;
+    ///<summary> returns a new, valid GUID </summary>
+    class function Generate: TNullableGuid; static;
   end;
 
 ///<summary> Tries to convert a string to a GUID, returns true if successfull </summary>
@@ -132,6 +134,11 @@ begin
     Result := GUIDToString(_a.FValue)
   else
     Result := '';
+end;
+
+class function TNullableGuid.Generate: TNullableGuid;
+begin
+  Result.GenerateNew;
 end;
 
 procedure TNullableGuid.GenerateNew;
