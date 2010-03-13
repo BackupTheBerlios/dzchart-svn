@@ -6,15 +6,15 @@
 set BASE=.
 
 @rem extract from subdirectories src and forms
-..\..\dxgettext --delphi -r -b %BASE%\src -b %BASE%\forms -o %BASE%
+..\..\buildtools\dxgettext --delphi -r -b %BASE%\src -b %BASE%\forms -o %BASE%
 
 @rem remove strings given in ignore.po
-..\..\msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
+..\..\buildtools\msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
 
 @rem merge German translations
-..\..\msgmerge --no-wrap --update %BASE%\translations\de\dzCmdLineParser.po %BASE%\filtered.po
+..\..\buildtools\msgmerge --no-wrap --update %BASE%\translations\de\dzCmdLineParser.po %BASE%\filtered.po
 
 @rem merge English translations
-..\..\msgmerge --no-wrap --update %BASE%\translations\en\dzCmdLineParser.po %BASE%\filtered.po
+..\..\buildtools\msgmerge --no-wrap --update %BASE%\translations\en\dzCmdLineParser.po %BASE%\filtered.po
 
 pause
