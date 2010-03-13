@@ -22,11 +22,13 @@
 {                                                                                                  }
 { Platform-independent MIDI declarations                                                           }
 {                                                                                                  }
-{ Unit owner: Robert Rossmair                                                                      }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-07-24 07:34:39 +0200 (lun., 24 juil. 2006) $
 
 unit JclMIDI;
 
@@ -363,10 +365,12 @@ function MIDINoteToStr(Note: TMIDINote): string;
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclMIDI.pas $';
-    Revision: '$Revision: 1694 $';
-    Date: '$Date: 2006-07-24 07:34:39 +0200 (lun., 24 juil. 2006) $';
-    LogPath: 'JCL\source\common'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclMIDI.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -427,7 +431,7 @@ end;
 
 procedure CheckMIDIChannelNum(Channel: TMIDIChannel);
 begin
-  if (Channel < Low(TMIDIChannel)) or (Channel > High(TMIDIChannel)) then
+  if (Integer(Channel) < Low(TMIDIChannel)) or (Integer(Channel) > High(TMIDIChannel)) then
     raise EJclMIDIError.CreateResFmt(@RsMidiInvalidChannelNum, [Channel]);
 end;
 
@@ -637,9 +641,9 @@ begin
   if IsRunningStatus(Data[0]) then
     {$IFDEF FPC}
     DoSendMessage(PJclByteArray(@Data[1])^)
-    {$ELSE}
+    {$ELSE ~FPC}
     DoSendMessage(Slice(Data, 1))
-    {$ENDIF FPC}
+    {$ENDIF ~FPC}
   else
     DoSendMessage(Data);
 end;

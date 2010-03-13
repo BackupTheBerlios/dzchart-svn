@@ -1,3 +1,11 @@
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
+
 unit mscorlib_TLB;
 
 // ************************************************************************ //
@@ -11,7 +19,7 @@ unit mscorlib_TLB;
 // manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// PASTLWTR : $Revision: 1726 $
+// PASTLWTR : $Revision: 122 $
 // File generated on 14.12.2003 01:40:37 from Type Library described below.
 
 // ************************************************************************  //
@@ -4614,9 +4622,11 @@ type
     m_value: LongWord;
   end;
 
+  {$IFNDEF FPC}
   UInt64 = packed record
     m_value: Largeuint;
   end;
+  {$ENDIF ~FPC}
 
   UIntPtr = packed record
     m_value: Pointer;

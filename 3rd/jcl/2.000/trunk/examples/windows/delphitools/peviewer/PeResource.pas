@@ -19,7 +19,7 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $                                                      }
+{ Last modified: $Date: 2009-04-21 22:46:30 +0200 (mar., 21 avr. 2009) $                                                      }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -30,10 +30,7 @@ unit PeResource;
 interface
 
 uses
-  Windows, Messages, Classes, SysUtils, Graphics, ComCtrls,
-  {$IFDEF DELPHI5_UP}
-  Contnrs,
-  {$ENDIF}
+  Windows, Messages, Classes, SysUtils, Graphics, ComCtrls, Contnrs,
   JclBase, JclFileUtils, JclPeImage, JclStrings;
 
 type
@@ -726,10 +723,16 @@ const
 
 function WideCharToStr(WStr: PWChar; Len: Integer): string;
 begin
+  {$IFDEF SUPPORTS_UNICODE}
+  SetLength(Result, Len);
+  if Len > 0 then
+    Move(WStr^, Result[1], Len * SizeOf(WideChar));
+  {$ELSE SUPPORTS_UNICODE}
   if Len = 0 then Len := -1;
   Len := WideCharToMultiByte(CP_ACP, 0, WStr, Len, nil, 0, nil, nil);
   SetLength(Result, Len);
   WideCharToMultiByte(CP_ACP, 0, WStr, Len, PChar(Result), Len, nil, nil);
+  {$ENDIF ~SUPPORTS_UNICODE}
 end;
 
 { TPeResItem }
@@ -1366,7 +1369,7 @@ begin
           S := WideCharToStr(PWideChar(Text), lstrlenW(PWideChar(Text)))
         else
           SetString(S, PAnsiChar(Text), StrLen(Text));
-        if StripCrLf then S := StrRemoveChars(S, [AnsiCarriageReturn, AnsiLineFeed]);
+        if StripCrLf then S := StrRemoveChars(S, CharIsReturn);
         Strings.AddObject(S, Pointer(E));
       end;
       Entry := Pointer(PChar(Entry) + Entry^.Length);
@@ -1395,7 +1398,7 @@ begin
       Inc(P);
       ID := ((FResourceItem.ParentItem.Entry^.Name - 1) shl 4) + Cnt;
       S := WideCharToStr(P, Len);
-      if StripCrLf then S := StrRemoveChars(S, [AnsiCarriageReturn, AnsiLineFeed]);
+      if StripCrLf then S := StrRemoveChars(S, CharIsReturn);
       Strings.AddObject(S, Pointer(ID));
       Inc(P, Len);
     end else

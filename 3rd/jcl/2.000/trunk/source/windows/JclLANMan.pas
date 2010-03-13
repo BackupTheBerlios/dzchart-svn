@@ -28,8 +28,12 @@
 { implies, it uses the LAN Manager API.                                                            }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 // Comments to Win9x compatibility of the functions used in this unit
 
@@ -83,23 +87,25 @@ function GlobalGroupExists(const Server, Group: string): Boolean;
 
 function AddAccountToLocalGroup(const Accountname, Groupname: string): Boolean;
 function LookupGroupName(const Server: string; const RID: TNetWellKnownRID): string;
-procedure ParseAccountName(const QualifiedName: string; var Domain, UserName: string);
+procedure ParseAccountName(const QualifiedName: string; out Domain, UserName: string);
 function IsLocalAccount(const AccountName: string): Boolean;
 
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/windows/JclLANMan.pas $';
-    Revision: '$Revision: 1695 $';
-    Date: '$Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $';
-    LogPath: 'JCL\source\windows'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/windows/JclLANMan.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\source\windows';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
 implementation
 
 uses
-  JclBase, JclStrings, JclSysInfo, JclWin32;
+  JclBase, JclStrings, JclSysUtils, JclSysInfo, JclWin32;
 
 function CreateAccount(const Server, Username, Fullname, Password, Description,
   Homedir, Script: string; const PasswordNeverExpires: Boolean): Boolean;
@@ -118,7 +124,7 @@ begin
   wScript := Script;
   wHomedir := Homedir;
 
-  FillChar(Details, SizeOf(Details), #0);
+  ResetMemory(Details, SizeOf(Details));
   with Details do
   begin
     usri2_name := PWideChar(wUsername);
@@ -172,7 +178,7 @@ begin
   wGroupname := Groupname;
   wDescription := Description;
 
-  FillChar(Details, SizeOf(Details), #0);
+  ResetMemory(Details, SizeOf(Details));
   Details.grpi1_name := PWideChar(wGroupName);
   Details.grpi1_comment := PWideChar(wDescription);
 
@@ -191,7 +197,7 @@ begin
   wGroupname := Groupname;
   wDescription := Description;
 
-  FillChar(Details, SizeOf(Details), #0);
+  ResetMemory(Details, SizeOf(Details));
   Details.lgrpi1_name := PWideChar(wGroupName);
   Details.lgrpi1_comment := PWideChar(wDescription);
 
@@ -373,7 +379,7 @@ end;
 
 function LookupGroupName(const Server: string; const RID: TNetWellKnownRID): string;
 var
-  sia: SID_IDENTIFIER_AUTHORITY;
+  sia: Windows.SID_IDENTIFIER_AUTHORITY;
   rd1, rd2: DWORD;
   ridCount: Integer;
   sd: PSID;
@@ -396,10 +402,12 @@ begin
     rd2 := RIDToDWORD(RID);
     ridCount := 2;
   end;
+  sd := nil;
   if AllocateAndInitializeSid(sia, ridCount, rd1, rd2, 0, 0, 0, 0, 0, 0, sd) then
   try
     AccountNameLen := 0;
     DomainNameLen := 0;
+    SidNameUse := SidTypeUnknown;
     if not LookupAccountSID(PChar(Server), sd, PChar(Result), AccountNameLen,
       nil, DomainNameLen, SidNameUse) then
       SetLength(Result, AccountNamelen);
@@ -414,7 +422,7 @@ begin
   end;
 end;
 
-procedure ParseAccountName(const QualifiedName: string; var Domain, UserName: string);
+procedure ParseAccountName(const QualifiedName: string; out Domain, UserName: string);
 var
   Parts: TStringList;
 begin

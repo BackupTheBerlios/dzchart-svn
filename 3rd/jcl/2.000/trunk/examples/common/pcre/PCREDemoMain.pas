@@ -42,11 +42,11 @@ type
 
   private
     { Private declarations }
-    RE: TJclAnsiRegEx;
+    RE: TJclRegEx;
     FMatchIndex: integer;
-    procedure SelectText(Range: TJclAnsiCaptureRange);
+    procedure SelectText(Range: TJclCaptureRange);
     procedure Match;
-    function GetUIOptions: TJclAnsiRegExOptions;
+    function GetUIOptions: TJclRegExOptions;
     procedure UpdateUIOptions;
     procedure LoadFromFile(const Filename:string);
   protected
@@ -73,7 +73,7 @@ end;
 procedure TfrmMain.acFindExecute(Sender: TObject);
 begin
   FreeAndNil(RE);
-  RE := TJclAnsiRegEx.Create;
+  RE := TJclRegEx.Create;
   RE.Options := GetUIOptions;
   RE.Compile(edRegExpr.Text, false, false);
   FMatchIndex := 1;
@@ -88,10 +88,10 @@ begin
     Match;
 end;
 
-procedure TfrmMain.SelectText(Range: TJclAnsiCaptureRange);
+procedure TfrmMain.SelectText(Range: TJclCaptureRange);
 begin
-  reFile.SelStart := Range.FirstPos;
-  reFile.SelLength := Range.LastPos - Range.FirstPos;
+  reFile.SelStart := Range.FirstPos - 1;
+  reFile.SelLength := Range.LastPos - Range.FirstPos + 1;
 end;
 
 procedure TfrmMain.Match;
@@ -105,12 +105,12 @@ begin
   else
   begin
     SelectText(RE.CaptureRanges[0]);
-    FMatchIndex := RE.CaptureRanges[0].LastPos;
+    FMatchIndex := RE.CaptureRanges[0].LastPos + 1;
   end;
   UpdateUIOptions;
 end;
 
-function TfrmMain.GetUIOptions: TJclAnsiRegExOptions;
+function TfrmMain.GetUIOptions: TJclRegExOptions;
 begin
   Result := [];
   if chkIgnoreCase.Checked then
@@ -141,7 +141,7 @@ end;
 
 procedure TfrmMain.UpdateUIOptions;
 var
-  Options: TJclAnsiRegExOptions;
+  Options: TJclRegExOptions;
 begin
   if RE = nil then Exit;
   Options := RE.Options;

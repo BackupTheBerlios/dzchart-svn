@@ -21,8 +21,12 @@
 { located at http://jcl.sourceforge.net                                                            }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// $Id: JclSIMDView.pas 1671 2006-05-29 22:02:45Z outchy $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclSIMDView;
 
@@ -33,7 +37,11 @@ interface
 uses
   Windows, Classes, Menus, ActnList, ToolsAPI, SysUtils, Graphics, Dialogs,
   Forms, ComCtrls,
-  JclOtaUtils, JclSIMDViewForm, JclSysInfo;
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
+  JclSysInfo,
+  JclOtaUtils, JclSIMDViewForm;
 
 {$R 'JclSIMDIcon.dcr'}
 
@@ -118,14 +126,24 @@ function JCLWizardInit(const BorlandIDEServices: IBorlandIDEServices;
   RegisterProc: TWizardRegisterProc;
   var TerminateProc: TWizardTerminateProc): Boolean; stdcall;
 
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/debug/simdview/JclSIMDView.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\experts\debug\simdview';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
+
 implementation
 
 uses
+  TypInfo,
   JclOtaConsts, JclOtaResources, 
   JclSIMDUtils;
-
-const
-  RsSIMDActionName = 'DebugSSECommand';
 
 procedure Register;
 begin
@@ -144,18 +162,10 @@ var
   JCLWizardIndex: Integer = -1;
 
 procedure JclWizardTerminate;
-var
-  OTAWizardServices: IOTAWizardServices;
 begin
   try
     if JCLWizardIndex <> -1 then
-    begin
-      Supports(BorlandIDEServices, IOTAWizardServices, OTAWizardServices);
-      if not Assigned(OTAWizardServices) then
-        raise EJclExpertException.CreateTrace(RsENoWizardServices);
-
-      OTAWizardServices.RemoveWizard(JCLWizardIndex);
-    end;
+      TJclOTAExpertBase.GetOTAWizardServices.RemoveWizard(JCLWizardIndex);
   except
     on ExceptionObj: TObject do
     begin
@@ -167,17 +177,11 @@ end;
 function JCLWizardInit(const BorlandIDEServices: IBorlandIDEServices;
     RegisterProc: TWizardRegisterProc;
     var TerminateProc: TWizardTerminateProc): Boolean stdcall;
-var
-  OTAWizardServices: IOTAWizardServices;
 begin
   try
     TerminateProc := JclWizardTerminate;
 
-    Supports(BorlandIDEServices, IOTAWizardServices, OTAWizardServices);
-    if not Assigned(OTAWizardServices) then
-      raise EJclExpertException.CreateTrace(RsENoWizardServices);
-
-    JCLWizardIndex := OTAWizardServices.AddWizard(TJclSIMDWizard.Create);
+    JCLWizardIndex := TJclOTAExpertBase.GetOTAWizardServices.AddWizard(TJclSIMDWizard.Create);
 
     Result := True;
   except
@@ -211,7 +215,7 @@ end;
 procedure TJclSIMDWizard.SIMDActionExecute(Sender: TObject);
 begin
   try
-    if CpuInfo.SSE = 0 then
+    if CpuInfo.SSE = [] then
       raise EJclExpertException.CreateTrace(RsNoSSE);
 
     if not Assigned(FForm) then
@@ -244,7 +248,7 @@ begin
   try
     AAction := Sender as TAction;
 
-    if (CpuInfo.SSE <> 0) or CPUInfo.MMX or CPUInfo._3DNow then
+    if (CpuInfo.SSE <> []) or CPUInfo.MMX or CPUInfo._3DNow then
     begin
       AThread := nil;
       AProcess := nil;
@@ -291,12 +295,12 @@ var
   IDEMenu: TMenu;
   ViewMenu: TMenuItem;
   Category: string;
+  NTAServices: INTAServices;
 begin
   inherited RegisterCommands;
 
-  Supports(Services, IOTADebuggerServices, FDebuggerServices);
-  if not Assigned(FDebuggerServices) then
-    raise EJclExpertException.CreateTrace(RsENoDebuggerServices);
+  NTAServices := GetNTAServices;
+  FDebuggerServices := GetOTADebuggerServices;
 
   Category := '';
   for I := 0 to NTAServices.ActionList.ActionCount - 1 do
@@ -312,12 +316,13 @@ begin
   FSIMDAction.OnExecute := SIMDActionExecute;
   FSIMDAction.OnUpdate := SIMDActionUpdate;
   FSIMDAction.Category := Category;
-  FSIMDAction.Name := RsSIMDActionName;
+  FSIMDAction.Name := JclSIMDActionName;
   FSIMDAction.ImageIndex := NTAServices.ImageList.AddIcon(FIcon);
   FSIMDAction.ActionList := NTAServices.ActionList;
   FSIMDAction.ShortCut := Shortcut(Ord('D'), [ssCtrl, ssAlt]);
 
   FSIMDMenuItem := TMenuItem.Create(nil);
+  FSIMDMenuItem.Name := JCLSIMDMenuName;
   FSIMDMenuItem.Action := FSIMDAction;
 
   IDEMenu := NTAServices.MainMenu;
@@ -371,6 +376,8 @@ function TJclSIMDWizard.GetSIMDString: string;
       Result := LeftValue + ',' + RightValue;
   end;
 
+var
+  SSESupport: TSSESupport;
 begin
   Result := '';
   with CpuInfo do
@@ -383,12 +390,9 @@ begin
       Result := Concat(Result, Rs3DNow);
     if Ex3DNow then
       Result := Concat(Result, RsEx3DNow);
-    if SSE >= 1 then
-      Result := Concat(Result, RsSSE1);
-    if SSE >= 2 then
-      Result := Concat(Result, RsSSE2);
-    if SSE >= 3 then
-      Result := Concat(Result, RsSSE3);
+    for SSESupport := Low(TSSESupport) to High(TSSESupport) do
+      if SSESupport in SSE then
+        Result := Concat(Result, GetEnumName(TypeInfo(TSSESupport), Integer(SSESupport)));
     if Is64Bits then
       Result := Result + ',' + RsLong;
   end;
@@ -625,5 +629,13 @@ begin
     end;
   end;
 end;
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

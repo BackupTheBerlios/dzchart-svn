@@ -32,8 +32,12 @@
 {   See home page for latest news & events and online help.                                        }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// $Id: JclEDI_UNEDIFACT_Ext.pas 1699 2006-07-30 19:18:34Z outchy $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclEDI_UNEDIFACT_Ext;
 
@@ -101,10 +105,12 @@ type
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclEDI_UNEDIFACT_Ext.pas $';
-    Revision: '$Revision: 1699 $';
-    Date: '$Date: 2006-07-30 21:18:34 +0200 (dim., 30 juil. 2006) $';
-    LogPath: 'JCL\source\common'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclEDI_UNEDIFACT_Ext.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 {$ENDIF ~EDI_WEAK_PACKAGE_UNITS}
@@ -222,9 +228,8 @@ begin
   for I := 0 to DataSegment.ElementCount - 1 do
   begin
     if I > J then
-      raise EJclEDIError.CreateResFmt(@RsEDIError058,
-        [IntToStr(I), DataSegment.SegmentId,
-         IntToStr(DataSegment.GetIndexPositionFromParent)]);
+      raise EJclEDIError.CreateIDFmt(58, [IntToStr(I), DataSegment.SegmentId,
+        IntToStr(DataSegment.GetIndexPositionFromParent)]);
     DataSegment.EDIDataObject[I].SpecPointer := SpecSegment.Elements[I];
     // ToDo: Assign SubElement Specs
   end;

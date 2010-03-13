@@ -6,13 +6,11 @@ uses
   {$IFDEF MSWINDOWS}
   Forms,
   {$ENDIF MSWINDOWS}
-  {$IFDEF KYLIX}
-  QForms,
-  {$ENDIF KYLIX}
   ContainerPerformanceMain in 'ContainerPerformanceMain.pas' {MainForm},
   ContainerPerformanceTests in 'ContainerPerformanceTests.pas';
 
 {$R *.res}
+{$R ..\..\..\..\source\windows\JclCommCtrlAsInvoker.res}
 
 begin
   Application.Initialize;

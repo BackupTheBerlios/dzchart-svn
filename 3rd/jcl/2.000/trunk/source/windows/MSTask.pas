@@ -1,3 +1,11 @@
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
+
 (*****************************************************************************
   This IDL-file has been converted by "the fIDLer".
   [written by -=Assarbad=- <oliver at assarbad dot net> Sept-2004] under MPL
@@ -30,9 +38,13 @@ unit MSTask;
 {$WEAKPACKAGEUNIT}
 interface
 
+{$I jcl.inc}
+
 uses
-  Windows,
-  ActiveX;
+  {$IFDEF BORLAND}
+  ActiveX,
+  {$ENDIF BORLAND}
+  Windows;
 
 
 (*$HPPEMIT '#include <MSTask.h>' *)
@@ -580,9 +592,11 @@ type
 {$EXTERNALSYM _PSP}
   _PSP = record end;
 
+{$IFNDEF FPC}
 type
 {$EXTERNALSYM HPROPSHEETPAGE}
   HPROPSHEETPAGE = ^_PSP;
+{$ENDIF ~FPC}
 
 type
 {$EXTERNALSYM _TASKPAGE}

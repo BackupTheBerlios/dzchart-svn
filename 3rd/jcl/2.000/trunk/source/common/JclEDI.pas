@@ -33,8 +33,12 @@
 {   See home page for latest news & events and online help.                                        }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// $Id: JclEDI.pas 1699 2006-07-30 19:18:34Z outchy $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009)                         $ }
+{ Revision:      $Rev:: 126                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclEDI;
 
@@ -82,10 +86,18 @@ var
 {$ENDIF ENABLE_EDI_DEBUGGING}
 
 type
+  {$TYPEINFO ON}
   TEDIObject = class(TObject); // Base EDI Object
+  {$IFNDEF TYPEINFO_ON}
+  {$TYPEINFO OFF}
+  {$ENDIF ~TYPEINFO_ON}
   TEDIObjectArray = array of TEDIObject;
 
-  EJclEDIError = EJclError;
+  EJclEDIError = class(EJclError)
+  public
+    constructor CreateID(ID: Cardinal);
+    constructor CreateIDFmt(ID: Cardinal; const Args: array of const);
+  end;
 
   //  EDI Forward Class Declarations
   TEDIDataObject = class;
@@ -127,11 +139,7 @@ type
 
   TEDIDataObjectDataState = (ediCreated, ediAssembled, ediDisassembled);
 
-  {$IFDEF CLR}
-  TCustomData = TObject;
-  {$ELSE}
   TCustomData = Pointer; // backward compatibility
-  {$ENDIF CLR}
 
   TEDIDataObject = class(TEDIObject)
   private
@@ -249,13 +257,13 @@ type
     FCurrentItem: TEDIObjectListItem;
     function GetEDIObject(Index: Integer): TEDIObject;
     procedure SetEDIObject(Index: Integer; const Value: TEDIObject);
-    function CreateListItem(PriorItem: TEDIObjectListItem;
-      EDIObject: TEDIObject = nil): TEDIObjectListItem; virtual;
   public
     constructor Create(OwnsObjects: Boolean = True);
     destructor Destroy; override;
     procedure Add(Item: TEDIObjectListItem; Name: string = ''); overload;
     function Add(EDIObject: TEDIObject; Name: string = ''): TEDIObjectListItem; overload;
+    function CreateListItem(PriorItem: TEDIObjectListItem;
+      EDIObject: TEDIObject = nil): TEDIObjectListItem; virtual;
     function Find(Item: TEDIObjectListItem): TEDIObjectListItem; overload;
     function Find(EDIObject: TEDIObject): TEDIObjectListItem; overload;
     function FindEDIObject(EDIObject: TEDIObject): TEDIObject;
@@ -380,10 +388,12 @@ function StringReplace(const S, OldPattern, NewPattern: string; Flags: TReplaceF
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclEDI.pas $';
-    Revision: '$Revision: 1699 $';
-    Date: '$Date: 2006-07-30 21:18:34 +0200 (dim., 30 juil. 2006) $';
-    LogPath: 'JCL\source\common'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclEDI.pas $';
+    Revision: '$Revision: 126 $';
+    Date: '$Date: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 {$ENDIF ~EDI_WEAK_PACKAGE_UNITS}
@@ -525,6 +535,18 @@ begin
     Inc(SearchIndex);
     Inc(ReplaceIndex);
   end;
+end;
+
+//=== { EJclEDIError } =======================================================
+
+constructor EJclEDIError.CreateID(ID: Cardinal);
+begin
+  CreateRes(RsEDIErrors[ID]);
+end;
+
+constructor EJclEDIError.CreateIDFmt(ID: Cardinal; const Args: array of const);
+begin
+  CreateResFmt(RsEDIErrors[ID], Args);
 end;
 
 //=== { TEDIDelimiters } =====================================================
@@ -672,11 +694,7 @@ begin
   if IndexIsValid(Index) then
     FEDIDataObjects.Delete(Index)
   else
-    {$IFNDEF CLR}
-    raise EJclEDIError.CreateResFmt(@RsEDIError010, [Self.ClassName, IntToStr(Index)]);
-    {$ELSE}
-    raise EJclEDIError.CreateFmt(RsEDIError010, [Self.ClassName, IntToStr(Index)]);
-    {$ENDIF ~CLR}
+    raise EJclEDIError.CreateIDFmt(10, [Self.ClassName, IntToStr(Index)]);
 end;
 
 procedure TEDIDataObjectGroup.DeleteEDIDataObjects;
@@ -699,11 +717,7 @@ begin
     end;
   end
   else
-    {$IFNDEF CLR}
-    raise EJclEDIError.CreateResFmt(@RsEDIError011, [IntToStr(Index)]);
-    {$ELSE}
-    raise EJclEDIError.CreateFmt(RsEDIError011, [IntToStr(Index)]);
-    {$ENDIF ~CLR}
+    raise EJclEDIError.CreateIDFmt(11, [IntToStr(Index)]);
 end;
 
 destructor TEDIDataObjectGroup.Destroy;
@@ -720,15 +734,15 @@ begin
       if Index <= FEDIDataObjects.Count - 1 then
       begin
         if not Assigned(FEDIDataObjects[Index]) then
-          raise EJclEDIError.CreateFmt(RsEDIError006, [Self.ClassName, IntToStr(Index)]);
+          raise EJclEDIError.CreateIDFmt(6, [Self.ClassName, IntToStr(Index)]);
         Result := FEDIDataObjects[Index];
       end
       else
-        raise EJclEDIError.CreateFmt(RsEDIError005, [Self.ClassName, IntToStr(Index)])
+        raise EJclEDIError.CreateIDFmt(5, [Self.ClassName, IntToStr(Index)])
     else
-      raise EJclEDIError.CreateFmt(RsEDIError004, [Self.ClassName, IntToStr(Index)])
+      raise EJclEDIError.CreateIDFmt(4, [Self.ClassName, IntToStr(Index)])
   else
-    raise EJclEDIError.CreateFmt(RsEDIError003, [Self.ClassName, IntToStr(Index)]);
+    raise EJclEDIError.CreateIDFmt(3, [Self.ClassName, IntToStr(Index)]);
 end;
 
 function TEDIDataObjectGroup.IndexIsValid(Index: Integer): Boolean;
@@ -804,11 +818,11 @@ begin
           FEDIDataObjects[Index].Parent := Self;
       end
       else
-        raise EJclEDIError.CreateFmt(RsEDIError009, [Self.ClassName, IntToStr(Index)])
+        raise EJclEDIError.CreateIDFmt(9, [Self.ClassName, IntToStr(Index)])
     else
-      raise EJclEDIError.CreateFmt(RsEDIError008, [Self.ClassName, IntToStr(Index)])
+      raise EJclEDIError.CreateIDFmt(8, [Self.ClassName, IntToStr(Index)])
   else
-    raise EJclEDIError.CreateFmt(RsEDIError007, [Self.ClassName, IntToStr(Index)]);
+    raise EJclEDIError.CreateIDFmt(7, [Self.ClassName, IntToStr(Index)]);
 end;
 
 function TEDIDataObjectGroup.GetIndexPositionFromParent: Integer;
@@ -1455,12 +1469,12 @@ function TEDILoopStack.Debug: string;
 var
   I: Integer;
 begin
-  Result := 'Loop Stack' + AnsiLineBreak;
+  Result := 'Loop Stack' + NativeLineBreak;
   for I := 0 to High(FStack) do
     Result := Result + FStack[I].SegmentId + ', ' +
       FStack[I].OwnerLoopId + ', ' +
       FStack[I].ParentLoopId + ', ' +
-      IntToStr(FStack[I].SpecStartIndex) + AnsiLineBreak;
+      IntToStr(FStack[I].SpecStartIndex) + NativeLineBreak;
 end;
 
 procedure TEDILoopStack.DoAddLoop(StackRecord: TEDILoopStackRecord;
@@ -1485,11 +1499,7 @@ begin
       Result := Low(FStack);
   end
   else
-    {$IFNDEF CLR}
-    raise EJclEDIError.CreateResFmt(@RsEDIError057, [IntToStr(Index)]);
-    {$ELSE}
-    raise EJclEDIError.CreateFmt(RsEDIError057, [IntToStr(Index)]);
-    {$ENDIF ~CLR}
+    raise EJclEDIError.CreateIDFmt(57, [IntToStr(Index)]);
 end;
 
 function TEDILoopStack.GetSize: Integer;
@@ -1509,11 +1519,11 @@ begin
       if Index <= High(FStack) then
         Result := FStack[Index]
       else
-        raise EJclEDIError.CreateFmt(RsEDIError054, [IntToStr(Index)])
+        raise EJclEDIError.CreateIDFmt(54, [IntToStr(Index)])
     else
-      raise EJclEDIError.CreateFmt(RsEDIError055, [IntToStr(Index)])
+      raise EJclEDIError.CreateIDFmt(55, [IntToStr(Index)])
   else
-    raise EJclEDIError.CreateFmt(RsEDIError056, [IntToStr(Index)]);
+    raise EJclEDIError.CreateIDFmt(56, [IntToStr(Index)]);
 end;
 
 procedure TEDILoopStack.Pop(Index: Integer);

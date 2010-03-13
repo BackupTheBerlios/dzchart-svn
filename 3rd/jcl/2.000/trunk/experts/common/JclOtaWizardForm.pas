@@ -1,31 +1,30 @@
-{****************************************************************************}
-{                                                                            }
-{ Project JEDI Code Library (JCL)                                            }
-{                                                                            }
-{ The contents of this file are subject to the Mozilla Public License        }
-{ Version 1.1 (the "License");                                               }
-{ you may not use this file except in compliance with the License. You may   }
-{ obtain a copy of the License at http://www.mozilla.org/MPL/                }
-{                                                                            }
-{ Software distributed under the License is distributed on an "AS IS" basis, }
-{ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License   }
-{ for the specific language governing rights and limitations under the       }
-{ License.                                                                   }
-{                                                                            }
-{ The Original Code is JclOtaWizardForm.pas.                                 }
-{                                                                            }
-{ The Initial Developer of the Original Code is Florent Ouchet               }
-{         <outchy att users dott sourceforge dott net>                       }
-{ Portions created by Florent Ouchet are Copyright (C) of Florent Ouchet.    }
-{                                                                            }
-{ Contributors:                                                              }
-{                                                                            }
-{****************************************************************************}
-{                                                                            }
-{ Last modified: $Date: $                                                    }
-{                                                                            }
-{****************************************************************************}
-
+{**************************************************************************************************}
+{                                                                                                  }
+{ Project JEDI Code Library (JCL)                                                                  }
+{                                                                                                  }
+{ The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); }
+{ you may not use this file except in compliance with the License. You may obtain a copy of the    }
+{ License at http://www.mozilla.org/MPL/                                                           }
+{                                                                                                  }
+{ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF   }
+{ ANY KIND, either express or implied. See the License for the specific language governing rights  }
+{ and limitations under the License.                                                               }
+{                                                                                                  }
+{ The Original Code is JclOtaWizardForm.pas.                                                       }
+{                                                                                                  }
+{ The Initial Developer of the Original Code is Florent Ouchet                                     }
+{         <outchy att users dott sourceforge dott net>                                             }
+{ Portions created by Florent Ouchet are Copyright (C) of Florent Ouchet. All rights reserved.     }
+{                                                                                                  }
+{ Contributors:                                                                                    }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 unit JclOtaWizardForm;
 
 interface
@@ -35,6 +34,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ActnList,
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
   JclOtaWizardFrame;
 
 type
@@ -80,6 +82,18 @@ type
     property ActivePage: TJclWizardFrame read GetActivePage;
     property Executing: Boolean read FExecuting;
   end;
+
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/common/JclOtaWizardForm.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\experts\common';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
 
 implementation
 
@@ -162,6 +176,10 @@ end;
 
 procedure TJclWizardForm.FormCreate(Sender: TObject);
 begin
+  {$IFDEF COMPILER7_UP}
+  PanelTitle.ParentBackground := False;
+  {$ENDIF COMPILER7_UP}
+
   ActionPrevious.Caption := RsPrevious;
   ActionNext.Caption := RsNext;
   ActionFinish.Caption := RsFinish;
@@ -232,5 +250,13 @@ begin
     LabelProgression.Caption := Format(RsWizardProgression, [PageIndex+1 {one based}, PageCount, AFrame.Caption]);
   end;
 end;
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

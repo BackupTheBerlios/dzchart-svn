@@ -17,11 +17,13 @@
 {                                                                                                  }
 { Contributors:                                                                                    }
 {   Florent Ouchet (outchy)                                                                        }
+{   Uwe Schuster (uschuster)                                                                       }
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Unit owner: Florent Ouchet                                                                       }
-{ Last modified: $Date: 2007-02-16 22:32:52 +0100 (ven., 16 févr. 2007) $                            }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                    $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -31,20 +33,27 @@ interface
 
 {$I jcl.inc}
 
-uses JclBase;
+uses
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
+  JclBase;
 
 //=== JclOtaUtils.pas ========================================================
+{ TODO : consider replacing "Borland X Services" by "IDE X Services"}
 resourcestring
-  RsENoIDEServices = 'Unable to get Borland IDE Services';
+  RsENoOTAServices = 'Unable to get Borland IDE Services';
   RsENoNTAServices = 'Unable to get Borland NTA Services';
-  RsENoSplashServices = 'Unable to get Borland Splash Services';
-  RsENoAboutServices = 'Unable to get Borland About Services';
-  RsENoModuleServices = 'Unable to get Borland Module Services';
-  RsENoWizardServices = 'Unable to get Borland Wizard Services';
-  RsENoPackageServices = 'Unable to get Borland Package Services';
-  RsENoPersonalityServices = 'Unable to get Borland Personality Services';
-  RsENoMessageServices = 'Unable to get Borland Message Services';
-  RsENoGalleryCategoryManager = 'Unable to get Borland Gallery Category Manager';
+  RsENoDebuggerServices = 'Unable to get Borland Debugger Services';
+  RsENoNTASplashServices = 'Unable to get Borland Splash Services';
+  RsENoOTAAboutServices = 'Unable to get Borland About Services';
+  RsENoOTAModuleServices = 'Unable to get Borland Module Services';
+  RsENoOTAWizardServices = 'Unable to get Borland Wizard Services';
+  RsENoOTAPackageServices = 'Unable to get Borland Package Services';
+  RsENoOTAPersonalityServices = 'Unable to get Borland Personality Services';
+  RsENoOTAProjectManager = 'Unable to get project manager';
+  RsENoOTAMessageServices = 'Unable to get Borland Message Services';
+  RsENoOTAGalleryCategoryManager = 'Unable to get Borland Gallery Category Manager';
   RsENoModule = 'Unable to get Module';
   RsBadModuleHInstance = 'Unable to get module HInstance';
   RsENoRootDir = 'RootDir is empty';
@@ -54,30 +63,34 @@ resourcestring
   RsAboutDialogTitle = 'JEDI Code Library';
   RsAboutCopyright = 'Copyright the JCL development team';
   RsAboutTitle = 'JEDI Code Library';
-  RsAboutDescription = 'JEDI Code Library http://jcl.sf.net' + AnsiLineBreak +
-                       'The JCL is a member of the JEDI Project http://www.delphi-jedi.org' + AnsiLineBreak +
-                       'Covered under the Mozilla Public License v1.1 (MPL 1.1)' + AnsiLineBreak +
+  RsAboutDescription = 'JEDI Code Library http://jcl.delphi-jedi.org/' + NativeLineBreak +
+                       'The JCL is a member of the JEDI Project http://www.delphi-jedi.org' + NativeLineBreak +
+                       'Covered under the Mozilla Public License v1.1 (MPL 1.1)' + NativeLineBreak +
                        'License available at http://www.mozilla.org/MPL/MPL-1.1.html';
   RsAboutLicenceStatus = 'MPL 1.1';
   RsJCLOptions = 'JCL Options...';
   RsActionSheet = 'Common\Actions';
+  RsUnitVersioningSheet = 'Common\Unit versioning';
   RsENoBitmapResources = 'Unable to load bitmap resource';
   RsENoEnvironmentOptions = 'Environment options are not available';
+  RsELineTooLong = 'Line too long in project file';
+  RsEUnterminatedComment = 'Unterminated comment in project file';
 
 //=== JclExceptionForm.pas ===================================================
 resourcestring
   RsReportFormCaption = 'Exception in an expert of the JCL';
-  RsExceptionDetails = 'An exception was raised in an expert of the JCL.' + AnsiLineBreak +
+  RsExceptionDetails = 'An exception was raised in an expert of the JCL.' + NativeLineBreak +
                        'The JCL development team expects quality and performance for the library.' +
                        'That''s why we highly encourage you to report this exception by quoting ' +
                        'your version of Delphi/BCB/BDS (including patch numbers), by explaining ' +
-                       'steps to reproduce and by copying the call stack displayed in the box below.' + AnsiLineBreak +
-                       'There are several ways to report bugs in the JCL:' + AnsiLineBreak +
-                       ' - issue tracker (recommended),' + AnsiLineBreak +
-                       ' - jedi newsgroups,' + AnsiLineBreak +
-                       ' - mailing list.' + AnsiLineBreak +
+                       'steps to reproduce and by copying the call stack displayed in the box below.' + NativeLineBreak +
+                       'There are several ways to report bugs in the JCL:' + NativeLineBreak +
+                       ' - issue tracker (recommended),' + NativeLineBreak +
+                       ' - jedi newsgroups,' + NativeLineBreak +
+                       ' - mailing list.' + NativeLineBreak +
                        'Details and guidelines for these tools are available at:';
-  RsReportURL = 'http://homepages.borland.com/jedi/jcl/page24.html';
+  { TODO : Should this link lead directly to the issue tracker at http://issuetracker.delphi-jedi.org/ ?}
+  RsReportURL = 'http://jcl.delphi-jedi.org/page24.html';
   RsReportCaption = 'JCL - Feedback&&Support - Report a bug page';
   RsDetailsExceptionName = 'Exception class name: ';
   RsDetailsExceptionMessage = 'Exception message: ';
@@ -91,6 +104,11 @@ resourcestring
   RsShortcut = 'Shortcut';
   RsRestore = '&Restore';
 
+//=== JclOtaUnitVersioningSheet.pas ==========================================
+resourcestring
+  RsCopyToClipboard = '&Copy to clipboard';
+  RsSaveAsText = '&Save as...';
+
 //=== JclExpertConfigurationForm.pas =========================================
 resourcestring
   RsConfigurationCaption = 'JCL Options';
@@ -98,6 +116,7 @@ resourcestring
   RsCancel = '&Cancel';
   RsSelectPage = 'Select a page';
   RsHomePage = '&JCL Home page';
+  RsHomePageURL = 'http://jcl.delphi-jedi.org/';
 
 //=== JclOtaWizardForm.pas ===================================================
 resourcestring
@@ -133,12 +152,22 @@ resourcestring
 resourcestring
   RsExcDlgSystemOptions = 'system options';
   RsDelayedStackTrace = '&Delayed stack traces (faster)';
-  RsLogTrace = '&Add crash data to log file';
   RsHookDll = '&Hook DLL';
   RsModuleList = '&Module list';
+  RsUnitVersioning = '&Unit versioning';
   RsOSInfo = '&Operating system informations';
   RsActiveControls = '&List of active controls';
-  RsMainThreadOnly = '&Catch only exceptions of main thread';
+  RsCatchMainThread = '&Catch only exceptions of main thread';
+  RsDisableIfDebuggerAttached = 'Disable if the debu&gger is attached';
+
+//=== JclOtaExcDlgLogFrame.pas ===============================================
+resourcestring
+  RsExcDlgLogOptions = 'log options';
+  RsLogTrace = '&Add crash data to log file';
+  RsLogInWorkingDirectory = 'Autosave in &working directory';
+  RsLogInApplicationDirectory = 'Autosave in &application directory (not recommended)';
+  RsLogInDesktopDirectory = 'Autosave in &desktop directory';
+  RsLogSaveDialog = 'Add a save &button on dialog';
 
 //=== JclOtaExcDlgTraceFrame.pas =============================================
 resourcestring
@@ -151,6 +180,15 @@ resourcestring
   RsVirtualAddress = '&Virtual address';
   RsModuleOffset = 'Module &offset';
   RsPreview = '&Preview:';
+
+//=== JclOtaExcDlgThreadFrame.pas ============================================
+resourcestring
+  RsExcDlgThreadOptions = 'thread options';
+  RsAllThreads = 'Traces for &all threads';
+  RsAllRegisteredThreads = 'Traces for &registered threads';
+  RsMainExceptionThreads = 'Traces for main a&nd exception threads';
+  RsExceptionThread = 'Trace for &exception thread';
+  RsMainThread = 'Trace for &main thread';
 
 //=== JclOtaExcDlgIgnoreFrame.pas ============================================
 resourcestring
@@ -188,7 +226,6 @@ resourcestring
 //=== ProjAnalyserImpl.pas ===================================================
 resourcestring
   RsAnalyzeActionCaption = 'Analyze project %s';
-  RsAnalyzeActionName = 'ProjectAnalyseCommand';
   RsProjectNone = '[none]';
   RsCantFindFiles = 'Can''t find MAP or executable file';
   RsBuildingProject = 'Building project %s ...';
@@ -197,8 +234,8 @@ resourcestring
 //=== ProjAnalyzerFrm.pas ====================================================
 resourcestring
   RsFormCaption = 'Project Analyzer - %s';
-  RsStatusText = 'Units: %d, Forms: %d, Code: %d, Data: %d, Bss: %d, Resources: %d';
-  RsCodeData = '(CODE+DATA)';
+  RsStatusText = 'Units: %d, Forms: %d, Code: %d, ICode: %d, Data: %d, Bss: %d, Resources: %d';
+  RsCodeData = '(CODE+ICODE+DATA)';
 
 //=== JclUsesWizard.pas ======================================================
 resourcestring
@@ -217,21 +254,25 @@ resourcestring
 //=== JclDebugIdeImpl.pas ====================================================
 resourcestring
   RsENoProjectOptions = 'Project options are not available';
-  RsBuildActionCaption = 'Build JCL Debug %s';
-  RsBuildAllCaption = 'Build JCL Debug All Projects';
-  RsBuildActionName = 'ProjectJCLBuildCommand';
-  RsBuildAllActionName = 'ProjectJCLBuildAllCommand';
   RsCantInsertToInstalledPackage = 'JCL Debug IDE Expert: Can not insert debug information to installed package' +
-    AnsiLineBreak + '%s' + AnsiLineBreak + 'Would you like to disable inserting JCL Debug data ?';
-  RsCompilationAborted = 'JCL Debug data cannot be inserted to installed package' + AnsiLineBreak + 'Compilation aborted';
-  RsInsertDataCaption = 'Insert JCL Debug data';
-  RsInsertDataActionName = 'ProjectJCLInsertDataCommand';
+    NativeLineBreak + '%s' + NativeLineBreak + 'Would you like to disable the insertion of JCL Debug data ?';
+  RsChangeMapFileOption = 'JCL Debug expert: the project "%s" must be configured to generate a detailled MAP file.' +
+    NativeLineBreak + 'Do you want the expert to change this setting?';
+  RsDisabledDebugExpert = 'JCL Debug expert is disabled';
+  RsCompilationAborted = 'JCL Debug data cannot be inserted to installed package' + NativeLineBreak + 'Compilation aborted';
+  RsDebugExpertCaption = 'JCL Debug expert';
+  RsAlwaysDisabled = 'Always &disabled';
+  RsProjectDisabled = 'D&isabled for this project';
+  RsProjectEnabled = 'E&nabled for this project';
+  RsAlwaysEnabled = 'Always &enabled';
   RsEExecutableNotFound = 'Executable file for project "%s" not found.' +
     'JCL debug data can''t be added to the binary.';
   RsEMapFileNotFound = 'Map file "%s" for project "%s" not found.' +
     'No conversions of debug information were made';
   RsConvertedMapToJdbg = 'Converted MAP file "%s" (%d bytes) to .jdbg (%d bytes)';
   RsInsertedJdbg = 'Converted MAP file "%s" (%d bytes) and inserted debug information (%d bytes) into the binary';
+  RsDeletedMapFile = 'Deleted %s file "%s"';
+  RsEFailedToDeleteMapFile = 'Failed to delete %s file "%s"';
   RsEMapConversion = 'Failed to convert MAP file "%s"';
   RsENoActiveProject = 'No active project';
   RsENoProjectMenuItem = 'Project menu item not found';
@@ -242,16 +283,19 @@ resourcestring
   RsENoBuildAllAction = 'Build All action not found';
   RsENoProjectGroup = 'No project group';
   RsDebugConfigPageCaption = 'Debug info converter';
+  RsEProjectPropertyFailed = 'Unable to save project properties, project file may be read-only';  
 
 //=== JclDebugIdeConfigFrame.pas =============================================
 resourcestring
-  RsDebugEnableExpert = 'Enable debug expert';
+  RsDefaultDisabled = 'D&isabled by default (can be enabled per project)';
+  RsDefaultEnabled = 'E&nabled by default (can be disabled per project)';
   RsDebugGenerateJdbg = 'Generate .jdbg files';
-  RsDebugInsertJdbg = 'Insert data into the binary';
+  RsDebugInsertJdbg = 'Insert JDBG data into the binary';
+  RsDeleteMapFile = 'Delete map files after conversion';
+  RsEInvalidDebugExpertState = '%d is not a valid debug expert state';
 
 //=== JclSIMDView.pas ========================================================
 resourcestring
-  RsENoDebuggerServices = 'Unable to get Borland Debugger Services';
   RsENoViewMenuItem = 'View menu item not found';
   RsENoDebugWindowsMenuItem = 'Debug windows menu item not found';
 
@@ -262,13 +306,10 @@ resourcestring
   RsExMMX = 'Ex MMX';
   Rs3DNow = '3DNow!';
   RsEx3DNow = 'Ex 3DNow!';
-  RsSSE1 = 'SSE1';
-  RsSSE2 = 'SSE2';
-  RsSSE3 = 'SSE3';
   RsLong = '64-bit Core';
 
   RsTrademarks =
-    'MMX is a trademark of Intel Corporation.' + AnsiLineBreak +
+    'MMX is a trademark of Intel Corporation.' + NativeLineBreak +
     '3DNow! is a registered trademark of Advanced Micro Devices.';
 
   RsNoSIMD = 'No SIMD registers found';
@@ -281,6 +322,8 @@ resourcestring
   RsModifyMM = 'Modification of MM%d';
   RsModifyXMM1 = 'Modification of XMM%d';
   RsModifyXMM2 = 'Modification of XMM%.2d';
+  RsModifyYMM1 = 'Modification of YMM%d';
+  RsModifyYMM2 = 'Modification of YMM%.2d';
 
   RsVectorIE = 'IE  ';
   RsVectorDE = 'DE  ';
@@ -328,13 +371,54 @@ resourcestring
 //=== JclOtaExcDlgRepository.pas =============================================
 resourcestring
   RsRepositoryExcDlgPage = 'Exception dialog';
-  
+
   RsRepositoryExcDlgDelphiName = 'Jcl Exception dialog for Delphi';
   RsRepositoryExcDlgDelphiDescription = 'Create an exception dialog for your Delphi project';
 
   RsRepositoryExcDlgCBuilderName = 'Jcl Exception dialog for C++Builder';
   RsRepositoryExcDlgCBuilderDescription = 'Create an exception dialog for your C++Builder';
 
+//=== JclVersionControlImpl.pas ==============================================
+resourcestring
+  RsVersionCtrlMenuCaption = '&Version Control';
+  RsSvnMenuItemNotInserted = 'Can''t insert the ''%s'' menu item';
+  RsENoToolsMenuItem = 'Tools menu item not found';
+  RsVersionControlSheet = 'Version control';
+  RsActionCategory = 'JEDI Code Library';
+  RsVersionCtrlSystemName = 'System';
+
+//=== JclStackTraceViewerImpl.pas ============================================
+resourcestring
+  rsStackTraceViewerCaption = 'Stack Traces';
+  rsStackTraceViewerOptionsPageName = 'Stack Trace Viewer';
+
+//=== JclStackTraceViewerMainFrame.pas =======================================
+resourcestring
+  rsSTVFindFilesInProjectGroup = 'Find files in active project group';
+  rsSTVFindFileInProjectGroup  = 'Find %s in active project group';
+  rsSTVFindFilesInBrowsingPath = 'Find files in browsing path';
+
+
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/common/JclOtaResources.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\experts\common';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
+
 implementation
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

@@ -19,7 +19,7 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $                                                      }
+{ Last modified: $Date: 2009-04-21 22:46:30 +0200 (mar., 21 avr. 2009) $                                                      }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -321,7 +321,7 @@ begin
   for I := 1 to ParamCount do
   begin
     FileName := PathGetLongName(ParamStr(I));
-    if (FileName <> '') and not (FileName[1] in ['-', '/']) then
+    if (FileName <> '') and (FileName[1] <> '-') and (FileName[1] <> '/') then
       OpenFile(FileName, False);
   end;
 end;

@@ -38,22 +38,16 @@
 { declarations.                                                                                    }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2007-02-07 20:17:57 +0100 (mer., 07 févr. 2007) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclWin32;
 
 {$I jcl.inc}
-
-{$DEFINE STRICT}
-{$DEFINE WINVER_0400_UP}
-{$DEFINE WINVER_0500_GREATER}
-{$DEFINE WINVER_0400_GREATER}
-{$DEFINE WINNT}
-{$DEFINE WINNT_0400_UP}
-{$DEFINE WINNT_0400_GREATER}
-{$DEFINE WINNT_0500_GREATER}
-{$DEFINE WINDOWS_0400_GREATER}
 
 {$MINENUMSIZE 4}
 {$ALIGN ON}
@@ -67,65 +61,56 @@ uses
   {$ENDIF UNITVERSIONING}
   Windows, SysUtils,
   {$IFNDEF FPC}
-  {$IFDEF CLR}
-  System.Runtime.InteropServices, System.Security,
-  {$ELSE}
   AccCtrl,
-  {$ENDIF CLR}
   ActiveX,
   {$ENDIF ~FPC}
   JclBase;
 
-{$HPPEMIT ''}
-{$IFDEF COMPILER5}
-{$HPPEMIT '// To lift ambiguity between LONG64 and System::LONG64'}
-{$HPPEMIT '#define LONG64 System::LONG64'}
-{$HPPEMIT ''}
-{$ENDIF COMPILER5}
-{$HPPEMIT '#include "WinDef.h"'}
-{$HPPEMIT '#include "WinNT.h"'}
-{$HPPEMIT '#include "WinBase.h"'}
-{$HPPEMIT '#include "BaseTsd.h"'}
-{$HPPEMIT '#include "ImageHlp.h"'}
-{$HPPEMIT '#include "lm.h"'}
-{$HPPEMIT '#include "Nb30.h"'}
-{$HPPEMIT '#include "RasDlg.h"'}
-{$IFDEF COMPILER6_UP}
-{$HPPEMIT '#include "Reason.h"'}
-{$ENDIF COMPILER6_UP}
-{$HPPEMIT '#include "ShlWApi.h"'}
-{$HPPEMIT '#include "WinError.h"'}
-{$HPPEMIT '#include "WinIoCtl.h"'}
-{$HPPEMIT '#include "WinUser.h"'}
-{$HPPEMIT '#include "Powrprof.h"}
+{$HPPEMIT '#include <WinDef.h>'}
+{$HPPEMIT '#include <WinNT.h>'}
+{$HPPEMIT '#include <WinBase.h>'}
+{$HPPEMIT '#include <BaseTsd.h>'}
+{$HPPEMIT '#include <ImageHlp.h>'}
+{$HPPEMIT '#include <lm.h>'}
+{$HPPEMIT '#include <Nb30.h>'}
+{$HPPEMIT '#include <RasDlg.h>'}
+{$HPPEMIT '#include <Reason.h>'}
+{$HPPEMIT '#include <ShlWApi.h>'}
+{$HPPEMIT '#include <WinError.h>'}
+{$HPPEMIT '#include <WinIoCtl.h>'}
+{$HPPEMIT '#include <WinUser.h>'}
+//{$HPPEMIT '#include <Powrprof.h>'}
 {$HPPEMIT '#include <delayimp.h>'}
-{$HPPEMIT '#include "propidl.h"'}
-{$HPPEMIT '#include "msidefs.h"'}
-{$HPPEMIT '#include "shlguid.h"'}
-{$HPPEMIT '#include "imgguids.h"}
-{$HPPEMIT '#include "objbase.h"}
+{$HPPEMIT '#include <propidl.h>'}
+{$HPPEMIT '#include <msidefs.h>'}
+{$HPPEMIT '#include <shlguid.h>'}
+{$IFNDEF COMPILER14_UP}
+{$HPPEMIT '#include <imgguids.h>'}
+{$ENDIF ~COMPILER14_UP}
+{$HPPEMIT '#include <objbase.h>'}
+{$HPPEMIT '#include <ntsecapi.h>'}
 {$HPPEMIT ''}
 
-{$IFDEF CLR}
+// EJclWin32Error
+{$IFDEF MSWINDOWS}
 type
-  LPSTR = string;
-  LPWSTR = string;
-  LPCSTR = string;
-  LPCWSTR = string;
-  LPCTSTR = string;
-  PLongWord = ^LongWord;
-  PByte = IntPtr;
-{$ENDIF CLR}
-
-{$IFDEF FPC}
-// include file for FPC compatibility
-{$I win32api\fpc.inc}
-{$ENDIF FPC}
+  EJclWin32Error = class(EJclError)
+  private
+    FLastError: DWORD;
+    FLastErrorMsg: string;
+  public
+    constructor Create(const Msg: string);
+    constructor CreateFmt(const Msg: string; const Args: array of const);
+    constructor CreateRes(Ident: Integer); overload;
+    constructor CreateRes(ResStringRec: PResStringRec); overload;
+    property LastError: DWORD read FLastError;
+    property LastErrorMsg: string read FLastErrorMsg;
+  end;
+{$ENDIF MSWINDOWS}
 
 {$I win32api\WinDef.int}
 {$I win32api\WinNT.int}
 {$I win32api\WinBase.int}
-{$I win32api\BaseTsd.int}
 {$I win32api\AclApi.int}
 {$I win32api\ImageHlp.int}
 {$I win32api\LmErr.int}
@@ -148,10 +133,11 @@ type
 {$I win32api\ShlGuid.int}
 {$I win32api\imgguids.int}
 {$I win32api\ObjBase.int}
+{$I win32api\NtSecApi.int}
+{$I win32api\TlHelp32.int}
+{$I win32api\Winternl.int}
 
 {$IFDEF MSWINDOWS}
-
-{$IFNDEF CLR}
 
 const
   RtdlSetNamedSecurityInfoW: function(pObjectName: LPWSTR; ObjectType: SE_OBJECT_TYPE;
@@ -202,29 +188,28 @@ const
     lpCalData: PWideChar; cchData: Integer;
     lpValue: PDWORD): Integer stdcall = GetCalendarInfoW;
 
-  RtdlEnumCalendarInfoExA: function(lpCalInfoEnumProc: TCalInfoEnumProcExA;
-    Locale: LCID; Calendar: CALID; CalType: CALTYPE): BOOL stdcall = EnumCalendarInfoExA;
+  RtdlEnumCalendarInfoExW: function(lpCalInfoEnumProc: TCalInfoEnumProcExW;
+    Locale: LCID; Calendar: CALID; CalType: CALTYPE): BOOL stdcall = EnumCalendarInfoExW;
 
-  RtdlGetVolumeNameForVolumeMountPoint: function(lpszVolumeMountPoint: LPCSTR;
-    lpszVolumeName: LPSTR; cchBufferLength: DWORD): BOOL stdcall = GetVolumeNameForVolumeMountPoint;
+  RtdlGetVolumeNameForVolumeMountPointW: function(lpszVolumeMountPoint: LPCWSTR;
+    lpszVolumeName: LPWSTR; cchBufferLength: DWORD): BOOL stdcall = GetVolumeNameForVolumeMountPointW;
 
-  RtdlSetVolumeMountPoint: function(lpszVolumeMountPoint: LPCSTR;
-    lpszVolumeName: LPCSTR): BOOL stdcall = SetVolumeMountPoint;
+  RtdlSetVolumeMountPointW: function(lpszVolumeMountPoint: LPCWSTR;
+    lpszVolumeName: LPCWSTR): BOOL stdcall = SetVolumeMountPointW;
 
-  RtdlDeleteVolumeMountPoint: function(lpszVolumeMountPoint: LPCSTR): BOOL
-    stdcall = DeleteVolumeMountPoint;
+  RtdlDeleteVolumeMountPointW: function(lpszVolumeMountPoint: LPCWSTR): BOOL
+    stdcall = DeleteVolumeMountPointW;
 
   RtdlNetBios: function(P: PNCB): UCHAR stdcall = NetBios;
 
-{$ENDIF ~CLR}
 {$ENDIF MSWINDOWS}
 
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/prototypes/JclWin32.pas $';
-    Revision: '$Revision: 1914 $';
-    Date: '$Date: 2007-02-07 20:17:57 +0100 (mer., 07 févr. 2007) $';
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/prototypes/JclWin32.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
     LogPath: 'JCL\source\windows'
     );
 {$ENDIF UNITVERSIONING}
@@ -234,14 +219,6 @@ implementation
 uses
   JclResources;
 
-const
-  {$IFDEF UNICODE}
-  AWSuffix = 'W';
-  {$ELSE ~UNICODE}
-  AWSuffix = 'A';
-  {$ENDIF ~UNICODE}
-
-{$IFNDEF CLR}
 procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: string);
 var
   ModuleHandle: HMODULE;
@@ -251,7 +228,7 @@ begin
     ModuleHandle := GetModuleHandle(PChar(ModuleName));
     if ModuleHandle = 0 then
     begin
-      ModuleHandle := LoadLibrary(PChar(ModuleName));
+      ModuleHandle := SafeLoadLibrary(PChar(ModuleName));
       if ModuleHandle = 0 then
         raise EJclError.CreateResFmt(@RsELibraryNotFound, [ModuleName]);
     end;
@@ -260,7 +237,40 @@ begin
       raise EJclError.CreateResFmt(@RsEFunctionNotFound, [ModuleName, ProcName]);
   end;
 end;
-{$ENDIF ~CLR}
+
+//== { EJclWin32Error } ======================================================
+
+{$IFDEF MSWINDOWS}
+
+constructor EJclWin32Error.Create(const Msg: string);
+begin
+  FLastError := GetLastError;
+  FLastErrorMsg := SysErrorMessage(FLastError);
+  inherited CreateFmt(Msg + NativeLineBreak + RsWin32Prefix, [FLastErrorMsg, FLastError]);
+end;
+
+constructor EJclWin32Error.CreateFmt(const Msg: string; const Args: array of const);
+begin
+  FLastError := GetLastError;
+  FLastErrorMsg := SysErrorMessage(FLastError);
+  inherited CreateFmt(Msg + NativeLineBreak + Format(RsWin32Prefix, [FLastErrorMsg, FLastError]), Args);
+end;
+
+constructor EJclWin32Error.CreateRes(Ident: Integer);
+begin
+  FLastError := GetLastError;
+  FLastErrorMsg := SysErrorMessage(FLastError);
+  inherited CreateFmt(LoadStr(Ident) + NativeLineBreak + RsWin32Prefix, [FLastErrorMsg, FLastError]);
+end;
+
+constructor EJclWin32Error.CreateRes(ResStringRec: PResStringRec);
+begin
+  FLastError := GetLastError;
+  FLastErrorMsg := SysErrorMessage(FLastError);
+  inherited CreateFmt(LoadResString(ResStringRec) + NativeLineBreak + RsWin32Prefix, [FLastErrorMsg, FLastError]);
+end;
+
+{$ENDIF MSWINDOWS}
 
 {$I win32api\AclApi.imp}
 {$I win32api\ImageHlp.imp}
@@ -269,9 +279,13 @@ end;
 {$I win32api\Nb30.imp}
 {$I win32api\WinBase.imp}
 {$I win32api\WinNLS.imp}
+{$I win32api\WinUser.imp}
 {$I win32api\WinNT.imp}
 {$I win32api\PowrProf.imp}
 {$I win32api\ObjBase.imp}
+{$I win32api\NtSecApi.imp}
+{$I win32api\TlHelp32.imp}
+{$I win32api\Winternl.imp}
 
 {$IFDEF UNITVERSIONING}
 initialization
@@ -280,6 +294,8 @@ initialization
 finalization
   UnregisterUnitVersion(HInstance);
 {$ENDIF UNITVERSIONING}
+
+{$WARNINGS ON}
 
 end.
 

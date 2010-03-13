@@ -22,10 +22,20 @@
 { Contributors:                                                                                    }
 {   Marcel van Brakel                                                                              }
 {   Matthias Thoma (mthoma)                                                                        }
+{   Karl Ivar Hansen                                                                               }
+{   Martin Cakrt                                                                                   }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $
+{                                                                                                  }
+{ This unit contains print-related classes and functions.                                          }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclPrint;
 
@@ -60,7 +70,7 @@ type
     FDriver: PChar;
     FPort: PChar;
     FHandle: THandle;
-    FDeviceMode: PDeviceModeA;
+    FDeviceMode: PDeviceMode;
     FPrinter: Integer;
     FBinArray: PWordArray;
     FNumBins: Byte;
@@ -153,7 +163,7 @@ type
     property DpiY: Integer read FiDpiY write FiDpiY;
   end;
 
-procedure DirectPrint(const Printer, Data: string);
+procedure DirectPrint(const Printer, Data: string; const DocumentName: string = '');
 procedure SetPrinterPixelsPerInch;
 function GetPrinterResolution: TPoint;
 function CharFitsWithinDots(const Text: string; const Dots: Integer): Integer;
@@ -167,10 +177,12 @@ function DPSetDefaultPrinter(const PrinterName: string): Boolean;
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/vcl/JclPrint.pas $';
-    Revision: '$Revision: 1695 $';
-    Date: '$Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $';
-    LogPath: 'JCL\source\vcl'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/vcl/JclPrint.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\source\vcl';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -201,7 +213,7 @@ const
   cPrintSpool = 'winspool.drv';
 
 // Misc. functions
-procedure DirectPrint(const Printer, Data: string);
+procedure DirectPrint(const Printer, Data, DocumentName: string);
 const
   cRaw = 'RAW';
 type
@@ -227,7 +239,10 @@ begin
   if not OpenPrinter(PChar(Printer), PrinterHandle, @Defaults) then
     raise EJclPrinterError.CreateRes(@RsInvalidPrinter);
   // Fill in the structure with info about this "document"
-  DocInfo.DocName := PChar(RsSpoolerDocName);
+  if DocumentName = '' then
+    DocInfo.DocName := PChar(RsSpoolerDocName)
+  else
+    DocInfo.DocName := PChar(DocumentName);
   DocInfo.OutputFile := nil;
   DocInfo.Datatype := cRaw;
   try
@@ -240,7 +255,7 @@ begin
         EJclPrinterError.CreateRes(@RsNAStartPage);
       try
         // Send the data to the printer
-        if not WritePrinter(PrinterHandle, @Data, Count, BytesWritten) then
+        if not WritePrinter(PrinterHandle, PChar(Data), Count, BytesWritten) then
           EJclPrinterError.CreateRes(@RsNASendData);
       finally
         // End the page
@@ -373,10 +388,14 @@ begin
   else
   // >= Win 2000 uses GetDefaultPrinter
   begin
-    hWinSpool := LoadLibrary(cPrintSpool);
+    hWinSpool := SafeLoadLibrary(cPrintSpool);
     if hWinSpool <> 0 then
       try
+        {$IFDEF UNICODE}
+        @GetDefPrint := GetProcAddress(hWinSpool, 'GetDefaultPrinterW');
+        {$ELSE}
         @GetDefPrint := GetProcAddress(hWinSpool, 'GetDefaultPrinterA');
+        {$ENDIF UNICODE}
         if not Assigned(GetDefPrint) then
           Exit;
         Size := BUFSIZE;
@@ -475,10 +494,14 @@ begin
   else
   // >= Win 2000 uses SetDefaultPrinter
   begin
-    hWinSpool := LoadLibrary(cPrintSpool);
+    hWinSpool := SafeLoadLibrary(cPrintSpool);
     if hWinSpool <> 0 then
       try
+        {$IFDEF UNICODE}
+        @SetDefPrint := GetProcAddress(hWinSpool, 'SetDefaultPrinterW');
+        {$ELSE}
         @SetDefPrint := GetProcAddress(hWinSpool, 'SetDefaultPrinterA');
+        {$ENDIF UNICODE}
         if Assigned(SetDefPrint) then
           Result := SetDefPrint(PChar(PrinterName));
       finally

@@ -29,8 +29,12 @@
 { find it hard to document en masse.                                                               }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                           $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 { TODO : Replacing the calls to MultiBytetoWideChar is all what's needed to make this crossplatform }
 { TODO : Fix Internal Error DBG1384 in BCB 6 compilation }
@@ -79,10 +83,12 @@ function WideFormat(const Format: WideString; const Args: array of const): WideS
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/windows/JclWideFormat.pas $';
-    Revision: '$Revision: 1695 $';
-    Date: '$Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $';
-    LogPath: 'JCL\source\windows'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/windows/JclWideFormat.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\windows';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -436,6 +442,11 @@ function ModDiv32(const Dividend, Divisor: Cardinal; out Quotient: Cardinal): Ca
   Quotient := Dividend div Divisor;
   Result := Dividend mod Divisor; }
 asm
+        {$IFDEF CPU32}
+        // --> EAX Dividend
+        //     EDX Divisor
+        //     ECX Quotient
+        // <-- EAX Result
         PUSH    ECX
         MOV     ECX, EDX
         XOR     EDX, EDX
@@ -443,6 +454,25 @@ asm
         POP     ECX
         MOV     [ECX], EAX
         MOV     EAX, EDX
+        {$ENDIF CPU32}
+        {$IFDEF CPU64}
+        // --> ECX Dividend
+        //     EDX Divisor
+        //     R8  Quotient
+        // <-- RAX Result
+        MOV     EAX, ECX
+        MOV     ECX, EDX
+        XOR     EDX, EDX
+        //     EAX Dividend
+        //     ECX Divisor
+        //     R8  Quotient
+        DIV     ECX
+        //     EAX Quotient
+        //     EDX Remainder
+        MOV     [R8], EAX
+        XOR     RAX, RAX
+        MOV     EAX, EDX
+        {$ENDIF CPU64}
 end;
 
 function ConvertInt32(Value: Cardinal; const Base: Cardinal; var Buffer: PWideChar): Cardinal;
@@ -459,13 +489,18 @@ begin
   until Value = 0;
 end;
 
-function ModDiv64(var Dividend: Int64; const Divisor: Cardinal; out Quotient: Int64): Int64;
+function ModDiv64({$IFDEF CPU32}var{$ENDIF CPU32} Dividend: Int64; const Divisor: Cardinal; out Quotient: Int64): Int64;
 { Returns the quotient and modulus of the two inputs using unsigned division
   Unsigned 64-bit division is not available in Delphi 5, but the System unit
   does provide division and modulus functions accessible through assembler.
   Quotient := Dividend div Divisor;
   Result := Dividend mod Divisor; }
 asm
+        {$IFDEF CPU32}
+        // --> EAX Dividend
+        //     EDX Divisor
+        //     ECX Quotient
+        // <-- EAX Result
         PUSH    0 // prepare for second division
         PUSH    EDX
 
@@ -486,6 +521,24 @@ asm
         POP     EDX // restore dividend
         POP     EAX
         CALL    System.@_llumod
+        {$ENDIF CPU32}
+        {$IFDEF CPU64}
+        // --> RCX Dividend
+        //     RDX Divisor
+        //     R8  Quotient
+        // <-- RAX Result
+        MOV     RAX, RCX
+        MOV     RCX, RDX
+        XOR     RDX, RDX
+        //     RAX Dividend
+        //     RCX Divisor
+        //     R8  Quotient
+        DIV     RCX
+        //     RAX Quotient
+        //     RDX Remainder
+        MOV     [R8], RAX
+        MOV     RAX, RDX
+        {$ENDIF CPU64}
 end;
 
 function ConvertInt64(Value: Int64; const Base: Cardinal; var Buffer: PWideChar): Cardinal;
@@ -511,7 +564,16 @@ function GetPClassName(const Cls: TClass): PShortString;
   AnsiString.
   Result := JclSysUtils.GetVirtualMethod(Cls, vmtClassName div SizeOf(Pointer)); }
 asm
+        {$IFDEF CPU32}
+        // --> EAX Cls
+        // <-- EAX Result
         MOV     EAX, [EAX].vmtClassName
+        {$ENDIF CPU32}
+        {$IFDEF CPU64}
+        // --> RCX Cls
+        // <-- RAX Result
+        MOV     RAX, [ECX].vmtClassName
+        {$ENDIF CPU64}
 end;
 {$ENDIF FORMAT_EXTENSIONS}
 
@@ -519,7 +581,7 @@ end;
   procedures, which negate integers. For the rest of the code in this unit,
   overflow isn't relevant. }
 
-{$Q-}
+{$OVERFLOWCHECKS OFF}
 
 procedure SafeNegate32(var Int: Integer);
 begin
@@ -532,7 +594,7 @@ begin
 end;
 
 {$IFDEF OVERFLOWCHECKS_ON}
-{$Q+}
+{$OVERFLOWCHECKS ON}
 {$ENDIF OVERFLOWCHECKS_ON}
 
 // === Argument-preparation routines ===========================================
@@ -745,7 +807,11 @@ function PrepareString(const Format: WideString; const Buffer: PConversionBuffer
   variable (TempWS), and if that were assigned here, then the pointer that this
   function returns would be invalidated when the string goes out of scope. }
 const
-  AllowedStringTypes: TDelphiSet = [vtChar, vtWideChar, vtString, vtPChar, vtPWideChar, vtVariant, vtAnsiString, vtWideString{$IFDEF FORMAT_EXTENSIONS}, vtBoolean, vtClass{$ENDIF}];
+  AllowedStringTypes: TDelphiSet = [
+    vtChar, vtWideChar, vtString, vtPChar, vtPWideChar,
+    vtVariant, vtAnsiString, vtWideString{$IFDEF SUPPORTS_UNICODE_STRING}, vtUnicodeString{$ENDIF SUPPORTS_UNICODE_STRING}
+    {$IFDEF FORMAT_EXTENSIONS}, vtBoolean, vtClass{$ENDIF FORMAT_EXTENSIONS}
+  ];
 begin
   case Arg^.VType of
     vtChar, vtWideChar:
@@ -759,10 +825,10 @@ begin
         CharCount := Length(Arg^.VString^);
         Result := @Arg^.VString^[1];
       end;
-    vtPChar:
+    vtPChar: // PAnsiChar
       begin
         Result := Arg^.VPChar;
-        CharCount := StrLen(Result);
+        CharCount := StrLen(PAnsiChar(Result));
       end;
     vtPWideChar:
       begin
@@ -787,6 +853,13 @@ begin
         Result := Arg^.VWideString;
         CharCount := Length(WideString(Result))
       end;
+    {$IFDEF SUPPORTS_UNICODE_STRING}
+    vtUnicodeString:
+      begin
+        Result := Arg^.VUnicodeString;
+        CharCount := Length(UnicodeString(Result))
+      end;
+    {$ENDIF SUPPORTS_UNICODE_STRING}
   else
     raise FormatBadArgumentTypeErrorEx(Format, FormatStart, Src, Arg.VType, ArgIndex, AllowedStringTypes);
   end;

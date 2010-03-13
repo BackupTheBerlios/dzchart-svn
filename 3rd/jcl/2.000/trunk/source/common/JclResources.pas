@@ -20,6 +20,7 @@
 {   Barry Kelly                                                                                    }
 {   Flier Lu (flier)                                                                               }
 {   Florent Ouchet (outchy)                                                                        }
+{   Jean-Fabien Connault (cycocrew)                                                                }
 {   Marcel Bestebroer                                                                              }
 {   Marcel van Brakel                                                                              }
 {   Matthias Thoma (mthoma)                                                                        }
@@ -29,14 +30,19 @@
 {   Robert Marquardt (marquardt)                                                                   }
 {   Robert Rossmair (rrossmair)                                                                    }
 {   Scott Price (scottprice)                                                                       }
+{   Uwe Schuster (uschuster)                                                                       }
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
 { Unit which provides a central place for all resource strings used in the JCL                     }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2007-03-18 18:48:59 +0100 (dim., 18 mars 2007) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclResources;
 
@@ -49,21 +55,13 @@ uses
   JclUnitVersioning;
 {$ENDIF UNITVERSIONING}
 
-{$IFNDEF RTL140_UP}
-const
-  sLineBreak = #13#10;
-{$ENDIF RTL140_UP}
-
 //=== JclBase ================================================================
 resourcestring
   RsWin32Prefix        = 'Win32: %s (%u)';
   RsDynArrayError      = 'DynArrayInitialize: ElementSize out of bounds';
   RsSysErrorMessageFmt = 'Win32 Error %d (%x)';
   RsCantConvertAddr64  = 'The address %s%.16x cannot be converted to 32 bit';
-  {$IFDEF CLR}
-  RsEGetBytesExFmt     = 'GetBytesEx(): Unsupported value type: %s';
-  RsESetBytesExFmt     = 'SetBytesEx(): Unsupported value type: %s';
-  {$ENDIF CLR}
+  RsEReplacementChar   = 'Failed to get ANSI replacement character';
 
 //=== JclBorlandTools ========================================================
 resourcestring
@@ -74,13 +72,7 @@ resourcestring
   RsBCBName             = 'C++Builder';
   RsCSharpName          = 'C#Builder';
   RsBDSName             = 'Borland Developer Studio';
-  {$IFDEF KYLIX}
-  RsKylixName           = 'Kylix for %s';
-  RsKylixVersionName    = 'Kylix %d for %s';
-  RsOpenEdition         = 'Open Edition';
-  RsServerDeveloper     = 'Server Developer';
-  RsVclIncludeDir       = '/include/vcl/';
-  {$ENDIF KYLIX}
+  RsRSName              = 'RAD Studio';
   {$IFDEF MSWINDOWS}
   RsClientServer        = 'Client/Server';
   RsStandard            = 'Standard';
@@ -115,8 +107,8 @@ resourcestring
   RsCompilingProject            = 'Compiling project %s';
   RsCompilationOk               = 'Compilation success';
   RsCompilationFailed           = 'Compilation failure';
-  RsCreatingJdbg                = 'Creating Jedi Debug informations for %s';
-  RsInsertingJdbg               = 'Inserting Jedi Debug informations in %s';
+  RsCreatingJdbg                = 'Creating JEDI Debug informations for %s';
+  RsInsertingJdbg               = 'Inserting JEDI Debug informations in %s';
   RsJdbgInfo                    = 'Bug unit: %s; MAP size: %d; Debug size: %d';
   RsJdbgInfoOk                  = 'JDBG successfully generated';
   RsJdbgInfoFailed              = 'Cannot generate JDBG informations';
@@ -154,6 +146,10 @@ resourcestring
   {$IFDEF MSWINDOWS}
   RsENoOpenHelp                 = 'open help not present in Borland Developer Studio';
   {$ENDIF MSWINDOWS}
+
+//=== JclCharsets ============================================================
+resourcestring
+  RsENoCharset = 'No matching charset';
 
 //=== JclCIL =================================================================
 resourcestring
@@ -777,18 +773,118 @@ resourcestring
   RsCompressionZLibZDataError        = 'zlib returned: data error';
   RsCompressionZLibZMemError         = 'zlib returned: memory error';
   RsCompressionZLibZBufError         = 'zlib returned: buffer error';
-  RsCompressionZLibZVersionError     = 'zlib returned: Version error';
-  RsCompressionZLibError             = 'ZLib error';
-  RsCompressionGZIPInvalidID         = 'GZip: Invalid ID (ID1=%.2x; ID2=%.2x)';
-  RsCompressionGZIPUnsupportedCM     = 'GZip: unsupported compression method (%d)';
-  RsCompressionGZIPHeaderCRC         = 'GZip: CRC failed, header is damaged';
-  RsCompressionGZIPDecompressing     = 'GZip: this property is not readable when the data are being decompressed';
-  RsCompressionGZIPNotDecompressed   = 'GZip: this property is not readable until the data are fully decompressed';
-  RsCompressionGZIPDataTruncated     = 'GZip: data are truncated';
-  RsCompressionGZIPInternalError     = 'GZip: internal error';
-  RsCompressionGZIPDataCRCFailed     = 'GZip: CRC failed, data are damaged';
-  RsCompilationGZIPExtraFieldTooLong = 'GZip: extra field is too long';
-  RsCompilationGZIPBadString         = 'GZip: the string contains null chars';
+  RsCompressionZLibZVersionError     = 'zlib returned: version error';
+  RsCompressionZLibError             = 'zLib returned: unknown error (%d)';
+  RsCompressionGZIPInvalidID         = 'gzip: Invalid ID (ID1=%.2x; ID2=%.2x)';
+  RsCompressionGZIPUnsupportedCM     = 'gzip: unsupported compression method (%d)';
+  RsCompressionGZIPHeaderCRC         = 'gzip: CRC failed, header is damaged';
+  RsCompressionGZIPDecompressing     = 'gzip: this property is not readable when the data are being decompressed';
+  RsCompressionGZIPNotDecompressed   = 'gzip: this property is not readable until the data are fully decompressed';
+  RsCompressionGZIPDataTruncated     = 'gzip: data are truncated';
+  RsCompressionGZIPInternalError     = 'gzip: internal error';
+  RsCompressionGZIPDataCRCFailed     = 'gzip: CRC failed, data are damaged';
+  RsCompressionGZIPExtraFieldTooLong = 'gzip: extra field is too long';
+  RsCompressionGZIPBadString         = 'gzip: the string contains null chars';
+  RsCompressionBZIP2SequenceError    = 'bzip2 returned: sequence error';
+  RsCompressionBZIP2ParameterError   = 'bzip2 returned: parameter error';
+  RsCompressionBZIP2MemoryError      = 'bzip2 returned: memory error';
+  RsCompressionBZIP2DataError        = 'bzip2 returned: data error';
+  RsCompressionBZIP2HeaderError      = 'bzip2 returned: header error';
+  RsCompressionBZIP2IOError          = 'bzip2 returned: IO error';
+  RsCompressionBZIP2EOFError         = 'bzip2 returned: unexpected end of file';
+  RsCompressionBZIP2OutBuffError     = 'bzip2 returned: out buffer is too small';
+  RsCompressionBZIP2ConfigError      = 'bzip2 returned: configuration error';
+  RsCompressionBZIP2Error            = 'bzip2 returned: unknown error (%d)';
+  RsCompressionUnavailableProperty   = 'Property is not available';
+  RsCompressionCompressingError      = 'Operation is not supported while compressing';
+  RsCompressionDecompressingError    = 'Operation is not supported while decompressing';
+  RsCompressionUnsupportedMethod     = 'Unsupported method';
+  RsCompressionDataError             = 'Data error';
+  RsCompressionCRCError              = 'CRC error';
+  RsCompressionUnknownError          = 'Unknown error';
+  RsCompression7zLoadError           = 'Sevenzip: Failed to load 7z.dll';
+  RsCompression7zReturnError         = 'Sevenzip: Error result (%.8x) "%s"';
+  RsCompression7zUnassignedStream    = 'Sevenzip: Stream object is not assigned';
+  RsCompression7zOutArchiveError     = 'Sevenzip: Failed to get out archive interface for class %s';
+  RsCompression7zInArchiveError      = 'Sevenzip: Failed to get in archive interface for class %s';
+  RsCompression7zUnknownValueType    = 'Sevenzip: Unknown value type (%d) for property ID %d';
+  RsCompression7zOnlyCurrentFile     = 'Sevenzip: Only properties for current file can be retreived';
+  RsCompression7zWindows             = 'Windows';
+  RsCompression7zUnix                = 'Unix';
+  RsCompressionZipName               = 'Zip archive';
+  RsCompressionZipExtensions         = '*.zip;*.jar;*.xpi';
+  RsCompressionBZip2Name             = 'BZip2 archive';
+  RsCompressionBZip2Extensions       = '*.bz2;*.bzip2;*.tbz2;*.tbz';
+  RsCompressionRarName               = 'Rar archive';
+  RsCompressionRarExtensions         = '*.rar;*.r00';
+  RsCompressionArjName               = 'Arj archive';
+  RsCompressionArjExtensions         = '*.arj';
+  RsCompressionZName                 = 'Z archive';
+  RsCompressionZExtensions           = '*.z;*.taz';
+  RsCompressionLzhName               = 'Lzh archive';
+  RsCompressionLzhExtensions         = '*.lzh;*.lha';
+  RsCompression7zName                = '7z archive';
+  RsCompression7zExtensions          = '*.7z';
+  RsCompressionCabName               = 'Cab archive';
+  RsCompressionCabExtensions         = '*.cab';
+  RsCompressionNsisName              = 'Nsis archive';
+  RsCompressionNsisExtensions        = '*.nsis';
+  RsCompressionLzmaName              = 'Lzma archive';
+  RsCompressionLzmaExtensions        = '*.lzma';
+  RsCompressionLzma86Name            = 'Lzma86 archive';
+  RsCompressionLzma86Extensions      = '*.lzma86';
+  RsCompressionPeName                = 'Pe archive';
+  // TODO: extension might be *.*, but then TJclCompressionStreamFormats.FindDecompressFormat can fail
+  RsCompressionPeExtensions          = '*.';
+  RsCompressionElfName               = 'Elf archive';
+  // TODO: extension might be *.*, but then TJclCompressionStreamFormats.FindDecompressFormat can fail
+  RsCompressionElfExtensions         = '*.';
+  RsCompressionMachoName             = 'Mach-O archive';
+  // TODO: extension might be *.*, but then TJclCompressionStreamFormats.FindDecompressFormat can fail
+  RsCompressionMachoExtensions       = '*.';
+  RsCompressionUdfName               = 'Udf archive';
+  RsCompressionUdfExtensions         = '*.iso';
+  RsCompressionXarName               = 'Xar archive';
+  RsCompressionXarExtensions         = '*.xar';
+  RsCompressionMubName               = 'Mub archive';
+  // TODO: extension might be *.*, but then TJclCompressionStreamFormats.FindDecompressFormat can fail
+  RsCompressionMubExtensions         = '*.';
+  RsCompressionHfsName               = 'Hfs archive';
+  RsCompressionHfsExtensions         = '*.hfs';
+  RsCompressionDmgName               = 'Dmg archive';
+  RsCompressionDmgExtensions         = '*.dmg';
+  RsCompressionCompoundName          = 'Compound archive';
+  RsCompressionCompoundExtensions    = '*.msi;*.doc;*.xls;*.ppt';
+  RsCompressionWimName               = 'Wim archive';
+  RsCompressionWimExtensions         = '*.wim;*.swm';
+  RsCompressionIsoName               = 'Iso archive';
+  RsCompressionIsoExtensions         = '*.iso';
+  RsCompressionChmName               = 'Chm archive';
+  RsCompressionChmExtensions         = '*.chm;*.chi;*.chq;*.chw;*.hxs;*.hxi;*.hxr;*.hxq;*.hxw;*.lit';
+  RsCompressionSplitName             = 'Split archive';
+  RsCompressionSplitExtensions       = '*.001';
+  RsCompressionRpmName               = 'Rpm archive';
+  RsCompressionRpmExtensions         = '*.rpm';
+  RsCompressionDebName               = 'Deb archive';
+  RsCompressionDebExtensions         = '*.deb';
+  RsCompressionCpioName              = 'Cpio archive';
+  RsCompressionCpioExtensions        = '*.cpio';
+  RsCompressionTarName               = 'Tar archive';
+  RsCompressionTarExtensions         = '*.tar';
+  RsCompressionGZipName              = 'GZip archive';
+  RsCompressionGZipExtensions        = '*.gz;*.gzip;*.tgz;*.tpz';
+  RsCompressionXzName                = 'xz archive';
+  RsCompressionXzExtensions          = '*.xz;*.txz';
+  RsCompressionNtfsName              = 'Ntfs archive';
+  RsCompressionNtfsExtensions        = '*.ntfs;*.img';
+  RsCompressionFatName               = 'Fat archive';
+  RsCompressionFatExtensions         = '*.fat;*.img';
+  RsCompressionMbrName               = 'Mbr archive';
+  RsCompressionMbrExtensions         = '*.mbr';
+  RsCompressionVhdName               = 'Vhd archive';
+  RsCompressionVhdExtensions         = '*.vhd;*.mbr';
+  RsCompressionDuplicate             = 'The file %s already exists in the archive';
+  RsCompressionReplaceError          = 'At least one compression volumes could not be replaced after an archive out-of-place update';
 
 //=== JclConsole =============================================================
 resourcestring
@@ -796,15 +892,18 @@ resourcestring
 
 //=== JclContainerIntf =======================================================
 resourcestring
-  RsEOutOfBounds = 'Out of bounds';
-  //RsENoSuchElement = 'No such element';
-  //RsEIllegalState = 'Illegal state';
-  //RsEConcurrentModification = 'Concurrent modification';
-  //RsEIllegalArgument = 'Illegal argument';
+  RsEOutOfBounds           = 'Out of bounds';
   RsEOperationNotSupported = 'Operation not supported';
-  RsEValueNotFound = 'Value %s not found';
-  RsENoCollection = 'Collection = nil';
-  RsEIllegalQueueCapacity = 'Illegal queue capacity';
+  RsEValueNotFound         = 'Value %s not found';
+  RsEDuplicateElement      = 'Duplicate element';
+  RsENoCollection          = 'Collection not assigned';
+  RsEIllegalQueueCapacity  = 'Illegal queue capacity';
+  RsEIllegalStateOperation = 'Illegal state operation';
+  RsENoEqualityComparer    = 'Item equality comparer is not assigned';
+  RsENoComparer            = 'Item comparer is not assigned';
+  RsENoHashConverter       = 'Hash converter is not assigned';
+  RsEAssignError           = 'Assignation error';
+  RsEReadOnlyError         = 'Container is read-only';
 
 //=== JclCounter =============================================================
 resourcestring
@@ -900,6 +999,19 @@ resourcestring
     'in segment [%s] at index [%s] in transaction set.';
 
   RsUnknownAttribute = 'Unknown Attribute';
+
+
+const
+  RsEDIErrors: array [1..58] of PResStringRec =
+    ( @RsEDIError001, @RsEDIError002, @RsEDIError003, @RsEDIError004, @RsEDIError005, @RsEDIError006, @RsEDIError007,
+      @RsEDIError008, @RsEDIError009, @RsEDIError010, @RsEDIError011, @RsEDIError012, @RsEDIError013, @RsEDIError014,
+      @RsEDIError015, @RsEDIError016, @RsEDIError017, @RsEDIError018, @RsEDIError019, @RsEDIError020, @RsEDIError021,
+      @RsEDIError022, @RsEDIError023, @RsEDIError024, @RsEDIError025, @RsEDIError026, @RsEDIError027, @RsEDIError028,
+      @RsEDIError029, @RsEDIError030, @RsEDIError031, @RsEDIError032, @RsEDIError033, @RsEDIError034, @RsEDIError035,
+      @RsEDIError036, @RsEDIError037, @RsEDIError038, @RsEDIError039, @RsEDIError040, @RsEDIError041, @RsEDIError042,
+      @RsEDIError043, @RsEDIError044, @RsEDIError045, @RsEDIError046, @RsEDIError047, @RsEDIError048, @RsEDIError049,
+      @RsEDIError050, @RsEDIError051, @RsEDIError052, @RsEDIError053, @RsEDIError054, @RsEDIError055, @RsEDIError056,
+      @RsEDIError057, @RsEDIError058 );
 
 //== JclEDISEF ===============================================================
 resourcestring
@@ -1134,38 +1246,39 @@ resourcestring
   RsMapiInvalidIndex  = 'Index is out ot range';
   RsMapiMailNoClient  = 'No Simple MAPI client installed, cannot send the message';
 
-  RsMapiErrUSER_ABORT               = 'User abort';
-  RsMapiErrFAILURE                  = 'General MAPI failure';
-  RsMapiErrLOGIN_FAILURE            = 'MAPI login failure';
-  RsMapiErrDISK_FULL                = 'Disk full';
-  RsMapiErrINSUFFICIENT_MEMORY      = 'Insufficient memory';
-  RsMapiErrACCESS_DENIED            = 'Access denied';
-  RsMapiErrTOO_MANY_SESSIONS        = 'Too many sessions';
-  RsMapiErrTOO_MANY_FILES           = 'Too many files were specified';
-  RsMapiErrTOO_MANY_RECIPIENTS      = 'Too many recipients were specified';
-  RsMapiErrATTACHMENT_NOT_FOUND     = 'A specified attachment was not found';
-  RsMapiErrATTACHMENT_OPEN_FAILURE  = 'Attachment open failure';
-  RsMapiErrATTACHMENT_WRITE_FAILURE = 'Attachment write failure';
-  RsMapiErrUNKNOWN_RECIPIENT        = 'Unknown recipient';
-  RsMapiErrBAD_RECIPTYPE            = 'Bad recipient type';
-  RsMapiErrNO_MESSAGES              = 'No messages';
-  RsMapiErrINVALID_MESSAGE          = 'Invalid message';
-  RsMapiErrTEXT_TOO_LARGE           = 'Text too large';
-  RsMapiErrINVALID_SESSION          = 'Invalid session';
-  RsMapiErrTYPE_NOT_SUPPORTED       = 'Type not supported';
-  RsMapiErrAMBIGUOUS_RECIPIENT      = 'A recipient was specified ambiguously';
-  RsMapiErrMESSAGE_IN_USE           = 'Message in use';
-  RsMapiErrNETWORK_FAILURE          = 'Network failure';
-  RsMapiErrINVALID_EDITFIELDS       = 'Invalid edit fields';
-  RsMapiErrINVALID_RECIPS           = 'Invalid recipients';
-  RsMapiErrNOT_SUPPORTED            = 'Not supported';
+const
+  RsMapiErrUSER_ABORT               : AnsiString = 'User abort';
+  RsMapiErrFAILURE                  : AnsiString = 'General MAPI failure';
+  RsMapiErrLOGIN_FAILURE            : AnsiString = 'MAPI login failure';
+  RsMapiErrDISK_FULL                : AnsiString = 'Disk full';
+  RsMapiErrINSUFFICIENT_MEMORY      : AnsiString = 'Insufficient memory';
+  RsMapiErrACCESS_DENIED            : AnsiString = 'Access denied';
+  RsMapiErrTOO_MANY_SESSIONS        : AnsiString = 'Too many sessions';
+  RsMapiErrTOO_MANY_FILES           : AnsiString = 'Too many files were specified';
+  RsMapiErrTOO_MANY_RECIPIENTS      : AnsiString = 'Too many recipients were specified';
+  RsMapiErrATTACHMENT_NOT_FOUND     : AnsiString = 'A specified attachment was not found';
+  RsMapiErrATTACHMENT_OPEN_FAILURE  : AnsiString = 'Attachment open failure';
+  RsMapiErrATTACHMENT_WRITE_FAILURE : AnsiString = 'Attachment write failure';
+  RsMapiErrUNKNOWN_RECIPIENT        : AnsiString = 'Unknown recipient';
+  RsMapiErrBAD_RECIPTYPE            : AnsiString = 'Bad recipient type';
+  RsMapiErrNO_MESSAGES              : AnsiString = 'No messages';
+  RsMapiErrINVALID_MESSAGE          : AnsiString = 'Invalid message';
+  RsMapiErrTEXT_TOO_LARGE           : AnsiString = 'Text too large';
+  RsMapiErrINVALID_SESSION          : AnsiString = 'Invalid session';
+  RsMapiErrTYPE_NOT_SUPPORTED       : AnsiString = 'Type not supported';
+  RsMapiErrAMBIGUOUS_RECIPIENT      : AnsiString = 'A recipient was specified ambiguously';
+  RsMapiErrMESSAGE_IN_USE           : AnsiString = 'Message in use';
+  RsMapiErrNETWORK_FAILURE          : AnsiString = 'Network failure';
+  RsMapiErrINVALID_EDITFIELDS       : AnsiString = 'Invalid edit fields';
+  RsMapiErrINVALID_RECIPS           : AnsiString = 'Invalid recipients';
+  RsMapiErrNOT_SUPPORTED            : AnsiString = 'Not supported';
 
-  RsMapiMailORIG    = 'From';
-  RsMapiMailTO      = 'To';
-  RsMapiMailCC      = 'Cc';
-  RsMapiMailBCC     = 'Bcc';
-  RsMapiMailSubject = 'Subject';
-  RsMapiMailBody    = 'Body';
+  RsMapiMailORIG    = AnsiString('From');
+  RsMapiMailTO      = AnsiString('To');
+  RsMapiMailCC      = AnsiString('Cc');
+  RsMapiMailBCC     = AnsiString('Bcc');
+  RsMapiMailSubject = AnsiString('Subject');
+  RsMapiMailBody    = AnsiString('Body');
 
 //=== JclMath ================================================================
 resourcestring
@@ -1303,11 +1416,14 @@ resourcestring
   RsErrDfaWSSize     = 'DFA WSSize';
   RsErrDfaRecurse    = 'DFA Recurse';
   RsErrRecursionLimit = 'Recursion limit';
+  RsErrNullWsLimit   = 'Null WS limit';
+  RsErrBadNewLine    = 'Bad new line';
   RsErrLibNotLoaded  = 'PCRE library not loaded';
   RsErrMemFuncNotSet = 'PCRE memory management functions not set';
   RsErrStudyFailed   = 'Study failed'; 
   RsErrCalloutError  = 'Unhandled exception in callout';
-  RsErrUnknownError  = 'Unknown error'; 
+  RsErrUnknownError  = 'Unknown error';
+  RsErrNoUTF8Support = 'No UTF8 support in this version of PCRE';
 
 //=== JclPeImage =============================================================
 resourcestring
@@ -1520,6 +1636,7 @@ resourcestring
   RsWrongDataType        = '"%s\%s\%s" is of wrong kind or size';
   RsInconsistentPath     = '"%s" does not match RootKey';
 
+const
   RsHKCRLong = 'HKEY_CLASSES_ROOT';
   RsHKCULong = 'HKEY_CURRENT_USER';
   RsHKLMLong = 'HKEY_LOCAL_MACHINE';
@@ -1601,7 +1718,13 @@ resourcestring
   RsScheduleDayInRange      = 'Day values should fall in the range 1 .. 31';
   RsScheduleMonthInRange    = 'Month values should fall in the range 1 .. 12';
 
-//=== JclSimpleXml.pas =======================================================
+//=== JclSecurity ============================================================
+resourcestring
+  RsInvalidSID = 'Invalid SID';
+  RsSIDBufferTooSmall = 'SID buffer too small.';
+  RsLsaError = 'LSA Error: NT Status = %.8x, message: %s'; 
+
+//=== JclSimpleXml ===========================================================
 resourcestring
   RsEInvalidXMLElementUnexpectedCharacte =
     'Invalid XML Element: Unexpected character in property declaration ("%s" found)';
@@ -1621,6 +1744,8 @@ resourcestring
   RsEInvalidHeaderExpectedsButFounds = 'Invalid Header: expected "%0:s" but found "%1:s"';
   RsEInvalidStylesheetExpectedsButFounds = 'Invalid Stylesheet: expected "%0:s" but found "%1:s"';
   RsEInvalidStylesheetUnexpectedEndOfDat = 'Invalid Stylesheet: Unexpected end of data';
+  RsEInvalidMSOExpectedsButFounds = 'Invalid MSO: expected "%0:s" but found "%1:s"';
+  RsEInvalidMSOUnexpectedEndOfDat = 'Invalid MSO: Unexpected end of data';
   RsEInvalidDocumentUnexpectedTextInFile = 'Invalid Document: Unexpected text in file prolog';
 
 //=== JclStatistics ==========================================================
@@ -1632,6 +1757,8 @@ resourcestring
   RsStreamsCreateError = 'Cannot create file %s';
   RsStreamsOpenError = 'Cannot open file %s';
   RsStreamsSetSizeError = 'Error setting stream size';
+  RsStreamsSeekError = 'Error seeking stream';
+  RsStreamsCRCError = 'Cyclic Redundency Check (CRC) error: data are damaged';
 
 //=== JclStrHashMap ==========================================================
 resourcestring
@@ -1650,6 +1777,12 @@ resourcestring
   RsArgumentIsNull          = 'Argument %d is null';
   RsDotNetFormatArgumentNotSupported = 'Argument type of %d is not supported';
   RsArgumentOutOfRange      = 'Argument out of range';
+  RsTabs_DuplicatesNotAllowed = 'Duplicate tab stops are not allowed.';
+  RsTabs_StopExpected = 'A tab stop was expected but not found.';
+  RsTabs_CloseBracketExpected = 'Closing bracket expected.';
+  RsTabs_TabWidthExpected = 'Tab width expected.';
+  // Default text for the NullReferenceException in .NET
+  RsArg_NullReferenceException = 'Object reference not set to an instance of an object.';
 
 //=== JclStructStorage =======================================================
 resourcestring
@@ -1687,15 +1820,25 @@ resourcestring
   RsIntelCacheDescr05 = 'Data TLB1: 4 MByte pages, 4-way set associative, 32 entries';
   RsIntelCacheDescr06 = '1st level instruction cache: 8 KBytes, 4-way set associative, 32 byte line size';
   RsIntelCacheDescr08 = '1st level instruction cache: 16 KBytes, 4-way set associative, 32 byte line size';
+  RsIntelCacheDescr09 = '1st level instruction cache: 32 KBytes, 4-way set associative, 64 byte line size';
   RsIntelCacheDescr0A = '1st level data cache: 8 KBytes, 2-way set associative, 32 byte line size';
   RsIntelCacheDescr0B = 'Instruction TLB: 4 MByte pages, 4-way set associative, 4 entries';
   RsIntelCacheDescr0C = '1st level data cache: 16 KBytes, 4-way set associative, 32 byte line size';
+  RsIntelCacheDescr0D = '1st level data cache: 16 KBytes, 4-way set associative, 64 byte line size';
+  RsIntelCacheDescr0E = '1st level data cache: 24 KBytes, 6-way set associative, 64 byte line size';
+  RsIntelCacheDescr21 = '2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size';
   RsIntelCacheDescr22 = '3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector';
   RsIntelCacheDescr23 = '3rd level cache: 1 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector';
   RsIntelCacheDescr25 = '3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector';
   RsIntelCacheDescr29 = '3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector';
   RsIntelCacheDescr2C = '1st level data cache: 32 KBytes, 8-way set associative, 64 byte line size';
   RsIntelCacheDescr30 = '1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size';
+  RsIntelCacheDescr39 = '2nd-level cache: 128 KBytes, 4-way set associative, sectored cache, 64-byte line size';
+  RsIntelCacheDescr3A = '2nd-level cache: 192 KBytes, 6-way set associative, sectored cache, 64-byte line size';
+  RsIntelCacheDescr3B = '2nd-level cache: 128 KBytes, 2-way set associative, sectored cache, 64-byte line size';
+  RsIntelCacheDescr3C = '2nd-level cache: 256 KBytes, 4-way set associative, sectored cache, 64-byte line size';
+  RsIntelCacheDescr3D = '2nd-level cache: 384 KBytes, 6-way set associative, sectored cache, 64-byte line size';
+  RsIntelCacheDescr3E = '2nd-level cache: 512 KBytes, 4-way set associative, sectored cache, 64-byte line size';
   RsIntelCacheDescr40 = 'No 2nd-level cache or, if processor contains a valid 2nd-level cache, no 3rd-level cache';
   RsIntelCacheDescr41 = '2nd-level cache: 128 KBytes, 4-way set associative, 32 byte line size';
   RsIntelCacheDescr42 = '2nd-level cache: 256 KBytes, 4-way set associative, 32 byte line size';
@@ -1704,12 +1847,22 @@ resourcestring
   RsIntelCacheDescr45 = '2nd-level cache: 2 MBytes, 4-way set associative, 32 byte line size';
   RsIntelCacheDescr46 = '3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size';
   RsIntelCacheDescr47 = '3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size';
+  RsIntelCacheDescr48 = '3rd-level cache: 8 MByte, 8-way set associative, 64 byte line size';
   RsIntelCacheDescr49 = '2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size';
+  RsIntelCacheDescr4A = '3rd-level cache: 6MByte, 12-way set associative, 64 byte line size';
+  RsIntelCacheDescr4B = '3rd-level cache: 8MByte, 16-way set associative, 64 byte line size';
+  RsIntelCacheDescr4C = '3rd-level cache: 12MByte, 12-way set associative, 64 byte line size';
+  RsIntelCacheDescr4D = '3rd-level cache: 16MByte, 16-way set associative, 64 byte line size';
+  RsIntelCacheDescr4E = '2nd-level cache: 6MByte, 24-way set associative, 64 byte line size';
+  RsIntelCacheDescr4F = 'Instruction TLB: 4 KByte pages, 32 Entries';
   RsIntelCacheDescr50 = 'Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 64 Entries';
   RsIntelCacheDescr51 = 'Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 128 Entries';
   RsIntelCacheDescr52 = 'Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 256 Entries';
+  RsIntelCacheDescr55 = 'Instruction TLB: 2-MByte or 4-MByte pages, fully associative, 7 entries';
   RsIntelCacheDescr56 = 'Data TLB0: 4 MByte pages, 4-way set associative, 16 entries';
   RsIntelCacheDescr57 = 'Data TLB0: 4 KByte pages, 4-way associative, 16 entries';
+  RsIntelCacheDescr59 = 'Data TLB0: 4 KByte pages, fully associative, 16 entries';
+  RsIntelCacheDescr5A = 'Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries';
   RsIntelCacheDescr5B = 'Data TLB: 4 KByte and 4 MByte pages, 64 Entries';
   RsIntelCacheDescr5C = 'Data TLB: 4 KByte and 4 MByte pages, 128 Entries';
   RsIntelCacheDescr5D = 'Data TLB: 4 KByte and 4 MByte pages, 256 Entries';
@@ -1720,6 +1873,7 @@ resourcestring
   RsIntelCacheDescr70 = 'Trace cache: 12 K-Ops, 8-way set associative';
   RsIntelCacheDescr71 = 'Trace cache: 16 K-Ops, 8-way set associative';
   RsIntelCacheDescr72 = 'Trace cache: 32 K-Ops, 8-way set associative';
+  RsIntelCacheDescr73 = 'Trace cache: 64 K-Ops, 8-way set associative';
   RsIntelCacheDescr78 = '2nd-level cache: 1 MBytes, 4-way set associative, 64 bytes line size';
   RsIntelCacheDescr79 = '2nd-level cache: 128 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector';
   RsIntelCacheDescr7A = '2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector';
@@ -1727,6 +1881,7 @@ resourcestring
   RsIntelCacheDescr7C = '2nd-level cache: 1 MBytes, 8-way set associative, 64 bytes line size, 2 lines per sector';
   RsIntelCacheDescr7D = '2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size';
   RsIntelCacheDescr7F = '2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size';
+  RsIntelCacheDescr80 = '2nd-level cache: 512 KBytes, 8-way set associative, 64 byte line size';
   RsIntelCacheDescr82 = '2nd-level cache: 256 KBytes, 8-way associative, 32 byte line size';
   RsIntelCacheDescr83 = '2nd-level cache: 512 KBytes, 8-way associative, 32 byte line size';
   RsIntelCacheDescr84 = '2nd-level cache: 1 MBytes, 8-way associative, 32 byte line size';
@@ -1734,25 +1889,62 @@ resourcestring
   RsIntelCacheDescr86 = '2nd-level cache: 512 KByte, 4-way set associative, 64 byte line size';
   RsIntelCacheDescr87 = '2nd-level cache: 1 MByte, 8-way set associative, 64 byte line size';
   RsIntelCacheDescrB0 = 'Instruction TLB: 4 KByte pages, 4-way set associative, 128 entries';
+  RsIntelCacheDescrB1 = 'Instruction TLB: 2 MByte pages, 4-way, 8 entries or 4 MByte pages, 4-way, 4 entries';
+  RsIntelCacheDescrB2 = 'Instruction TLB: 4 KByte pages, 4-way set associative, 64 entries';
   RsIntelCacheDescrB3 = 'Data TLB: 4 KByte pages, 4-way set associative, 128 entries';
   RsIntelCacheDescrB4 = 'Data TLB1: 4 KByte pages, 4-way set associative, 256 entries';
+  RsIntelCacheDescrBA = 'Data TLB1: 4 KByte pages, 4-way set associative, 64 entries';
+  RsIntelCacheDescrC0 = 'Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries';
+  RsIntelCacheDescrCA = 'Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries';
+  RsIntelCacheDescrE4 = '3rd-level cache: 8 MByte, 16-way set associative, 64 byte line size';
   RsIntelCacheDescrF0 = '64-Byte Prefetching';
   RsIntelCacheDescrF1 = '128-Byte Prefetching';
+  RsIntelCacheDescrFF = 'CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters';
 
-  RsOSVersionWin95       = 'Windows 95';
-  RsOSVersionWin95OSR2   = 'Windows 95 OSR2';
-  RsOSVersionWin98       = 'Windows 98';
-  RsOSVersionWin98SE     = 'Windows 98 SE';
-  RsOSVersionWinME       = 'Windows ME';
-  RsOSVersionWinNT3      = 'Windows NT 3.%u';
-  RsOSVersionWinNT4      = 'Windows NT 4.%u';
-  RsOSVersionWin2000     = 'Windows 2000';
-  RsOSVersionWinXP       = 'Windows XP';
-  RsOSVersionWin2003     = 'Windows Server 2003';
-  RsOSVersionWin2003R2   = 'Windows Server 2003 "R2"';
-  RsOSVersionWinXP64     = 'Windows XP x64';
-  RsOSVersionWinVista    = 'Windows Vista';
-  RsOSVersionWinLonghorn = 'Windows Server "Longhorn"';
+  RsUnknownAMDModel = 'Unknown AMD (Model %d)';
+
+  RsOSVersionWin95              = 'Windows 95';
+  RsOSVersionWin95OSR2          = 'Windows 95 OSR2';
+  RsOSVersionWin98              = 'Windows 98';
+  RsOSVersionWin98SE            = 'Windows 98 SE';
+  RsOSVersionWinME              = 'Windows ME';
+  RsOSVersionWinNT3             = 'Windows NT 3.%u';
+  RsOSVersionWinNT4             = 'Windows NT 4.%u';
+  RsOSVersionWin2000            = 'Windows 2000';
+  RsOSVersionWinXP              = 'Windows XP';
+  RsOSVersionWin2003            = 'Windows Server 2003';
+  RsOSVersionWin2003R2          = 'Windows Server 2003 R2';
+  RsOSVersionWinXP64            = 'Windows XP x64';
+  RsOSVersionWinVista           = 'Windows Vista';
+  RsOSVersionWinServer2008      = 'Windows Server 2008';
+  RsOSVersionWin7               = 'Windows 7';
+  RsOSVersionWinServer2008R2    = 'Windows Server 2008 R2';
+
+  RsEditionWinXPHome            = 'Home Edition';
+  RsEditionWinXPPro             = 'Professional';
+  RsEditionWinXPHomeN           = 'Home Edition N';
+  RsEditionWinXPProN            = 'Professional N';
+  RsEditionWinXPHomeK           = 'Home Edition K';
+  RsEditionWinXPProK            = 'Professional K';
+  RsEditionWinXPHomeKN          = 'Home Edition KN';
+  RsEditionWinXPProKN           = 'Professional KN';
+  RsEditionWinXPStarter         = 'Starter Edition';
+  RsEditionWinXPMediaCenter     = 'Media Center Edition';
+  RsEditionWinXPTablet          = 'Tablet PC Edition';
+  RsEditionWinVistaStarter      = 'Starter';
+  RsEditionWinVistaHomeBasic    = 'Home Basic';
+  RsEditionWinVistaHomeBasicN   = 'Home Basic N';
+  RsEditionWinVistaHomePremium  = 'Home Premium';
+  RsEditionWinVistaBusiness     = 'Business';
+  RsEditionWinVistaBusinessN    = 'Business N';
+  RsEditionWinVistaEnterprise   = 'Enterprise';
+  RsEditionWinVistaUltimate     = 'Ultimate';
+  RsEditionWin7Starter          = 'Starter';
+  RsEditionWin7HomeBasic        = 'Home Basic';
+  RsEditionWin7HomePremium      = 'Home Premium';
+  RsEditionWin7Professional     = 'Professional';
+  RsEditionWin7Enterprise       = 'Enterprise';
+  RsEditionWin7Ultimate         = 'Ultimate';
 
   RsProductTypeWorkStation      = 'Workstation';
   RsProductTypeServer           = 'Server';
@@ -1763,8 +1955,6 @@ resourcestring
   RsProductTypeEnterprise       = 'Enterprise';
   RsProductTypeWebEdition       = 'Web Edition';
 
-  RsOpenGLInfoError = 'Err';
-
   RsEOpenGLInfo = 'GetOpenGLVersion: %s failed';
 
   {$IFDEF MSWINDOWS}
@@ -1774,6 +1964,9 @@ resourcestring
   {$IFDEF UNIX}
   RsInvalidProcessID = 'Invalid process ID %d';
   {$ENDIF UNIX}
+
+const
+  RsOpenGLInfoError : AnsiString = 'Err';
 
 //=== JclSysUtils ============================================================
 resourcestring
@@ -1810,11 +2003,51 @@ resourcestring
   RsCasedUnicodeChar          = 'cased Unicode character > $FFFFFF found';
   RsDecomposedUnicodeChar     = 'decomposed Unicode character > $FFFFFF found';
   RsCombiningClassUnicodeChar = 'combining class for Unicode character > $FFFFFF found';
+  RsEUnexpectedEOSeq          = 'Unexpected end of sequence';
 
 //=== JclUnitConv ============================================================
 resourcestring
   RsTempConvTypeError = 'An invalid type has been provided for the %s parameter';
   RsConvTempBelowAbsoluteZero = 'Temperature can not be below Absolute Zero!';
+
+//=== JclVersionControl ======================================================
+resourcestring
+  RsVersionCtrlAddCaption = '&Add';                                 // vcaAdd
+  RsVersionCtrlAddSandboxCaption = 'Add ...';                       // vcaAddSandbox
+  RsVersionCtrlBlameCaption = '&Blame';                             // vcaBlame
+  RsVersionCtrlBranchCaption = 'Branc&h';                           // vcaBranch
+  RsVersionCtrlBranchSandboxCaption = 'Branch ...';                 // vcaBranchSandbox
+  RsVersionCtrlCheckOutSandboxCaption = 'C&heck out ...';           // vcaCreateSandbox
+  RsVersionCtrlCommitCaption = 'Co&mmit';                           // vcaCommit
+  RsVersionCtrlCommitSandboxCaption = 'Commit ...';                 // vcaCommitSandbox
+  RsVersionCtrlContextMenuCaption = 'Co&ntext Menu (right-click)';  // vcaContextMenu
+  RsVersionCtrlDiffCaption = '&Diff';                               // vcaDiff
+  RsVersionCtrlExploreCaption = 'E&xplore';                         // vcaExplore
+  RsVersionCtrlExploreSandboxCaption = 'E&xplore ...';              // vcaExploreSandbox
+  RsVersionCtrlGraphCaption = 'Revision Gr&aph';                    // vcaGraph
+  RsVersionCtrlLogCaption = '&Log';                                 // vcaLog
+  RsVersionCtrlLogSandboxCaption = 'Log ...';                       // vcaLogSandbox
+  RsVersionCtrlLockCaption = 'Loc&k';                               // vcaLock
+  RsVersionCtrlLockSandboxCaption = 'Lock ...';                     // vcaLockSandbox
+  RsVersionCtrlMergeCaption = '&Merge';                             // vcaMerge
+  RsVersionCtrlMergeSandboxCaption = 'Merge ...';                   // vcaMergeSandbox
+  RsVersionCtrlPropertiesCaption = 'Pr&operties';                   // vcaProperties
+  RsVersionCtrlPropertiesSandboxCaption = 'Properties ...';         // vcaPropertiesSandbox
+  RsVersionCtrlRenameCaption = '&Rename';                           // vcaRename
+  RsVersionCtrlRenameSandboxCaption = '&Rename Sandbox';            // vcaRenameSandbox
+  RsVersionCtrlRepoBrowserCaption = 'Repositor&y Browser';          // vcaRepoBrowser
+  RsVersionCtrlRevertCaption = '&Revert';                           // vcaRevert
+  RsVersionCtrlRevertSandboxCaption = 'Revert ...';                 // vcaRevertSandbox
+  RsVersionCtrlStatusCaption = 'S&tatus';                           // vcaStatus
+  RsVersionCtrlStatusSandboxCaption = 'Status ...';                 // vcaStatusSandbox
+  RsVersionCtrlTagCaption = 'Ta&g';                                 // vcaTag
+  RsVersionCtrlTagSandboxCaption = 'Tag ...';                       // vcaTagSandBox
+  RsVersionCtrlUpdateCaption = 'U&pdate';                           // vcaUpdate
+  RsVersionCtrlUpdateSandboxCaption = 'Update ...';                 // vcaUpdateSandbox
+  RsVersionCtrlUpdateToCaption = 'Update &to ';                     // vcaUpdateTo
+  RsVersionCtrlUpdateSandboxToCaption = 'Update to ...';            // vcaUpdateSandboxTo
+  RsVersionCtrlUnlockCaption = '&Unlock';                           // vcaUnlock
+  RsVersionCtrlUnlockSandboxCaption = 'Unlock ...';                 // vcaUnlockSandbox
 
 //=== JclWideFormat ==========================================================
 resourcestring
@@ -1828,7 +2061,10 @@ resourcestring
 resourcestring
   RsELibraryNotFound  = 'Library not found: %s';
   RsEFunctionNotFound = 'Function not found: %s.%s';
-
+  RsEWindowsVersionNotSupported = 'This windows version is not supported';
+  RsEWindowNotValid = 'The window with handle %d is not valid';
+  RsEProcessNotValid = 'The process with ID %d is not valid'; 
+  RsEModuleNotValid = 'The Module with handle %d is not valid'; 
 //=== JclWinMidi =============================================================
 resourcestring
   RsMidiInUnknownError  = 'Unknown MIDI-In error No. %d';
@@ -1837,10 +2073,12 @@ resourcestring
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclResources.pas $';
-    Revision: '$Revision: 1953 $';
-    Date: '$Date: 2007-03-18 18:48:59 +0100 (dim., 18 mars 2007) $';
-    LogPath: 'JCL\source\common'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclResources.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 

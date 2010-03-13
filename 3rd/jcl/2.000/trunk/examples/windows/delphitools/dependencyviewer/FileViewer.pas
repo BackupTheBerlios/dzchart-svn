@@ -19,7 +19,7 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $                                                      }
+{ Last modified: $Date: 2009-04-21 22:46:30 +0200 (mar., 21 avr. 2009) $                                                      }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -99,7 +99,9 @@ var
 
 implementation
 
-uses DependViewMain, ToolsUtils, JclSysInfo, JclStrings, JclFileUtils;
+uses
+  DependViewMain, ToolsUtils,
+  JclBase, JclSysInfo, JclStrings, JclFileUtils;
 
 {$R *.DFM}
 
@@ -380,6 +382,8 @@ begin
 end;
 
 function TFileViewerChild.GetWin32Function: String;
+const
+  BracketChars: array [0..1] of Char = ( '[', ']' );
 begin
   Result := '';
   if IsListViewActiveAndFocused(ImportListView) then
@@ -392,7 +396,7 @@ begin
   if Pos('@', Result) > 0 then
     Result := ''
   else
-    Result := StrRemoveChars(Result, ['[', ']']);
+    Result := StrRemoveChars(Result, BracketChars);
 end;
 
 procedure TFileViewerChild.ExportListViewData(Sender: TObject;

@@ -1,9 +1,9 @@
 --------------------------------------------------------------------------------
 
-Jedi Code Library
-Release 1.99
-Build 2551
-24-Februray-2007
+JEDI Code Library
+Release 2.0
+Build 3449
+10-August-2010
 
 --------------------------------------------------------------------------------
 
@@ -22,8 +22,8 @@ Getting involved in JCL development
 --------------------------------------------------------------------------------
 
 About this release
-JCL release 1.99 provide an updated support for all targets (including CodeGear
-Delphi 2007 for Win32).
+JCL release 2.0 provides basic support for RAD Studio 2010 (including
+Delphi 2010 and C++Builder 2010) an updated support for all targets.
 
 As always, multiple bugs have been fixed; for detailed change logs, use the
 facilities of our Subversion repository at Sourceforge.net
@@ -31,48 +31,34 @@ http://sourceforge.net/projects/jcl/, see below.
 
 Head changes:
 
- - JclPeImage is significantly updated: it now supports 64-bit applications and
-   libraries.
- - JclDebug is significantly updated: .jdbg files contain informations about all
-   segments of code. A new option was added to limit exception handling to the
-   main thread of the application.
- - PCRE (http://www.pcre.org/) updated to version 7.0. PCRE code can be included
-   in the application not requiring "pcre.dll" anymore (experimental - read the
-   comments at the beginning of source\common\pcre.pas for details and
-   modifications to enable this feature).
- - JclMail : different file names can be specified for attachements
- - Collection of stream classes to make basic operations easier (getting random
-   data, multiplexing several streams, buffering an other stream, being notifyed
-   on changes, reading common data types, scoping a stream, delegating
-   read/write/seek operations.
- - Integration of the JCL help into the help system of Delphi 2005, BDS 2006,
-   Turbo Delphi and Delphi 2007 for Win32.
- - New IDE expert to have TortoiseSVN (http://tortoisesvn.tigris.org/) and
-   TortoiseCVS (http://tortoisecvs.sourceforge.net/) commands integrated in all
-   supportted IDE.
+ - improved Unicode support for Delphi 2009, C++Builder 2009 and newer;
+ - new expert for displaying improved stack traces in the debugger, these stack
+   traces can be serialized to XML files;
+ - support for 32 bit FPC;
+ - support for 64 bit FPC (experimental);
+ - support for Delphi 2005 is back;
+ - removal of support for Delphi 5, C++Builder 5, Delphi.net and Kylix;
+ - added 7-zip 9.4.0 archive formats in JclCompression (.xz, .lzma86, ntfs,
+   fat...);
+ - simple log: new option to release the log files between two accesses;
+ - PCRE (http://www.pcre.org/) precompiled object files updated to PCRE 7.9;
+ - exception dialog: the log can be saved to any arbitrary location;
+ - exception dialog: new option to disable integrated exception tracking when
+   a debugger is attached;
+ - exception dialog: new option to select which thread to report to log;
 
 Important:
 
- - Note that the package naming has changed: the same package name is used by
-   all versions of the compiler supporting suffixes (C++Builder 6, Delphi 6,
-   Delphi 7, C#Builder 1, Delphi 8, Delphi 2005 and BDS 2006); a different
-   suffix is added for each target to the BPL file name (for BDS 2006, the
-   library file is named jcl100.bpl). The installer tries to remove old
-   packages. 3rd party packages requiring old DJcl* resp. CJcl* packages need to
-   be changed to accomodate the new naming scheme or they will cause conflicts
-   in the IDE at load time.
-
- - DCP files are now created in the lib\target subdirectory of the JCL
-   installation. 3rd party packages requiring JCL packages need to have this
-   path in their "browse path" option to compile.
+ - As of JCL 2.0, the library does not support Delphi 5, C++Builder 5, Kylix 3
+   and Delphi.net anymore;
 
 (Windows only) Installation options:
 
   Packages compiled by the JCL installer don't contain any debug informations to
 keep their size as small as possible.
 
-  The Jedi Code Library packages are required by some 3rd party packages
-(including the Jedi Visual Component Library - JVCL), the installer generates
+  The JEDI Code Library packages are required by some 3rd party packages
+(including the JEDI Visual Component Library - JVCL), the installer generates
 them if the "Packages" node is checked.
 
   The installer can generate MAP informations for each package. These
@@ -80,17 +66,10 @@ informations can be linked into binaries to become JCL debug data or be
 converted to .jdbg files. Once linked MAP files could be deleted. These options
 are subnodes of the "Packages" node.
 
-  For BDS 2006, the compiler introduced a new option to make the same packages
-available in C++, by checking the "Dual packages" option of the "Packages" node,
-you will be able to call functions of the JCL from C++ code.
-
-.net Framework support:
-
-A subset of JCL units was worked over to support Delphi.Net (Delphi 2005
-& BDS 2006). The packages belong to the Jedi.Jcl namespace. The installer can
-generate these packages for Delphi 2005 and BDS 2006, it displays an other tab
-to configure options and directory. The installation process is similar to the
-native targets.
+  For BDS 2006, RAD Studio 2007, RAD Studio 2009 and RAD Studio 2010, the
+compiler introduced a new option to make the same packages available in C++,
+by checking the "Dual packages" option of the "Packages" node, you will be able
+to call functions of the JCL from C++ code.
 
 --------------------------------------------------------------------------------
 
@@ -98,40 +77,34 @@ Supported Tools
 The JCL can be compiled and installed in the following environments
 
 Only runtime support:
- - Kylix 3 (cf Installation notes)
+ - FreePascal (tested with 2.2.2 and 2.2.4).
 
 Only design-time support (only experts):
- - C#Builder 1 (cf Installation notes).
+ - C#Builder 1 (cf Installation notes);
  - Delphi 8.net (cf Installation notes).
 
 Both supports (run time and design time):
- - Delphi version 5, 6, 7.
- - C++Builder version 5 & 6.
- - Delphi 2005 (Delphi Win32 and Delphi.net personalities).
- - Borland Developer Studio 2006 (Delphi Win32, C++ Builder Win32, Delphi.net
-   and C#Builder personalities).
- - Turbo Delphi (explorer and professional - cf Installation notes).
- - CodeGear Delphi 2007 for Win32.
+ - Delphi 6, Delphi 7 and Delphi 2005;
+ - C++Builder 6;
+ - Delphi 2005 (without unit versioning support);
+ - Borland Developer Studio 2006 (Delphi for Win32, C++Builder for Win32,
+   Delphi.net and C#Builder personalities);
+ - Turbo Delphi (explorer and professional - cf Installation notes);
+ - CodeGear RAD Studio 2007 (Delphi for Win32 and C++Builder for Win32
+   personalities);
+ - CodeGear Delphi 2009 and C++Builder 2009;
+ - CodeGear Delphi 2010 and C++Builder 2010.
 
 --------------------------------------------------------------------------------
 
 Installation notes
 
- - Not every unit supports all tools. Look out for *.exc files in the tool-
-   specific lib/subdirectories for a list of units excluded from compilation.
-
- - Kylix 3 Delphi/C++ installation is back but specific code has not been tested
-   with the latest versions of the kernel. Please ensure you use the flavor of
-   the JCL with Unix EOL.
-
- - Free Pascal (http://www.freepascal.org/) support has not been updated for
-   this release; most units fromsource/common should work with FP 2.0, as tests
-   with a 2.0 beta (1.9.8)indicated, but this has not been verified. Note that
-   there are no plans to support FP versions from the 1.0 branch.
+ - Free Pascal (http://www.freepascal.org/) support has been updated for
+   this release; most units fromsource/common work with FP 2.2.
 
 Installation for Turbo Delphi
 
-The Jedi Code Library can be compiled targetting Turbo Delphi Explorer and Turbo
+The JEDI Code Library can be compiled targetting Turbo Delphi Explorer and Turbo
 Delphi Professional. Turbo Delphi Professional is recognized as BDS 2006, you
 have to download its command line compiler from CodeGear website at
 http://www.codegear.com/Default.aspx?tabid=160  to install the full JCL on this
@@ -179,18 +152,18 @@ included file.
 For each tool you want to install the JCL in, repeat the following steps:
 
 1. Open and edit included file to customize options:
- - For Kylix 3 (Delphi): source\jclkd3.inc
- - For Kylix 3 (C++Builder): source\jclkc3.inc
- - For C++Builder 5: source\jclc5.inc
- - For C++Builder 6: source\jclc6.inc
- - For Delphi 5: source\jcld5.inc
- - For Delphi 6: source\jcld6.inc
- - For Delphi 7: source\jcld7.inc
- - For Delphi 2005: source\jcld9.inc
- - For Delphi.net 2005: source\jcld9.net.inc
- - For BDS 2006 (Delphi and C++Builder) and CodeGear Delphi 2007 for Win32 :
-   source\jcld10.inc
- - For Delphi.net 2006: source\jcld10.net.inc
+ - For C++Builder 6: source\include\jclc6.inc
+ - For Delphi 6: source\include\jcld6.inc
+ - For Delphi 7: source\include\jcld7.inc
+ - For Delphi 2005: source\include\jcld9.inc
+ - For Delphi.net 2005: source\include\jcld9.net.inc
+ - For BDS 2006 (Delphi and C++Builder): source\include\jcld10.inc
+ - For Delphi.net 2006: source\include\jcld10.net.inc
+ - For CodeGear Delphi 2007 for Win32 and C++Builder 2007: source\include\jcld11.inc
+ - For Delphi.net 2007: source\include\jcld11.net.inc
+ - For Delphi 2009 and C++Builder 2009: source\include\include\jcld12.inc
+ - For Delphi 2010 and C++Builder 2010: source\include\include\jcld14.inc
+ - For FreePascal: source\include\jclfpc.inc
 
 2. In the IDE, open and compile package Jcl.dpk (or Jcl.bpk for C++Builder)
 located in a subdirectory of the "packages" directory matching your version of
@@ -223,6 +196,8 @@ experts\debug\threadnames     - IDE expert showing class names for debugged thre
 experts\debug\tools           - Tools for creating files with JCL debug information
 experts\favfolders            - Favorite folders combobox in IDE open/save file dialogs
 experts\projectanalyzer       - Project Analyzer IDE expert
+experts\repository            - Repository expert
+experts\stacktraceviewer      - stack trace expert
 experts\useswizard            - JCL uses wizard
 experts\versioncontrol        - Integration of TortoiseCVS and TortoiseSVN in the IDE
 examples                      - JCL example applications
@@ -257,7 +232,7 @@ Reporting bugs
 The general rule is: If you want to get a bug fixed you need to log it!
 
 An issue tracking tool can be accessed via ('Code Library' category):
-http://homepages.codegear.com/jedi/issuetracker/
+http://issuetracker.delphi-jedi.org/
 
 Please be aware that you are allowed there to enter feature request and code
 donations as well.
@@ -274,7 +249,7 @@ These sources are official JCL releases and file status can be considered as
 stable for use in final applications. During the past years, there have been
 around 2 or 3 releases per year.
 
-Jedi Code Library: File List on SourceForge:
+JEDI Code Library: File List on SourceForge:
 http://sourceforge.net/project/showfiles.php?group_id=47514
 
 --------------------------------------------------------------------------------
@@ -293,7 +268,7 @@ To always have access to the most recent changes in the JCL, you should install
 a Subversion client (we recommend TortoiseSVN http://tortoisesvn.tigris.org/and
 RapidSVN http://rapidsvn.tigris.org/) and download the SVN repository files to
 your computer as explained in the repository page of the JEDI Wiki at
-http://homepages.codegear.com/jedi/wiki/index.php?title=Repository With the SVN
+http://wiki.delphi-jedi.org/index.php?title=Repository With the SVN
 client, you can update your local repository at any time. You can also view the
 repository online via the web interface at http://jcl.svn.sourceforge.net/
 
@@ -312,7 +287,7 @@ your help on:
 
   JCL accepts donations from developers as long as the source fullfills the
 requirements set up by the JEDI and JCL teams. To read more about these
-requirements, visit the page http://homepages.codegear.com/jedi/jcl
+requirements, visit the page http://jcl.delphi-jedi.org/
 
   You can also donate your time by writing help for the source already in JCL.
 We currently use Doc-o-Matic to create the finished help files but the actual

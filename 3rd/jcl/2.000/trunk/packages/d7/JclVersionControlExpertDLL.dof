@@ -1,8 +1,9 @@
 [Directories]
 UnitOutputDir=..\..\lib\d7
-SearchPath=..\..\source;..\..\experts\common
+SearchPath=..\..\source\include;..\..\experts\common
+Conditionals=RELEASE
 [Compiler]
 PackageNoLink=1
 [Linker]
-Packages=rtl;vcl;designide;Jcl;JclBaseExpert
+Packages=rtl;vcl;designide;Jcl;JclVcl;JclBaseExpert
 

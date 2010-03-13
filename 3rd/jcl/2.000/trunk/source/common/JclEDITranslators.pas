@@ -32,8 +32,12 @@
 {   See home page for latest news & events and online help.                                        }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// $Id: JclEDITranslators.pas 1699 2006-07-30 19:18:34Z outchy $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009)                         $ }
+{ Revision:      $Rev:: 126                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclEDITranslators;
 
@@ -92,10 +96,12 @@ type
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclEDITranslators.pas $';
-    Revision: '$Revision: 1699 $';
-    Date: '$Date: 2006-07-30 21:18:34 +0200 (dim., 30 juil. 2006) $';
-    LogPath: 'JCL\source\common'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclEDITranslators.pas $';
+    Revision: '$Revision: 126 $';
+    Date: '$Date: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 {$ENDIF ~EDI_WEAK_PACKAGE_UNITS}
@@ -360,14 +366,14 @@ var
 begin
   Location := SEFElement.GetTextSetsLocation;
   Data := ElementSpec.Notes;
-  Data := JclEDI.StringReplace(Data, AnsiCrLf, SEFTextCRLF, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiCarriageReturn, SEFTextCR, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiLineFeed, SEFTextLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCrLf, SEFTextCRLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCarriageReturn, SEFTextCR, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeLineFeed, SEFTextLF, [rfReplaceAll]);
   SEFElement.TEXTSETS.SetText(SEFElement.SEFFile, Location, SEFTextSetsCode_Elm0, Data);
   Data := ElementSpec.Description;
-  Data := JclEDI.StringReplace(Data, AnsiCrLf, SEFTextCRLF, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiCarriageReturn, SEFTextCR, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiLineFeed, SEFTextLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCrLf, SEFTextCRLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCarriageReturn, SEFTextCR, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeLineFeed, SEFTextLF, [rfReplaceAll]);
   SEFElement.TEXTSETS.SetText(SEFElement.SEFFile, Location, SEFTextSetsCode_Elm2, Data);
 end;
 
@@ -382,14 +388,14 @@ var
 begin
   Location := SEFSegment.GetTextSetsLocation;
   Data := SegmentSpec.Description;
-  Data := JclEDI.StringReplace(Data, AnsiCrLf, SEFTextCRLF, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiCarriageReturn, SEFTextCR, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiLineFeed, SEFTextLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCrLf, SEFTextCRLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCarriageReturn, SEFTextCR, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeLineFeed, SEFTextLF, [rfReplaceAll]);
   SEFSegment.TEXTSETS.SetText(SEFSegment.SEFFile, Location, SEFTextSetsCode_Seg3, Data);
   Data := SegmentSpec.Notes;
-  Data := JclEDI.StringReplace(Data, AnsiCrLf, SEFTextCRLF, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiCarriageReturn, SEFTextCR, [rfReplaceAll]);
-  Data := JclEDI.StringReplace(Data, AnsiLineFeed, SEFTextLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCrLf, SEFTextCRLF, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeCarriageReturn, SEFTextCR, [rfReplaceAll]);
+  Data := JclEDI.StringReplace(Data, NativeLineFeed, SEFTextLF, [rfReplaceAll]);
   SEFSegment.TEXTSETS.SetText(SEFSegment.SEFFile, Location, SEFTextSetsCode_Seg4, Data);
 
   SEFSegment.AssignElementOrdinals;

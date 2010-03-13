@@ -32,19 +32,20 @@
 {   Petr Vones (pvones)                                                                            }
 {   Robert Marquardt (marquardt)                                                                   }
 {   Robert Rossmair (rrossmair)                                                                    }
-{   Dejoy Den (dejoy)                                                                                        }
+{   Dejoy Den (dejoy)                                                                              }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
-{$IFDEF PROTOTYPE}
-// Last modified: $Date: 2006-07-30 21:48:09 +0200 (dim., 30 juil. 2006) $
-{$ELSE ~PROTOTYPE}
-
+{$IFNDEF PROTOTYPE}
 {$IFDEF VCL}
 unit JclGraphics;
-{$ELSE VisualCLX}
-unit JclQGraphics;
-{$ENDIF VisualCLX}
+{$ENDIF VCL}
 {$ENDIF ~PROTOTYPE}
 
 {$I jcl.inc}
@@ -59,11 +60,9 @@ uses
   {$IFDEF UNITVERSIONING}
   JclUnitVersioning,
   {$ENDIF UNITVERSIONING}
-  {$IFDEF VisualCLX}
-  Types, QGraphics, JclQGraphUtils,
-  {$ELSE}
+  {$IFDEF VCL}
   Graphics, JclGraphUtils, Controls,
-  {$ENDIF VisualCLX}
+  {$ENDIF VCL}
   JclBase;
 
 type
@@ -192,7 +191,7 @@ type
     procedure Combine(DestRegion, SrcRegion: TJclRegion; CombineOp: TJclRegionCombineOperator); overload;
     procedure Combine(SrcRegion: TJclRegion; CombineOp: TJclRegionCombineOperator); overload;
     function Copy: TJclRegion;
-    function Equals(CompareRegion: TJclRegion): Boolean;
+    function Equals(CompareRegion: TJclRegion): Boolean; {$IFDEF RTL200_UP} reintroduce; {$ENDIF RTL200_UP}
     procedure Fill(Canvas: TCanvas);
     procedure FillGradient(Canvas: TCanvas; ColorCount: Integer; StartColor, EndColor: TColor; ADirection: TGradientDirection);
     procedure Frame(Canvas: TCanvas; FrameWidth, FrameHeight: Integer);
@@ -483,7 +482,8 @@ procedure Stretch(NewWidth, NewHeight: Cardinal; Filter: TResamplingFilter;
 procedure DrawBitmap(DC: HDC; Bitmap: HBITMAP; X, Y, Width, Height: Integer);
 
 function ExtractIconCount(const FileName: string): Integer;
-function BitmapToIcon(Bitmap: HBITMAP; cx, cy: Integer): HICON;
+function BitmapToIcon(Bitmap: HBITMAP; cx, cy: Integer): HICON; overload;
+function BitmapToIcon(Bitmap, Mask: HBITMAP; cx, cy: Integer): HICON; overload;
 function IconToBitmap(Icon: HICON): HBITMAP;
 {$ENDIF MSWINDOWS}
 
@@ -554,15 +554,12 @@ procedure SetGamma(Gamma: Single = 0.7);
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/prototypes/_Graphics.pas $';
-    Revision: '$Revision: 1700 $';
-    Date: '$Date: 2006-07-30 21:48:09 +0200 (dim., 30 juil. 2006) $';
-    {$IFDEF VCL}
-    LogPath: 'JCL\source\vcl'
-    {$ENDIF VCL}
-    {$IFDEF VisualCLX}
-    LogPath: 'JCL\source\visclx'
-    {$ENDIF VisualCLX}
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/prototypes/_Graphics.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\vcl';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -577,6 +574,7 @@ uses
   JclResources,
   {$ENDIF VCL}
   {$ENDIF MSWINDOWS}
+  JclSysUtils,
   JclLogic;
 
 type
@@ -662,21 +660,6 @@ end;
 //=== Internal low level routines ============================================
 
 procedure FillLongword(var X; Count: Integer; Value: Longword);
-{asm
-// EAX = X
-// EDX = Count
-// ECX = Value
-        TEST    EDX, EDX
-        JLE     @@EXIT
-
-        PUSH    EDI
-        MOV     EDI, EAX  // Point EDI to destination
-        MOV     EAX, ECX
-        MOV     ECX, EDX
-        REP     STOSD    // Fill count dwords
-        POP     EDI
-@@EXIT:
-end;}
 var
   P: PLongword;
 begin
@@ -701,22 +684,6 @@ begin
 end;
 
 procedure TestSwap(var A, B: Integer);
-{asm
-// EAX = [A]
-// EDX = [B]
-        MOV     ECX, [EAX]     // ECX := [A]
-        CMP     ECX, [EDX]     // ECX <= [B]? Exit
-        JLE     @@EXIT
-        //Replaced on more fast code
-        //XCHG    ECX, [EDX]     // ECX <-> [B];
-        //MOV     [EAX], ECX     // [A] := ECX
-        PUSH    EBX
-        MOV     EBX,[EDX]      // EBX := [B]
-        MOV     [EAX],EBX      // [A] := EBX
-        MOV     [EDX],ECX      // [B] := ECX
-        POP     EBX
-@@EXIT:
-end;}
 var
   X: Integer;
 begin
@@ -1320,6 +1287,7 @@ procedure Stretch(NewWidth, NewHeight: Cardinal; Filter: TResamplingFilter;
   Radius: Single; Source: TGraphic; Target: TBitmap);
 var
   Temp: TBitmap;
+  OriginalPixelFormat: TPixelFormat;
 begin
   if Source.Empty then
     Exit;               // do nothing
@@ -1332,6 +1300,7 @@ begin
     // To allow Source = Target, the following assignment needs to be done initially
     Temp.Assign(Source);
     Temp.PixelFormat := pf32bit;
+    OriginalPixelFormat := Target.PixelFormat; //Save format
 
     Target.FreeImage;
     Target.PixelFormat := pf32bit;
@@ -1340,6 +1309,8 @@ begin
 
     {$IFDEF VCL}if not Target.Empty then{$ENDIF VCL}
       DoStretch(FilterList[Filter], Radius, Temp, Target);
+
+    Target.PixelFormat := OriginalPixelFormat; //Restore original PixelFormat
   finally
     Temp.Free;
   end;
@@ -1722,6 +1693,20 @@ begin
   end;
 end;
 
+function BitmapToIcon(Bitmap, Mask: HBITMAP; cx, cy: Integer): HICON;
+var
+  ImgList: HIMAGELIST;
+  I: Integer;
+begin
+  ImgList := ImageList_Create(cx, cy, ILC_COLOR, 1, 1);
+  try
+    I := ImageList_Add(ImgList, Bitmap, Mask);
+    Result := ImageList_GetIcon(ImgList, I, ILD_TRANSPARENT);
+  finally
+    ImageList_Destroy(ImgList);
+  end;
+end;
+
 function IconToBitmap(Icon: HICON): HBITMAP;
 var
   IconInfo: TIconInfo;
@@ -1785,8 +1770,8 @@ var
   List: TIconRec;
   Length: Longint;
 begin
-  FillChar(CI, SizeOf(CI), 0);
-  FillChar(List, SizeOf(List), 0);
+  ResetMemory(CI, SizeOf(CI));
+  ResetMemory(List, SizeOf(List));
   GetDIBSizes(MaskBitmap, MonoInfoSize, MonoBitsSize);
   GetDIBSizes(ColorBitmap, ColorInfoSize, ColorBitsSize);
   MonoInfo := nil;
@@ -2095,7 +2080,7 @@ begin
   // Palette-device?
   if (GetDeviceCaps(WinDC, RASTERCAPS) and RC_PALETTE) = RC_PALETTE then
   begin
-    FillChar(Pal, SizeOf(TMaxLogPalette), #0);  // fill the structure with zeros
+    ResetMemory(Pal, SizeOf(TMaxLogPalette));  // fill the structure with zeros
     Pal.palVersion := $300;                     // fill in the palette version
 
     // grab the system palette entries...
@@ -2373,7 +2358,7 @@ begin
   if FHandle = 0 then
   begin
     if FOwnsHandle then
-      raise EJclWin32Error.CreateRes(@RsRegionCouldNotCreated)
+      raise EJclGraphicsError.CreateRes(@RsRegionCouldNotCreated)
     else
       raise EJclGraphicsError.CreateRes(@RsInvalidHandleForRegion);
   end;
@@ -2432,7 +2417,7 @@ procedure TJclRegion.FillGradient(Canvas: TCanvas; ColorCount: Integer;
   StartColor, EndColor: TColor; ADirection: TGradientDirection);
 begin
   SelectClipRgn(Canvas.Handle,FHandle);
-  {$IFDEF VisualCLX}JclQGraphics{$ELSE}JclGraphics{$ENDIF}.FillGradient(Canvas.Handle, Box, ColorCount, StartColor, EndColor, ADirection);
+  {$IFDEF VCL}JclGraphics{$ENDIF}.FillGradient(Canvas.Handle, Box, ColorCount, StartColor, EndColor, ADirection);
 end;
 
 procedure TJclRegion.Frame(Canvas: TCanvas; FrameWidth, FrameHeight: Integer);
@@ -2647,7 +2632,7 @@ begin
 
   FResetAlphaOnAssign := True;
 
-  FillChar(FBitmapInfo, SizeOf(TBitmapInfo), #0);
+  ResetMemory(FBitmapInfo, SizeOf(TBitmapInfo));
   with FBitmapInfo.bmiHeader do
   begin
     biSize := SizeOf(TBitmapInfoHeader);

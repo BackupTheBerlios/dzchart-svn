@@ -21,8 +21,12 @@
 { located at http://jcl.sourceforge.net                                                            }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// $Id: JclSIMDCpuInfo.pas 1671 2006-05-29 22:02:45Z outchy $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclSIMDCpuInfo;
 
@@ -33,6 +37,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
   JclSysInfo;
 
 type
@@ -52,11 +59,31 @@ type
     CheckBoxSSE2: TCheckBox;
     CheckBoxSSE3: TCheckBox;
     ButtonClose: TButton;
+    CheckBoxSSSE3: TCheckBox;
+    CheckBoxSSE4A: TCheckBox;
+    CheckBoxSSE5: TCheckBox;
+    CheckBoxSSE4B: TCheckBox;
+    CheckBoxAVX: TCheckBox;
+    CheckBoxEnabledFPU: TCheckBox;
+    CheckBoxEnabledSSE: TCheckBox;
+    CheckBoxEnabledAVX: TCheckBox;
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
-    procedure Execute(const CpuInfo: TCPUInfo);
+    procedure Execute(const CpuInfo: TCPUInfo; const EnabledFeatures: TOSEnabledFeatures);
   end;
+
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/debug/simdview/JclSIMDCpuInfo.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\experts\debug\simdview';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
 
 implementation
 
@@ -78,20 +105,36 @@ begin
     Params.WndParent := Application.Handle;
 end;
 
-procedure TJclFormCpuInfo.Execute(const CpuInfo: TCPUInfo);
+procedure TJclFormCpuInfo.Execute(const CpuInfo: TCPUInfo; const EnabledFeatures: TOSEnabledFeatures);
 begin
-  EditName.Text := CpuInfo.CpuName;
-  EditVendor.Text := CpuInfo.VendorIDString;
+  EditName.Text := string(AnsiString(CpuInfo.CpuName));
+  EditVendor.Text := string(AnsiString(CpuInfo.VendorIDString));
   EditFrequency.Text := IntToStr(CpuInfo.FrequencyInfo.NormFreq);
   CheckBoxMMX.Checked := CpuInfo.MMX;
   CheckBoxExMMX.Checked := CpuInfo.ExMMX;
   CheckBox3DNow.Checked := CpuInfo._3DNow;
   CheckBoxEx3DNow.Checked := CpuInfo.Ex3DNow;
   CheckBox64Bits.Checked := CpuInfo.Is64Bits;
-  CheckBoxSSE1.Checked := CpuInfo.SSE >= 1;
-  CheckBoxSSE2.Checked := CpuInfo.SSE >= 2;
-  CheckBoxSSE3.Checked := CpuInfo.SSE >= 3;
+  CheckBoxSSE1.Checked := sse in CpuInfo.SSE;
+  CheckBoxSSE2.Checked := sse2 in CpuInfo.SSE;
+  CheckBoxSSE3.Checked := sse3 in CpuInfo.SSE;
+  CheckBoxSSSE3.Checked := ssse3 in CpuInfo.SSE;
+  CheckBoxSSE4A.Checked := sse4A in CpuInfo.SSE;
+  CheckBoxSSE4B.Checked := sse4B in CpuInfo.SSE;
+  CheckBoxSSE5.Checked := sse5 in CpuInfo.SSE;
+  CheckBoxAVX.Checked := avx in CpuInfo.SSE;
+  CheckBoxEnabledFPU.Checked := oefFPU in EnabledFeatures;
+  CheckBoxEnabledSSE.Checked := oefSSE in EnabledFeatures;
+  CheckBoxEnabledAVX.Checked := oefAVX in EnabledFeatures;
   ShowModal;
 end;
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

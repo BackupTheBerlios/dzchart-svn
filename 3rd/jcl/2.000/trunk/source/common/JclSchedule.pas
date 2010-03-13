@@ -24,11 +24,13 @@
 {                                                                                                  }
 { This unit contains scheduler classes.                                                            }
 {                                                                                                  }
-{ Unit owner: Marcel Bestebroer                                                                    }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-07-24 07:34:39 +0200 (lun., 24 juil. 2006) $
 
 unit JclSchedule;
 
@@ -174,18 +176,16 @@ type
   end;
 
 function CreateSchedule: IJclSchedule;
-function NullStamp: TTimeStamp;
-function CompareTimeStamps(const Stamp1, Stamp2: TTimeStamp): Int64;
-function EqualTimeStamps(const Stamp1, Stamp2: TTimeStamp): Boolean;
-function IsNullTimeStamp(const Stamp: TTimeStamp): Boolean;
 
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclSchedule.pas $';
-    Revision: '$Revision: 1694 $';
-    Date: '$Date: 2006-07-24 07:34:39 +0200 (lun., 24 juil. 2006) $';
-    LogPath: 'JCL\source\common'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclSchedule.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -193,328 +193,6 @@ implementation
 
 uses
   JclDateTime, JclResources;  
-
-{$IFNDEF RTL140_UP}
-
-const
-  S_OK    = $00000000;
-  E_NOINTERFACE = HRESULT($80004002);
-
-type
-  TAggregatedObject = class
-  private
-    FController: Pointer;
-    function GetController: IUnknown;
-  protected
-    { IUnknown }
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
-  public
-    constructor Create(Controller: IUnknown);
-    property Controller: IUnknown read GetController;
-  end;
-
-  TContainedObject = class(TAggregatedObject, IUnknown)
-  protected
-    { IUnknown }
-    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
-  end;
-
-//=== { TAggregatedObject } ==================================================
-
-constructor TAggregatedObject.Create(Controller: IUnknown);
-begin
-  FController := Pointer(Controller);
-end;
-
-function TAggregatedObject.GetController: IUnknown;
-begin
-  Result := IUnknown(FController);
-end;
-
-function TAggregatedObject.QueryInterface(const IID: TGUID; out Obj): HResult;
-begin
-  Result := IUnknown(FController).QueryInterface(IID, Obj);
-end;
-
-function TAggregatedObject._AddRef: Integer;
-begin
-  Result := IUnknown(FController)._AddRef;
-end;
-
-function TAggregatedObject._Release: Integer; stdcall;
-begin
-  Result := IUnknown(FController)._Release;
-end;
-
-//=== { TContainedObject } ===================================================
-
-function TContainedObject.QueryInterface(const IID: TGUID; out Obj): HResult;
-begin
-  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
-end;
-
-{$ENDIF ~RTL140_UP}
-
-// Utility functions
-function NullStamp: TTimeStamp;
-begin
-  Result.Date := 0;
-  Result.Time := -1;
-end;
-
-function CompareTimeStamps(const Stamp1, Stamp2: TTimeStamp): Int64;
-begin
-  if Stamp1.Date < Stamp2.Date then
-    Result := -1
-  else
-  if Stamp1.Date = Stamp2.Date then
-  begin
-    if Stamp1.Time < Stamp2.Time then
-      Result := -1
-    else
-    if Stamp1.Time = Stamp2.Time then
-      Result := 0
-    else // If Stamp1.Time > Stamp2.Time then
-      Result := 1;
-  end
-  else // if Stamp1.Date > Stamp2.Date then
-    Result := 1;
-//  Result := Int64(Stamp1) - Int64(Stamp2);
-end;
-
-function EqualTimeStamps(const Stamp1, Stamp2: TTimeStamp): Boolean;
-begin
-  Result := CompareTimeStamps(Stamp1, Stamp2) = 0;
-end;
-
-function IsNullTimeStamp(const Stamp: TTimeStamp): Boolean;
-begin
-  Result := CompareTimeStamps(NullStamp, Stamp) = 0;
-end;
-
-function TimeStampDOW(const Stamp: TTimeStamp): Integer;
-begin
-  Result := (Stamp.Date - 1) mod 7 + 1
-end;
-
-function ISODayOfWeek(DateTime: TDateTime): Integer;
-begin
-  Result := (DayOfWeek(DateTime - 2 + 7) mod 7) + 1;
-end;
-
-function FirstWeekDayPrim(const Year, Month: Integer; var DOW: Integer): Integer;
-begin
-  DOW := ISODayOfWeek(JclDateTime.EncodeDate(Year, Month, 1));
-  if DOW > 5 then
-  begin
-    Result := 9 - DOW;
-    DOW := 1;
-  end
-  else
-    Result := 1;
-end;
-
-function LastWeekDayPrim(const Year, Month: Integer; var DOW: Integer): Integer;
-begin
-  DOW := ISODayOfWeek(JclDateTime.EncodeDate(Year, Month, DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1))));
-  if DOW > 5 then
-  begin
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1)) - (DOW - 5);
-    DOW := 5;
-  end
-  else
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1));
-end;
-
-function FirstWeekendDayPrim(const Year, Month: Integer; var DOW: Integer): Integer;
-begin
-  DOW := ISODayOfWeek(JclDateTime.EncodeDate(Year, Month, 1));
-  if DOW < 6 then
-  begin
-    Result := 7 - DOW;
-    DOW := 6;
-  end
-  else
-    Result := 1;
-end;
-
-function LastWeekendDayPrim(const Year, Month: Integer; var DOW: Integer): Integer;
-begin
-  DOW := ISODayOfWeek(JclDateTime.EncodeDate(Year, Month, DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1))));
-  if DOW < 6 then
-  begin
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1)) - DOW;
-    DOW := 7;
-  end
-  else
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1));
-end;
-
-function FirstWeekDay(const Year, Month: Integer): Integer;
-var
-  Dummy: Integer;
-begin
-  Result := FirstWeekDayPrim(Year, Month, Dummy);
-end;
-
-function LastWeekDay(const Year, Month: Integer): Integer;
-var
-  Dummy: Integer;
-begin
-  Result := LastWeekDayPrim(Year, Month, Dummy);
-end;
-
-function IndexedWeekDay(const Year, Month: Integer; Index: Integer): Integer;
-var
-  DOW: Integer;
-begin
-  if Index > 0 then
-    Result := FirstWeekDayPrim(Year, Month, DOW)
-  else
-  if Index < 0 then
-    Result := LastWeekDayPrim(Year, Month, DOW)
-  else
-    Result := 0;
-  if Index > 1 then                   // n-th weekday from start of month
-  begin
-    Dec(Index);
-    if DOW > 1 then                   // adjust to first monday
-    begin
-      if Index < (5 - DOW) then
-      begin
-        Inc(Result, Index);
-        Index := 0;
-      end
-      else
-      begin
-        Dec(Index, 6 - DOW);
-        Inc(Result, 8 - DOW);
-      end;
-    end;
-    Result := Result + (7 * (Index div 5)) + (Index mod 5);
-  end
-  else
-  if Index < -1 then             // n-th weekday from end of month
-  begin
-    Index := Abs(Index) - 1;
-    if DOW < 5 then                   // adjust to last friday
-    begin
-      if Index < DOW then
-      begin
-        Dec(Result, Index);
-        Index := 0;
-      end
-      else
-      begin
-        Dec(Index, DOW);
-        Dec(Result, DOW + 2);
-      end;
-    end;
-    Result := Result - (7 * (Index div 5)) - (Index mod 5);
-  end;
-  if (Result < 0) or (Result > DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1))) then
-    Result := 0;
-end;
-
-function FirstWeekendDay(const Year, Month: Integer): Integer;
-var
-  Dummy: Integer;
-begin
-  Result := FirstWeekendDayPrim(Year, Month, Dummy);
-end;
-
-function LastWeekendDay(const Year, Month: Integer): Integer;
-var
-  Dummy: Integer;
-begin
-  Result := LastWeekendDayPrim(Year, Month, Dummy);
-end;
-
-function IndexedWeekendDay(const Year, Month: Integer; Index: Integer): Integer;
-var
-  DOW: Integer;
-begin
-  if Index > 0 then
-    Result := FirstWeekendDayPrim(Year, Month, DOW)
-  else
-  if Index < 0 then
-    Result := LastWeekendDayPrim(Year, Month, DOW)
-  else
-    Result := 0;
-  if Index > 1 then                         // n-th weekend day from the start of the month
-  begin
-    if (DOW > 6) and not Odd(Index) then   // Adjust to first saturday
-    begin
-      Inc(Result, 6);
-      Dec(Index);
-    end;
-    if Index > 1 then
-    begin
-      Dec(Index);
-      Result := Result + (7 * (Index div 2)) + (Index mod 2);
-    end;
-  end
-  else
-  if Index < -1 then                   // n-th weekend day from the start of the month
-  begin
-    Index := Abs(Index);
-    if (DOW < 7) and not Odd(Index) then    // Adjust to last sunday
-    begin
-      Dec(Result, 6);
-      Dec(Index);
-    end;
-    if Index > 1 then
-    begin
-      Dec(Index);
-      Result := Result - (7 * (Index div 2)) - (Index mod 2);
-    end;
-  end;
-  if (Result < 0) or (Result > DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1))) then
-    Result := 0;
-end;
-
-function FirstDayOfWeek(const Year, Month, DayOfWeek: Integer): Integer;
-var
-  DOW: Integer;
-begin
-  DOW := ISODayOfWeek(JclDateTime.EncodeDate(Year, Month, 1));
-  if DOW > DayOfWeek then
-    Result := 8 + DayOfWeek - DOW
-  else
-  if DOW < DayOfWeek then
-    Result := 1 + DayOfWeek - DOW
-  else
-    Result := 1;
-end;
-
-function LastDayOfWeek(const Year, Month, DayOfWeek: Integer): Integer;
-var
-  DOW: Integer;
-begin
-  DOW := ISODayOfWeek(JclDateTime.EncodeDate(Year, Month, DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1))));
-  if DOW > DayOfWeek then
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1)) - (DOW - DayOfWeek)
-  else
-  if DOW < DayOfWeek then
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1)) - (7 + DayOfWeek - DOW)
-  else
-    Result := DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1));
-end;
-
-function IndexedDayOfWeek(const Year, Month, DayOfWeek, Index: Integer): Integer;
-begin
-  if Index > 0 then
-    Result := FirstDayOfWeek(Year, Month, DayOfWeek) + 7 * (Index - 1)
-  else
-  if Index < 0 then
-    Result := LastDayOfWeek(Year, Month, DayOfWeek) - 7 * (Abs(Index) - 1)
-  else
-    Result := 0;
-  if (Result < 0) or (Result > DaysInMonth(JclDateTime.EncodeDate(Year, Month, 1))) then
-    Result := 0;
-end;
 
 //=== { TScheduleAggregate } =================================================
 
@@ -555,7 +233,7 @@ end;
 //=== { TDailyFreq } =========================================================
 
 type
-  TDailyFreq = class(TAggregatedObject)
+  TDailyFreq = class(TAggregatedObject, IJclScheduleDayFrequency, IInterface)
   private
     FStartTime: Cardinal;
     FEndTime: Cardinal;
@@ -664,7 +342,7 @@ end;
 //=== { TDailySchedule } =====================================================
 
 type
-  TDailySchedule = class(TScheduleAggregate)
+  TDailySchedule = class(TScheduleAggregate, IJclDailySchedule, IInterface)
   private
     FEveryWeekDay: Boolean;
     FInterval: Cardinal;
@@ -765,7 +443,7 @@ end;
 //=== { TWeeklySchedule } ====================================================
 
 type
-  TWeeklySchedule = class(TScheduleAggregate)
+  TWeeklySchedule = class(TScheduleAggregate, IJclWeeklySchedule, IInterface)
   private
     FDaysOfWeek: TScheduleWeekDays;
     FInterval: Cardinal;
@@ -860,7 +538,7 @@ end;
 //=== { TMonthlySchedule } ===================================================
 
 type
-  TMonthlySchedule = class(TScheduleAggregate)
+  TMonthlySchedule = class(TScheduleAggregate, IJclMonthlySchedule, IInterface)
   private
     FIndexKind: TScheduleIndexKind;
     FIndexValue: Integer;
@@ -1209,7 +887,7 @@ end;
 //=== { TYearlySchedule } ====================================================
 
 type
-  TYearlySchedule = class(TMonthlySchedule)
+  TYearlySchedule = class(TMonthlySchedule, IJclYearlySchedule, IInterface)
   private
     FMonth: Cardinal;
   protected
@@ -1304,6 +982,9 @@ end;
 //=== { TSchedule } ==========================================================
 
 type
+
+  { TSchedule }
+
   TSchedule = class(TInterfacedObject, IJclSchedule, IJclScheduleDayFrequency, IJclDailySchedule,
     IJclWeeklySchedule, IJclMonthlySchedule, IJclYearlySchedule)
   private
@@ -1322,13 +1003,19 @@ type
     FDayCount: Cardinal;
     FLastEvent: TTimeStamp;
 
+    function GetDailyFreq: IJclScheduleDayFrequency;
+    function GetDailySchedule: IJclDailySchedule;
+    function GetWeeklySchedule: IJclWeeklySchedule;
+    function GetMonthlySchedule: IJclMonthlySchedule;
+    function GetYearlySchedule: IJclYearlySchedule;
+
     function GetNextEventStamp(const From: TTimeStamp): TTimeStamp;
 
-    property DailyFreq: TDailyFreq read FDailyFreq implements IJclScheduleDayFrequency;
-    property DailySchedule: TDailySchedule read FDailySchedule implements IJclDailySchedule;
-    property WeeklySchedule: TWeeklySchedule read FWeeklySchedule implements IJclWeeklySchedule;
-    property MonthlySchedule: TMonthlySchedule read FMonthlySchedule implements IJclMonthlySchedule;
-    property YearlySchedule: TYearlySchedule read FYearlySchedule implements IJclYearlySchedule;
+    property DailyFreq: IJclScheduleDayFrequency read GetDailyFreq implements IJclScheduleDayFrequency;
+    property DailySchedule: IJclDailySchedule read GetDailySchedule implements IJclDailySchedule;
+    property WeeklySchedule: IJclWeeklySchedule read GetWeeklySchedule implements IJclWeeklySchedule;
+    property MonthlySchedule: IJclMonthlySchedule read GetMonthlySchedule implements IJclMonthlySchedule;
+    property YearlySchedule: IJclYearlySchedule read GetYearlySchedule implements IJclYearlySchedule;
   public
     constructor Create;
     destructor Destroy; override;
@@ -1391,6 +1078,31 @@ begin
   inherited Destroy;
 end;
 
+function TSchedule.GetDailyFreq: IJclScheduleDayFrequency;
+begin
+  Result := FDailyFreq;
+end;
+
+function TSchedule.GetDailySchedule: IJclDailySchedule;
+begin
+  Result := FDailySchedule;
+end;
+
+function TSchedule.GetWeeklySchedule: IJclWeeklySchedule;
+begin
+  Result := FWeeklySchedule;
+end;
+
+function TSchedule.GetMonthlySchedule: IJclMonthlySchedule;
+begin
+  Result := FMonthlySchedule;
+end;
+
+function TSchedule.GetYearlySchedule: IJclYearlySchedule;
+begin
+  Result := FYearlySchedule;
+end;
+
 function TSchedule.GetNextEventStamp(const From: TTimeStamp): TTimeStamp;
 var
   UseFrom: TTimeStamp;
@@ -1408,51 +1120,51 @@ begin
         Result := StartDate;
     srkDaily:
       begin
-        Result := DailyFreq.NextValidStamp(UseFrom);
+        Result := FDailyFreq.NextValidStamp(UseFrom);
         if IsNullTimeStamp(Result) then
         begin
           Result.Date := UseFrom.Date;
           Result.Time := DailyFreq.StartTime;
-          Result := DailySchedule.NextValidStamp(Result);
+          Result := FDailySchedule.NextValidStamp(Result);
         end
         else
-          DailySchedule.MakeValidStamp(Result);
+          FDailySchedule.MakeValidStamp(Result);
       end;
     srkWeekly:
       begin
-        Result := DailyFreq.NextValidStamp(UseFrom);
+        Result := FDailyFreq.NextValidStamp(UseFrom);
         if IsNullTimeStamp(Result) then
         begin
           Result.Date := UseFrom.Date;
           Result.Time := DailyFreq.StartTime;
-          Result := WeeklySchedule.NextValidStamp(Result);
+          Result := FWeeklySchedule.NextValidStamp(Result);
         end
         else
-          WeeklySchedule.MakeValidStamp(Result);
+          FWeeklySchedule.MakeValidStamp(Result);
       end;
     srkMonthly:
       begin
-        Result := DailyFreq.NextValidStamp(UseFrom);
+        Result := FDailyFreq.NextValidStamp(UseFrom);
         if IsNullTimeStamp(Result) then
         begin
           Result.Date := UseFrom.Date;
           Result.Time := DailyFreq.StartTime;
-          Result := MonthlySchedule.NextValidStamp(Result);
+          Result := FMonthlySchedule.NextValidStamp(Result);
         end
         else
-          MonthlySchedule.MakeValidStamp(Result);
+          FMonthlySchedule.MakeValidStamp(Result);
       end;
     srkYearly:
       begin
-        Result := DailyFreq.NextValidStamp(UseFrom);
+        Result := FDailyFreq.NextValidStamp(UseFrom);
         if IsNullTimeStamp(Result) then
         begin
           Result.Date := UseFrom.Date;
           Result.Time := DailyFreq.StartTime;
-          Result := YearlySchedule.NextValidStamp(Result);
+          Result := FYearlySchedule.NextValidStamp(Result);
         end
         else
-          YearlySchedule.MakeValidStamp(Result);
+          FYearlySchedule.MakeValidStamp(Result);
       end;
   end;
   if CompareTimeStamps(Result, UseFrom) < 0 then

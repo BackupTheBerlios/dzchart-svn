@@ -19,7 +19,7 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $                                                      }
+{ Last modified: $Date: 2009-04-21 22:46:30 +0200 (mar., 21 avr. 2009) $                                                      }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -324,7 +324,7 @@ begin
   with Item do
   begin
     Caption := Format('%u', [DWORD(FStringsList.Objects[Index])]);
-    SubItems.Add(StrRemoveChars(FStringsList[Index], [AnsiCarriageReturn, AnsiLineFeed]));
+    SubItems.Add(StrRemoveChars(FStringsList[Index], CharIsReturn));
   end;
 end;
 

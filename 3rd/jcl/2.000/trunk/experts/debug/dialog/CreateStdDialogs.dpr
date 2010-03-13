@@ -1,3 +1,31 @@
+{**************************************************************************************************}
+{                                                                                                  }
+{ Project JEDI Code Library (JCL)                                                                  }
+{                                                                                                  }
+{ The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); }
+{ you may not use this file except in compliance with the License. You may obtain a copy of the    }
+{ License at http://www.mozilla.org/MPL/                                                           }
+{                                                                                                  }
+{ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF   }
+{ ANY KIND, either express or implied. See the License for the specific language governing rights  }
+{ and limitations under the License.                                                               }
+{                                                                                                  }
+{ The Original Code is CreateStdDialogs.dpr.                                                       }
+{                                                                                                  }
+{ The Initial Developer of the Original Code is Florent Ouchet                                     }
+{         <outchy att users dott sourceforge dott net>                                             }
+{ Portions created by Florent Ouchet are Copyright (C) of Florent Ouchet. All rights reserved.     }
+{                                                                                                  }
+{ Contributors:                                                                                    }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-04-26 22:50:19 +0200 (dim. 26 avr. 2009)                           $ }
+{ Revision:      $Rev:: 18                                                                       $ }
+{ Author:        $Author:: uschuster                                                             $ }
+{                                                                                                  }
+{**************************************************************************************************}
+
 program CreateStdDialogs;
 
 {$APPTYPE CONSOLE}
@@ -6,30 +34,34 @@ uses
   SysUtils,
   Classes,
   JclBorlandTools,
-  JclOtaTemplates in 'JclOtaTemplates.pas',
-  JclOtaExcDlgRepository in 'JclOtaExcDlgRepository.pas';
+  JclOtaTemplates in '..\..\repository\JclOtaTemplates.pas',
+  JclOtaExcDlgRepository in '..\..\repository\JclOtaExcDlgRepository.pas';
 
-function LoadTemplate(const FileName: string): string;
+function LoadTemplate(const FileName: TFileName): string;
 var
   AFileStream: TFileStream;
+  Buffer: AnsiString;
 begin
   AFileStream := TFileStream.Create(FileName, fmOpenRead, fmShareDenyWrite);
   try
-    SetLength(Result, AFileStream.Size);
-    AFileStream.ReadBuffer(Result[1], AFileStream.Size);
+    SetLength(Buffer, AFileStream.Size);
+    AFileStream.ReadBuffer(Buffer[1], AFileStream.Size);
+    Result := string(Buffer);
   finally
     AFileStream.Free;
   end;
 end;
 
-procedure SaveFile(const FileName, FileContent: string);
+procedure SaveFile(const FileName: TFileName; const FileContent: string);
 var
   AFileStream: TFileStream;
+  Buffer: AnsiString;
 begin
   AFileStream := TFileStream.Create(FileName, fmOpenWrite, fmShareExclusive);
   try
+    Buffer := AnsiString(FileContent);
     AFileStream.Size := 0;
-    AFileStream.Write(FileContent[1], Length(FileContent));
+    AFileStream.Write(Buffer[1], Length(Buffer));
   finally
     AFileStream.Free;
   end;

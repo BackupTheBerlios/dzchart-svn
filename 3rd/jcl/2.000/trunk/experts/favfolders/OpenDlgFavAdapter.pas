@@ -20,11 +20,11 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Unit owner: Petr Vones                                                                           }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $
 
 unit OpenDlgFavAdapter;
 
@@ -34,7 +34,10 @@ interface
 
 uses
   Windows, Messages, Classes, SysUtils, Controls, StdCtrls, ExtCtrls,
-  JclPeImage;
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
+  JclPeImage, JclWin32;
 
 type
   TFavOpenDialog = class (TObject)
@@ -91,14 +94,23 @@ type
 
 function InitializeFavOpenDialog: TFavOpenDialog;
 
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/favfolders/OpenDlgFavAdapter.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\experts\favfolders';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
+
 implementation
 
 uses
-  {$IFNDEF RTL140_UP}
-  Forms,
-  {$ENDIF ~RTL140_UP}
   CommDlg, Dlgs,
-  JclFileUtils, JclStrings, JclSysInfo, JclSysUtils,
+  JclBase, JclFileUtils, JclStrings, JclSysInfo, JclSysUtils,
   JclOtaConsts, JclOtaResources, JclOtaUtils;
 
 {$R FavDlg.res}
@@ -118,7 +130,7 @@ begin
   if (Msg = WM_INITDIALOG) and Assigned(FavOpenDialog) then
   begin
     FavOpenDialog.FHandle := Wnd;
-    FavOpenDialog.FOldWndInstance := Pointer(SetWindowLong(Wnd, GWL_WNDPROC, Longint(FavOpenDialog.FWndInstance)));
+    FavOpenDialog.FOldWndInstance := Pointer(SetWindowLongPtr(Wnd, GWLP_WNDPROC, LONG_PTR(FavOpenDialog.FWndInstance)));
     CallWindowProc(FavOpenDialog.FWndInstance, Wnd, Msg, WParam, LParam);
   end;
 end;
@@ -143,10 +155,8 @@ begin
         begin
           if FavOpenDialog.DisableHelpButton then
             Flags := Flags and (not OFN_SHOWHELP);
-          {$IFDEF DELPHI6_UP}
           if FavOpenDialog.DisablePlacesBar and (lStructSize = SizeOf(TOpenFilename)) then
             FlagsEx := FlagsEx or OFN_EX_NOPLACESBAR;
-          {$ENDIF DELPHI6_UP}
         end;
       end
       else
@@ -324,14 +334,14 @@ begin
     FFavoritePanel.BoundsRect := PreviewRect;
     FFavoritePanel.ParentWindow := FHandle;
     if IsWin2k or IsWinXP then
-      FOldParentWndInstance := Pointer(SetWindowLong(FParentWnd, GWL_WNDPROC, Longint(FParentWndInstance)));
+      FOldParentWndInstance := Pointer(SetWindowLongPtr(FParentWnd, GWLP_WNDPROC, LONG_PTR(FParentWndInstance)));
     AdjustControlPos;
     try
       DoShow;
     finally
       FFavoriteComboBox.Items.Assign(FavoriteFolders);
     end;
-  end;  
+  end;
 end;
 
 procedure TFavOpenDialog.DoClose;
@@ -375,8 +385,13 @@ procedure TFavOpenDialog.HookDialogs;
   begin
     if ModuleBase <> nil then
     begin
+      {$IFDEF UNICODE}
+      FHooks.HookImport(ModuleBase, comdlg32, 'GetOpenFileNameW', @NewGetOpenFileName, @OldGetOpenFileName);
+      FHooks.HookImport(ModuleBase, comdlg32, 'GetSaveFileNameW', @NewGetSaveFileName, @OldGetSaveFileName);
+      {$ELSE}
       FHooks.HookImport(ModuleBase, comdlg32, 'GetOpenFileNameA', @NewGetOpenFileName, @OldGetOpenFileName);
       FHooks.HookImport(ModuleBase, comdlg32, 'GetSaveFileNameA', @NewGetSaveFileName, @OldGetSaveFileName);
+      {$ENDIF UNICODE}
     end;
   end;
 var
@@ -509,9 +524,24 @@ end;
 
 initialization
 
+try
+  {$IFDEF UNITVERSIONING}
+  RegisterUnitVersion(HInstance, UnitVersioning);
+  {$ENDIF UNITVERSIONING}
+except
+  on ExceptionObj: TObject do
+  begin
+    JclExpertShowExceptionDialog(ExceptionObj);
+    raise;
+  end;
+end;
+
 finalization
 
 try
+  {$IFDEF UNITVERSIONING}
+  UnregisterUnitVersion(HInstance);
+  {$ENDIF UNITVERSIONING}
   FreeAndNil(FavOpenDialog);
 except
   on ExceptionObj: TObject do

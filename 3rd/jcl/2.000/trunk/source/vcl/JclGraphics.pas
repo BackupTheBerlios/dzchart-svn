@@ -36,24 +36,37 @@
 {   Petr Vones (pvones)                                                                            }
 {   Robert Marquardt (marquardt)                                                                   }
 {   Robert Rossmair (rrossmair)                                                                    }
-{   Dejoy Den (dejoy)                                                                                        }
+{   Dejoy Den (dejoy)                                                                              }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
 
+
 unit JclGraphics;
+
+
 
 {$I jcl.inc}
 
 interface
 
 uses
+  
   Windows,
+  
   Classes, SysUtils,
   {$IFDEF UNITVERSIONING}
   JclUnitVersioning,
   {$ENDIF UNITVERSIONING}
+  
   Graphics, JclGraphUtils, Controls,
+  
   JclBase;
 
 type
@@ -123,6 +136,7 @@ var
 
 // Classes
 type
+  
   TJclDesktopCanvas = class(TCanvas)
   private
     FDesktop: HDC;
@@ -181,7 +195,7 @@ type
     procedure Combine(DestRegion, SrcRegion: TJclRegion; CombineOp: TJclRegionCombineOperator); overload;
     procedure Combine(SrcRegion: TJclRegion; CombineOp: TJclRegionCombineOperator); overload;
     function Copy: TJclRegion;
-    function Equals(CompareRegion: TJclRegion): Boolean;
+    function Equals(CompareRegion: TJclRegion): Boolean; {$IFDEF RTL200_UP} reintroduce; {$ENDIF RTL200_UP}
     procedure Fill(Canvas: TCanvas);
     procedure FillGradient(Canvas: TCanvas; ColorCount: Integer; StartColor, EndColor: TColor; ADirection: TGradientDirection);
     procedure Frame(Canvas: TCanvas; FrameWidth, FrameHeight: Integer);
@@ -198,13 +212,17 @@ type
     property Handle: HRGN read GetHandle;
     property RegionType: TJclRegionKind read GetRegionType;
   end;
+  
 
+  
   { TJclThreadPersistent }
   { TJclThreadPersistent is an ancestor for TJclBitmap32 object. In addition to
     TPersistent methods, it provides thread-safe locking and change notification }
   TJclThreadPersistent = class(TPersistent)
   private
+    
     FLock: TRTLCriticalSection;
+    
     FLockCount: Integer;
     FUpdateCount: Integer;
     FOnChanging: TNotifyEvent;
@@ -422,6 +440,7 @@ type
     property ValPtr[X, Y: Integer]: PByte read GetValPtr;
     property Value[X, Y: Integer]: Byte read GetValue write SetValue; default;
   end;
+  
 
   TJclTransformation = class(TObject)
   public
@@ -461,11 +480,15 @@ procedure Stretch(NewWidth, NewHeight: Cardinal; Filter: TResamplingFilter;
 procedure Stretch(NewWidth, NewHeight: Cardinal; Filter: TResamplingFilter;
   Radius: Single; Bitmap: TBitmap); overload;
 
+
 procedure DrawBitmap(DC: HDC; Bitmap: HBITMAP; X, Y, Width, Height: Integer);
 
 function ExtractIconCount(const FileName: string): Integer;
-function BitmapToIcon(Bitmap: HBITMAP; cx, cy: Integer): HICON;
+function BitmapToIcon(Bitmap: HBITMAP; cx, cy: Integer): HICON; overload;
+function BitmapToIcon(Bitmap, Mask: HBITMAP; cx, cy: Integer): HICON; overload;
 function IconToBitmap(Icon: HICON): HBITMAP;
+
+
 
 procedure BitmapToJPeg(const FileName: string);
 procedure JPegToBitmap(const FileName: string);
@@ -478,6 +501,8 @@ procedure GetIconFromBitmap(Icon: TIcon; Bitmap: TBitmap);
 
 function GetAntialiasedBitmap(const Bitmap: TBitmap): TBitmap;
 
+
+
 procedure BlockTransfer(Dst: TJclBitmap32; DstX: Integer; DstY: Integer; Src: TJclBitmap32;
   SrcRect: TRect; CombineOp: TDrawMode);
 
@@ -487,14 +512,20 @@ procedure StretchTransfer(Dst: TJclBitmap32; DstRect: TRect; Src: TJclBitmap32; 
 procedure Transform(Dst, Src: TJclBitmap32; SrcRect: TRect; Transformation: TJclTransformation);
 procedure SetBorderTransparent(ABitmap: TJclBitmap32; ARect: TRect);
 
+
+
 function FillGradient(DC: HDC; ARect: TRect; ColorCount: Integer;
   StartColor, EndColor: TColor; ADirection: TGradientDirection): Boolean; overload;
+
+
 
 function CreateRegionFromBitmap(Bitmap: TBitmap; RegionColor: TColor;
   RegionBitmapMode: TJclRegionBitmapMode): HRGN;
 procedure ScreenShot(bm: TBitmap; Left, Top, Width, Height: Integer; Window: THandle = HWND_DESKTOP); overload;
 procedure ScreenShot(bm: TBitmap; IncludeTaskBar: Boolean = True); overload;
 function MapWindowRect(hWndFrom, hWndTo: THandle; ARect: TRect):TRect;
+
+
 
 // PolyLines and Polygons
 procedure PolyLineTS(Bitmap: TJclBitmap32; const Points: TDynPointArray; Color: TColor32);
@@ -521,13 +552,16 @@ procedure ColorToGrayscale(Dst, Src: TJclBitmap32);
 procedure ApplyLUT(Dst, Src: TJclBitmap32; const LUT: TLUT8);
 procedure SetGamma(Gamma: Single = 0.7);
 
+
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/vcl/JclGraphics.pas $';
-    Revision: '$Revision: 1700 $';
-    Date: '$Date: 2006-07-30 21:48:09 +0200 (dim., 30 juil. 2006) $';
-    LogPath: 'JCL\source\vcl'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/vcl/JclGraphics.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\vcl';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -535,9 +569,14 @@ implementation
 
 uses
   Math,
+  
   CommCtrl, ShellApi,
+  
   ClipBrd, JPeg, TypInfo,
   JclResources,
+  
+  
+  JclSysUtils,
   JclLogic;
 
 type
@@ -599,6 +638,7 @@ begin
   Result := Math.Max(0, Math.Min(255, Value));
 end;
 
+
 procedure CheckBitmaps(Dst, Src: TJclBitmap32);
 begin
   if (Dst = nil) or Dst.Empty then
@@ -618,24 +658,10 @@ begin
   Result := True;
 end;
 
+
 //=== Internal low level routines ============================================
 
 procedure FillLongword(var X; Count: Integer; Value: Longword);
-{asm
-// EAX = X
-// EDX = Count
-// ECX = Value
-        TEST    EDX, EDX
-        JLE     @@EXIT
-
-        PUSH    EDI
-        MOV     EDI, EAX  // Point EDI to destination
-        MOV     EAX, ECX
-        MOV     ECX, EDX
-        REP     STOSD    // Fill count dwords
-        POP     EDI
-@@EXIT:
-end;}
 var
   P: PLongword;
 begin
@@ -660,22 +686,6 @@ begin
 end;
 
 procedure TestSwap(var A, B: Integer);
-{asm
-// EAX = [A]
-// EDX = [B]
-        MOV     ECX, [EAX]     // ECX := [A]
-        CMP     ECX, [EDX]     // ECX <= [B]? Exit
-        JLE     @@EXIT
-        //Replaced on more fast code
-        //XCHG    ECX, [EDX]     // ECX <-> [B];
-        //MOV     [EAX], ECX     // [A] := ECX
-        PUSH    EBX
-        MOV     EBX,[EDX]      // EBX := [B]
-        MOV     [EAX],EBX      // [A] := EBX
-        MOV     [EDX],ECX      // [B] := ECX
-        POP     EBX
-@@EXIT:
-end;}
 var
   X: Integer;
 begin
@@ -1279,6 +1289,7 @@ procedure Stretch(NewWidth, NewHeight: Cardinal; Filter: TResamplingFilter;
   Radius: Single; Source: TGraphic; Target: TBitmap);
 var
   Temp: TBitmap;
+  OriginalPixelFormat: TPixelFormat;
 begin
   if Source.Empty then
     Exit;               // do nothing
@@ -1291,6 +1302,7 @@ begin
     // To allow Source = Target, the following assignment needs to be done initially
     Temp.Assign(Source);
     Temp.PixelFormat := pf32bit;
+    OriginalPixelFormat := Target.PixelFormat; //Save format
 
     Target.FreeImage;
     Target.PixelFormat := pf32bit;
@@ -1299,6 +1311,8 @@ begin
 
     if not Target.Empty then
       DoStretch(FilterList[Filter], Radius, Temp, Target);
+
+    Target.PixelFormat := OriginalPixelFormat; //Restore original PixelFormat
   finally
     Temp.Free;
   end;
@@ -1309,6 +1323,7 @@ procedure Stretch(NewWidth, NewHeight: Cardinal; Filter: TResamplingFilter;
 begin
   Stretch(NewWidth, NewHeight, Filter, Radius, Bitmap, Bitmap);
 end;
+
 
 procedure StretchNearest(Dst: TJclBitmap32; DstRect: TRect;
   Src: TJclBitmap32; SrcRect: TRect; CombineOp: TDrawMode);
@@ -1569,6 +1584,8 @@ begin
   end;
 end;
 
+
+
 procedure DrawBitmap(DC: HDC; Bitmap: HBITMAP; X, Y, Width, Height: Integer);
 var
   MemDC: HDC;
@@ -1580,6 +1597,8 @@ begin
   SelectObject(MemDC, OldBitmap);
   DeleteObject(MemDC);
 end;
+
+
 
 { TODO : remove VCL-dependency by replacing pf24bit by pf32bit }
 
@@ -1655,6 +1674,8 @@ begin
   end;
 end;
 
+
+
 function ExtractIconCount(const FileName: string): Integer;
 begin
   Result := ExtractIcon(HInstance, PChar(FileName), $FFFFFFFF);
@@ -1674,6 +1695,20 @@ begin
   end;
 end;
 
+function BitmapToIcon(Bitmap, Mask: HBITMAP; cx, cy: Integer): HICON;
+var
+  ImgList: HIMAGELIST;
+  I: Integer;
+begin
+  ImgList := ImageList_Create(cx, cy, ILC_COLOR, 1, 1);
+  try
+    I := ImageList_Add(ImgList, Bitmap, Mask);
+    Result := ImageList_GetIcon(ImgList, I, ILD_TRANSPARENT);
+  finally
+    ImageList_Destroy(ImgList);
+  end;
+end;
+
 function IconToBitmap(Icon: HICON): HBITMAP;
 var
   IconInfo: TIconInfo;
@@ -1685,6 +1720,8 @@ begin
     Result := IconInfo.hbmColor;
   end;
 end;
+
+
 
 procedure GetIconFromBitmap(Icon: TIcon; Bitmap: TBitmap);
 var
@@ -1735,8 +1772,8 @@ var
   List: TIconRec;
   Length: Longint;
 begin
-  FillChar(CI, SizeOf(CI), 0);
-  FillChar(List, SizeOf(List), 0);
+  ResetMemory(CI, SizeOf(CI));
+  ResetMemory(List, SizeOf(List));
   GetDIBSizes(MaskBitmap, MonoInfoSize, MonoBitsSize);
   GetDIBSizes(ColorBitmap, ColorInfoSize, ColorBitsSize);
   MonoInfo := nil;
@@ -1812,6 +1849,8 @@ begin
     Stream.Free;
   end;
 end;
+
+
 
 procedure Transform(Dst, Src: TJclBitmap32; SrcRect: TRect;
   Transformation: TJclTransformation);
@@ -1939,6 +1978,8 @@ begin
   end;
 end;
 
+
+
 function CreateRegionFromBitmap(Bitmap: TBitmap; RegionColor: TColor;
   RegionBitmapMode: TJclRegionBitmapMode): HRGN;
 var
@@ -2041,7 +2082,7 @@ begin
   // Palette-device?
   if (GetDeviceCaps(WinDC, RASTERCAPS) and RC_PALETTE) = RC_PALETTE then
   begin
-    FillChar(Pal, SizeOf(TMaxLogPalette), #0);  // fill the structure with zeros
+    ResetMemory(Pal, SizeOf(TMaxLogPalette));  // fill the structure with zeros
     Pal.palVersion := $300;                     // fill in the palette version
 
     // grab the system palette entries...
@@ -2315,7 +2356,7 @@ begin
   if FHandle = 0 then
   begin
     if FOwnsHandle then
-      raise EJclWin32Error.CreateRes(@RsRegionCouldNotCreated)
+      raise EJclGraphicsError.CreateRes(@RsRegionCouldNotCreated)
     else
       raise EJclGraphicsError.CreateRes(@RsInvalidHandleForRegion);
   end;
@@ -2571,7 +2612,7 @@ begin
 
   FResetAlphaOnAssign := True;
 
-  FillChar(FBitmapInfo, SizeOf(TBitmapInfo), #0);
+  ResetMemory(FBitmapInfo, SizeOf(TBitmapInfo));
   with FBitmapInfo.bmiHeader do
   begin
     biSize := SizeOf(TBitmapInfoHeader);

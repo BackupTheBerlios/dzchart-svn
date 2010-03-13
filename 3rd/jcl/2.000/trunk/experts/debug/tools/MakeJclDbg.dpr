@@ -19,7 +19,11 @@
 {                                                                                                  }
 { Command line tool for inserting JCL debug data created from MAP files into executable files      }
 {                                                                                                  }
-{ Last modified: March 13, 2002                                                                    }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-04-26 22:50:19 +0200 (dim. 26 avr. 2009)                           $ }
+{ Revision:      $Rev:: 18                                                                       $ }
+{ Author:        $Author:: uschuster                                                             $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -88,7 +92,7 @@ begin
       for I := 0 to FilesList.Count - 1 do
       begin
         FileName := FilesList[I];
-        if ExtractFileExt(FileName) <> '.map' then
+        if not AnsiSameText(ExtractFileExt(FileName), '.map') then
           Continue;
         Write(#13#10, FilesList[I]);
         Result := False;
@@ -124,7 +128,7 @@ begin
     WriteLn('Usage: MAKEJCLDBG -<J|E> <map filenames>');
     WriteLn('       J - Create .JDBG files');
     WriteLn('       E - Insert debug data into executable files');
-    WriteLn('Executable files must be in the same directory like MAP files');
+    WriteLn('Executable files must be in the same directory as the MAP files');
   end
   else
   if not MakeDebugData(ParamStr(2)) then

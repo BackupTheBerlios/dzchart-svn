@@ -26,11 +26,15 @@
 {                                                                                                  }
 { Microsoft .Net CIL Instruction Set information support routines and classes.                     }
 {                                                                                                  }
-{ Unit owner: Flier Lu                                                                             }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009)                          $ }
+{ Revision:      $Rev:: 132                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
-// Last modified: $Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $
+// Last modified: $Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $
 
 unit JclCIL;
 
@@ -46,10 +50,10 @@ uses
   Windows, 
   {$ENDIF MSWINDOWS}
   Classes, SysUtils,
-  {$IFDEF RTL130_UP}
+  {$IFDEF HAS_UNIT_CONTNRS}
   Contnrs,
-  {$ENDIF RTL130_UP}
-  JclBase, JclSysUtils, JclCLR, JclMetadata;
+  {$ENDIF HAS_UNIT_CONTNRS}
+  JclBase, JclSysUtils, JclMetadata;
 
 type
   TJclOpCode =
@@ -202,10 +206,12 @@ type
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/windows/JclCIL.pas $';
-    Revision: '$Revision: 1695 $';
-    Date: '$Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $';
-    LogPath: 'JCL\source\windows'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/windows/JclCIL.pas $';
+    Revision: '$Revision: 132 $';
+    Date: '$Date: 2009-08-09 20:39:51 +0200 (dim. 09 août 2009) $';
+    LogPath: 'JCL\source\windows';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -215,6 +221,8 @@ uses
   {$IFDEF HAS_UNIT_VARIANTS}
   Variants,
   {$ENDIF HAS_UNIT_VARIANTS}
+  JclCLR,
+  JclPeImage,
   JclStrings, JclResources;
 
 type
@@ -577,10 +585,10 @@ begin
       Stream.Seek(0, soFromBeginning);
       while Stream.Position < Stream.Size do
       begin
-        OpCode := PByte(Longint(Stream.Memory) + Stream.Position)^;
+        OpCode := PByte(PAnsiChar(Stream.Memory) + Stream.Position)^;
         if OpCode = STP1 then
         begin
-          OpCode := PByte(Longint(Stream.Memory) + Stream.Position + 1)^;
+          OpCode := PByte(PAnsiChar(Stream.Memory) + Stream.Position + 1)^;
           Instruction := TJclInstruction.Create(Self, TJclOpCode(MaxByte + 1 + OpCode));
         end
         else
@@ -736,7 +744,7 @@ begin
   else
     Result := 0;
   end;
-  Result := OpCodeSize[OpCode in [opNop..opPrefixRef]] + Result;
+  Inc(Result, OpCodeSize[OpCode in [opNop..opPrefixRef]]);
 end;
 
 procedure TJclInstruction.Load(Stream: TStream);
@@ -747,6 +755,7 @@ var
 begin
   FOffset := Stream.Position;
   try
+    Code := 0;
     Stream.Read(Code, SizeOf(Code));
     if WideOpCode then
     begin
@@ -787,15 +796,16 @@ begin
         end;
       ptArray:
         begin
+          ArraySize := 0;
           Stream.Read(ArraySize, SizeOf(ArraySize));
           FParam := VarArrayCreate([0, ArraySize-1], varInteger);
           for I := 0 to ArraySize-1 do  { TODO : ArraySize = 0 and we have a nearly endless loop }
           begin
+            Value := 0;
             Stream.Read(Value, SizeOf(Value));
             FParam[I] := Value;
           end;
         end;
-      {$IFDEF RTL140_UP}  { TODO -cTest : since RTL 14.0 or 15.0? }
       ptSOff, ptI1:
         begin
           Stream.Read(VShortInt, SizeOf(ShortInt));
@@ -816,7 +826,6 @@ begin
           Stream.Read(VInt64, SizeOf(Int64));
           VType := varInt64;
         end;
-      {$ENDIF RTL140_UP}
     end;
   except
     Stream.Position := FOffset;
@@ -827,10 +836,8 @@ end;
 procedure TJclInstruction.Save(Stream: TStream);
 var
   Code: Byte;
-  {$IFDEF RTL140_UP}  { TODO -cTest : since RTL 14.0 or 15.0? }
   ArraySize: DWORD;
   I, Value: Integer;
-  {$ENDIF RTL140_UP}
 begin
   if WideOpCode then
   begin
@@ -852,7 +859,6 @@ begin
       Stream.Write(TVarData(FParam).VSingle, SizeOf(Single));
     ptR8:
       Stream.Write(TVarData(FParam).VDouble, SizeOf(Double));
-    {$IFDEF RTL140_UP}  { TODO -cTest : since RTL 14.0 or 15.0? }
     ptSOff, ptI1:
       Stream.Write(TVarData(FParam).VShortInt, SizeOf(ShortInt));
     ptU2:
@@ -872,7 +878,6 @@ begin
           Stream.Write(Value, SizeOf(Value));
         end;
       end;
-    {$ENDIF RTL140_UP}
   end;
 end;
 
@@ -903,10 +908,8 @@ function TJclInstruction.DumpILOption(Option: TJclInstructionDumpILOption): stri
   end;
 
 var
-  {$IFDEF RTL140_UP}  { TODO -cTest : since RTL 14.0 or 15.0? }
   I: Integer;
   Row: TJclClrTableRow;
-  {$ENDIF RTL140_UP}
   CodeStr, ParamStr: string;
 begin
   case Option of
@@ -925,7 +928,6 @@ begin
             ParamStr := IntToHex(TVarData(FParam).VByte, 2);
           ptArray:
             ParamStr := 'Array';
-          {$IFDEF RTL140_UP}  { TODO -cTest : since RTL 14.0 or 15.0? }
           ptI2, ptU2:
             ParamStr := IntToHex(TVarData(FParam).VWord, 4);
           ptLOff, ptI4, ptU4, ptR4:
@@ -934,7 +936,6 @@ begin
             ParamStr := IntToHex(TVarData(FParam).VInt64, 16);
           ptToken:
             ParamStr := TokenToString(TVarData(FParam).VLongWord);
-          {$ENDIF RTL140_UP}
         else
           ParamStr := '';
         end;
@@ -947,8 +948,7 @@ begin
         ptVoid:
           ; // do nothing
         ptLOff:
-          Result := FormatLabel(Integer(Offset + Size) + TVarData(Param).VInteger - 1);
-        {$IFDEF RTL140_UP}  { TODO -cTest : since RTL 14.0 or 15.0? }
+          Result := FormatLabel(Integer(Offset) + + Integer(Size) + TVarData(Param).VInteger - 1);
         ptToken:
           begin
             if Byte(TJclPeMetadata.TokenTable(TVarData(Param).VLongWord)) = $70 then
@@ -996,7 +996,6 @@ begin
             end;
             Result := ' (' + Result + ')';
           end;
-        {$ENDIF RTL140_UP}
         else
           Result := VarToStr(Param);
         end;

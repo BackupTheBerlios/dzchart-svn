@@ -1,39 +1,40 @@
-{******************************************************************************}
-{                                                                              }
-{  Borland Delphi Runtime Library                                              }
-{  SNMP functions interface unit                                               }
-{                                                                              }
-{  The contents of this file are subject to the Mozilla Public License         }
-{  Version 1.1 (the "License"); you may not use this file except in            }
-{  compliance with the License. You may obtain a copy of the License at        }
-{  http://www.mozilla.org/MPL/                                                 }
-{                                                                              }
-{  Software distributed under the License is distributed on an "AS IS" basis,  }
-{  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License    }
-{  for the specific language governing rights and limitations under the        }
-{  License.                                                                    }
-{                                                                              }
-{  The Original Code is: snmp.h.                                               }
-{  The Initial Developer of the Original Code is Microsoft. Portions created   }
-{  by Microsoft are Copyright (C) 1992-1999 Microsoft Corporation. All Rights  }
-{  Reserved.                                                                   }
-{                                                                              }
-{  The Original Pascal code is: Snmp.pas, released 2001-10-05.                 }
-{  The Initial Developer of the Original Pascal code is Petr Vones             }
-{  (petrdott v att mujmail dott cz). Portions created by Petr Vones are        }
-{  Copyright (C) 2001  Petr Vones. All Rights Reserved.                        }
-{                                                                              }
-{  Obtained through:                                                           }
-{    Joint Endeavour of Delphi Innovators (Project JEDI)                       }
-{                                                                              }
-{  You may retrieve the latest version of this file at the Project JEDI home   }
-{  page, located at http://delphi-jedi.org                                     }
-{                                                                              }
-{  Contributor(s):                                                             }
-{                                                                              }
-{******************************************************************************}
-
-// Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $
+{**************************************************************************************************}
+{                                                                                                  }
+{  Borland Delphi Runtime Library                                                                  }
+{  SNMP functions interface unit                                                                   }
+{                                                                                                  }
+{  The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License") }
+{  you may not use this file except in compliance with the License. You may obtain a copy of the   }
+{  License at http://www.mozilla.org/MPL/                                                          }
+{                                                                                                  }
+{  Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF  }
+{  ANY KIND, either express or implied. See the License for the specific language governing rights }
+{  and limitations under the License.                                                              }
+{                                                                                                  }
+{  The Original Code is: snmp.h.                                                                   }
+{  The Initial Developer of the Original Code is Microsoft. Portions created by Microsoft are      }
+{  Copyright (C) 1992-1999 Microsoft Corporation. All Rights Reserved.                             }
+{                                                                                                  }
+{  The Original Pascal code is: Snmp.pas, released 2001-10-05.                                     }
+{  The Initial Developer of the Original Pascal code is Petr Vones                                 }
+{  (petrdott v att mujmail dott cz). Portions created by Petr Vones are Copyright (C) 2001 Petr    }
+{  Vones. All Rights Reserved.                                                                     }
+{                                                                                                  }
+{  Obtained through:                                                                               }
+{    Joint Endeavour of Delphi Innovators (Project JEDI)                                           }
+{                                                                                                  }
+{  You may retrieve the latest version of this file at the Project JEDI homepage, located at       }
+{  http://delphi-jedi.org                                                                          }
+{                                                                                                  }
+{  Contributor(s):                                                                                 }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-04-21 22:46:30 +0200 (mar., 21 avr. 2009)                          $ }
+{ Revision:      $Rev:: 11                                                                       $ }
+{ Author:        $Author:: obones                                                                $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit Snmp;
 
@@ -54,7 +55,7 @@ interface
 {$ENDIF ~SNMP_DYNAMIC_LINK}
 
 uses
-  Windows;
+  Windows, SysUtils;
 
 (*$HPPEMIT '#include <snmp.h>'*)
 
@@ -368,7 +369,7 @@ var
   SnmpSvcSetLogLevel: procedure(nLogLevel: Integer); stdcall;
   SnmpSvcSetLogType: procedure(nLogType: Integer); stdcall;
 
-{$ELSE}
+{$ELSE ~SNMP_DYNAMIC_LINK}
 
 function SnmpUtilOidCpy(pOidDst: PAsnObjectIdentifier; pOidSrc: PAsnObjectIdentifier): SNMPAPI; stdcall;
 function SnmpUtilOidAppend(pOidDst: PAsnObjectIdentifier; pOidSrc: PAsnObjectIdentifier): SNMPAPI; stdcall;
@@ -396,7 +397,7 @@ function SnmpSvcGetUptime: DWORD; stdcall;
 procedure SnmpSvcSetLogLevel(nLogLevel: Integer); stdcall;
 procedure SnmpSvcSetLogType(nLogType: Integer); stdcall;
 
-{$ENDIF SNMP_DYNAMIC_LINK}
+{$ENDIF ~SNMP_DYNAMIC_LINK}
 
 {$EXTERNALSYM SnmpUtilOidCpy}
 {$EXTERNALSYM SnmpUtilOidAppend}
@@ -538,7 +539,7 @@ var
   SNMP_DBG_malloc: function (nBytes: UINT): Pointer; stdcall;
   SNMP_DBG_realloc: function (pMem: Pointer; nBytes: UINT): Pointer; stdcall;
 
-{$ELSE}
+{$ELSE SNMP_DYNAMIC_LINK}
 
 function SNMP_oidcpy(pOidDst: PAsnObjectIdentifier; pOidSrc: PAsnObjectIdentifier): SNMPAPI; stdcall;
 function SNMP_oidappend(pOidDst: PAsnObjectIdentifier; pOidSrc: PAsnObjectIdentifier): SNMPAPI; stdcall;
@@ -676,7 +677,7 @@ begin
   Result := UnloadSnmpExtension;
   if Result then
   begin
-    ExtensionLibHandle := LoadLibrary(PChar(LibName));
+    ExtensionLibHandle := SafeLoadLibrary(LibName);
     Result := SnmpExtensionLoaded;
     if Result then
     begin
@@ -781,7 +782,7 @@ begin
   Result := SnmpLoaded;
   if not Result then
   begin
-    SnmpLibHandle := LoadLibrary(snmpapilib);
+    SnmpLibHandle := SafeLoadLibrary(snmpapilib);
     if SnmpLoaded then
     begin
       @SnmpUtilOidCpy := GetProcAddress(SnmpLibHandle, 'SnmpUtilOidCpy');
@@ -833,7 +834,7 @@ begin
   end;
 end;
 
-{$ELSE}
+{$ELSE ~SNMP_DYNAMIC_LINK}
 
 function SnmpUtilOidCpy; external snmpapilib name 'SnmpUtilOidCpy';
 function SnmpUtilOidAppend; external snmpapilib name 'SnmpUtilOidAppend';
@@ -881,7 +882,7 @@ function SNMP_DBG_malloc; external snmpapilib name 'SnmpUtilMemAlloc';
 function SNMP_DBG_realloc; external snmpapilib name 'SnmpUtilMemReAlloc';
 {$ENDIF ~SNMPSTRICT}
 
-{$ENDIF SNMP_DYNAMIC_LINK}
+{$ENDIF ~SNMP_DYNAMIC_LINK}
 
 {$IFDEF SNMP_DYNAMIC_LINK}
 {$IFNDEF SNMP_DYNAMIC_LINK_EXPLICIT}

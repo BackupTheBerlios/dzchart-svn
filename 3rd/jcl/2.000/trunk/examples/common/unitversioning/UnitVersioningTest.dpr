@@ -26,7 +26,7 @@
 {                                                                                                  }
 {**************************************************************************************************}
 
-// Last modified: $Date: 2006-05-18 18:04:47 +0200 (jeu., 18 mai 2006) $
+// Last modified: $Date: 2009-04-26 22:50:19 +0200 (dim. 26 avr. 2009) $
 
 program UnitVersioningTest;
 
@@ -37,6 +37,7 @@ uses
   UnitVersioningTestMain in 'UnitVersioningTestMain.pas' {frmUnitVersioningTestMain};
 
 {$R *.res}
+{$R ..\..\..\source\windows\JclCommCtrlAsInvoker.res}
 
 begin
   Application.Initialize;

@@ -1,11 +1,12 @@
 object %FORMNAME%: T%FORMNAME%
   Left = 310
   Top = 255
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
 %ifnot SizeableDialog  BorderStyle = bsDialog%endif
   Caption = '%FORMNAME%'
-  ClientHeight = 255
-  ClientWidth = 432
+  ClientHeight = 283
+  ClientWidth = 483
   Color = clBtnFace
   Constraints.MinWidth = 200
   Font.Charset = DEFAULT_CHARSET
@@ -27,15 +28,15 @@ object %FORMNAME%: T%FORMNAME%
   TextHeight = 13
   object BevelDetails: TBevel
     Left = 3
-    Top = 91
-    Width = 422
+    Top = 119
+    Width = 473
     Height = 9
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
   end
 %if SendEMail
   object SendBtn: TButton
-    Left = 351
+    Left = 403
     Top = 32
     Width = 75
     Height = 25
@@ -45,17 +46,27 @@ object %FORMNAME%: T%FORMNAME%
     TabOrder = 0
     OnClick = SendBtnClick
   end%endif
-  object TextLabel: TMemo
+%if LogSaveDialog
+  object SaveBtn: TButton
+    Left = 403
+    Top = 60
+    Width = 75
+    Height = 25
+    Hint = 'Save bug report'
+    Anchors = [akTop, akRight]
+    Caption = '&Save'
+    TabOrder = 0
+    OnClick = SaveBtnClick
+  end%endif
+  object TextMemo: TMemo
     Left = 56
     Top = 8
-    Width = 281
-    Height = 75
+    Width = 332
+    Height = 105
     Hint = 'Use Ctrl+C to copy the report to the clipboard'
     Anchors = [akLeft, akTop, akRight]
     BorderStyle = bsNone
     Ctl3D = True
-    Lines.Strings = (
-      'TextLabel')
     ParentColor = True
     ParentCtl3D = False
     ReadOnly = True
@@ -63,7 +74,7 @@ object %FORMNAME%: T%FORMNAME%
     WantReturns = False
   end
   object OkBtn: TButton
-    Left = 352
+    Left = 403
     Top = 4
     Width = 75
     Height = 25
@@ -74,8 +85,8 @@ object %FORMNAME%: T%FORMNAME%
     TabOrder = 2
   end
   object DetailsBtn: TButton
-    Left = 352
-    Top = 60
+    Left = 403
+    Top = 88
     Width = 75
     Height = 25
     Hint = 'Show or hide additional information|'
@@ -87,8 +98,8 @@ object %FORMNAME%: T%FORMNAME%
   end
   object DetailsMemo: TMemo
     Left = 4
-    Top = 101
-    Width = 421
+    Top = 129
+    Width = 472
     Height = 147
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET

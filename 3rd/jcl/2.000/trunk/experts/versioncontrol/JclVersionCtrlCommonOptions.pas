@@ -18,9 +18,9 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Unit owner: Florent Ouchet                                                                       }
-{ Last modified: $Date: 2006-05-30 00:02:45 +0200 (mar., 30 mai 2006) $                                                      }
-{ Revision: $Revision: 1671 $                                                                       }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                        $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -32,9 +32,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
   Dialogs, StdCtrls, ComCtrls, ActnList, Menus;
 
 type
+  TIconType = (itNone, itJCL);
+
   TJclVersionCtrlOptionsFrame = class(TFrame)
     CheckBoxHideActions: TCheckBox;
     LabelIcons: TLabel;
@@ -89,25 +94,36 @@ type
     procedure SetSaveConfirmation(const Value: Boolean);
     function GetDisableActions: Boolean;
     function GetHideActions: Boolean;
-    function GetIconType: Integer;
+    function GetIconType: TIconType;
     function GetMenuTree: TStrings;
     procedure SetDisableActions(const Value: Boolean);
     procedure SetHideActions(const Value: Boolean);
-    procedure SetIconType(const Value: Integer);
+    procedure SetIconType(const Value: TIconType);
     procedure SetMenuTree(const Value: TStrings);
     procedure MenuItemNewActionClick(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SetIconTypeNames(const Names: TStrings);
     procedure SetActions(const Actions: array of TCustomAction);
     property ActOnTopSandbox: Boolean read GetActOnTopSandbox write SetActOnTopSandbox;
     property DisableActions: Boolean read GetDisableActions write SetDisableActions;
     property HideActions: Boolean read GetHideActions write SetHideActions;
-    property IconType: Integer read GetIconType write SetIconType;
+    property IconType: TIconType read GetIconType write SetIconType;
     property MenuTree: TStrings read GetMenuTree write SetMenuTree;
     property SaveConfirmation: Boolean read GetSaveConfirmation write SetSaveConfirmation;
   end;
+
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/versioncontrol/JclVersionCtrlCommonOptions.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\experts\versioncontrol';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
 
 implementation
 
@@ -115,8 +131,8 @@ implementation
 
 uses
   TypInfo, ToolsAPI,
-  JclStrings,
-  JclOtaUtils, JclOtaResources, VersionControlImpl;
+  JclStrings, JclVersionControl,
+  JclOtaUtils, JclOtaResources, JclVersionControlImpl;
 
 resourcestring
   RsEInvalidMenuCaption = 'Menu caption cannot contain \, _ and numbers';
@@ -136,7 +152,6 @@ resourcestring
   RsMenuOrganization = 'Menu &organization:';
   RsNoIcon = 'No icon';
   RsJCLIcons = 'JCL icons';
-  RsAutoIcons = 'Automatic';
 
 //=== TJclVersionCtrlOptionsFrame ============================================
 
@@ -328,7 +343,6 @@ begin
   LabelMenuOrganization.Caption := RsMenuOrganization;
   ComboBoxIcons.Items.Strings[0] := RsNoIcon;
   ComboBoxIcons.Items.Strings[1] := RsJCLIcons;
-  ComboBoxIcons.Items.Strings[2] := RsAutoIcons;
 end;
 
 destructor TJclVersionCtrlOptionsFrame.Destroy;
@@ -352,9 +366,12 @@ begin
   Result := CheckBoxHideActions.Checked;
 end;
 
-function TJclVersionCtrlOptionsFrame.GetIconType: Integer;
+function TJclVersionCtrlOptionsFrame.GetIconType: TIconType;
 begin
-  Result := ComboBoxIcons.ItemIndex - 3;
+  if ComboBoxIcons.ItemIndex = 1 then
+    Result := itJCL
+  else
+    Result := itNone;
 end;
 
 function TJclVersionCtrlOptionsFrame.GetMenuTree: TStrings;
@@ -373,7 +390,7 @@ begin
     if Assigned(AAction) then
       for Index := 0 to PopupMenuActions.Items.Count - 1 do
         if TCustomAction(PopupMenuActions.Items.Items[Index].Tag) = AAction then
-          ItemName := GetEnumName(TypeInfo(TJclVersionControlAction), Index);
+          ItemName := GetEnumName(TypeInfo(TJclVersionControlActionType), Index);
 
     if ItemName = '' then
       ItemName := ATreeNode.Text;
@@ -388,7 +405,7 @@ begin
       if Assigned(AAction) then
         for Index := 0 to PopupMenuActions.Items.Count - 1 do
           if TCustomAction(PopupMenuActions.Items.Items[Index].Tag) = AAction then
-            ItemName := GetEnumName(TypeInfo(TJclVersionControlAction), Index);
+            ItemName := GetEnumName(TypeInfo(TJclVersionControlActionType), Index);
 
       if ItemName = '' then
         ItemName := BTreeNode.Text;
@@ -465,18 +482,14 @@ begin
   CheckBoxHideActions.Checked := Value;
 end;
 
-procedure TJclVersionCtrlOptionsFrame.SetIconType(const Value: Integer);
+procedure TJclVersionCtrlOptionsFrame.SetIconType(const Value: TIconType);
 begin
-  ComboBoxIcons.ItemIndex := Value + 3;
-end;
-
-procedure TJclVersionCtrlOptionsFrame.SetIconTypeNames(const Names: TStrings);
-var
-  Index: Integer;
-begin
-  for Index := ComboBoxIcons.Items.Count - 1 downto 3 do
-    ComboBoxIcons.Items.Delete(Index);
-  ComboBoxIcons.Items.AddStrings(Names);
+  case Value of
+    itNone:
+      ComboBoxIcons.ItemIndex := 0;
+    itJCL:
+      ComboBoxIcons.ItemIndex := 1;
+  end;
 end;
 
 procedure TJclVersionCtrlOptionsFrame.SetMenuTree(const Value: TStrings);
@@ -494,7 +507,7 @@ begin
     Item := Value.Strings[Index];
     IndexB := GetItemIndexB(Item);
     ItemName := GetItemName(Item);
-    AAction := GetEnumValue(TypeInfo(TJclVersionControlAction), ItemName);
+    AAction := GetEnumValue(TypeInfo(TJclVersionControlActionType), ItemName);
 
     if IndexB = -1 then
     begin
@@ -508,7 +521,7 @@ begin
       else
       begin
         ControlAction := TCustomAction(PopupMenuActions.Items.Items[AAction].Tag);
-        ATreeNode := TreeViewMenu.Items.Add(nil, StrRemoveChars(ControlAction.Caption, ['&']));
+        ATreeNode := TreeViewMenu.Items.Add(nil, StrRemoveChars(ControlAction.Caption, CharIsAmpersand));
         ATreeNode.Data := ControlAction;
         ATreeNode.ImageIndex := ControlAction.ImageIndex;
         ATreeNode.SelectedIndex := ControlAction.ImageIndex;
@@ -530,7 +543,7 @@ begin
       else
       begin
         ControlAction := TCustomAction(PopupMenuActions.Items.Items[AAction].Tag);
-        BTreeNode := TreeViewMenu.Items.AddChild(ATreeNode, StrRemoveChars(ControlAction.Caption, ['&']));
+        BTreeNode := TreeViewMenu.Items.AddChild(ATreeNode, StrRemoveChars(ControlAction.Caption, CharIsAmpersand));
         BTreeNode.ImageIndex := ControlAction.ImageIndex;
         BTreeNode.SelectedIndex := ControlAction.ImageIndex;
         BTreeNode.Data := ControlAction;
@@ -545,10 +558,20 @@ begin
   CheckBoxSaveConfirmation.Checked := Value;
 end;
 
+function CharIsInvalid(const C: Char): Boolean;
+begin
+  case C of
+    '\', '_', '0'..'9':
+      Result := True;
+  else
+    Result := False;
+  end;
+end;
+
 procedure TJclVersionCtrlOptionsFrame.TreeViewMenuEdited(Sender: TObject;
   Node: TTreeNode; var S: string);
 begin
-  if StrContainsChars(S, ['\', '_', '0'..'9'], True) then
+  if StrContainsChars(S, CharIsInvalid, True) then
   begin
     S := Node.Text;
     MessageDlg(RsEInvalidMenuCaption, mtError, [mbAbort], 0);
@@ -560,5 +583,13 @@ procedure TJclVersionCtrlOptionsFrame.TreeViewMenuEditing(Sender: TObject;
 begin
   AllowEdit := Assigned(Node) and (Node.Text <> '-') and not Assigned(Node.Data);
 end;
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

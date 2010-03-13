@@ -17,11 +17,13 @@
 {                                                                                                  }
 { Contributors:                                                                                    }
 {   Florent Ouchet (outchy)                                                                        }
+{   Uwe Schuster (uschuster)                                                                       }
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Unit owner: Florent Ouchet                                                                       }
-{ Last modified: $Date: 2006-10-30 18:06:29 +0100 (lun., 30 oct. 2006) $                                                      }
+{ Last modified: $Date:: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009)                         $ }
+{ Revision:      $Rev:: 126                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -32,16 +34,17 @@ interface
 {$I jcl.inc}
 
 uses
-  ToolsApi;
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
+  ToolsAPI;
 
 const
   DelphiRootDirKeyValue = 'RootDir';
   RegJclKey             = 'Jedi\JCL\';
   RegJclIDEKey          = RegJclKey + 'IDE\';
   DelphiEnvironmentVar  = 'DELPHI';
-  {$IFDEF COMPILER6_UP}
   EnvironmentVarsKey    = 'Environment Variables';
-  {$ENDIF COMP�LER6_UP}
 
   //=== Various constants shared by different experts ========================
   JclLeft   = 'Left';
@@ -49,9 +52,8 @@ const
   JclWidth  = 'Right';
   JclHeight = 'Height';
 
-  JclDesignerAny = {$IFDEF COMPILER6_UP} dAny {$ELSE COMPILER6_UP} '' {$ENDIF COMPILER6_UP};
-  JclDesignerVcl = {$IFDEF COMPILER6_UP} dVcl {$ELSE COMPILER6_UP} '' {$ENDIF COMPILER6_UP};
-  JclDesignerClx = {$IFDEF COMPILER6_UP} dClx {$ELSE COMPILER6_UP} '' {$ENDIF COMPILER6_UP};
+  JclDesignerAny = dAny;
+  JclDesignerVcl = dVcl;
   JclDelphiPersonality = {$IFDEF BDS} sDelphiPersonality {$ELSE BDS} '' {$ENDIF BDS};
   JclCBuilderPersonality = {$IFDEF BDS} sCBuilderPersonality {$ELSE BDS} '' {$ENDIF BDS};
 
@@ -61,23 +63,41 @@ const
   JclActionSettings = 'Actions';
 
   //=== Configuration form ===================================================
-  JclPanelTreeWidth = 'PanelTreeWidth';
-  JclConfigureActionName = 'ActionJCLConfigure';
+  JclPanelTreeWidth      = 'PanelTreeWidth';
+  JclConfigureActionName = 'JCLConfigureCommand';
+  JclConfigureMenuName   = 'JCLConfigureMenu';
 
   //=== Debug Expert =========================================================
-  JclDebugExpertRegKey         = 'JclDebugExpert';
-  JclDebugEnabledRegValue      = 'JclDebugEnabled';
-  JclDebugGenerateJdbgRegValue = 'JclDebugGenerateJdbg';
-  JclDebugInsertJdbgRegValue   = 'JclDebugInsertJdbg';
-  MapFileOptionName            = 'MapFile';
-  OutputDirOptionName          = 'OutputDir';
-  RuntimeOnlyOptionName        = 'RuntimeOnly';
-  PkgDllDirOptionName          = 'PkgDllDir';
-  BPLOutputDirOptionName       = 'PackageDPLOutput';
-  LIBPREFIXOptionName          = 'SOPrefix';
-  LIBSUFFIXOptionName          = 'SOSuffix';
-  ColumnRegName                = 'Column%d';
-  JclDebugMessagePrefix        = 'Jcl Debug Expert';
+  JclDebugExpertRegKey          = 'JclDebugExpert';
+  JclDebugEnabledRegValue       = 'JclDebugEnabled';
+  JclDebugGenerateJdbgRegValue  = 'JclDebugGenerateJdbg';
+  JclDebugInsertJdbgRegValue    = 'JclDebugInsertJdbg';
+  JclDebugDeleteMapFileRegValue = 'JclDebugDeleteMapFile';
+  MapFileOptionName             = 'MapFile';
+  OutputDirOptionName           = 'OutputDir';
+  FinalOutputDirOptionName      = 'FinalOutputDir';
+  RuntimeOnlyOptionName         = 'RuntimeOnly';
+  PkgDllDirOptionName           = 'PkgDllDir';
+  BPLOutputDirOptionName        = 'PackageDPLOutput';
+  LIBPREFIXOptionName           = 'SOPrefix';
+  LIBSUFFIXOptionName           = 'SOSuffix';
+  ColumnRegName                 = 'Column%d';
+  JclDebugMessagePrefix         = 'Jcl Debug Expert';
+  JclDebugExpertActionName      = 'JCLDebugExpertCommand';
+  JclDebugExpertMenuName        = 'JCLDebugExpertMenu';
+  JclDebugExpertProjMenuName    = 'JCLDebugExpertProjMenu';
+  JclGenerateJdbgActionName     = 'JCLGenerateJdbgCommand';
+  JclGenerateJdbgMenuName       = 'JCLGenerateJdbgMenu';
+  JclGenerateJdbgProjMenuName   = 'JCLGenerateJdbgProjMenu';
+  JclInsertJdbgActionName       = 'JCLInsertJdbgCommand';
+  JclInsertJdbgMenuName         = 'JCLInsertJdbgMenu';
+  JclInsertJdbgProjMenuName     = 'JCLInsertJdbgProjMenu';
+  JclDeleteMapFileActionName    = 'JCLDeleteMapFileCommand';
+  JclDeleteMapFileMenuName      = 'JCLDeleteMapFileMenu';
+  JclDeleteMapFileProjMenuName  = 'JCLDeleteMapFileProjMenu';
+  JclDebugGenerateJdbgSetting   = 'JCL_DEBUG_EXPERT_GENERATEJDBG';
+  JclDebugInsertJdbgSetting     = 'JCL_DEBUG_EXPERT_INSERTJDBG';
+  JclDebugDeleteMapfileSetting  = 'JCL_DEBUG_EXPERT_DELETEMAPFILE';
 
   //=== Favorite Folders Expert ==============================================
   JclFavoritesExpertName     = 'JclFavoriteFoldersExpert';
@@ -91,7 +111,9 @@ const
   JclThreadsExpertName = 'JclThreadsExpert';
 
   //=== SIMD Expert ==========================================================
-  JclSIMDExpertName   = 'JclSIMDExpert';
+  JclSIMDExpertName = 'JclSIMDExpert';
+  JclSIMDActionName = 'JCLSIMDCommand';
+  JclSIMDMenuName   = 'JCLSIMDMenu';
 
   //=== Uses Expert ==========================================================
   JclUsesExpertName   = 'JclUsesExpert';
@@ -105,13 +127,55 @@ const
   JclIniFileLocation  = 'experts\useswizard\JediUsesWizard.ini';
 
   //=== Project analyser =====================================================
-  AnalyzerViewName = 'AnalyzerView';
-
+  JclProjectAnalyzerExpertName = 'JclProjectAnalyzerExpert';
+  AnalyzerViewName             = 'AnalyzerView';
+  AnalyzerShowPackagesName     = 'ShowPackages';
+  JclProjectAnalyzeActionName  = 'JCLProjectAnalyseCommand';
+  JclProjectAnalyzeMenuName    = 'JCLProjectAnalyseMenu';
 
   //=== Repository Expert ====================================================
   JclRepositoryCategoryDelphiFiles = {$IFDEF BDS} sCategoryDelphiNewFiles {$ELSE BDS} '' {$ENDIF BDS};
   JclRepositoryCategoryCBuilderFiles = {$IFDEF BDS} sCategoryCBuilderNewFiles {$ELSE BDS} '' {$ENDIF BDS};
+  JclRepositoryModuleTypeForm = omtForm;  
+
+  //=== Version Control Expert ===============================================
+  JclVersionCtrlMenuName = 'JclVersionCtrlMenu';
+  JclVersionCtrlActOnTopSandboxName = 'ActOnTopSandbox';
+  JclVersionCtrlMenuOrganizationName = 'MenuOrganization';
+  JclVersionCtrlSaveConfirmationName = 'SaveConfirmation';
+  JclVersionCtrlDisableActionsName = 'DisableActions';
+  JclVersionCtrlHideActionsName = 'HideActions';
+  JclVersionCtrlIconTypeName = 'IconType';
+  JclVersionCtrlIconTypeAutoValue = 'auto';
+  JclVersionCtrlIconTypeNoIconValue = 'noicon';
+  JclVersionCtrlIconTypeJclIconValue = 'jclicons';
+
+  //=== Stack Trace Viewer Expert ============================================
+  JclStackTraceViewerExpertName        = 'JclStackTraceViewerExpert';
+  JclStackTraceViewerActionName        = 'JCLStackTraceViewerCommand';
+  JclStackTraceViewerMenuName          = 'JCLStackTraceViewerMenu';
+  JclStackTraceViewerDesktopIniSection = 'JclStackTraceViewer';
+
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/common/JclOtaConsts.pas $';
+    Revision: '$Revision: 126 $';
+    Date: '$Date: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009) $';
+    LogPath: 'JCL\experts\common';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
 
 implementation
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

@@ -11,7 +11,7 @@ unit EDISDK_TLB;
 // manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// PASTLWTR : $Revision: 1658 $
+// PASTLWTR : $Revision: 11 $
 // File generated on 17.7.2004 03:06:57 from Type Library described below.
 
 // ************************************************************************ //

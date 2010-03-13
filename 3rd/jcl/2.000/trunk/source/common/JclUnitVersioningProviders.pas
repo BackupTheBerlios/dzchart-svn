@@ -25,8 +25,12 @@
 { Unit owner: Uwe Schuster                                                                         }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2007-02-04 19:37:27 +0100 (dim., 04 févr. 2007) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclUnitVersioningProviders;
 
@@ -102,7 +106,6 @@ const
   JclUnitVersioningDataResName = 'JCLUV';
 
 type
-  PJclUnitVersioningHeader = ^TJclUnitVersioningHeader;
   TJclUnitVersioningHeader = record
     UnitCount: Integer;
   end;
@@ -134,9 +137,13 @@ end;
 procedure TJclUnitVersioningList.Clear;
 var
   I: Integer;
+  Item: PUnitVersionInfo;
 begin
   for I := FItems.Count - 1 downto 0 do
-    Dispose(FItems[I]);
+  begin
+    Item := PUnitVersionInfo(FItems[I]);
+    Dispose(Item);
+  end;
   FItems.Clear;
 end;
 
@@ -173,6 +180,7 @@ begin
   begin
     if AStream.Size - AStream.Position >= SizeOf(StringLength) then
     begin
+      StringLength := 0;
       AStream.Read(StringLength, SizeOf(StringLength));
       if StringLength <= AStream.Size - AStream.Position then
       begin
@@ -255,6 +263,7 @@ begin
   if Assigned(AStream) then
   begin
     Clear;
+    Header.UnitCount := 0;
     AStream.Read(Header, SizeOf(Header));
     UnitsToRead := Header.UnitCount;
     LastReadOkay := True;
@@ -387,10 +396,12 @@ end;
 
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/common/JclUnitVersioningProviders.pas $';
-    Revision: '$Revision: 1912 $';
-    Date: '$Date: 2007-02-04 19:37:27 +0100 (dim., 04 févr. 2007) $';
-    LogPath: 'JCL\common';
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/common/JclUnitVersioningProviders.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\source\common';
+    Extra: '';
+    Data: nil
   );
 
 initialization

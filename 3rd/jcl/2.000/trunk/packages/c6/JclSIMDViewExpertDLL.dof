@@ -1,7 +1,7 @@
 [Directories]
 UnitOutputDir=..\..\lib\c6
-SearchPath=..\..\source
-Conditionals=BCB
+SearchPath=..\..\source\include
+Conditionals=BCB;RELEASE
 [Compiler]
 PackageNoLink=1
 [Linker]

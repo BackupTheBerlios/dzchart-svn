@@ -19,8 +19,9 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Unit owner: Robert Marquardt                                                                     }
-{ Last modified: $Date: 2006-10-30 19:04:11 +0100 (lun., 30 oct. 2006) $                                                      }
+{ Last modified: $Date:: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009)                        $ }
+{ Revision:      $Rev:: 126                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -34,6 +35,9 @@ uses
   SysUtils, Windows, Classes, Messages, Forms, Controls, StdCtrls, ComCtrls,
   ExtCtrls,
   ToolsAPI,
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
   JclOtaUtils, JclOptionsFrame;
 
 type
@@ -105,6 +109,18 @@ function JCLWizardInit(const BorlandIDEServices: IBorlandIDEServices;
   RegisterProc: TWizardRegisterProc;
   var TerminateProc: TWizardTerminateProc): Boolean; stdcall;
 
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/useswizard/JCLUsesWizard.pas $';
+    Revision: '$Revision: 126 $';
+    Date: '$Date: 2009-08-07 10:25:11 +0200 (ven., 07 août 2009) $';
+    LogPath: 'JCL\experts\useswizard';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
+
 implementation
 
 uses
@@ -132,18 +148,10 @@ var
   JCLWizardIndex: Integer = -1;
 
 procedure JclWizardTerminate;
-var
-  OTAWizardServices: IOTAWizardServices;
 begin
   try
     if JCLWizardIndex <> -1 then
-    begin
-      Supports(BorlandIDEServices, IOTAWizardServices, OTAWizardServices);
-      if not Assigned(OTAWizardServices) then
-        raise EJclExpertException.CreateTrace(RsENoWizardServices);
-
-      OTAWizardServices.RemoveWizard(JCLWizardIndex);
-    end;
+      TJclOTAExpertBase.GetOTAWizardServices.RemoveWizard(JCLWizardIndex);
   except
     on ExceptionObj: TObject do
     begin
@@ -155,17 +163,11 @@ end;
 function JCLWizardInit(const BorlandIDEServices: IBorlandIDEServices;
     RegisterProc: TWizardRegisterProc;
     var TerminateProc: TWizardTerminateProc): Boolean stdcall;
-var
-  OTAWizardServices: IOTAWizardServices;
 begin
   try
     TerminateProc := JclWizardTerminate;
 
-    Supports(BorlandIDEServices, IOTAWizardServices, OTAWizardServices);
-    if not Assigned(OTAWizardServices) then
-      raise EJclExpertException.CreateTrace(RsENoWizardServices);
-
-    JCLWizardIndex := OTAWizardServices.AddWizard(TJCLUsesWizard.Create);
+    JCLWizardIndex := TJclOTAExpertBase.GetOTAWizardServices.AddWizard(TJCLUsesWizard.Create);
 
     Result := True;
   except
@@ -495,8 +497,10 @@ end;
 procedure TJCLUsesWizard.LoadSettings;
 var
   DefaultIniFile, DefaultRegKey: string;
+  OTAServices: IOTAServices;
 begin
-  DefaultRegKey := StrEnsureSuffix(AnsiBackslash, Services.GetBaseRegistryKey) + RegJclKey;
+  OTAServices := GetOTAServices;
+  DefaultRegKey := StrEnsureSuffix(NativeBackslash, OTAServices.GetBaseRegistryKey) + RegJclKey;
   DefaultIniFile := RegReadStringDef(HKCU, DefaultRegKey, JclRootDirValueName, '');
   if DefaultIniFile <> '' then
     DefaultIniFile := PathAddSeparator(DefaultIniFile) + JclIniFileLocation;
@@ -519,13 +523,8 @@ var
 
   procedure LoadDcc32Strings;
   const
-    {$IFDEF COMPILER6}
     SErrorID = 4147; // 'Error'
     SUndeclaredIdentID = 47; // 'Undeclared identifier: ''%s'''
-    {$ELSE}
-    SErrorID = 4200;
-    SUndeclaredIdentID = 2;
-    {$ENDIF COMPILER6}
   var
     Dcc32FileName: string;
     Dcc32: HMODULE;
@@ -539,11 +538,9 @@ var
 
     // try to retrieve and prepend Delphi bin path
     S := (BorlandIDEServices as IOTAServices).GetBaseRegistryKey;
-    {$IFDEF COMPILER6_UP}
     if RegKeyExists(HKEY_CURRENT_USER, S) then
       Dcc32FileName := PathAddSeparator(RegReadString(HKEY_CURRENT_USER, S, 'RootDir')) + 'Bin\' + Dcc32FileName
     else
-    {$ENDIF COMPILER6_UP}
     if RegKeyExists(HKEY_LOCAL_MACHINE, S) then
       Dcc32FileName := PathAddSeparator(RegReadString(HKEY_LOCAL_MACHINE, S, 'RootDir')) + 'Bin\' + Dcc32FileName;
 
@@ -724,7 +721,7 @@ var
   ChangeList: TStrings;
   IntfLength, ImplLength: Integer;
   Writer: IOTAEditWriter;
-  Project: IOTAProject;
+  ActiveProject: IOTAProject;
 begin
   GoalSource := '';
   with BorlandIDEServices as IOTAEditorServices do
@@ -775,9 +772,9 @@ begin
               end;
 
             // attempt to recompile
-            Project := ActiveProject;
-            if Assigned(Project) and Assigned(Project.ProjectBuilder) then
-              Project.ProjectBuilder.BuildProject(cmOTAMake, True, True);
+            ActiveProject := GetActiveProject;
+            if Assigned(ActiveProject) and Assigned(ActiveProject.ProjectBuilder) then
+              ActiveProject.ProjectBuilder.BuildProject(cmOTAMake, True, True);
           end;
         finally
           ChangeList.Free;
@@ -821,9 +818,9 @@ begin
               end;
 
             // attempt to recompile
-            Project := ActiveProject;
-            if Assigned(Project) and Assigned(Project.ProjectBuilder) then
-              Project.ProjectBuilder.BuildProject(cmOTAMake, True, True);
+            ActiveProject := GetActiveProject;
+            if Assigned(ActiveProject) and Assigned(ActiveProject.ProjectBuilder) then
+              ActiveProject.ProjectBuilder.BuildProject(cmOTAMake, True, True);
           end;
         finally
           ChangeList.Free;
@@ -900,9 +897,9 @@ begin
               end;
 
             // attempt to recompile
-            Project := ActiveProject;
-            if Assigned(Project) and Assigned(Project.ProjectBuilder) then
-              Project.ProjectBuilder.BuildProject(cmOTAMake, True, True);
+            ActiveProject := GetActiveProject;
+            if Assigned(ActiveProject) and Assigned(ActiveProject.ProjectBuilder) then
+              ActiveProject.ProjectBuilder.BuildProject(cmOTAMake, True, True);
           end;
         finally
           ChangeList.Free;
@@ -982,5 +979,13 @@ procedure TJCLUsesWizard.UnregisterCommands;
 begin
   SaveSettings;
 end;
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

@@ -28,8 +28,12 @@
 { This unit contains Various COM (Component Object Model) utility routines.                        }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclCOM;
 
@@ -120,10 +124,12 @@ procedure VariantArrayToStream(VarArray: OleVariant; var Stream: IStream); overl
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/windows/JclCOM.pas $';
-    Revision: '$Revision: 1695 $';
-    Date: '$Date: 2006-07-25 07:56:46 +0200 (mar., 25 juil. 2006) $';
-    LogPath: 'JCL\source\windows'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/windows/JclCOM.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\source\windows';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -166,7 +172,7 @@ begin
   Result := not (GetWindowsVersion in [wvUnknown, wvWin95, wvWin95OSR2]);
   if not Result then
   begin
-    OLE32 := LoadLibrary(pcOLE32);
+    OLE32 := SafeLoadLibrary(pcOLE32);
     if OLE32 > 0 then
     try
       Result := GetProcAddress(OLE32, PChar('CoCreateInstanceEx')) <> nil;
@@ -306,6 +312,7 @@ var
   itfStream: IStream;
 begin
   { TODO -cTest : D4 (CBx ??) }
+  itfStream := nil;
   Result := MarshalInterProcessInterfaceInStream(iid, unk, itfStream);
 
   if Result <> S_OK then
@@ -360,6 +367,7 @@ var
   itfStream: IStream;
 begin
   { TODO -cTest : D4 (CBx ??) }
+  itfStream := nil;
   Result := MarshalInterMachineInterfaceInStream(iid, unk, itfStream);
 
   if Result <> S_OK then

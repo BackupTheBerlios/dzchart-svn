@@ -1,31 +1,39 @@
-{******************************************************************************}
-{                                                                              }
-{ Project JEDI Code Library (JCL) extension                                    }
-{                                                                              }
-{ The contents of this file are subject to the Mozilla Public License Version  }
-{ 1.0 (the "License"); you may not use this file except in compliance with the }
-{ License. You may obtain a copy of the License at http://www.mozilla.org/MPL/ }
-{                                                                              }
-{ Software distributed under the License is distributed on an "AS IS" basis,   }
-{ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for }
-{ the specific language governing rights and limitations under the License.    }
-{                                                                              }
-{ The Original Code is JclDebugResult.pas.                                     }
-{                                                                              }
-{ The Initial Developer of the Original Code is documented in the accompanying }
-{ help file JCL.chm. Portions created by these individuals are Copyright (C)   }
-{ of these individuals.                                                        }
-{                                                                              }
-{ Last modified: $Date: 2006-10-30 16:00:17 +0100 (lun., 30 oct. 2006) $                                  }
-{                                                                              }
-{******************************************************************************}
+{**************************************************************************************************}
+{                                                                                                  }
+{ Project JEDI Code Library (JCL) extension                                                        }
+{                                                                                                  }
+{ The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License"); }
+{ you may not use this file except in compliance with the License. You may obtain a copy of the    }
+{ License at http://www.mozilla.org/MPL/                                                           }
+{                                                                                                  }
+{ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF   }
+{ ANY KIND, either express or implied. See the License for the specific language governing rights  }
+{ and limitations under the License.                                                               }
+{                                                                                                  }
+{ The Original Code is JclDebugResult.pas.                                                         }
+{                                                                                                  }
+{ The Initial Developer of the Original Code is documented in the accompanying help file JCL.chm.  }
+{ Portions created by these individuals are Copyright (C) of these individuals.                    }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclDebugIdeResult;
+
+{$I jcl.inc}
 
 interface
 
 uses
   Windows, SysUtils, Classes, Controls, Forms, ComCtrls, StdCtrls, ImgList,
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
   JclOtaUtils;
 
 type
@@ -46,6 +54,18 @@ type
   public
     constructor Create(AOwner: TComponent; ASettings: TJclOTASettings); reintroduce;
   end;
+
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/experts/debug/converter/JclDebugIdeResult.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\experts\debug\converter';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
 
 implementation
 
@@ -196,5 +216,13 @@ begin
     MessageBeep(MB_OK);
   end;
 end;
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.

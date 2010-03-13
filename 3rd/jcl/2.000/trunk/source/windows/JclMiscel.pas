@@ -26,11 +26,15 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Various miscellanuous routines that do not (yet) fit nicely into other units                     }
+{ Various miscellaneous routines that do not (yet) fit nicely into other units                     }
 {                                                                                                  }
 {**************************************************************************************************}
-
-// Last modified: $Date: 2006-08-16 21:35:09 +0200 (mer., 16 août 2006) $
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009)                         $ }
+{ Revision:      $Rev:: 122                                                                      $ }
+{ Author:        $Author:: outch                                                                 $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 unit JclMiscel;
 
@@ -42,15 +46,17 @@ uses
   {$IFDEF UNITVERSIONING}
   JclUnitVersioning,
   {$ENDIF UNITVERSIONING}
-  Windows,
+  {$IFDEF MSWINDOWS}
+  Windows, JclWin32,
+  {$ENDIF MSWINDOWS}
   JclBase;
 
 // StrLstLoadSave
 function SetDisplayResolution(const XRes, YRes: DWORD): Longint;
 
-function CreateDOSProcessRedirected(const CommandLine, InputFile, OutputFile: string): Boolean;
-function WinExec32(const Cmd: string; const CmdShow: Integer): Boolean;
-function WinExec32AndWait(const Cmd: string; const CmdShow: Integer): Cardinal;
+function CreateDOSProcessRedirected(CommandLine: string; const InputFile, OutputFile: string): Boolean;
+function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
+function WinExec32AndWait(Cmd: string; const CmdShow: Integer): Cardinal;
 function WinExec32AndRedirectOutput(const Cmd: string; var Output: string; RawOutput: Boolean = False): Cardinal;
 
 type
@@ -75,10 +81,10 @@ function ShutDownDialog(const MachineName, DialogMessage: string; TimeOut: DWORD
 function AbortShutDown: Boolean; overload;
 function AbortShutDown(const MachineName: string): Boolean; overload;
 
-type                                              
+type
   TJclAllowedPowerOperation = (apoHibernate, apoShutdown, apoSuspend);
   TJclAllowedPowerOperations = set of TJclAllowedPowerOperation;
-  
+
 function GetAllowedPowerOperations: TJclAllowedPowerOperations;
 
 // CreateProcAsUser
@@ -96,10 +102,12 @@ procedure CreateProcAsUserEx(const UserDomain, UserName, Password, CommandLine: 
 {$IFDEF UNITVERSIONING}
 const
   UnitVersioning: TUnitVersionInfo = (
-    RCSfile: '$URL: https://jcl.svn.sourceforge.net/svnroot/jcl/tags/JCL199-Build2551/jcl/source/windows/JclMiscel.pas $';
-    Revision: '$Revision: 1732 $';
-    Date: '$Date: 2006-08-16 21:35:09 +0200 (mer., 16 août 2006) $';
-    LogPath: 'JCL\source\windows'
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/trunk/jcl/source/windows/JclMiscel.pas $';
+    Revision: '$Revision: 122 $';
+    Date: '$Date: 2009-07-30 13:23:44 +0200 (jeu., 30 juil. 2009) $';
+    LogPath: 'JCL\source\windows';
+    Extra: '';
+    Data: nil
     );
 {$ENDIF UNITVERSIONING}
 
@@ -107,9 +115,25 @@ implementation
 
 uses
   SysUtils,
-  JclResources, JclSecurity, JclStrings, JclSysUtils, JclWin32, JclSysInfo;
+  JclResources, JclSecurity, JclStrings, JclSysUtils, JclSysInfo;
 
-function CreateDOSProcessRedirected(const CommandLine, InputFile, OutputFile: string): Boolean;
+function SetDisplayResolution(const XRes, YRes: DWORD): Longint;
+var
+  DevMode: TDeviceMode;
+begin
+  Result := DISP_CHANGE_FAILED;
+  ResetMemory(DevMode, SizeOf(DevMode));
+  DevMode.dmSize := SizeOf(DevMode);
+  if EnumDisplaySettings(nil, 0, DevMode) then
+  begin
+    DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT;
+    DevMode.dmPelsWidth := XRes;
+    DevMode.dmPelsHeight := YRes;
+    Result := ChangeDisplaySettings(DevMode, 0);
+  end;
+end;
+
+function CreateDOSProcessRedirected(CommandLine: string; const InputFile, OutputFile: string): Boolean;
 var
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
@@ -126,12 +150,14 @@ begin
       FILE_ATTRIBUTE_TEMPORARY, 0);
     if hOutputFile <> INVALID_HANDLE_VALUE then
     begin
-      FillChar(StartupInfo, SizeOf(StartupInfo), #0);
+      ResetMemory(StartupInfo, SizeOf(StartupInfo));
+      ResetMemory(ProcessInfo, SizeOf(ProcessInfo));
       StartupInfo.cb := SizeOf(StartupInfo);
       StartupInfo.dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
       StartupInfo.wShowWindow := SW_HIDE;
       StartupInfo.hStdOutput := hOutputFile;
       StartupInfo.hStdInput := hInputFile;
+      UniqueString(CommandLine);//in the Unicode version the parameter lpCommandLine needs to be writable
       Result := CreateProcess(nil, PChar(CommandLine), nil, nil, True,
         CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo,
         ProcessInfo);
@@ -147,15 +173,17 @@ begin
   end;
 end;
 
-function WinExec32(const Cmd: string; const CmdShow: Integer): Boolean;
+function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 var
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
 begin
-  FillChar(StartupInfo, SizeOf(TStartupInfo), #0);
+  ResetMemory(StartupInfo, SizeOf(TStartupInfo));
+  ResetMemory(ProcessInfo, SizeOf(ProcessInfo));
   StartupInfo.cb := SizeOf(TStartupInfo);
   StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
   StartupInfo.wShowWindow := CmdShow;
+  UniqueString(Cmd);//in the Unicode version the parameter lpCommandLine needs to be writable
   Result := CreateProcess(nil, PChar(Cmd), nil, nil, False,
     NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo, ProcessInfo);
   if Result then
@@ -166,16 +194,18 @@ begin
   end;
 end;
 
-function WinExec32AndWait(const Cmd: string; const CmdShow: Integer): Cardinal;
+function WinExec32AndWait(Cmd: string; const CmdShow: Integer): Cardinal;
 var
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
 begin
   Result := Cardinal($FFFFFFFF);
-  FillChar(StartupInfo, SizeOf(TStartupInfo), #0);
+  ResetMemory(StartupInfo, SizeOf(TStartupInfo));
+  ResetMemory(ProcessInfo, SizeOf(ProcessInfo));
   StartupInfo.cb := SizeOf(TStartupInfo);
   StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
   StartupInfo.wShowWindow := CmdShow;
+  UniqueString(Cmd);//in the Unicode version the parameter lpCommandLine needs to be writable
   if CreateProcess(nil, PChar(Cmd), nil, nil, False, NORMAL_PRIORITY_CLASS,
     nil, nil, StartupInfo, ProcessInfo) then
   begin
@@ -349,22 +379,6 @@ begin
   {$ENDIF MSWINDOWS}
 end;
 
-function SetDisplayResolution(const XRes, YRes: DWORD): Longint;
-var
-  DevMode: TDeviceMode;
-begin
-  Result := DISP_CHANGE_FAILED;
-  FillChar(DevMode, SizeOf(DevMode), #0);
-  DevMode.dmSize := SizeOf(DevMode);
-  if EnumDisplaySettings(nil, 0, DevMode) then
-  begin
-    DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT;
-    DevMode.dmPelsWidth := XRes;
-    DevMode.dmPelsHeight := YRes;
-    Result := ChangeDisplaySettings(DevMode, 0);
-  end;
-end;
-
 function GetAllowedPowerOperations: TJclAllowedPowerOperations;
 begin
   {$IFDEF MSWINDOWS}
@@ -402,7 +416,7 @@ const
   // default values for window stations and desktops
   CreateProcDEFWINSTATION = 'WinSta0';
   CreateProcDEFDESKTOP    = 'Default';
-  CreateProcDOMUSERSEP    = '\';
+  // CreateProcDOMUSERSEP    = '\';
 var
   ConsoleTitle: string;
   Help: string;
@@ -419,6 +433,7 @@ begin
   CheckOSVersion;
 
   // Step 2: logon as the specified user
+  hUserToken := 0;
   if not LogonUser(PChar(UserName), PChar(UserDomain), PChar(Password),
     LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, hUserToken) then
   begin
@@ -460,7 +475,7 @@ begin
 
   // Step 4: set the startup info for the new process
   ConsoleTitle := UserDomain + UserName;
-  FillChar(StartUpInfo, SizeOf(StartUpInfo), #0);
+  ResetMemory(StartUpInfo, SizeOf(StartUpInfo));
   with StartUpInfo do
   begin
     cb:= SizeOf(StartUpInfo);
@@ -474,9 +489,9 @@ begin
     False, CREATE_NEW_CONSOLE or CREATE_NEW_PROCESS_GROUP, Environment, nil,
     {$IFDEF FPC}
     @StartUpInfo, @ProcInfo) then
-    {$ELSE}
+    {$ELSE ~FPC}
     StartUpInfo, ProcInfo) then
-    {$ENDIF FPC}
+    {$ENDIF ~FPC}
   begin
     case GetLastError of
       ERROR_PRIVILEGE_NOT_HELD:
