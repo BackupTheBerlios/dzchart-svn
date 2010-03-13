@@ -1,6 +1,7 @@
 @rem This batch will
 @rem * call dxgettext to extract all strings to translate
 @rem * call msgremove remove any strings stored in the ignore.po file
+@rem * call msgmerge to merge German and English translations with the new template
 
 set BASE=.
 
@@ -13,7 +14,7 @@ msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
 @rem merge German translations
 msgmerge --no-wrap --update %BASE%\translations\de\dzCmdLineParser.po %BASE%\filtered.po
 
-@rem merge Eerman translations
+@rem merge English translations
 msgmerge --no-wrap --update %BASE%\translations\en\dzCmdLineParser.po %BASE%\filtered.po
 
 pause
