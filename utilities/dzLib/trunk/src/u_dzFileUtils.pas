@@ -314,7 +314,7 @@ type
     /// <summary>
     /// set of char constant containing all characters that are invalid in a filename
     /// </summary>
-    INVALID_FILENAME_CHARS: set of Char = ['\', '/', ':', '*', '?', '"', '<', '>', '|'];
+    INVALID_FILENAME_CHARS: set of AnsiChar = ['\', '/', ':', '*', '?', '"', '<', '>', '|'];
   {*)}
     /// <summary>
     /// Returns a temporary filename.
@@ -647,7 +647,7 @@ type
     /// <summary>
     /// Returns the free space (in bytes) on the disk with the given drive letter
     /// </summary>
-    class function DiskFree(_DriveLetter: char): Int64;
+    class function DiskFree(_DriveLetter: AnsiChar): Int64;
   end;
 
 type
@@ -1014,12 +1014,12 @@ begin
     _Size := Info.Size;
 end;
 
-class function TFileSystem.DiskFree(_DriveLetter: char): Int64;
+class function TFileSystem.DiskFree(_DriveLetter: AnsiChar): Int64;
 var
   ErrorMode: Cardinal;
 begin
   if _DriveLetter in ['a'..'z'] then
-    _DriveLetter := chr(Ord(_DriveLetter) - Ord('a') + Ord('A'));
+    _DriveLetter := UpCase(_DriveLetter);
 
   if not (_DriveLetter in ['A'..'Z']) then
     Result := -1
@@ -1530,7 +1530,7 @@ begin
   if not _AllowDot then
     Include(NotAllowed, '.');
   for i := 1 to Length(_s) do begin
-    if _s[i] in NotAllowed then begin
+    if CharInSet(_s[i], NotAllowed) then begin
       _ErrPos := i;
       Exit;
     end;
