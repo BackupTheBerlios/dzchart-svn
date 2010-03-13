@@ -109,6 +109,10 @@ type
     function GetFieldValue(const _FieldName: string): Variant;
     ///<summary> sets the field value as variant (setter method for FieldValues property) </summary>
     procedure SetFieldValue(const _FieldName: string; const _Value: Variant);
+    ///<summary> sets the field value, if the filed exists
+    ///          @param Fieldname is name of the field to set
+    ///          @param Value is the new value
+    ///          @returns true, if the field exists, false otherwise </summary>
     function TrySetFieldValue(const _FieldName: string; const _Value: Variant): boolean;
     procedure ClearField(const _Fieldname: string);
 
