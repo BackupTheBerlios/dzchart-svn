@@ -106,7 +106,8 @@ begin
   case _Idx of
     0: rb_ItemsUnsorted.Checked := true;
     2: rb_ItemsByTemplate.Checked := true;
-  // else: alpha-sort
+  else
+    rb_ItemsAlpha.Checked := true;
   end;
 end;
 
@@ -115,7 +116,8 @@ begin
   case _Idx of
     0: rb_SectionsUnsorted.Checked := true;
     2: rb_SectionsByTemplate.Checked := true;
-  // else: alpha-sort
+  else
+    rb_SectionsAlpha.Checked := true;
   end;
 end;
 

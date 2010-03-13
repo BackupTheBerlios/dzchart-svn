@@ -22,11 +22,11 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
 			<DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
-			<DCC_Define>no_translation;$(DCC_Define)</DCC_Define>
+			<DCC_Define>no_translation;no_jcl;$(DCC_Define)</DCC_Define>
 			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_DcuOutput>..\dcu</DCC_DcuOutput>
 			<DCC_ExeOutput>..</DCC_ExeOutput>
-			<DCC_UnitSearchPath>..\..\..\..\dztemplates\Units;..\..\..\..\dztemplates\templates;..\..\..\jedi_inc;..\..\..\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\libs\dztemplates\Units;..\libs\dztemplates\templates;..\libs\dzlib\jedi_inc;..\libs\dzlib\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>..\IniFileFormatter.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
@@ -54,20 +54,22 @@
 			<DCCReference Include="w_IniFileFormatter.pas">
 				<Form>f_IniFileFormatter</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\..\IniFileFormatter\u_dzIniFileFormatter.pas"/>
-			<DCCReference Include="..\..\..\IniFileFormatter\u_dzIniSections.pas"/>
-			<DCCReference Include="..\..\..\IniFileFormatter\u_dzIniEntryList.pas"/>
 			<DCCReference Include="u_IniFileFormatterMain.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzDefaultMain.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzGetOpt.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzOptionDescList.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzOptionFoundList.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzOptionNameList.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzParamDescList.pas"/>
-			<DCCReference Include="..\..\..\..\dzcmdlineparser\src\u_dzParamFoundList.pas"/>
-			<DCCReference Include="..\..\..\forms\w_dzDialog.pas">
+			<DCCReference Include="..\libs\dzLib\forms\w_dzDialog.pas">
 				<Form>f_dzDialog</Form>
 			</DCCReference>
+			<DCCReference Include="..\libs\dzLib\IniFileFormatter\u_dzIniFileFormatter.pas"/>
+			<DCCReference Include="..\libs\dzLib\IniFileFormatter\u_dzIniSections.pas"/>
+			<DCCReference Include="..\libs\dzLib\IniFileFormatter\u_dzIniEntryList.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzDefaultMain.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzCmdLineParser.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzCmdLineParserStates.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzGetOpt.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzOptionDescList.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzOptionFoundList.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzOptionNameList.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzParamDescList.pas"/>
+			<DCCReference Include="..\libs\dzCmdLineParser\src\u_dzParamFoundList.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -93,7 +95,6 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">--help</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>

@@ -26,9 +26,9 @@ procedure TIniFileFormatterMain.InitCmdLineParser;
 begin
   inherited;
   FGetOpt.RegisterOption('SortSections', _(
-    'Sort sections. Possible values: no, alpha, template'), true);
+    'Sort sections. Possible values: no, alpha, template (default: alpha)'), true);
   FGetOpt.RegisterOption('SortItems', _(
-    'Sort items. Possible values: no, alpha, template'), true);
+    'Sort items. Possible values: no, alpha, template (default: alpha'), true);
   FGetOpt.RegisterOption('template', _('Template file for sorting by template')
     , true);
   FGetOpt.RegisterParam('SrcFile', _('Source INI file to read and format'), 0, 1);
