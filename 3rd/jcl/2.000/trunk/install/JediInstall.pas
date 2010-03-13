@@ -18,7 +18,11 @@
 { Contributor(s): Robert Rossmair (crossplatform & BCB support)                                    }
 {                 Florent Ouchet (new core for more than one target)                               }
 {                                                                                                  }
-{ Last modified: $Date: 2006-12-30 20:56:40 +0100 (sam., 30 déc. 2006) $                          }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2009-07-11 22:38:48 +0200 (sam., 11 juil. 2009)                         $ }
+{ Revision:      $Rev:: 94                                                                       $ }
+{ Author:        $Author:: uschuster                                                             $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -46,6 +50,7 @@ type
 
 type
   TDialogType = (dtWarning, dtError, dtInformation, dtConfirmation);
+  TDialogTypes = set of TDialogType;
   TDialogResponse = (drYes, drNo, drOK, drCancel);
   TDialogResponses = set of TDialogResponse;
 
@@ -99,6 +104,13 @@ type
     property DirectoryCount: Integer read GetDirectoryCount;
     property Directories[Index: Integer]: string read GetDirectory write SetDirectory;
     property Progress: Integer read GetProgress write SetProgress;
+  end;
+
+  IJediProfilesPage = interface(IJediPage)
+    ['{23CD1150-A05F-4C64-A3A5-5335874DF942}']
+    function GetProfileEnabled(Index: Integer): Boolean;
+    procedure SetProfileEnabled(Index: Integer; Value: Boolean);
+    property IsProfileEnabled[Index: Integer]: Boolean read GetProfileEnabled write SetProfileEnabled;
   end;
 
   TOptionRec = record
@@ -155,6 +167,7 @@ type
       Options: TDialogResponses = [drOK]): TDialogResponse;
     function CreateReadmePage: IJediReadmePage;
     function CreateInstallPage: IJediInstallPage;
+    function CreateProfilesPage: IJediProfilesPage;
     function GetPageCount: Integer;
     function GetPage(Index: Integer): IJediPage;
     function GetStatus: string;
@@ -163,8 +176,23 @@ type
     procedure SetCaption(const Value: string);
     function GetProgress: Integer;
     procedure SetProgress(Value: Integer);
+    function GetAutoAcceptDialogs: TDialogTypes;
+    procedure SetAutoAcceptDialogs(Value: TDialogTypes);
+    function GetAutoCloseOnFailure: Boolean;
+    procedure SetAutoCloseOnFailure(Value: Boolean);
+    function GetAutoCloseOnSuccess: Boolean;
+    procedure SetAutoCloseOnSuccess(Value: Boolean);
+    function GetAutoInstall: Boolean;
+    procedure SetAutoInstall(Value: Boolean);
+    function GetAutoUninstall: Boolean;
+    procedure SetAutoUninstall(Value: Boolean);
     procedure Execute;
 
+    property AutoAcceptDialogs: TDialogTypes read GetAutoAcceptDialogs write SetAutoAcceptDialogs;
+    property AutoCloseOnFailure: Boolean read GetAutoCloseOnFailure write SetAutoCloseOnFailure;
+    property AutoCloseOnSuccess: Boolean read GetAutoCloseOnSuccess write SetAutoCloseOnSuccess;
+    property AutoInstall: Boolean read GetAutoInstall write SetAutoInstall;
+    property AutoUninstall: Boolean read GetAutoUninstall write SetAutoUninstall;
     property PageCount: Integer read GetPageCount;
     property Pages[Index: Integer]: IJediPage read GetPage;
     property Status: string read GetStatus write SetStatus;
@@ -175,9 +203,23 @@ type
   IJediProduct = interface
     ['{CF5BE67A-4A49-43FB-8F6E-217A51023DA4}']
     procedure Init;
-    procedure Install;
-    procedure Uninstall;
+    function Install: Boolean;
+    function Uninstall: Boolean;
     procedure Close;
+  end;
+
+  IJediProfilesManager = interface
+    ['{5B818F08-3325-492A-BFC3-9489F749CB78}']
+    function CheckPrerequisites: Boolean;
+    function GetMultipleProfileMode: Boolean;
+    function GetProfileKey(Index: Integer): LongWord; // HKEY is Windows specific
+    function GetProfileCount: Integer;
+    function GetProfileName(Index: Integer): string;
+    procedure SetMultipleProfileMode(Value: Boolean);
+    property ProfileKeys[Index: Integer]: LongWord read GetProfileKey;
+    property ProfileNames[Index: Integer]: string read GetProfileName;
+    property ProfileCount: Integer read GetProfileCount;
+    property MultipleProfileMode: Boolean read GetMultipleProfileMode write SetMultipleProfileMode;
   end;
 
   TJediInstallGUICreator = function: IJediInstallGUI;
@@ -188,38 +230,31 @@ type
   TJediInstallCore = class(TComponent)
   private
     FInstallGUI: IJediInstallGUI;
-    {$IFDEF VisualCLX}
-    FGUIComponent: TComponent;
-    {$ENDIF VisualCLX}
     FProducts: IJclIntfList;
     FClosing: Boolean;
     FOptions: TStrings;
     FInstallGUICreator: TJediInstallGUICreator;
     FConfiguration: IJediConfiguration;
     FConfigurationCreator: TJediConfigurationCreator;
+    FProfilesManager: IJediProfilesManager;
     function GetProductCount: Integer;
     function GetProduct(Index: Integer): IJediProduct;
     function GetInstallGUI: IJediInstallGUI;
     function GetConfiguration: IJediConfiguration;
-  {$IFDEF VisualCLX}
-  protected
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;    
-  {$ENDIF VisualCLX}
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
 
-    function AddProduct(AProduct: IJediProduct): Integer;
+    function AddProduct(const AProduct: IJediProduct): Integer;
     procedure Execute;
-    procedure Install;
-    procedure Uninstall;
+    function Install: Boolean;
+    function Uninstall: Boolean;
     procedure Close;
     function AddInstallOption(const Name: string): Integer;
     function GetInstallOptionName(Id: Integer): string;
     function GetOptionCount: Integer;
-    function ProcessLogLine(const Line: string; var LineType: TCompileLineType;
-      Page: IJediInstallPage): string;
+    function ProcessLogLine(const Line: string; out LineType: TCompileLineType;
+      const Page: IJediInstallPage): string;
 
     property ProductCount: Integer read GetProductCount;
     property Products[Index: Integer]: IJediProduct read GetProduct;
@@ -232,6 +267,7 @@ type
     property Configuration: IJediConfiguration read GetConfiguration;
     property ConfigurationCreator: TJediConfigurationCreator read FConfigurationCreator
       write FConfigurationCreator;
+    property ProfilesManager: IJediProfilesManager read FProfilesManager;
   end;
 
 var
@@ -254,7 +290,8 @@ resourcestring
 implementation
 
 uses
-  JclArrayLists;
+  JclArrayLists, JclFileUtils,
+  JediProfiles;
 
 var
   InternalInstallCore: TJediInstallCore = nil;
@@ -275,7 +312,7 @@ begin
     Result := FOptions.Add(Name);
 end;
 
-function TJediInstallCore.AddProduct(AProduct: IJediProduct): Integer;
+function TJediInstallCore.AddProduct(const AProduct: IJediProduct): Integer;
 begin
   Result := FProducts.Size;
   FProducts.Add(AProduct);
@@ -302,9 +339,11 @@ begin
   inherited Create(nil);
   
   FOptions := TStringList.Create;
-  FProducts := TJclIntfArrayList.Create;
+  FProducts := TJclIntfArrayList.Create(1);
   FClosing := False;
   JediTargetOption := AddInstallOption('joTarget');
+
+  FProfilesManager := TJediProfilesManager.Create;
 end;
 
 destructor TJediInstallCore.Destroy;
@@ -325,13 +364,17 @@ var
   Index: Integer;
   AInstallGUI: IJediInstallGUI;
 begin
-  AInstallGUI := InstallGUI;
+  FProfilesManager.MultipleProfileMode := ParamPos('MultipleProfiles') >= 1;
+  if FProfilesManager.CheckPrerequisites then
+  begin
+    AInstallGUI := InstallGUI;
 
-  for Index := FProducts.Size - 1 downto 0 do
-    (FProducts.GetObject(Index) as IJediProduct).Init;
+    for Index := FProducts.Size - 1 downto 0 do
+      (FProducts.GetObject(Index) as IJediProduct).Init;
 
-  if Assigned(AInstallGUI) then
-    AInstallGUI.Execute;
+    if Assigned(AInstallGUI) then
+      AInstallGUI.Execute;
+  end;
 end;
 
 function TJediInstallCore.GetConfiguration: IJediConfiguration;
@@ -342,22 +385,28 @@ begin
 end;
 
 function TJediInstallCore.GetInstallGUI: IJediInstallGUI;
-{$IFDEF VisualCLX}
 var
-  CompRef: IInterfaceComponentReference;
-{$ENDIF VisualCLX}
+  AutoAcceptDialogs: TDialogTypes;
 begin
   if Assigned(FInstallGUICreator) and not Assigned(FInstallGUI) then
-    FInstallGUI := InstallGUICreator;
-  Result := FInstallGUI;
-{$IFDEF VisualCLX}
-  Result.QueryInterface(IInterfaceComponentReference, CompRef);
-  if Assigned(CompRef) then
   begin
-    FGUIComponent := CompRef.GetComponent;
-    FGuiComponent.FreeNotification(Self);
+    FInstallGUI := InstallGUICreator;
+    AutoAcceptDialogs := [];
+    if ParamPos('AcceptInformations') >= 1 then
+      Include(AutoAcceptDialogs, dtInformation);
+    if ParamPos('AcceptConfirmations') >= 1 then
+      Include(AutoAcceptDialogs, dtConfirmation);
+    if ParamPos('AcceptWarnings') >= 1 then
+      Include(AutoAcceptDialogs, dtWarning);
+    if ParamPos('AcceptErrors') >= 1 then
+      Include(AutoAcceptDialogs, dtError);
+    FInstallGUI.AutoAcceptDialogs := AutoAcceptDialogs;
+    FInstallGUI.AutoCloseOnFailure := ParamPos('CloseOnFailure') >= 1;
+    FInstallGUI.AutoCloseOnSuccess := ParamPos('CloseOnSuccess') >= 1;
+    FInstallGUI.AutoInstall := ParamPos('Install') >= 1;
+    FInstallGUI.AutoUninstall := ParamPos('Uninstall') >= 1;
   end;
-{$ENDIF VisualCLX}
+  Result := FInstallGUI;
 end;
 
 function TJediInstallCore.GetInstallOptionName(Id: Integer): string;
@@ -380,29 +429,21 @@ begin
   Result := FProducts.Size;
 end;
 
-procedure TJediInstallCore.Install;
+function TJediInstallCore.Install: Boolean;
 var
   Index: Integer;
 begin
+  Result := True;
   for Index := FProducts.Size - 1 downto 0 do
-    (FProducts.GetObject(Index) as IJediProduct).Install;
-end;
-
-{$IFDEF VisualCLX}
-procedure TJediInstallCore.Notification(AComponent: TComponent;
-  Operation: TOperation);
-begin
-  inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) and (AComponent = FGUIComponent) then
   begin
-    FGUIComponent := nil;
-    FInstallGUI := nil;
+    Result := (FProducts.GetObject(Index) as IJediProduct).Install;
+    if not Result then
+      Break;
   end;
 end;
-{$ENDIF VisualCLX}
 
 function TJediInstallCore.ProcessLogLine(const Line: string;
-  var LineType: TCompileLineType; Page: IJediInstallPage): string;
+  out LineType: TCompileLineType; const Page: IJediInstallPage): string;
 
   function HasText(Text: string; const Values: array of string): Boolean;
   var
@@ -503,12 +544,13 @@ begin
     Page.AddText(Line);
 end;
 
-procedure TJediInstallCore.Uninstall;
+function TJediInstallCore.Uninstall: Boolean;
 var
   Index: Integer;
 begin
+  Result := True;
   for Index := FProducts.Size - 1 downto 0 do
-    (FProducts.GetObject(Index) as IJediProduct).Uninstall;
+    Result := (FProducts.GetObject(Index) as IJediProduct).Uninstall and Result;
 end;
 
 initialization
