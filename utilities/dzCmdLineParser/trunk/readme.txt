@@ -1,5 +1,5 @@
-dummzeuch.de commandline parser version 1.0.0
-copyright 2006 by Thomas Mueller <http://www.dummzeuch.de
+dummzeuch.de commandline parser
+copyright 2006-2010 by Thomas Mueller <http://www.dummzeuch.de
 
  *****************************************************************************
  * Version: MPL 1.1
@@ -35,4 +35,4 @@ Also I would like feedback if you use this library. So far I have received none
 at all which could mean everything between nobody even looked at it, or everybody
 who looked at it turned away in horror. ;-)
 
-last updated 2006-08-03 by twm
+last updated 2010-03-13 by twm
