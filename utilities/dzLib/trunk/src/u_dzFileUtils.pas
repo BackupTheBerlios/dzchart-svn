@@ -320,7 +320,7 @@ type
     /// Returns a temporary filename.
     /// @param Directory is a string with the directory to create the file in, defaults
     ///                  to the TEMP directory.
-    /// @param Prefix is a string with a prefix for the filename, defaults to 'dz'.)
+    /// @param Prefix is a string with a prefix for the filename, defaults to 'dz'.
     /// @param Unique is an word that the function converts to a hexadecimal string
     /// for use in creating the temporary filename.)
     /// <ul>
@@ -337,7 +337,16 @@ type
     /// </summary>
     class function GetTempFileName(_Directory: string = ''; const _Prefix: string = 'dz';
       _Unique: word = 0): string;
-
+//    ///<summary>
+//    /// Returns a temporary filename which is ensured not to already exist before but has been created
+//    /// in this call.
+//    /// @param Directory is a string with the directory to create the file in, defaults
+//    ///                  to the TEMP directory.
+//    /// @param Prefix is a string with a prefix for the filename, defaults to 'dz'.
+//    /// @param Ext is the extension for the filename, defaults to '.tmp'.
+//    ///</summary>
+//    class function GetTempFileNameEx(_Directory: string = ''; const _Prefix: string = 'dz';
+//      const _Ext: string = '.tmp'): string;
     /// <summary>
     /// Calls the corresponding Windows function and returns the short path name
     /// for an *existing* file or directory.
@@ -714,7 +723,8 @@ uses
   Masks,
   u_dzMiscUtils,
   u_dzStringUtils,
-  u_dzDateUtils;
+  u_dzDateUtils,
+  u_dzFileStreams;
 
 function _(const _s: string): string; inline;
 begin
@@ -938,6 +948,30 @@ begin
   end;
   Result := PChar(Result); // remove trailing characters
 end;
+
+//class function TFileSystem.GetTempFileNameEx(_Directory: string; const _Prefix,
+//  _Ext: string): string;
+//var
+//  st: TdzFile;
+//  i: Integer;
+//begin
+//  if _Directory = '' then
+//    _Directory := GetTempPath;
+//  for i := 0 to 256 * 16 - 1 do begin
+//    Result := itpd(_Directory) + _Prefix + IntToHex(MainThreadID, 3) + IntToHex(Random(256 * 16), 2) + _Ext;
+//    st := TdzFile.Create(Result);
+//    try
+//      st.AccessMode := faReadWrite;
+//      st.ShareMode := fsNoSharing;
+//      st.CreateDisposition := fcCreateFailIfExists;
+//      if st.OpenNoException then
+//        exit;
+//    finally
+//      FreeAndNil(st);
+//    end;
+//  end;
+//  raise Exception.CreateFmt(_('Unable to create a temporary file from %s.'), [itpd(_Directory) + _Prefix + '*' + _Ext]);
+//end;
 
 class function TFileSystem.TryGetFileInfo(const _Filename: string;
   out _Info: TFileInfoRec): boolean;
