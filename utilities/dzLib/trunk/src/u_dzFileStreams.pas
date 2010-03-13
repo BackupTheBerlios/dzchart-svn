@@ -334,7 +334,7 @@ end;
 
 procedure TdzFile.SetFilename(const _Filename: string);
 begin
-  if Self.Handle <> integer(INVALID_HANDLE_VALUE) then
+  if Self.Handle <> Cardinal(INVALID_HANDLE_VALUE) then
     raise EdzFile.Create(_('Cannot change filename when file is open.'));
   FFilename := _Filename;
 end;
