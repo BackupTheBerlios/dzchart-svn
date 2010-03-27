@@ -18,7 +18,7 @@ uses
   u_dzParamDescList in '..\libs\dzCmdLineParser\src\u_dzParamDescList.pas',
   u_dzParamFoundList in '..\libs\dzCmdLineParser\src\u_dzParamFoundList.pas';
 
-{$R *.res}
+{$R *_version.res}
 
 begin
   Application.Initialize;
