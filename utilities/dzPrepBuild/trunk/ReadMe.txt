@@ -2,7 +2,7 @@ PrepBuild is a commandline tool for handling the version information
 for Delphi projects when compiling using the dcc32.exe commandline
 compiler. It can also be used as a Pre-Build tool in Delphi 2007.
 
-I can read and update three different kinds of sources for the
+It can read and update three different kinds of sources for the
 version information:
 * <projectname>.dof files (used up to Delphi 7)
 * <projectname>.bdsproj files (used in BDS 2005 and 2006)
@@ -31,7 +31,7 @@ build.cmd:
 del <projectname>.cfg
 dcc32 [... options ...] <projectname>.dpr
 
-[... other stuff, e.g. create a tag in the sCM ...]
+[... other stuff, e.g. create a tag in the SCM ...]
 
 -------------
 
@@ -72,7 +72,7 @@ prepbuild --ReadDof=<projectname> --IncBuild --exec=prep.cmd
 del <projectname>.cfg
 dcc32 [... options ...] <projectname>.dpr
 
-[... other stuff, e.g. create a tag in the sCM ...]
+[... other stuff, e.g. create a tag in the SCM ...]
 
 -------------
 
@@ -105,16 +105,15 @@ PrepBuild --updatedof=%dzProject%
           --Trademark="%dzVersion.Trademark%"
           --Comments="build on %dzDateTime%"
 
-(all this goes into one line, I just wrapped it to improve readability)
+(all this must go into one line, I just wrapped it to improve readability)
 
 The following environment variables can be used (in addition to the ones
 that are usually set):
 
 %dzDate% - the current date in ISO format (yyyy-mm-dd)
 %dzTime% - the current time in 24 hour format (hh:mm:ss)
-%dzDateTime% - both, date and time as yyyy-mm-dd hh:mm:ss
+%dzDateTime% - combination of the above (yyyy-mm-dd hh:mm:ss)
 %dzMyDocuments% - the My Documents folder of the current user
-
 %dzProject% - the project name passed by the --ReadDof / --ReadBdsProj
               or --ReadIni option without extension
 
@@ -143,8 +142,8 @@ In addition an icon file is also added to the .rc file.
 
 You may ask why I am using a second script instead of doing everything
 in PrepBuild itself. The answer is that I didn't want to add too
-much functionality to the tool but also wanted the maximu on flexibility.
-Using this second script, I can use the version info and also the
+much functionality to the tool but also wanted the maximum of flexibility.
+With this second script, I can use the version info and also the
 build timestamp to modify the version information. Others may want to
 add the user name to the version info, so they can just use the
 standard environment variable %USERNAME% to add it. You might even want
@@ -164,7 +163,7 @@ if no .res file exists). .res files are binary and there is no easy
 way to modify them. So, what do you do?
 
 The first thing is disabling the version information in the project
-options. Since the IDE doesn't do it right, there is no point in
+options. Since the IDE doesn't do it correctly, there is no point in
 letting it manage the version info. Instead you use a .ini file
 to store it. This .ini file goes into your source code repository
 together with the code. In addtion you have got another .ini file
