@@ -68,10 +68,14 @@ function Date2ddmmyyyy(_Date: TDateTime): string;
 function ddmmyyyy2Date(const _s: string): TDateTime;
 function Tryddmmyyyy2Date(const _s: string; out _Date: TDateTime): boolean;
 
+function TryStr2Date(const _s: string; out _dt: TDateTime): boolean;
+function Str2Date(const _s: string): TDateTime;
+
 implementation
 
 uses
   SysUtils,
+  SysConst,
   DateUtils,
   u_dzStringUtils;
 
@@ -231,6 +235,34 @@ begin
   Settings.TimeSeparator := ':';
   Settings.ShortTimeFormat := 'hh:nn:ss'; // do not translate
   Result := StrToDateTime(_s, Settings);
+end;
+
+function TryStr2Date(const _s: string; out _dt: TDateTime): boolean;
+var
+  UKSettings: TFormatSettings;
+begin
+  Result := true;
+  // Try several different formats
+  // format configured in Windows
+  if not TryStrToDate(_s, _dt) then
+    // German dd.mm.yyyy
+    if not Tryddmmyyyy2Date(_s, _dt) then
+      // ISO yyyy-mm-dd
+      if not TryIso2Date(_s, _dt) then begin
+        // United Kingdom: dd/mm/yyyy
+        UKSettings := GetUserDefaultLocaleSettings;
+        UKSettings.DateSeparator := '/';
+        UKSettings.ShortDateFormat := 'dd/mm/yyyy';
+        if not TryStrToDate(_s, _dt, UKSettings) then
+          // nothing worked, give up
+          Result := false;
+      end;
+end;
+
+function Str2Date(const _s: string): TDateTime;
+begin
+  if not TryStr2Date(_s, Result) then
+    raise EConvertError.CreateResFmt(@SInvalidDate, [_s]);
 end;
 
 end.
