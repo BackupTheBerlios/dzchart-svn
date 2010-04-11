@@ -34,7 +34,7 @@ type
     procedure ReadFromFile(_VerInfo: TVersionInfo);
     procedure WriteToFile(_VerInfo: TVersionInfo);
   protected
-    FBdsProjFile: string;
+    FXmlFilename: string;
     FVersionInfo: IXMLNode;
     FVersionInfoKeys: IXMLNode;
   public
@@ -106,8 +106,8 @@ var
 begin
   inherited Create(nil);
   FProjectName := _Project;
-  FBdsProjFile := VerInfoFilename;
-  ProjDoc.FileName := FBdsProjFile;
+  FXmlFilename := VerInfoFilename;
+  ProjDoc.FileName := FXmlFilename;
   ProjDoc.Active := True;
   Project := ProjDoc.DocumentElement;
   ProjectExtensions := Project.ChildNodes['ProjectExtensions'];
@@ -128,7 +128,7 @@ end;
 
 class function Tdm_DProjVersionInfo.FilenameFor(const _Project: string): string;
 begin
-  Result := ChangeFileExt(_Project, '.bdsproj');
+  Result := ChangeFileExt(_Project, '.dproj');
 end;
 
 procedure Tdm_DProjVersionInfo.ReadFromFile(_VerInfo: TVersionInfo);
@@ -169,7 +169,7 @@ begin
   SetVersionInfoKey('ProductName', _VerInfo.ProductName);
   SetVersionInfoKey('ProductVersion', _VerInfo.ProductVersion);
   SetVersionInfo('Release', IntToStr(_VerInfo.Release));
-  ProjDoc.SaveToFile(FBdsProjFile);
+  ProjDoc.SaveToFile(FXmlFilename);
 end;
 
 procedure Tdm_DProjVersionInfo.SetVersionInfo(const _Name, _Value: string);

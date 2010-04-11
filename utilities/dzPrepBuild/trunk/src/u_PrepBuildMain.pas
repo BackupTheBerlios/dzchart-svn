@@ -34,7 +34,8 @@ uses
   u_dzShellApiUtils,
   u_DofVersionInfo,
   d_BdsProjVersionInfo,
-  u_CentralIniVersionInfo;
+  u_CentralIniVersionInfo,
+  d_DProjVersionInfo;
 
 { TPrepBuildMain }
 
@@ -194,14 +195,20 @@ begin
 
   if FGetOpt.OptionPassed('ReadBdsProj', Project) then begin
     if Assigned(VerInfoAccess) then
-      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni'));
+      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj, --ReadDproj or --ReadIni'));
     VerInfoAccess := Tdm_BdsProjVersionInfo.Create(Project);
   end;
 
   if FGetOpt.OptionPassed('ReadIni', Project) then begin
     if Assigned(VerInfoAccess) then
-      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni'));
+      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj, --ReadDproj  or --ReadIni'));
     VerInfoAccess := TCentralVersionInfo.Create(Project);
+  end;
+
+  if FGetOpt.OptionPassed('ReadDproj', Project) then begin
+    if Assigned(VerInfoAccess) then
+      raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj, --ReadDproj  or --ReadIni'));
+    VerInfoAccess := Tdm_DProjVersionInfo.Create(Project);
   end;
 
   VersionInfo := TVersionInfo.Create;
@@ -304,6 +311,7 @@ begin
   FGetOpt.RegisterOption('ReadDof', _('read a .dof file to get the version information'), true);
   FGetOpt.RegisterOption('ReadBdsproj', _('read a .bdsproj file to get the version information'), true);
   FGetOpt.RegisterOption('ReadIni', _('read a .ini file to get the version information'), true);
+  FGetOpt.RegisterOption('ReadDproj', _('Read a .dproj file to get the version information'), true);
   FGetOpt.RegisterOption('Exec', _('execute the given program or script with extended environment'), true);
   FGetOpt.RegisterOption('UpdateDof', _('update a .dof file with the version information'), true);
   FGetOpt.RegisterOption('UpdateBdsproj', _('update a .bdsproj file with the version information'), true);

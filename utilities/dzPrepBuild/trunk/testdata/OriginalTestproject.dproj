@@ -75,7 +75,7 @@
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">31</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
 						<VersionInfo Name="Build">0</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
@@ -88,15 +88,15 @@
 					</VersionInfo>
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="FileVersion"/>
-						<VersionInfoKeys Name="ProductVersion">&quot;2007-07-14&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName">&quot;www.dummzeuch.de&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="FileDescription">&quot;Testproject&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="InternalName">&quot;testproject&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="LegalCopyright">&quot;Copyright 2002-2007 by Thomas Mueller&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="LegalTrademarks">&quot;&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="OriginalFilename">&quot;testproject.exe&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductName">&quot;Testproduct&quot;</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments">&quot;internal use only&quot;</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">2007-07-14</VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">www.dummzeuch.de</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">Testproject</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName">testproject</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalCopyright">Copyright 2002-2007 by Thomas Mueller</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
+						<VersionInfoKeys Name="OriginalFilename">testproject.exe</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductName">Testproduct</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments">internal use only</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>
