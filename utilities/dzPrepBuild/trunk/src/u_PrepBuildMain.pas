@@ -180,6 +180,7 @@ var
   IntValue: integer;
   IconFile: string;
   Project: string;
+  dt: TDateTime;
 begin
   WriteLn('dzPrepBuild version ' + TApplication_GetFileVersion + ' built ' + TApplication_GetProductVersion);
 
@@ -220,25 +221,25 @@ begin
 
     if FGetOpt.OptionPassed('MajorVer', Param) then begin
       if not TryStrToInt(Param, IntValue) then
-        raise Exception.Create(_('Parameter to MajorVer must be a number'));
+        raise Exception.Create(_('Parameter for MajorVer must be a number'));
       VersionInfo.MajorVer := IntValue;
     end;
 
     if FGetOpt.OptionPassed('MinorVer', Param) then begin
       if not TryStrToInt(Param, IntValue) then
-        raise Exception.Create(_('Parameter to MinorVer must be a number'));
+        raise Exception.Create(_('Parameter for MinorVer must be a number'));
       VersionInfo.MinorVer := IntValue;
     end;
 
     if FGetOpt.OptionPassed('Release', Param) then begin
       if not TryStrToInt(Param, IntValue) then
-        raise Exception.Create(_('Parameter to Release must be a number'));
+        raise Exception.Create(_('Parameter for Release must be a number'));
       VersionInfo.Release := IntValue;
     end;
 
     if FGetOpt.OptionPassed('Build', Param) then begin
       if not TryStrToInt(Param, IntValue) then
-        raise Exception.Create(_('Parameter to Build must be a number'));
+        raise Exception.Create(_('Parameter for Build must be a number'));
       VersionInfo.Build := IntValue;
     end;
 
@@ -256,6 +257,13 @@ begin
 
     if FGetOpt.OptionPassed('ProductVersion', Param) then
       VersionInfo.ProductVersion := UnquoteStr(Param);
+
+    dt := Now;
+    if FGetOpt.OptionPassed('ProductVersionToDate') then
+      VersionInfo.ProductVersion := DateTimeToString('yyyy-mm-dd', dt);
+
+    if FGetOpt.OptionPassed('ProductVersionToDateTime') then
+      VersionInfo.ProductVersion := DateTimeToString('yyyy-mm-dd hh:nn:ss', dt);
 
     if FGetOpt.OptionPassed('Company', Param) then
       VersionInfo.CompanyName := UnquoteStr(Param);
@@ -314,31 +322,41 @@ procedure TPrepBuildMain.InitCmdLineParser;
 begin
   inherited;
   FGetOpt.RegisterOption('dumpcmd', _('dump the commandline and exit (for debug purposes)'), false);
+
   FGetOpt.RegisterOption('ReadDof', _('read a .dof file to get the version information'), true);
   FGetOpt.RegisterOption('ReadBdsproj', _('read a .bdsproj file to get the version information'), true);
   FGetOpt.RegisterOption('ReadIni', _('read a .ini file to get the version information'), true);
   FGetOpt.RegisterOption('ReadDproj', _('Read a .dproj file to get the version information'), true);
-  FGetOpt.RegisterOption('Exec', _('execute the given program or script with extended environment'), true);
-  FGetOpt.RegisterOption('UpdateDof', _('update a .dof file with the version information'), true);
-  FGetOpt.RegisterOption('UpdateBdsproj', _('update a .bdsproj file with the version information'), true);
-  FGetOpt.RegisterOption('UpdateIni', _('update a .ini file with the version information'), true);
-  FGetOpt.RegisterOption('UpdateDproj', _('update a .dproj file with the version information'), true);
-  FGetOpt.RegisterOption('WriteRc', _('write version info to a .rc file'), true);
-  FGetOpt.RegisterOption('Icon', _('Assign an icon file to add to the .rc file'), true);
-  FGetOpt.RegisterOption('IncBuild', _('increment the build number'), false);
+
   FGetOpt.RegisterOption('MajorVer', _('set the major version number (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('MinorVer', _('set the minor version number (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Release', _('set the release number (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Build', _('set the build number (overwrites value from -ReadXxx option)'), true);
+
   FGetOpt.RegisterOption('FileDesc', _('set the file description (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('InternalName', _('set the internal name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('OriginalName', _('set the original file name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Product', _('set the product name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('ProductVersion', _('set the product version (overwrites value from -ReadXxx option)'), true);
+  FGetOpt.RegisterOption('ProductVersionToDate', _('set the proodcut version to the current date  (overwrites value from -ReadXxx and ProductVersion option)'), false);
+  FGetOpt.RegisterOption('ProductVersionToDateTime', _('set the proodcut version to the current date and time (overwrites value from -ReadXxx and ProductVersion option)'), false);
   FGetOpt.RegisterOption('Company', _('set the company name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Copyright', _('set the legal copyright (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Trademark', _('set the legal trademark (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Comments', _('set the comments (overwrites value from -ReadXxx option)'), true);
+
+  FGetOpt.RegisterOption('IncBuild', _('increment the build number'), false);
+
+  FGetOpt.RegisterOption('UpdateDof', _('update a .dof file with the version information'), true);
+  FGetOpt.RegisterOption('UpdateBdsproj', _('update a .bdsproj file with the version information'), true);
+  FGetOpt.RegisterOption('UpdateIni', _('update a .ini file with the version information'), true);
+  FGetOpt.RegisterOption('UpdateDproj', _('update a .dproj file with the version information'), true);
+
+  FGetOpt.RegisterOption('Icon', _('Assign an icon file to add to the .rc file'), true);
+
+  FGetOpt.RegisterOption('WriteRc', _('write version info to a .rc file'), true);
+
+  FGetOpt.RegisterOption('Exec', _('execute the given program or script with extended environment'), true);
 end;
 
 initialization
