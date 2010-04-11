@@ -10,7 +10,7 @@
 	</PersonalityInfo>
 	<Delphi.Personality>
 		<Source>
-			<Source Name="MainSource">IncBuildNo.dpr</Source>
+			<Source Name="MainSource">Testproject.dpr</Source>
 		</Source>
 		<FileVersion>
 			<FileVersion Name="Version">7.0</FileVersion>
@@ -161,15 +161,15 @@
 		</VersionInfo>
 		<VersionInfoKeys>
 			<VersionInfoKeys Name="FileVersion"></VersionInfoKeys>
-			<VersionInfoKeys Name="ProductVersion">"2007-07-14"</VersionInfoKeys>
-			<VersionInfoKeys Name="CompanyName">"www.dummzeuch.de"</VersionInfoKeys>
-			<VersionInfoKeys Name="FileDescription">"Testproject"</VersionInfoKeys>
-			<VersionInfoKeys Name="InternalName">"testproject"</VersionInfoKeys>
-			<VersionInfoKeys Name="LegalCopyright">"Copyright 2002-2007 by Thomas Mueller"</VersionInfoKeys>
-			<VersionInfoKeys Name="LegalTrademarks">""</VersionInfoKeys>
-			<VersionInfoKeys Name="OriginalFilename">"testproject.exe"</VersionInfoKeys>
-			<VersionInfoKeys Name="ProductName">"Testproduct"</VersionInfoKeys>
-			<VersionInfoKeys Name="Comments">"internal use only"</VersionInfoKeys>
+			<VersionInfoKeys Name="ProductVersion">2007-07-14</VersionInfoKeys>
+			<VersionInfoKeys Name="CompanyName">www.dummzeuch.de</VersionInfoKeys>
+			<VersionInfoKeys Name="FileDescription">Testproject</VersionInfoKeys>
+			<VersionInfoKeys Name="InternalName">testproject</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalCopyright">Copyright 2002-2007 by Thomas Mueller</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
+			<VersionInfoKeys Name="OriginalFilename">testproject.exe</VersionInfoKeys>
+			<VersionInfoKeys Name="ProductName">Testproduct</VersionInfoKeys>
+			<VersionInfoKeys Name="Comments">internal use only</VersionInfoKeys>
 		</VersionInfoKeys>
 		<Language>
 			<Language Name="ActiveLang"></Language>
