@@ -45,7 +45,7 @@
   <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
   <PropertyGroup>
     <PreBuildEvent>subwcrev .. SVN_Version_template.ini SVN_Version.ini
-..\buildtools\prepbuild.exe --incbuild --readini=$(PROJECTPATH) --exec=..\buildtools\prep.cmd $(SAVE)</PreBuildEvent>
+..\buildtools\prepbuild.exe --incbuild --readini=$(PROJECTPATH) --updateini=$(PROJECTPATH)  --productversiontodate --exec=..\buildtools\prep.cmd $(SAVE)</PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <DelphiCompile Include="PrepBuild.dpr">
