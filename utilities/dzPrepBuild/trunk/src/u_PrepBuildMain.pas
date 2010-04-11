@@ -46,9 +46,12 @@ end;
 
 procedure TPrepBuildMain.WriteRcFile(const _Project: string; _VersionInfo: TVersionInfo; const _Icon: string);
 var
+  fn: string;
   t: TextFile;
 begin
-  Assignfile(t, ChangeFileExt(_Project, '.rc'));
+  fn := ChangeFileExt(_Project, '_Version.rc');
+  WriteLn('Writing rc file ', fn);
+  Assignfile(t, fn);
   Rewrite(t);
   try
     WriteLn(t, {    } 'LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US');
@@ -342,7 +345,6 @@ begin
       IconFile := '';
 
     if FGetOpt.OptionPassed('WriteRc', Param) then begin
-      WriteLn('Writing rc file ', Param);
       WriteRcFile(Param, VersionInfo, IconFile);
     end;
 
