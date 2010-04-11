@@ -27,15 +27,14 @@ type
 implementation
 
 uses
+  Dialogs,
   u_dzTranslator,
   u_dzExecutor,
   u_dzJclUtils,
   u_dzShellApiUtils,
   u_DofVersionInfo,
   d_BdsProjVersionInfo,
-  u_CentralIniVersionInfo,
-  u_DummyVersionInfo,
-  Dialogs;
+  u_CentralIniVersionInfo;
 
 { TPrepBuildMain }
 

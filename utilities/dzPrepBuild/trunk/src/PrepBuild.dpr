@@ -15,7 +15,6 @@ uses
   u_IniVersionInfo in 'u_IniVersionInfo.pas',
   u_CentralIniVersionInfo in 'u_CentralIniVersionInfo.pas',
   u_PrepBuildMain in 'u_PrepBuildMain.pas',
-  u_DummyVersionInfo in 'u_DummyVersionInfo.pas',
   u_VersionInfo in 'u_VersionInfo.pas',
   u_dzGetOpt in '..\libs\dzCmdLineParsersrc\u_dzGetOpt.pas',
   u_dzDefaultMain in '..\libs\dzCmdLineParsersrc\u_dzDefaultMain.pas',
