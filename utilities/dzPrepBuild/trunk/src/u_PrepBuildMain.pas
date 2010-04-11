@@ -274,18 +274,24 @@ begin
 
     VersionInfo.UpdateFileVersion;
 
-    if FGetOpt.OptionPassed('UpdateDof', Param) then
+    if FGetOpt.OptionPassed('UpdateDof', Param) then begin
       VerInfoAccess := TDofVersionInfo.Create(Param);
-
-    if FGetOpt.OptionPassed('UpdateBdsproj', Param) then
-      VerInfoAccess := Tdm_BdsProjVersionInfo.Create(Param);
-
-    if FGetOpt.OptionPassed('UpdateIni', Param) then
-      VerInfoAccess := TCentralVersionInfo.Create(Param);
-
-    if Assigned(VerInfoAccess) then begin
       VerInfoAccess.WriteToFile(VersionInfo);
-      VerInfoAccess := nil;
+    end;
+
+    if FGetOpt.OptionPassed('UpdateBdsproj', Param) then begin
+      VerInfoAccess := Tdm_BdsProjVersionInfo.Create(Param);
+      VerInfoAccess.WriteToFile(VersionInfo);
+    end;
+
+    if FGetOpt.OptionPassed('UpdateIni', Param) then begin
+      VerInfoAccess := TCentralVersionInfo.Create(Param);
+      VerInfoAccess.WriteToFile(VersionInfo);
+    end;
+
+    if FGetOpt.OptionPassed('UpdateDproj', Param) then begin
+      VerInfoAccess := Tdm_DprojVersionInfo.Create(Param);
+      VerInfoAccess.WriteToFile(VersionInfo);
     end;
 
     if not FGetOpt.OptionPassed('Icon', IconFile) then
@@ -316,6 +322,7 @@ begin
   FGetOpt.RegisterOption('UpdateDof', _('update a .dof file with the version information'), true);
   FGetOpt.RegisterOption('UpdateBdsproj', _('update a .bdsproj file with the version information'), true);
   FGetOpt.RegisterOption('UpdateIni', _('update a .ini file with the version information'), true);
+  FGetOpt.RegisterOption('UpdateDproj', _('update a .dproj file with the version information'), true);
   FGetOpt.RegisterOption('WriteRc', _('write version info to a .rc file'), true);
   FGetOpt.RegisterOption('Icon', _('Assign an icon file to add to the .rc file'), true);
   FGetOpt.RegisterOption('IncBuild', _('increment the build number'), false);
