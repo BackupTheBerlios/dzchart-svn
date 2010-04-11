@@ -18,16 +18,16 @@ type
   protected
     procedure InitVersionNodes; override;
   public
-    class function FilenameFor(const _Project: string): string; override;
+    constructor Create(const _Project: string);
   end;
 
 implementation
 
 {$R *.dfm}
 
-class function Tdm_DprojVersionInfo.FilenameFor(const _Project: string): string;
+constructor Tdm_DprojVersionInfo.Create(const _Project: string);
 begin
-  Result := ChangeFileExt(_Project, '.dproj');
+  inherited Create(ChangeFileExt(_Project, '.dproj'));
 end;
 
 procedure Tdm_DprojVersionInfo.InitVersionNodes;

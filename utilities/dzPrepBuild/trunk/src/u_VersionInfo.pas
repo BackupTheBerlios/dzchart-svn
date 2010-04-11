@@ -24,6 +24,9 @@ type
     FInternalName: string;
     FOriginalFilename: string;
     FComments: string;
+    FSource: string;
+    function ResolveVariable(const _s: string): string;
+    procedure AdjustFilename(var _Filename: string);
   protected
     function GetAutoIncBuild: boolean;
     procedure SetAutoIncBuild(_AutoIncBuild: Boolean); virtual;
@@ -61,6 +64,9 @@ type
     procedure SetProductVersion(_ProductVersion: string); virtual;
   public
     procedure UpdateFileVersion;
+    function ResolveVariables(const _s: string): string;
+
+    property Source: string read FSource write FSource;
     //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
     //
@@ -83,10 +89,20 @@ type
 
 implementation
 
+uses
+  RegExpr,
+  StrUtils,
+  DateUtils,
+  IniFiles,
+  u_dzStringUtils,
+  u_dzDateUtils;
+
 { TVersionInfo }
 
 procedure TVersionInfo.Assign(_VersionInfo: TVersionInfo);
 begin
+  Source := _VersionInfo.Source;
+
   AutoIncBuild := _VersionInfo.AutoIncBuild;
 
   MajorVer := _VersionInfo.MajorVer;
@@ -104,6 +120,77 @@ begin
   OriginalFilename := _VersionInfo.OriginalFilename;
   ProductName := _VersionInfo.ProductName;
   ProductVersion := _VersionInfo.ProductVersion;
+end;
+
+procedure TVersionInfo.AdjustFilename(var _Filename: string);
+var
+  Path: string;
+begin
+  Path := ExtractFilePath(_Filename);
+  if (Path = '') or ((Path[1] <> '\') and (Copy(Path, 2, 1) <> ':')) then begin
+     // Path is relative, so make it relative to the main .ini/project file
+    _Filename := ExtractFilePath(FSource) + _Filename;
+  end;
+end;
+
+function TVersionInfo.ResolveVariable(const _s: string): string;
+var
+  Redir: string;
+  fn: string;
+  Section: string;
+  Ident: string;
+  IniFile: TMemIniFile;
+begin
+  if UStartsWith('read:', _s) then begin
+    Redir := Copy(_s, Length('read:') + 1);
+    fn := ExtractStr(Redir, ',');
+    Section := ExtractStr(Redir, ',');
+    Ident := Redir;
+    AdjustFilename(fn);
+    IniFile := TMemIniFile.Create(fn);
+    try
+      Result := IniFile.ReadString(Section, Ident, '');
+    finally
+      IniFile.Free;
+    end;
+  end else if SameText('thisyear', _s) then begin
+    Result := IntToStr(YearOf(Date));
+  end else if SameText('today', _s) then begin
+    Result := DateTime2Iso(Date, False);
+  end else if SameText('now', _s) then begin
+    Result := DateTime2Iso(Date, True);
+  end else
+    Result := _s;
+end;
+
+function TVersionInfo.ResolveVariables(const _s: string): string;
+var
+  re: TRegExpr;
+  Found: Boolean;
+  s: string;
+  Start: Integer;
+  Ende: integer;
+begin
+  Result := '';
+  Start := 1;
+  re := TRegExpr.Create;
+  try
+    re.Expression := '\{(.*?)\}';
+    re.Compile;
+    Found := re.Exec(_s);
+    while Found do begin
+      Ende := re.MatchPos[0];
+      Result := Result + Copy(_s, Start, Ende - Start);
+      Start := Ende + re.MatchLen[0];
+      s := re.Match[1];
+      s := ResolveVariable(s);
+      Result := Result + s;
+      Found := re.ExecNext;
+    end;
+    Result := Result + TailStr(_s, Start);
+  finally
+    re.Free;
+  end;
 end;
 
 function TVersionInfo.GetAutoIncBuild: boolean;

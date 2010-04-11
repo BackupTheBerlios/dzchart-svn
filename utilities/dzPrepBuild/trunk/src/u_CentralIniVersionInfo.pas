@@ -18,15 +18,13 @@ type
      used to maintain/increment a central build number for several branches of
      a project where the files have different version numbers but the build
      number should be increased for a build of any of these versions. }
-  TCentralVersionInfo = class(TIniVersionInfo, IVersionInfoAccess)
+  TCentralIniVersionInfo = class(TIniVersionInfo, IVersionInfoAccess)
   private
     FProjectName: string;
     procedure GetRedirIdentInfo(const _RedirString: string; out _Filename, _Section, _Ident: string);
     procedure GetRedirSectionInfo(_Redir: string; out _Filename, _Section: string);
     procedure AdjustFilename(var _Filename: string);
   protected
-    function VerInfoFilename: string;
-    //
     function ReadString(const _Section, _Ident: string; _Default: string): string; override;
     procedure WriteString(const _Section, _Ident: string; _Value: string); override;
   public
@@ -35,7 +33,6 @@ type
                           The constructor appends "_Version.ini" to this
                           name and tries to open the file }
     constructor Create(const _ProjectName: string);
-    class function FilenameFor(const _ProjectName: string): string;
   end;
 
 implementation
@@ -51,18 +48,12 @@ const
 
 { TCentralVersionInfo }
 
-constructor TCentralVersionInfo.Create(const _ProjectName: string);
+constructor TCentralIniVersionInfo.Create(const _ProjectName: string);
 begin
-  FProjectName := _ProjectName;
-  inherited Create(VerInfoFilename, VERSION_INFO_SECTION, VERSION_INFO_KEYS_SECTION);
+  inherited Create(ChangeFileExt(_ProjectName, '_Version.ini'), VERSION_INFO_SECTION, VERSION_INFO_KEYS_SECTION);
 end;
 
-class function TCentralVersionInfo.FilenameFor(const _ProjectName: string): string;
-begin
-  Result := ChangeFileExt(_ProjectName, '') + '_Version.ini';
-end;
-
-procedure TCentralVersionInfo.AdjustFilename(var _Filename: string);
+procedure TCentralIniVersionInfo.AdjustFilename(var _Filename: string);
 var
   Path: string;
 begin
@@ -73,14 +64,14 @@ begin
   end;
 end;
 
-procedure TCentralVersionInfo.GetRedirSectionInfo(_Redir: string; out _Filename, _Section: string);
+procedure TCentralIniVersionInfo.GetRedirSectionInfo(_Redir: string; out _Filename, _Section: string);
 begin
   _Filename := ExtractStr(_Redir, ',');
   _Section := _Redir;
   AdjustFilename(_Filename);
 end;
 
-procedure TCentralVersionInfo.GetRedirIdentInfo(const _RedirString: string;
+procedure TCentralIniVersionInfo.GetRedirIdentInfo(const _RedirString: string;
   out _Filename, _Section, _Ident: string);
 var
   Redir: string;
@@ -92,7 +83,7 @@ begin
   AdjustFilename(_Filename);
 end;
 
-function TCentralVersionInfo.ReadString(const _Section, _Ident: string; _Default: string): string;
+function TCentralIniVersionInfo.ReadString(const _Section, _Ident: string; _Default: string): string;
 var
   Redir: string;
   IniFile: TMemIniFile;
@@ -123,12 +114,7 @@ begin
   end;
 end;
 
-function TCentralVersionInfo.VerInfoFilename: string;
-begin
-  Result := FilenameFor(FProjectName);
-end;
-
-procedure TCentralVersionInfo.WriteString(const _Section, _Ident: string; _Value: string);
+procedure TCentralIniVersionInfo.WriteString(const _Section, _Ident: string; _Value: string);
 var
   Redir: string;
   IniFile: TMemIniFile;

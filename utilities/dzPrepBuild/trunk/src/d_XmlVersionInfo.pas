@@ -17,7 +17,7 @@ type
   Tdm_XmlVersionInfo = class(TDataModule, IVersionInfoAccess)
     ProjDoc: TXMLDocument;
   private
-    FProjectName: string;
+    FProjectFilename: string;
     function GetChildNodeContent(_Parent: IXMLNode; const _NodeName, _AttrName: string): string;
     function GetVersionInfo(const _Name: string): string;
     function GetVersionInfoKey(const _Name: string): string;
@@ -39,9 +39,8 @@ type
     FVersionInfoKeys: IXMLNode;
     procedure InitVersionNodes; virtual; abstract;
   public
-    constructor Create(const _Project: string); reintroduce;
+    constructor Create(const _FullFilename: string); reintroduce;
     destructor Destroy; override;
-    class function FilenameFor(const _Project: string): string; virtual; abstract;
   end;
 
 implementation
@@ -98,10 +97,10 @@ begin
   end;
 end;
 
-constructor Tdm_XmlVersionInfo.Create(const _Project: string);
+constructor Tdm_XmlVersionInfo.Create(const _FullFilename: string);
 begin
   inherited Create(nil);
-  FProjectName := _Project;
+  FProjectFilename := _FullFilename;
   FXmlFilename := VerInfoFilename;
   ProjDoc.FileName := FXmlFilename;
   ProjDoc.Active := True;
@@ -120,6 +119,8 @@ end;
 
 procedure Tdm_XmlVersionInfo.ReadFromFile(_VerInfo: TVersionInfo);
 begin
+  _VerInfo.Source := VerInfoFilename;
+
   _VerInfo.AutoIncBuild := SameText(GetVersionInfo('AutoIncBuild'), 'True');
 
   _VerInfo.MajorVer := StrToIntDef(GetVersionInfo('MajorVer'), 0);
@@ -171,7 +172,7 @@ end;
 
 function Tdm_XmlVersionInfo.VerInfoFilename: string;
 begin
-  Result := FilenameFor(FProjectName);
+  Result := FProjectFilename;
 end;
 
 // standard TInterfacedObject implementation of IInterface

@@ -26,7 +26,8 @@ uses
   u_dzOptionNameList in '..\libs\dzCmdLineParsersrc\u_dzOptionNameList.pas',
   u_dzOptionFoundList in '..\libs\dzCmdLineParsersrc\u_dzOptionFoundList.pas',
   w_dzDialog in '..\libs\dzlib\forms\w_dzDialog.pas' {f_dzDialog},
-  u_dzJclUtils in '..\libs\dzlib\src\u_dzJclUtils.pas';
+  u_dzJclUtils in '..\libs\dzlib\src\u_dzJclUtils.pas',
+  RegExpr in '..\libs\tregexpr\Source\RegExpr.pas';
 
 {$R *_icon.res}
 {$R *_version.res}

@@ -14,11 +14,10 @@ uses
 
 type
   Tdm_BdsProjVersionInfo = class(Tdm_XmlVersionInfo)
-  private
   protected
     procedure InitVersionNodes; override;
   public
-    class function FilenameFor(const _Project: string): string; override;
+    constructor Create(const _Project: string);
   end;
 
 implementation
@@ -27,9 +26,9 @@ implementation
 
 { Tdm_BdsProjVersionInfo }
 
-class function Tdm_BdsProjVersionInfo.FilenameFor(const _Project: string): string;
+constructor Tdm_BdsProjVersionInfo.Create(const _Project: string);
 begin
-  Result := ChangeFileExt(_Project, '.bdsproj');
+  inherited Create(ChangeFileExt(_Project, '.bdsproj'));
 end;
 
 procedure Tdm_BdsProjVersionInfo.InitVersionNodes;

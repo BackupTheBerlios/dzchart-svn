@@ -68,16 +68,16 @@ begin
     WriteLn(t, {    } ' {');
     WriteLn(t, {    } '  BLOCK "040904E4"');
     WriteLn(t, {    } '  {');
-    WriteLn(t, Format('   VALUE "CompanyName", "%s\000"', [_VersionInfo.CompanyName]));
-    WriteLn(t, Format('   VALUE "FileDescription", "%s\000"', [_VersionInfo.FileDescription]));
-    WriteLn(t, Format('   VALUE "FileVersion", "%s\000"', [_VersionInfo.FileVersion]));
-    WriteLn(t, Format('   VALUE "InternalName", "%s\000"', [_VersionInfo.InternalName]));
-    WriteLn(t, Format('   VALUE "LegalCopyright", "%s\000"', [_VersionInfo.LegalCopyright]));
-    WriteLn(t, Format('   VALUE "LegalTrademarks", "%s\000"', [_VersionInfo.LegalTrademarks]));
-    WriteLn(t, Format('   VALUE "OriginalFilename", "%s\000"', [_VersionInfo.OriginalFilename]));
-    WriteLn(t, Format('   VALUE "ProductName", "%s\000"', [_VersionInfo.ProductName]));
-    WriteLn(t, Format('   VALUE "ProductVersion", "%s\000"', [_VersionInfo.ProductVersion]));
-    WriteLn(t, Format('   VALUE "Comments", "%s\000"', [_VersionInfo.Comments]));
+    WriteLn(t, Format('   VALUE "CompanyName", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.CompanyName)]));
+    WriteLn(t, Format('   VALUE "FileDescription", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.FileDescription)]));
+    WriteLn(t, Format('   VALUE "FileVersion", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.FileVersion)]));
+    WriteLn(t, Format('   VALUE "InternalName", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.InternalName)]));
+    WriteLn(t, Format('   VALUE "LegalCopyright", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.LegalCopyright)]));
+    WriteLn(t, Format('   VALUE "LegalTrademarks", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.LegalTrademarks)]));
+    WriteLn(t, Format('   VALUE "OriginalFilename", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.OriginalFilename)]));
+    WriteLn(t, Format('   VALUE "ProductName", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.ProductName)]));
+    WriteLn(t, Format('   VALUE "ProductVersion", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.ProductVersion)]));
+    WriteLn(t, Format('   VALUE "Comments", "%s\000"', [_VersionInfo.ResolveVariables(_VersionInfo.Comments)]));
     WriteLn(t, {    } '  }');
     WriteLn(t, {    } ' }');
     WriteLn(t, {    } ' BLOCK "VarFileInfo"');
@@ -206,7 +206,7 @@ begin
   if FGetOpt.OptionPassed('ReadIni', Project) then begin
     if Assigned(VerInfoAccess) then
       raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj, --ReadDproj  or --ReadIni'));
-    VerInfoAccess := TCentralVersionInfo.Create(Project);
+    VerInfoAccess := TCentralIniVersionInfo.Create(Project);
   end;
 
   if FGetOpt.OptionPassed('ReadDproj', Project) then begin
@@ -276,17 +276,6 @@ begin
       WriteLn('Setting ProductVersion to ', VersionInfo.ProductVersion);
     end;
 
-    dt := Now;
-    if FGetOpt.OptionPassed('ProductVersionToDate') then begin
-      VersionInfo.ProductVersion := DateTimeToString('yyyy-mm-dd', dt);
-      WriteLn('Setting ProductVersion to ', VersionInfo.ProductVersion);
-    end;
-
-    if FGetOpt.OptionPassed('ProductVersionToDateTime') then begin
-      VersionInfo.ProductVersion := DateTimeToString('yyyy-mm-dd hh:nn:ss', dt);
-      WriteLn('Setting ProductVersion to ', VersionInfo.ProductVersion);
-    end;
-
     if FGetOpt.OptionPassed('Company', Param) then begin
       VersionInfo.CompanyName := UnquoteStr(Param);
       WriteLn('Setting CompanyName to ', VersionInfo.CompanyName);
@@ -328,7 +317,7 @@ begin
     end;
 
     if FGetOpt.OptionPassed('UpdateIni', Param) then begin
-      VerInfoAccess := TCentralVersionInfo.Create(Param);
+      VerInfoAccess := TCentralIniVersionInfo.Create(Param);
       WriteLn('Updating ', VerInfoAccess.VerInfoFilename);
       VerInfoAccess.WriteToFile(VersionInfo);
     end;
@@ -381,8 +370,6 @@ begin
   FGetOpt.RegisterOption('OriginalName', _('set the original file name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Product', _('set the product name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('ProductVersion', _('set the product version (overwrites value from -ReadXxx option)'), true);
-  FGetOpt.RegisterOption('ProductVersionToDate', _('set the proodcut version to the current date  (overwrites value from -ReadXxx and ProductVersion option)'), false);
-  FGetOpt.RegisterOption('ProductVersionToDateTime', _('set the proodcut version to the current date and time (overwrites value from -ReadXxx and ProductVersion option)'), false);
   FGetOpt.RegisterOption('Company', _('set the company name (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Copyright', _('set the legal copyright (overwrites value from -ReadXxx option)'), true);
   FGetOpt.RegisterOption('Trademark', _('set the legal trademark (overwrites value from -ReadXxx option)'), true);

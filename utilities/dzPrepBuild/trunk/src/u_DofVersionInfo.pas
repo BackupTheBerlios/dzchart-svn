@@ -15,8 +15,6 @@ type
   TDofVersionInfo = class(TIniVersionInfo, IVersionInfoAccess)
   private
     FProjectName: string;
-  protected
-    function VerInfoFilename: string;
   public
     {: Creates a TDofVersionInfo instance. Succeeds, if the file exists
        and IncludeVerInfo is <> 0
@@ -49,11 +47,6 @@ end;
 class function TDofVersionInfo.FilenameFor(const _ProjectName: string): string;
 begin
   Result := ChangeFileExt(_ProjectName, '.dof');
-end;
-
-function TDofVersionInfo.VerInfoFilename: string;
-begin
-  Result := FilenameFor(FProjectName);
 end;
 
 end.

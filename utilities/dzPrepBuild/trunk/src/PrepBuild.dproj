@@ -45,7 +45,7 @@
   <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
   <PropertyGroup>
     <PreBuildEvent>subwcrev .. SVN_Version_template.ini SVN_Version.ini
-..\buildtools\prepbuild.exe --incbuild --readini=$(PROJECTPATH) --updateini=$(PROJECTPATH)  --productversiontodate --WriteRc=$(PROJECTPATH) --exec=..\buildtools\prep.cmd $(SAVE)</PreBuildEvent>
+..\buildtools\prepbuild.exe --incbuild --readini=$(PROJECTPATH) --updateini=$(PROJECTPATH) --WriteRc=$(PROJECTPATH) --exec=..\buildtools\prep.cmd $(SAVE)</PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <DelphiCompile Include="PrepBuild.dpr">
@@ -62,6 +62,7 @@
       <Form>f_dzDialog</Form>
     </DCCReference>
     <DCCReference Include="..\libs\dzlib\src\u_dzJclUtils.pas" />
+    <DCCReference Include="..\libs\tregexpr\Source\RegExpr.pas" />
     <DCCReference Include="d_BdsProjVersionInfo.pas">
       <Form>dm_BdsProjVersionInfo</Form>
       <DesignClass>TDataModule</DesignClass>

@@ -23,7 +23,9 @@ type
     function ReadBool(const _Section, _Ident: string; _Default: boolean): boolean; virtual;
     procedure WriteBool(const _Section, _Ident: string; _Value: boolean); virtual;
   private
-  protected // implementation of IVersionInfo
+    FIniFilename: string;
+  protected // implement IVersionInfoAccess
+    function VerInfoFilename: string;
     procedure ReadFromFile(_VerInfo: TVersionInfo);
     procedure WriteToFile(_VerInfo: TVersionInfo);
   public
@@ -53,6 +55,7 @@ constructor TIniVersionInfo.Create(const _FullFilename: string; const _InfoSecti
   const _InfoKeysSection: string);
 begin
   inherited Create;
+  FIniFilename := _FullFilename;
   if not FileExists(_FullFilename) then
     raise ENoVersionInfo.CreateFmt(_('File %s does not exist.'), [_FullFilename]);
   FInfoSection := _InfoSection;
@@ -85,6 +88,11 @@ begin
   Result := FIniFile.ReadString(_Section, _Ident, _Default);
 end;
 
+function TIniVersionInfo.VerInfoFilename: string;
+begin
+  Result := FIniFilename;
+end;
+
 procedure TIniVersionInfo.WriteBool(const _Section, _Ident: string; _Value: boolean);
 begin
   WriteInteger(_Section, _Ident, Ord(_Value));
@@ -102,6 +110,8 @@ end;
 
 procedure TIniVersionInfo.ReadFromFile(_VerInfo: TVersionInfo);
 begin
+  _VerInfo.Source := VerInfoFilename;
+
   _VerInfo.AutoIncBuild := ReadBool(FInfoSection, 'AutoIncBuild', False);
 
   _VerInfo.Build := ReadInteger(FInfoSection, 'Build', 0);
