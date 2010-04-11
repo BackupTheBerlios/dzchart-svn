@@ -9,6 +9,7 @@ uses
   SysUtils,
   Forms,
   oxmldom,
+  d_DProjVersionInfo in 'd_DProjVersionInfo.pas' {dm_DProjVersionInfo: TDataModule},
   d_BdsProjVersionInfo in 'd_BdsProjVersionInfo.pas' {dm_BdsProjVersionInfo: TDataModule},
   i_VersionInfoAccess in 'i_VersionInfoAccess.pas',
   u_DofVersionInfo in 'u_DofVersionInfo.pas',

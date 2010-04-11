@@ -66,6 +66,10 @@
       <Form>dm_BdsProjVersionInfo</Form>
       <DesignClass>TDataModule</DesignClass>
     </DCCReference>
+    <DCCReference Include="d_DProjVersionInfo.pas">
+      <Form>dm_DProjVersionInfo</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
     <DCCReference Include="i_VersionInfoAccess.pas" />
     <DCCReference Include="u_CentralIniVersionInfo.pas" />
     <DCCReference Include="u_DofVersionInfo.pas" />
