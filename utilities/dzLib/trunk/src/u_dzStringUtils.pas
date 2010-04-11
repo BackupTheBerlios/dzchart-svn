@@ -36,6 +36,10 @@ const
     '0'..'9', 'ä', 'Ä', 'ö', 'Ö', 'ü', 'Ü', 'ß'];
   STANDARD_CONTROL_CHARS = [#0..' '];
 
+{$ifndef DELPHI2009_UP}
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
+{$endif DELPHI2009_UP}
+
 /// <summary>
 /// function is deprecated, use ExtractStr instead
 /// </summary>
@@ -1216,6 +1220,13 @@ begin
     sl.Free;
   end;
 end;
+
+{$ifndef DELPHI2009_UP}
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
+begin
+  Result := c in CharSet;
+end;
+{$endif DELPHI2009_UP}
 
 end.
 
