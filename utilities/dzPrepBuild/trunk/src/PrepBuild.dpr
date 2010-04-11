@@ -17,7 +17,14 @@ uses
   u_PrepBuildMain in 'u_PrepBuildMain.pas',
   u_DummyVersionInfo in 'u_DummyVersionInfo.pas',
   u_AbstractVersionInfo in 'u_AbstractVersionInfo.pas',
-  u_dzDefaultMain in '..\libs\dzCmdLineParser\src\u_dzDefaultMain.pas';
+  u_dzGetOpt in '..\libs\dzCmdLineParsersrc\u_dzGetOpt.pas',
+  u_dzDefaultMain in '..\libs\dzCmdLineParsersrc\u_dzDefaultMain.pas',
+  u_dzParamDescList in '..\libs\dzCmdLineParsersrc\u_dzParamDescList.pas',
+  u_dzParamFoundList in '..\libs\dzCmdLineParsersrc\u_dzParamFoundList.pas',
+  u_dzOptionDescList in '..\libs\dzCmdLineParsersrc\u_dzOptionDescList.pas',
+  u_dzOptionNameList in '..\libs\dzCmdLineParsersrc\u_dzOptionNameList.pas',
+  u_dzOptionFoundList in '..\libs\dzCmdLineParsersrc\u_dzOptionFoundList.pas',
+  w_dzDialog in '..\libs\dzlib\forms\w_dzDialog.pas' {f_dzDialog};
 
 {$R *_icon.res}
 {$R *_version.res}
