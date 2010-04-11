@@ -9,18 +9,19 @@ uses
 type
   TAbstractVersionInfo = class(TInterfacedObject)
   private
+    FMajorVer: integer;
+    FMinorVer: integer;
+    FRelease: integer;
+    FBuild: integer;
+
     FFileVersion: string;
     FProductVersion: string;
     FProductName: string;
-    FMinorVer: integer;
     FLegalTrademarks: string;
-    FRelease: integer;
     FLegalCopyright: string;
-    FMajorVer: integer;
     FCompanyName: string;
     FAutoIncBuild: boolean;
     FFileDescription: string;
-    FBuild: integer;
     FInternalName: string;
     FOriginalFilename: string;
     FComments: string;
@@ -62,7 +63,12 @@ type
     procedure UpdateFileVersion;
     //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
+    //
+    property MajorVer: integer read GetMajorVer write SetMajorVer;
+    property MinorVer: integer read GetMinorVer write SetMinorVer;
+    property Release: integer read GetRelease write SetRelease;
     property Build: integer read GetBuild write SetBuild;
+    //
     property Comments: string read GetComments write SetComments;
     property CompanyName: string read GetCompanyName write SetCompanyName;
     property FileDescription: string read GetFileDescription write SetFileDescription;
@@ -70,12 +76,9 @@ type
     property InternalName: string read GetInternalName write SetInternalName;
     property LegalCopyright: string read GetLegalCopyright write SetLegalCopyright;
     property LegalTrademarks: string read GetLegalTrademarks write SetLegalTrademarks;
-    property MajorVer: integer read GetMajorVer write SetMajorVer;
-    property MinorVer: integer read GetMinorVer write SetMinorVer;
     property OriginalFilename: string read GetOriginalFilename write SetOriginalFilename;
     property ProductName: string read GetProductName write SetProductName;
     property ProductVersion: string read GetProductVersion write SetProductVersion;
-    property Release: integer read GetRelease write SetRelease;
   end;
 
 implementation
@@ -83,7 +86,12 @@ implementation
 procedure TAbstractVersionInfo.Assign(const _VersionInfo: IVersionInfo);
 begin
   AutoIncBuild := _VersionInfo.AutoIncBuild;
+
+  MajorVer := _VersionInfo.MajorVer;
+  MinorVer := _VersionInfo.MinorVer;
+  Release := _VersionInfo.Release;
   Build := _VersionInfo.Build;
+
   Comments := _VersionInfo.Comments;
   CompanyName := _VersionInfo.CompanyName;
   FileDescription := _VersionInfo.FileDescription;
@@ -91,12 +99,9 @@ begin
   InternalName := _VersionInfo.InternalName;
   LegalCopyright := _VersionInfo.LegalCopyright;
   LegalTrademarks := _VersionInfo.LegalTrademarks;
-  MajorVer := _VersionInfo.MajorVer;
-  MinorVer := _VersionInfo.MinorVer;
   OriginalFilename := _VersionInfo.OriginalFilename;
   ProductName := _VersionInfo.ProductName;
   ProductVersion := _VersionInfo.ProductVersion;
-  Release := _VersionInfo.Release;
 end;
 
 function TAbstractVersionInfo.GetAutoIncBuild: boolean;

@@ -9,7 +9,7 @@ uses
   u_IniVersionInfo;
 
 type
-  {: This is a specialized versoin of TIniVersionInfo which readds a
+  {: This is a specialized version of TIniVersionInfo which reads a
      <projectname>.dof file, that was used by Delphi up to version 7. }
   TDofVersionInfo = class(TIniVersionInfo, IVersionInfo)
   private

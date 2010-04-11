@@ -106,6 +106,10 @@ procedure TIniVersionInfo.ReadValues;
 begin
   AutoIncBuild := ReadBool(FInfoSection, 'AutoIncBuild', False);
   Build := ReadInteger(FInfoSection, 'Build', 0);
+  MajorVer := ReadInteger(FInfoSection, 'MajorVer', 0);
+  MinorVer := ReadInteger(FInfoSection, 'MinorVer', 0);
+  Release := ReadInteger(FInfoSection, 'Release', 0);
+
   Comments := ReadString(FInfoKeysSection, 'Comments', '');
   CompanyName := ReadString(FInfoKeysSection, 'CompanyName', '');
   FileDescription := ReadString(FInfoKeysSection, 'FileDescription', '');
@@ -113,12 +117,9 @@ begin
   InternalName := ReadString(FInfoKeysSection, 'InternalName', '');
   LegalCopyright := ReadString(FInfoKeysSection, 'LegalCopyright', '');
   LegalTrademarks := ReadString(FInfoKeysSection, 'LegalTrademarks', '');
-  MajorVer := ReadInteger(FInfoSection, 'MajorVer', 0);
-  MinorVer := ReadInteger(FInfoSection, 'MinorVer', 0);
   OriginalFilename := ReadString(FInfoKeysSection, 'OriginalFilename', '');
   ProductName := ReadString(FInfoKeysSection, 'ProductName', '');
   ProductVersion := ReadString(FInfoKeysSection, 'ProductVersion', '');
-  Release := ReadInteger(FInfoSection, 'Release', 0);
 end;
 
 procedure TIniVersionInfo.WriteValues;
