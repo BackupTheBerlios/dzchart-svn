@@ -166,11 +166,15 @@ function TApplication_GetFileVersion: string;
 var
   VersionInfo: TJclFileVersionInfo;
 begin
-  VersionInfo := TJclFileVersionInfo.Create(Application.ExeName);
   try
-    Result := VersionInfo.FileVersion;
-  finally
-    FreeAndNil(VersionInfo);
+    VersionInfo := TJclFileVersionInfo.Create(Application.ExeName);
+    try
+      Result := VersionInfo.FileVersion;
+    finally
+      FreeAndNil(VersionInfo);
+    end;
+  except
+    Result := '<no version>';
   end;
 end;
 
@@ -178,11 +182,15 @@ function TApplication_GetProductName: string;
 var
   VersionInfo: TJclFileVersionInfo;
 begin
-  VersionInfo := TJclFileVersionInfo.Create(Application.ExeName);
   try
-    Result := VersionInfo.ProductName;
-  finally
-    FreeAndNil(VersionInfo);
+    VersionInfo := TJclFileVersionInfo.Create(Application.ExeName);
+    try
+      Result := VersionInfo.ProductName;
+    finally
+      FreeAndNil(VersionInfo);
+    end;
+  except
+    Result := '<no product>';
   end;
 end;
 
@@ -190,11 +198,15 @@ function TApplication_GetProductVersion: string;
 var
   VersionInfo: TJclFileVersionInfo;
 begin
-  VersionInfo := TJclFileVersionInfo.Create(Application.ExeName);
   try
-    Result := VersionInfo.ProductVersion;
-  finally
-    FreeAndNil(VersionInfo);
+    VersionInfo := TJclFileVersionInfo.Create(Application.ExeName);
+    try
+      Result := VersionInfo.ProductVersion;
+    finally
+      FreeAndNil(VersionInfo);
+    end;
+  except
+    Result := '<no product version>';
   end;
 end;
 
