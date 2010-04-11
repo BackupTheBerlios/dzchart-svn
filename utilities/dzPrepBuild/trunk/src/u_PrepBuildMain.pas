@@ -8,13 +8,14 @@ uses
   StrUtils,
   u_dzDefaultMain,
   u_dzGetOpt,
-  i_VersionInfo;
+  u_VersionInfo,
+  i_VersionInfoAccess;
 
 type
   TPrepBuildMain = class(TDefaultMain)
   private
-    function HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo; const _Project: string): integer;
-    procedure WriteRcFile(const _Project: string; _VersionInfo: IVersionInfo; const _Icon: string);
+    function HandleExecOption(const _Command: string; _VersionInfo: TVersionInfo; const _Project: string): integer;
+    procedure WriteRcFile(const _Project: string; _VersionInfo: TVersionInfo; const _Icon: string);
     procedure DumpCmd;
   protected
     procedure InitCmdLineParser; override;
@@ -28,6 +29,7 @@ implementation
 uses
   u_dzTranslator,
   u_dzExecutor,
+  u_dzJclUtils,
   u_dzShellApiUtils,
   u_DofVersionInfo,
   d_BdsProjVersionInfo,
@@ -42,7 +44,7 @@ begin
   SysUtils.DateTimeToString(Result, _Format, _dt);
 end;
 
-procedure TPrepBuildMain.WriteRcFile(const _Project: string; _VersionInfo: IVersionInfo; const _Icon: string);
+procedure TPrepBuildMain.WriteRcFile(const _Project: string; _VersionInfo: TVersionInfo; const _Icon: string);
 var
   t: TextFile;
 begin
@@ -89,7 +91,7 @@ begin
   end;
 end;
 
-function TPrepBuildMain.HandleExecOption(const _Command: string; _VersionInfo: IVersionInfo; const _Project: string): integer;
+function TPrepBuildMain.HandleExecOption(const _Command: string; _VersionInfo: TVersionInfo; const _Project: string): integer;
 const
   DZ_MY_DOCUMENTS = 'dzMyDocuments';
   DZ_DATE = 'dzDate';
@@ -162,21 +164,24 @@ var
   p: PChar;
 begin
   s := StrNew(PChar(_s));
-  p := s;
-  Result := AnsiExtractQuotedStr(p, '"');
-  StrDispose(s);
+  try
+    p := s;
+    Result := AnsiExtractQuotedStr(p, '"');
+  finally
+    StrDispose(s);
+  end;
 end;
 
 function TPrepBuildMain.doExecute: integer;
 var
   Param: string;
-  ParamVersionInfo: IVersionInfo;
-  VersionInfo: IVersionInfo;
+  VerInfoAccess: IVersionInfoAccess;
+  VersionInfo: TVersionInfo;
   IntValue: integer;
   IconFile: string;
   Project: string;
 begin
-  WriteLn('dzPrepBuild');
+  WriteLn('dzPrepBuild version ' + TApplication_GetFileVersion + ' built ' + TApplication_GetProductVersion);
 
   if FGetOpt.OptionsFoundList.Count = 0 then
     Usage(_('You must supply some options.'));
@@ -186,108 +191,109 @@ begin
 
   Project := '';
   if FGetOpt.OptionPassed('ReadDof', Project) then
-    ParamVersionInfo := TDofVersionInfo.Create(Project);
+    VerInfoAccess := TDofVersionInfo.Create(Project);
 
   if FGetOpt.OptionPassed('ReadBdsProj', Project) then begin
-    if Assigned(ParamVersionInfo) then
+    if Assigned(VerInfoAccess) then
       raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni'));
-    ParamVersionInfo := Tdm_BdsProjVersionInfo.Create(Project);
+    VerInfoAccess := Tdm_BdsProjVersionInfo.Create(Project);
   end;
 
   if FGetOpt.OptionPassed('ReadIni', Project) then begin
-    if Assigned(ParamVersionInfo) then
+    if Assigned(VerInfoAccess) then
       raise Exception.Create(_('You can only pass one of --ReadDof, --ReadBdsproj or --ReadIni'));
-    ParamVersionInfo := TCentralVersionInfo.Create(Project);
+    VerInfoAccess := TCentralVersionInfo.Create(Project);
   end;
 
-  VersionInfo := TDummyVersionInfo.Create;
-  if Assigned(ParamVersionInfo) then begin
-    VersionInfo.Assign(ParamVersionInfo);
-    ParamVersionInfo := nil;
+  VersionInfo := TVersionInfo.Create;
+  try
+    if Assigned(VerInfoAccess) then begin
+      VerInfoAccess.ReadFromFile(VersionInfo);
+      VerInfoAccess := nil;
+    end;
+
+    if FGetOpt.OptionPassed('MajorVer', Param) then begin
+      if not TryStrToInt(Param, IntValue) then
+        raise Exception.Create(_('Parameter to MajorVer must be a number'));
+      VersionInfo.MajorVer := IntValue;
+    end;
+
+    if FGetOpt.OptionPassed('MinorVer', Param) then begin
+      if not TryStrToInt(Param, IntValue) then
+        raise Exception.Create(_('Parameter to MinorVer must be a number'));
+      VersionInfo.MinorVer := IntValue;
+    end;
+
+    if FGetOpt.OptionPassed('Release', Param) then begin
+      if not TryStrToInt(Param, IntValue) then
+        raise Exception.Create(_('Parameter to Release must be a number'));
+      VersionInfo.Release := IntValue;
+    end;
+
+    if FGetOpt.OptionPassed('Build', Param) then begin
+      if not TryStrToInt(Param, IntValue) then
+        raise Exception.Create(_('Parameter to Build must be a number'));
+      VersionInfo.Build := IntValue;
+    end;
+
+    if FGetOpt.OptionPassed('FileDesc', Param) then
+      VersionInfo.FileDescription := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('InternalName', Param) then
+      VersionInfo.InternalName := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('OriginalName', Param) then
+      VersionInfo.OriginalFilename := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('Product', Param) then
+      VersionInfo.ProductName := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('ProductVersion', Param) then
+      VersionInfo.ProductVersion := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('Company', Param) then
+      VersionInfo.CompanyName := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('Copyright', Param) then
+      VersionInfo.LegalCopyright := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('Trademark', Param) then
+      VersionInfo.LegalTrademarks := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('Comments', Param) then
+      VersionInfo.Comments := UnquoteStr(Param);
+
+    if FGetOpt.OptionPassed('IncBuild') then
+      VersionInfo.Build := VersionInfo.Build + 1;
+
+    VersionInfo.UpdateFileVersion;
+
+    if FGetOpt.OptionPassed('UpdateDof', Param) then
+      VerInfoAccess := TDofVersionInfo.Create(Param);
+
+    if FGetOpt.OptionPassed('UpdateBdsproj', Param) then
+      VerInfoAccess := Tdm_BdsProjVersionInfo.Create(Param);
+
+    if FGetOpt.OptionPassed('UpdateIni', Param) then
+      VerInfoAccess := TCentralVersionInfo.Create(Param);
+
+    if Assigned(VerInfoAccess) then begin
+      VerInfoAccess.WriteToFile(VersionInfo);
+      VerInfoAccess := nil;
+    end;
+
+    if not FGetOpt.OptionPassed('Icon', IconFile) then
+      IconFile := '';
+
+    if FGetOpt.OptionPassed('WriteRc', Param) then
+      WriteRcFile(Param, VersionInfo, IconFile);
+
+    if FGetOpt.OptionPassed('Exec', Param) then
+      HandleExecOption(Param, VersionInfo, Project);
+
+  finally
+    FreeAndNil(VersionInfo);
   end;
-
-  if FGetOpt.OptionPassed('MajorVer', Param) then begin
-    if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create(_('Parameter to MajorVer must be a number'));
-    VersionInfo.MajorVer := IntValue;
-  end;
-
-  if FGetOpt.OptionPassed('MinorVer', Param) then begin
-    if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create(_('Parameter to MinorVer must be a number'));
-    VersionInfo.MinorVer := IntValue;
-  end;
-
-  if FGetOpt.OptionPassed('Release', Param) then begin
-    if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create(_('Parameter to Release must be a number'));
-    VersionInfo.Release := IntValue;
-  end;
-
-  if FGetOpt.OptionPassed('Build', Param) then begin
-    if not TryStrToInt(Param, IntValue) then
-      raise Exception.Create(_('Parameter to Build must be a number'));
-    VersionInfo.Build := IntValue;
-  end;
-
-  if FGetOpt.OptionPassed('FileDesc', Param) then
-    VersionInfo.FileDescription := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('InternalName', Param) then
-    VersionInfo.InternalName := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('OriginalName', Param) then
-    VersionInfo.OriginalFilename := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('Product', Param) then
-    VersionInfo.ProductName := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('ProductVersion', Param) then
-    VersionInfo.ProductVersion := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('Company', Param) then
-    VersionInfo.CompanyName := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('Copyright', Param) then
-    VersionInfo.LegalCopyright := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('Trademark', Param) then
-    VersionInfo.LegalTrademarks := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('Comments', Param) then
-    VersionInfo.Comments := UnquoteStr(Param);
-
-  if FGetOpt.OptionPassed('IncBuild') then
-    VersionInfo.Build := VersionInfo.Build + 1;
-
-  VersionInfo.UpdateFileVersion;
-
-  if FGetOpt.OptionPassed('UpdateDof', Param) then begin
-    ParamVersionInfo := TDofVersionInfo.Create(Param);
-    ParamVersionInfo.Assign(VersionInfo);
-    ParamVersionInfo.UpdateFile;
-  end;
-
-  if FGetOpt.OptionPassed('UpdateBdsproj', Param) then begin
-    ParamVersionInfo := Tdm_BdsProjVersionInfo.Create(Param);
-    ParamVersionInfo.Assign(VersionInfo);
-    ParamVersionInfo.UpdateFile;
-  end;
-
-  if FGetOpt.OptionPassed('UpdateIni', Param) then begin
-    ParamVersionInfo := TCentralVersionInfo.Create(Param);
-    ParamVersionInfo.Assign(VersionInfo);
-    ParamVersionInfo.UpdateFile;
-  end;
-
-  if not FGetOpt.OptionPassed('Icon', IconFile) then
-    IconFile := '';
-
-  if FGetOpt.OptionPassed('WriteRc', Param) then
-    WriteRcFile(Param, VersionInfo, IconFile);
-
-  if FGetOpt.OptionPassed('Exec', Param) then
-    HandleExecOption(Param, VersionInfo, Project);
 
   Result := 0;
 end;

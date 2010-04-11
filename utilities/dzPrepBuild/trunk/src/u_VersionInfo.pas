@@ -1,13 +1,12 @@
-unit u_AbstractVersionInfo;
+unit u_VersionInfo;
 
 interface
 
 uses
-  SysUtils,
-  i_VersionInfo;
+  SysUtils;
 
 type
-  TAbstractVersionInfo = class(TInterfacedObject)
+  TVersionInfo = class
   private
     FMajorVer: integer;
     FMinorVer: integer;
@@ -26,9 +25,20 @@ type
     FOriginalFilename: string;
     FComments: string;
   protected
-    procedure Assign(const _VersionInfo: IVersionInfo); virtual;
-    function GetAutoIncBuild: Boolean; virtual;
+    function GetAutoIncBuild: boolean;
+    procedure SetAutoIncBuild(_AutoIncBuild: Boolean); virtual;
+    //
+    procedure Assign(_VersionInfo: TVersionInfo); virtual;
+    //
+    function GetMajorVer: Integer; virtual;
+    function GetMinorVer: Integer; virtual;
+    function GetRelease: Integer; virtual;
     function GetBuild: Integer; virtual;
+    procedure SetMajorVer(_MajorVer: Integer); virtual;
+    procedure SetMinorVer(_MinorVer: Integer); virtual;
+    procedure SetRelease(_Release: Integer); virtual;
+    procedure SetBuild(_Build: Integer); virtual;
+    //
     function GetComments: string; virtual;
     function GetCompanyName: string; virtual;
     function GetFileDescription: string; virtual;
@@ -36,14 +46,9 @@ type
     function GetInternalName: string; virtual;
     function GetLegalCopyright: string; virtual;
     function GetLegalTrademarks: string; virtual;
-    function GetMajorVer: Integer; virtual;
-    function GetMinorVer: Integer; virtual;
     function GetOriginalFilename: string;
     function GetProductName: string; virtual;
     function GetProductVersion: string; virtual;
-    function GetRelease: Integer; virtual;
-    procedure SetAutoIncBuild(_AutoIncBuild: Boolean); virtual;
-    procedure SetBuild(_Build: Integer); virtual;
     procedure SetComments(const _Comments: string); virtual;
     procedure SetCompanyName(_CompanyName: string); virtual;
     procedure SetFileDescription(_FileDescription: string); virtual;
@@ -51,15 +56,10 @@ type
     procedure SetInternalName(_InternalName: string); virtual;
     procedure SetLegalCopyright(_LegalCopyright: string); virtual;
     procedure SetLegalTrademarks(_LegalTrademarks: string); virtual;
-    procedure SetMajorVer(_MajorVer: Integer); virtual;
-    procedure SetMinorVer(_MinorVer: Integer); virtual;
     procedure SetOriginalFilename(_OriginalFilename: string); virtual;
     procedure SetProductName(_ProductName: string); virtual;
     procedure SetProductVersion(_ProductVersion: string); virtual;
-    procedure SetRelease(_Release: Integer); virtual;
-    //
-    procedure UpdateFile; virtual; abstract;
-    function VerInfoFilename: string; virtual; abstract;
+  public
     procedure UpdateFileVersion;
     //
     property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
@@ -83,7 +83,9 @@ type
 
 implementation
 
-procedure TAbstractVersionInfo.Assign(const _VersionInfo: IVersionInfo);
+{ TVersionInfo }
+
+procedure TVersionInfo.Assign(_VersionInfo: TVersionInfo);
 begin
   AutoIncBuild := _VersionInfo.AutoIncBuild;
 
@@ -104,157 +106,157 @@ begin
   ProductVersion := _VersionInfo.ProductVersion;
 end;
 
-function TAbstractVersionInfo.GetAutoIncBuild: boolean;
+function TVersionInfo.GetAutoIncBuild: boolean;
 begin
   Result := FAutoIncBuild;
 end;
 
-function TAbstractVersionInfo.GetBuild: integer;
+function TVersionInfo.GetBuild: integer;
 begin
   Result := FBuild;
 end;
 
-function TAbstractVersionInfo.GetComments: string;
+function TVersionInfo.GetComments: string;
 begin
   Result := FComments;
 end;
 
-function TAbstractVersionInfo.GetCompanyName: string;
+function TVersionInfo.GetCompanyName: string;
 begin
   Result := FCompanyName;
 end;
 
-function TAbstractVersionInfo.GetFileDescription: string;
+function TVersionInfo.GetFileDescription: string;
 begin
   Result := FFileDescription;
 end;
 
-function TAbstractVersionInfo.GetFileVersion: string;
+function TVersionInfo.GetFileVersion: string;
 begin
   Result := FFileVersion;
 end;
 
-function TAbstractVersionInfo.GetInternalName: string;
+function TVersionInfo.GetInternalName: string;
 begin
   Result := FInternalName;
 end;
 
-function TAbstractVersionInfo.GetLegalCopyright: string;
+function TVersionInfo.GetLegalCopyright: string;
 begin
   Result := FLegalCopyright;
 end;
 
-function TAbstractVersionInfo.GetLegalTrademarks: string;
+function TVersionInfo.GetLegalTrademarks: string;
 begin
   Result := FLegalTrademarks;
 end;
 
-function TAbstractVersionInfo.GetMajorVer: integer;
+function TVersionInfo.GetMajorVer: integer;
 begin
   Result := FMajorVer;
 end;
 
-function TAbstractVersionInfo.GetMinorVer: integer;
+function TVersionInfo.GetMinorVer: integer;
 begin
   Result := FMinorVer;
 end;
 
-function TAbstractVersionInfo.GetOriginalFilename: string;
+function TVersionInfo.GetOriginalFilename: string;
 begin
   Result := FOriginalFilename;
 end;
 
-function TAbstractVersionInfo.GetProductName: string;
+function TVersionInfo.GetProductName: string;
 begin
   Result := FProductName;
 end;
 
-function TAbstractVersionInfo.GetProductVersion: string;
+function TVersionInfo.GetProductVersion: string;
 begin
   Result := FProductVersion;
 end;
 
-function TAbstractVersionInfo.GetRelease: integer;
+function TVersionInfo.GetRelease: integer;
 begin
   Result := FRelease;
 end;
 
-procedure TAbstractVersionInfo.SetAutoIncBuild(_AutoIncBuild: boolean);
+procedure TVersionInfo.SetAutoIncBuild(_AutoIncBuild: boolean);
 begin
   FAutoIncBuild := _AutoIncBuild;
 end;
 
-procedure TAbstractVersionInfo.SetBuild(_Build: integer);
+procedure TVersionInfo.SetBuild(_Build: integer);
 begin
   FBuild := _Build;
 end;
 
-procedure TAbstractVersionInfo.SetComments(const _Comments: string);
+procedure TVersionInfo.SetComments(const _Comments: string);
 begin
   FComments := _Comments;
 end;
 
-procedure TAbstractVersionInfo.SetCompanyName(_CompanyName: string);
+procedure TVersionInfo.SetCompanyName(_CompanyName: string);
 begin
   FCompanyName := _CompanyName;
 end;
 
-procedure TAbstractVersionInfo.SetFileDescription(_FileDescription: string);
+procedure TVersionInfo.SetFileDescription(_FileDescription: string);
 begin
   FFileDescription := _FileDescription;
 end;
 
-procedure TAbstractVersionInfo.SetFileVersion(_FileVersion: string);
+procedure TVersionInfo.SetFileVersion(_FileVersion: string);
 begin
   FFileVersion := _FileVersion;
 end;
 
-procedure TAbstractVersionInfo.SetInternalName(_InternalName: string);
+procedure TVersionInfo.SetInternalName(_InternalName: string);
 begin
   FInternalName := _InternalName;
 end;
 
-procedure TAbstractVersionInfo.SetLegalCopyright(_LegalCopyright: string);
+procedure TVersionInfo.SetLegalCopyright(_LegalCopyright: string);
 begin
   FLegalCopyright := _LegalCopyright;
 end;
 
-procedure TAbstractVersionInfo.SetLegalTrademarks(_LegalTrademarks: string);
+procedure TVersionInfo.SetLegalTrademarks(_LegalTrademarks: string);
 begin
   FLegalTrademarks := _LegalTrademarks;
 end;
 
-procedure TAbstractVersionInfo.SetMajorVer(_MajorVer: integer);
+procedure TVersionInfo.SetMajorVer(_MajorVer: integer);
 begin
   FMajorVer := _MajorVer;
 end;
 
-procedure TAbstractVersionInfo.SetMinorVer(_MinorVer: integer);
+procedure TVersionInfo.SetMinorVer(_MinorVer: integer);
 begin
   FMinorVer := _MinorVer;
 end;
 
-procedure TAbstractVersionInfo.SetOriginalFilename(_OriginalFilename: string);
+procedure TVersionInfo.SetOriginalFilename(_OriginalFilename: string);
 begin
   FOriginalFilename := _OriginalFilename;
 end;
 
-procedure TAbstractVersionInfo.SetProductName(_ProductName: string);
+procedure TVersionInfo.SetProductName(_ProductName: string);
 begin
   FProductName := _ProductName;
 end;
 
-procedure TAbstractVersionInfo.SetProductVersion(_ProductVersion: string);
+procedure TVersionInfo.SetProductVersion(_ProductVersion: string);
 begin
   FProductVersion := _ProductVersion;
 end;
 
-procedure TAbstractVersionInfo.SetRelease(_Release: integer);
+procedure TVersionInfo.SetRelease(_Release: integer);
 begin
   FRelease := _Release;
 end;
 
-procedure TAbstractVersionInfo.UpdateFileVersion;
+procedure TVersionInfo.UpdateFileVersion;
 begin
   FileVersion := Format('%d.%d.%d.%d', [MajorVer, MinorVer, Release, Build]);
 end;

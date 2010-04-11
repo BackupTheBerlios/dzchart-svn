@@ -3,7 +3,7 @@ unit u_CentralIniVersionInfo;
 interface
 
 uses
-  i_VersionInfo,
+  i_VersionInfoAccess,
   u_IniVersionInfo;
 
 type
@@ -18,14 +18,14 @@ type
      used to maintain/increment a central build number for several branches of
      a project where the files have different version numbers but the build
      number should be increased for a build of any of these versions. }
-  TCentralVersionInfo = class(TIniVersionInfo, IVersionInfo)
+  TCentralVersionInfo = class(TIniVersionInfo, IVersionInfoAccess)
   private
     FProjectName: string;
     procedure GetRedirIdentInfo(const _RedirString: string; out _Filename, _Section, _Ident: string);
     procedure GetRedirSectionInfo(_Redir: string; out _Filename, _Section: string);
     procedure AdjustFilename(var _Filename: string);
   protected
-    function VerInfoFilename: string; override;
+    function VerInfoFilename: string;
     //
     function ReadString(const _Section, _Ident: string; _Default: string): string; override;
     procedure WriteString(const _Section, _Ident: string; _Value: string); override;

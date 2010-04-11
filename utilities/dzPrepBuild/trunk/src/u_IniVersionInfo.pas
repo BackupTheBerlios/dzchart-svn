@@ -5,14 +5,13 @@ interface
 uses
   SysUtils,
   IniFiles,
-  i_VersionInfo,
-  u_AbstractVersionInfo;
+  u_VersionInfo;
 
 type
   {: Tries to read a <projectname>.ini file, succeeds, if it exists
      @param Project is the project name (*.dpr file without extension)
      @param VersionInfo is a TVersionInfoRec record which will be filled with the version info }
-  TIniVersionInfo = class(TAbstractVersionInfo)
+  TIniVersionInfo = class(TInterfacedObject)
   protected
     FIniFile: TMemIniFile;
     FInfoSection: string;
@@ -23,11 +22,10 @@ type
     procedure WriteString(const _Section, _Ident: string; _Value: string); virtual;
     function ReadBool(const _Section, _Ident: string; _Default: boolean): boolean; virtual;
     procedure WriteBool(const _Section, _Ident: string; _Value: boolean); virtual;
-    procedure ReadValues;
-    procedure WriteValues;
   private
   protected // implementation of IVersionInfo
-    procedure UpdateFile; override;
+    procedure ReadFromFile(_VerInfo: TVersionInfo);
+    procedure WriteToFile(_VerInfo: TVersionInfo);
   public
     {: Creates a TIniVersionInfo instance.
        @param FullFilename is the full filename including path and extension of
@@ -46,7 +44,8 @@ type
 implementation
 
 uses
-  u_dzTranslator;
+  u_dzTranslator,
+  i_VersionInfoAccess;
 
 { TIniVersionInfo }
 
@@ -59,7 +58,6 @@ begin
   FInfoSection := _InfoSection;
   FInfoKeysSection := _InfoKeysSection;
   FIniFile := TMemIniFile.Create(_FullFilename);
-  ReadValues;
 end;
 
 destructor TIniVersionInfo.Destroy;
@@ -102,48 +100,44 @@ begin
   FIniFile.WriteString(_Section, _Ident, _Value);
 end;
 
-procedure TIniVersionInfo.ReadValues;
+procedure TIniVersionInfo.ReadFromFile(_VerInfo: TVersionInfo);
 begin
-  AutoIncBuild := ReadBool(FInfoSection, 'AutoIncBuild', False);
-  Build := ReadInteger(FInfoSection, 'Build', 0);
-  MajorVer := ReadInteger(FInfoSection, 'MajorVer', 0);
-  MinorVer := ReadInteger(FInfoSection, 'MinorVer', 0);
-  Release := ReadInteger(FInfoSection, 'Release', 0);
+  _VerInfo.AutoIncBuild := ReadBool(FInfoSection, 'AutoIncBuild', False);
 
-  Comments := ReadString(FInfoKeysSection, 'Comments', '');
-  CompanyName := ReadString(FInfoKeysSection, 'CompanyName', '');
-  FileDescription := ReadString(FInfoKeysSection, 'FileDescription', '');
-  FileVersion := ReadString(FInfoKeysSection, 'FileVersion', '');
-  InternalName := ReadString(FInfoKeysSection, 'InternalName', '');
-  LegalCopyright := ReadString(FInfoKeysSection, 'LegalCopyright', '');
-  LegalTrademarks := ReadString(FInfoKeysSection, 'LegalTrademarks', '');
-  OriginalFilename := ReadString(FInfoKeysSection, 'OriginalFilename', '');
-  ProductName := ReadString(FInfoKeysSection, 'ProductName', '');
-  ProductVersion := ReadString(FInfoKeysSection, 'ProductVersion', '');
+  _VerInfo.Build := ReadInteger(FInfoSection, 'Build', 0);
+  _VerInfo.MajorVer := ReadInteger(FInfoSection, 'MajorVer', 0);
+  _VerInfo.MinorVer := ReadInteger(FInfoSection, 'MinorVer', 0);
+  _VerInfo.Release := ReadInteger(FInfoSection, 'Release', 0);
+
+  _VerInfo.Comments := ReadString(FInfoKeysSection, 'Comments', '');
+  _VerInfo.CompanyName := ReadString(FInfoKeysSection, 'CompanyName', '');
+  _VerInfo.FileDescription := ReadString(FInfoKeysSection, 'FileDescription', '');
+  _VerInfo.FileVersion := ReadString(FInfoKeysSection, 'FileVersion', '');
+  _VerInfo.InternalName := ReadString(FInfoKeysSection, 'InternalName', '');
+  _VerInfo.LegalCopyright := ReadString(FInfoKeysSection, 'LegalCopyright', '');
+  _VerInfo.LegalTrademarks := ReadString(FInfoKeysSection, 'LegalTrademarks', '');
+  _VerInfo.OriginalFilename := ReadString(FInfoKeysSection, 'OriginalFilename', '');
+  _VerInfo.ProductName := ReadString(FInfoKeysSection, 'ProductName', '');
+  _VerInfo.ProductVersion := ReadString(FInfoKeysSection, 'ProductVersion', '');
 end;
 
-procedure TIniVersionInfo.WriteValues;
+procedure TIniVersionInfo.WriteToFile(_VerInfo: TVersionInfo);
 begin
-  WriteBool(FInfoSection, 'AutoIncBuild', AutoIncBuild);
-  WriteInteger(FInfoSection, 'Build', Build);
-  WriteString(FInfoKeysSection, 'Comments', Comments);
-  WriteString(FInfoKeysSection, 'CompanyName', CompanyName);
-  WriteString(FInfoKeysSection, 'FileDescription', FileDescription);
-  WriteString(FInfoKeysSection, 'FileVersion', FileVersion);
-  WriteString(FInfoKeysSection, 'InternalName', InternalName);
-  WriteString(FInfoKeysSection, 'LegalCopyright', LegalCopyright);
-  WriteString(FInfoKeysSection, 'LegalTrademarks', LegalTrademarks);
-  WriteInteger(FInfoSection, 'MajorVer', MajorVer);
-  WriteInteger(FInfoSection, 'MinorVer', MinorVer);
-  WriteString(FInfoKeysSection, 'OriginalFilename', OriginalFilename);
-  WriteString(FInfoKeysSection, 'ProductName', ProductName);
-  WriteString(FInfoKeysSection, 'ProductVersion', ProductVersion);
-  WriteInteger(FInfoSection, 'Release', Release);
-end;
-
-procedure TIniVersionInfo.UpdateFile;
-begin
-  WriteValues;
+  WriteBool(FInfoSection, 'AutoIncBuild', _VerInfo.AutoIncBuild);
+  WriteInteger(FInfoSection, 'Build', _VerInfo.Build);
+  WriteString(FInfoKeysSection, 'Comments', _VerInfo.Comments);
+  WriteString(FInfoKeysSection, 'CompanyName', _VerInfo.CompanyName);
+  WriteString(FInfoKeysSection, 'FileDescription', _VerInfo.FileDescription);
+  WriteString(FInfoKeysSection, 'FileVersion', _VerInfo.FileVersion);
+  WriteString(FInfoKeysSection, 'InternalName', _VerInfo.InternalName);
+  WriteString(FInfoKeysSection, 'LegalCopyright', _VerInfo.LegalCopyright);
+  WriteString(FInfoKeysSection, 'LegalTrademarks', _VerInfo.LegalTrademarks);
+  WriteInteger(FInfoSection, 'MajorVer', _VerInfo.MajorVer);
+  WriteInteger(FInfoSection, 'MinorVer', _VerInfo.MinorVer);
+  WriteString(FInfoKeysSection, 'OriginalFilename', _VerInfo.OriginalFilename);
+  WriteString(FInfoKeysSection, 'ProductName', _VerInfo.ProductName);
+  WriteString(FInfoKeysSection, 'ProductVersion', _VerInfo.ProductVersion);
+  WriteInteger(FInfoSection, 'Release', _VerInfo.Release);
   FIniFile.UpdateFile;
 end;
 

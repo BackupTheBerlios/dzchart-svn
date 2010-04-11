@@ -10,10 +10,11 @@ uses
   XMLIntf,
   msxmldom,
   XMLDoc,
-  i_VersionInfo;
+  u_VersionInfo,
+  i_VersionInfoAccess;
 
 type
-  Tdm_BdsProjVersionInfo = class(TDataModule, IVersionInfo)
+  Tdm_BdsProjVersionInfo = class(TDataModule, IVersionInfoAccess)
     ProjDoc: TXMLDocument;
   private
     FProjectName: string;
@@ -28,59 +29,10 @@ type
     function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
     function _AddRef: integer; stdcall;
     function _Release: integer; stdcall;
-  protected
   protected // implementation of IVersionInfo
-    function GetBuild: integer;
-    procedure SetBuild(_Build: integer);
-    function GetMajorVer: integer;
-    procedure SetMajorVer(_MajorVer: integer);
-    function GetMinorVer: integer;
-    procedure SetMinorVer(_MinorVer: integer);
-    function GetRelease: integer;
-    procedure SetRelease(_Release: integer);
-    function GetCompanyName: string;
-    procedure SetCompanyName(_CompanyName: string);
-    function GetFileDescription: string;
-    procedure SetFileDescription(_FileDescription: string);
-    function GetFileVersion: string;
-    procedure SetFileVersion(_FileVersion: string);
-    function GetInternalName: string;
-    procedure SetInternalName(_InternalName: string);
-    function GetLegalCopyright: string;
-    procedure SetLegalCopyright(_LegalCopyright: string);
-    function GetLegalTrademarks: string;
-    procedure SetLegalTrademarks(_LegalTrademarks: string);
-    function GetOriginalFilename: string;
-    procedure SetOriginalFilename(_OriginalFilename: string);
-    function GetProductName: string;
-    procedure SetProductName(_ProductName: string);
-    function GetProductVersion: string;
-    procedure SetProductVersion(_ProductVersion: string);
-    function GetAutoIncBuild: boolean;
-    procedure SetAutoIncBuild(_AutoIncBuild: boolean);
-    function GetComments: string;
-    procedure SetComments(const _Comments: string);
-  //
-    procedure Assign(const _VersionInfo: IVersionInfo); reintroduce;
-    procedure UpdateFile;
-    procedure UpdateFileVersion;
     function VerInfoFilename: string;
-  //
-    property AutoIncBuild: boolean read GetAutoIncBuild write SetAutoIncBuild;
-    property Build: integer read GetBuild write SetBuild;
-    property Comments: string read GetComments write SetComments;
-    property CompanyName: string read GetCompanyName write SetCompanyName;
-    property FileDescription: string read GetFileDescription write SetFileDescription;
-    property FileVersion: string read GetFileVersion write SetFileVersion;
-    property InternalName: string read GetInternalName write SetInternalName;
-    property LegalCopyright: string read GetLegalCopyright write SetLegalCopyright;
-    property LegalTrademarks: string read GetLegalTrademarks write SetLegalTrademarks;
-    property MajorVer: integer read GetMajorVer write SetMajorVer;
-    property MinorVer: integer read GetMinorVer write SetMinorVer;
-    property OriginalFilename: string read GetOriginalFilename write SetOriginalFilename;
-    property ProductName: string read GetProductName write SetProductName;
-    property ProductVersion: string read GetProductVersion write SetProductVersion;
-    property Release: integer read GetRelease write SetRelease;
+    procedure ReadFromFile(_VerInfo: TVersionInfo);
+    procedure WriteToFile(_VerInfo: TVersionInfo);
   protected
     FBdsProjFile: string;
     FVersionInfo: IXMLNode;
@@ -89,7 +41,6 @@ type
     constructor Create(const _Project: string); reintroduce;
     destructor Destroy; override;
     class function FilenameFor(const _Project: string): string;
-
   end;
 
 implementation
@@ -101,25 +52,6 @@ uses
   u_dzTranslator;
 
 { Tdm_BdsProjVersionInfo }
-
-procedure Tdm_BdsProjVersionInfo.Assign(const _VersionInfo: IVersionInfo);
-begin
-  AutoIncBuild := _VersionInfo.AutoIncBuild;
-  Build := _VersionInfo.Build;
-  Comments := _VersionInfo.Comments;
-  CompanyName := _VersionInfo.CompanyName;
-  FileDescription := _VersionInfo.FileDescription;
-  FileVersion := _VersionInfo.FileVersion;
-  InternalName := _VersionInfo.InternalName;
-  LegalCopyright := _VersionInfo.LegalCopyright;
-  LegalTrademarks := _VersionInfo.LegalTrademarks;
-  MajorVer := _VersionInfo.MajorVer;
-  MinorVer := _VersionInfo.MinorVer;
-  OriginalFilename := _VersionInfo.OriginalFilename;
-  ProductName := _VersionInfo.ProductName;
-  ProductVersion := _VersionInfo.ProductVersion;
-  Release := _VersionInfo.Release;
-end;
 
 function Tdm_BdsProjVersionInfo.GetChildNodeContent(_Parent: IXMLNode; const _NodeName, _AttrName: string): string;
 var
@@ -195,154 +127,45 @@ begin
   Result := ChangeFileExt(_Project, '.bdsproj');
 end;
 
-function Tdm_BdsProjVersionInfo.GetAutoIncBuild: boolean;
+procedure Tdm_BdsProjVersionInfo.ReadFromFile(_VerInfo: TVersionInfo);
 begin
-  Result := SameText(GetVersionInfo('AutoIncBuild'), 'True');
+  _VerInfo.AutoIncBuild := SameText(GetVersionInfo('AutoIncBuild'), 'True');
+
+  _VerInfo.MajorVer := StrToIntDef(GetVersionInfo('MajorVer'), 0);
+  _VerInfo.MinorVer := StrToIntDef(GetVersionInfo('MinorVer'), 0);
+  _VerInfo.Release := StrToIntDef(GetVersionInfo('Release'), 0);
+  _VerInfo.Build := StrToIntDef(GetVersionInfo('Build'), 0);
+
+  _VerInfo.Comments := GetVersionInfoKey('Comments');
+  _VerInfo.CompanyName := GetVersionInfoKey('CompanyName');
+  _VerInfo.FileDescription := GetVersionInfoKey('FileDescription');
+  _VerInfo.FileVersion := GetVersionInfoKey('FileVersion');
+  _VerInfo.InternalName := GetVersionInfoKey('InternalName');
+  _VerInfo.LegalCopyright := GetVersionInfoKey('LegalCopyright');
+  _VerInfo.LegalTrademarks := GetVersionInfoKey('LegalTrademarks');
+  _VerInfo.OriginalFilename := GetVersionInfoKey('OriginalFilename');
+  _VerInfo.ProductName := GetVersionInfoKey('ProductName');
+  _VerInfo.ProductVersion := GetVersionInfoKey('ProductVersion');
 end;
 
-function Tdm_BdsProjVersionInfo.GetBuild: integer;
+procedure Tdm_BdsProjVersionInfo.WriteToFile(_VerInfo: TVersionInfo);
 begin
-  Result := StrToIntDef(GetVersionInfo('Build'), 0);
-end;
-
-function Tdm_BdsProjVersionInfo.GetComments: string;
-begin
-  Result := GetVersionInfoKey('Comments');
-end;
-
-function Tdm_BdsProjVersionInfo.GetCompanyName: string;
-begin
-  Result := GetVersionInfoKey('CompanyName');
-end;
-
-function Tdm_BdsProjVersionInfo.GetFileDescription: string;
-begin
-  Result := GetVersionInfoKey('FileDescription');
-end;
-
-function Tdm_BdsProjVersionInfo.GetFileVersion: string;
-begin
-  Result := GetVersionInfoKey('FileVersion');
-end;
-
-function Tdm_BdsProjVersionInfo.GetInternalName: string;
-begin
-  Result := GetVersionInfoKey('InternalName');
-end;
-
-function Tdm_BdsProjVersionInfo.GetLegalCopyright: string;
-begin
-  Result := GetVersionInfoKey('LegalCopyright');
-end;
-
-function Tdm_BdsProjVersionInfo.GetLegalTrademarks: string;
-begin
-  Result := GetVersionInfoKey('LegalTrademarks');
-end;
-
-function Tdm_BdsProjVersionInfo.GetMajorVer: integer;
-begin
-  Result := StrToIntDef(GetVersionInfo('MajorVer'), 0);
-end;
-
-function Tdm_BdsProjVersionInfo.GetMinorVer: integer;
-begin
-  Result := StrToIntDef(GetVersionInfo('MinorVer'), 0);
-end;
-
-function Tdm_BdsProjVersionInfo.GetOriginalFilename: string;
-begin
-  Result := GetVersionInfoKey('OriginalFilename');
-end;
-
-function Tdm_BdsProjVersionInfo.GetProductName: string;
-begin
-  Result := GetVersionInfoKey('ProductName');
-end;
-
-function Tdm_BdsProjVersionInfo.GetProductVersion: string;
-begin
-  Result := GetVersionInfoKey('ProductVersion');
-end;
-
-function Tdm_BdsProjVersionInfo.GetRelease: integer;
-begin
-  Result := StrToIntDef(GetVersionInfo('Release'), 0);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetAutoIncBuild(_AutoIncBuild: boolean);
-begin
-  SetVersionInfo('AutoIncBuild', IfThen(_AutoIncBuild, 'True', 'False'));
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetBuild(_Build: integer);
-begin
-  SetVersionInfo('Build', IntToStr(_Build));
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetComments(const _Comments: string);
-begin
-  SetVersionInfoKey('Comments', _Comments);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetCompanyName(_CompanyName: string);
-begin
-  SetVersionInfoKey('CompanyName', _CompanyName);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetFileDescription(_FileDescription: string);
-begin
-  SetVersionInfoKey('FileDescription', _FileDescription);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetFileVersion(_FileVersion: string);
-begin
-  SetVersionInfoKey('FileVersion', _FileVersion);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetInternalName(_InternalName: string);
-begin
-  SetVersionInfoKey('InternalName', _InternalName);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetLegalCopyright(_LegalCopyright: string);
-begin
-  SetVersionInfoKey('LegalCopyright', _LegalCopyright);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetLegalTrademarks(_LegalTrademarks: string);
-begin
-  SetVersionInfoKey('LegalTrademarks', _LegalTrademarks);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetMajorVer(_MajorVer: integer);
-begin
-  SetVersionInfo('MajorVer', IntToStr(_MajorVer));
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetMinorVer(_MinorVer: integer);
-begin
-  SetVersionInfo('MinorVer', IntToStr(_MinorVer));
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetOriginalFilename(_OriginalFilename: string);
-begin
-  SetVersionInfoKey('OriginalFilename', _OriginalFilename);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetProductName(_ProductName: string);
-begin
-  SetVersionInfoKey('ProductName', _ProductName);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetProductVersion(_ProductVersion: string);
-begin
-  SetVersionInfoKey('ProductVersion', _ProductVersion);
-end;
-
-procedure Tdm_BdsProjVersionInfo.SetRelease(_Release: integer);
-begin
-  SetVersionInfo('Release', IntToStr(_Release));
+  SetVersionInfo('AutoIncBuild', IfThen(_VerInfo.AutoIncBuild, 'True', 'False'));
+  SetVersionInfo('Build', IntToStr(_VerInfo.Build));
+  SetVersionInfoKey('Comments', _VerInfo.Comments);
+  SetVersionInfoKey('CompanyName', _VerInfo.CompanyName);
+  SetVersionInfoKey('FileDescription', _VerInfo.FileDescription);
+  SetVersionInfoKey('FileVersion', _VerInfo.FileVersion);
+  SetVersionInfoKey('InternalName', _VerInfo.InternalName);
+  SetVersionInfoKey('LegalCopyright', _VerInfo.LegalCopyright);
+  SetVersionInfoKey('LegalTrademarks', _VerInfo.LegalTrademarks);
+  SetVersionInfo('MajorVer', IntToStr(_VerInfo.MajorVer));
+  SetVersionInfo('MinorVer', IntToStr(_VerInfo.MinorVer));
+  SetVersionInfoKey('OriginalFilename', _VerInfo.OriginalFilename);
+  SetVersionInfoKey('ProductName', _VerInfo.ProductName);
+  SetVersionInfoKey('ProductVersion', _VerInfo.ProductVersion);
+  SetVersionInfo('Release', IntToStr(_VerInfo.Release));
+  ProjDoc.SaveToFile(FBdsProjFile);
 end;
 
 procedure Tdm_BdsProjVersionInfo.SetVersionInfo(const _Name, _Value: string);
@@ -353,16 +176,6 @@ end;
 procedure Tdm_BdsProjVersionInfo.SetVersionInfoKey(const _Name, _Value: string);
 begin
   SetChildNodeContent(FVersionInfoKeys, 'VersionInfoKeys', _Name, _Value);
-end;
-
-procedure Tdm_BdsProjVersionInfo.UpdateFile;
-begin
-  ProjDoc.SaveToFile(FBdsProjFile);
-end;
-
-procedure Tdm_BdsProjVersionInfo.UpdateFileVersion;
-begin
-  FileVersion := Format('%d.%d.%d.%d', [MajorVer, MinorVer, Release, Build]);
 end;
 
 function Tdm_BdsProjVersionInfo.VerInfoFilename: string;

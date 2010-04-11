@@ -5,17 +5,18 @@ interface
 uses
   SysUtils,
   IniFiles,
-  i_VersionInfo,
+  i_VersionInfoAccess,
+  u_VersionInfo,
   u_IniVersionInfo;
 
 type
   {: This is a specialized version of TIniVersionInfo which reads a
      <projectname>.dof file, that was used by Delphi up to version 7. }
-  TDofVersionInfo = class(TIniVersionInfo, IVersionInfo)
+  TDofVersionInfo = class(TIniVersionInfo, IVersionInfoAccess)
   private
     FProjectName: string;
   protected
-    function VerInfoFilename: string; override;
+    function VerInfoFilename: string;
   public
     {: Creates a TDofVersionInfo instance. Succeeds, if the file exists
        and IncludeVerInfo is <> 0
