@@ -1509,6 +1509,14 @@ begin
   end;
 end;
 
+{$IFNDEF VER200 // Delphi 2009}
+
+function CharInSet(_c: AnsiChar; _Set: TSysCharSet): boolean; inline;
+begin
+  Result := _c in _Set;
+end;
+{$ENDIF VER200}
+
 class function TFileSystem.IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean;
 var
   i: Integer;
