@@ -118,6 +118,12 @@ function TGrid_GetText(_Grid: TCustomGrid; _Selection: TGridRect): string; overl
 ///          @param IncludeFixed determines whether the fixed rows/columns are also exported </summary>
 procedure TGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string; _IncludeFixed: boolean = false);
 
+///<summary> exports the contents of the string grid as tab separated strings to a stream
+///          @param Grid is the string grid to export
+///          @param Stream is the stream to write to
+///          @param IncludeFixed determines whether the fixed rows/columns are also exported </summary>
+procedure TGrid_ExportToStream(_Grid: TCustomGrid; _Stream: TStream; _IncludeFixed: boolean = false);
+
 ///<summary> sets the row count, taking the fixed rows into account
 ///          @returns the new RowCount </summary>
 function TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer): integer;
@@ -662,6 +668,14 @@ begin
   finally
     FreeAndNil(Content);
   end;
+end;
+
+procedure TGrid_ExportToStream(_Grid: TCustomGrid; _Stream: TStream; _IncludeFixed: boolean = false);
+var
+  s: string;
+begin
+  s := TGrid_GetText(_Grid, _IncludeFixed);
+  TStream_WriteStringLn(_Stream, s);
 end;
 
 procedure TGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string; _IncludeFixed: boolean = false);
