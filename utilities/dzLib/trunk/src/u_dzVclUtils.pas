@@ -431,11 +431,27 @@ function TCheckListBox_GetCheckedObjects(_clb: TCheckListBox; _Objects: TList; _
 ///          @param clb is the TCheckListBox to modify
 ///          @param Checked is a string list containing the items to be checked
 ///          @param UncheckOthers determines whether any items not in the list should
-///                 be unchecked (defaults to true).
+///                               be unchecked (defaults to true).
+///          @param SuppressClick determines whether the automatic OnClickCkeck
+///                               event should be suppressed.
 ///          @returns the number of items that have been checked. </summary>
-function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings; _UncheckOthers: boolean = true): integer;
+function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings;
+  _UncheckOthers: boolean = true; _SuppressClick: boolean = false): integer;
+
+///<summary> sets the checked property without triggering an OnClickCheck event </summary>
+procedure TCheckListBox_SetCheckedNoClick(_clb: TCheckListBox; _Idx: integer; _Checked: boolean);
+
 procedure TCheckListBox_CheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
 procedure TCheckListBox_UncheckSelected(_clb: TCheckListBox; _IncludeDisabled: boolean = false);
+
+///<summary> Makes the given TCheckListBox readonly by assigning a special
+///          method to its OnClickCheck event or makes it ReadWrite again
+///          by removing that method.
+///          @param ReadOnly determines whether to assign or remove the event.
+///          @param ChangeColor determines whether to change the background color
+///                             to clWindow (ReadWrite) and clBtnFace (ReadOnly)
+///                             respectively. Defaults to true </summary>
+procedure TCheckListBox_Readonly(_clb: TCheckListBox; _ReadOnly: boolean; _ChangeColor: boolean = true);
 
 ///<summary> Gets the caption of the given or selected item in the RadioGroup
 ///          @param rg is the TCustomRadioGroup descendant to read
@@ -1498,7 +1514,21 @@ begin
       _clb.Items.Delete(i);
 end;
 
-function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings; _UncheckOthers: boolean = true): integer;
+procedure TCheckListBox_SetCheckedNoClick(_clb: TCheckListBox; _Idx: integer; _Checked: boolean);
+var
+  Event: TNotifyEvent;
+begin
+  Event := _clb.OnClickCheck;
+  _clb.OnClickCheck := nil;
+  try
+    _clb.Checked[_Idx] := _Checked;
+  finally
+    _clb.OnClickCheck := Event;
+  end;
+end;
+
+function TCheckListBox_SetChecked(_clb: TCheckListBox; _Checked: TStrings;
+  _UncheckOthers: boolean = true; _SuppressClick: boolean = false): integer;
 var
   i: integer;
   Idx: integer;
@@ -1508,9 +1538,16 @@ begin
     Idx := _Checked.IndexOf(_clb.Items[i]);
     if Idx <> -1 then begin
       Inc(Result);
-      _clb.Checked[i] := True;
-    end else if _UncheckOthers then
-      _clb.Checked[i] := False;
+      if _SuppressClick then
+        TCheckListBox_SetCheckedNoClick(_clb, i, True)
+      else
+        _clb.Checked[i] := True;
+    end else if _UncheckOthers then begin
+      if _SuppressClick then
+        TCheckListBox_SetCheckedNoClick(_clb, i, False)
+      else
+        _clb.Checked[i] := False;
+    end;
   end;
 end;
 
@@ -2280,5 +2317,44 @@ begin
   inherited;
 end;
 
+type
+  TCheckListBoxHelper = class
+  private
+    procedure HandleClickCheck(_Sender: TObject);
+  end;
+
+var
+  gblCheckListBoxHelper: TCheckListBoxHelper = nil;
+
+procedure TCheckListBox_Readonly(_clb: TCheckListBox; _ReadOnly: boolean; _ChangeColor: boolean = true);
+begin
+  if _ReadOnly then begin
+    if not Assigned(gblCheckListBoxHelper) then
+      gblCheckListBoxHelper := TCheckListBoxHelper.Create;
+    _clb.OnClickCheck := gblCheckListBoxHelper.HandleClickCheck;
+    if _ChangeColor then
+      _clb.Color := clBtnFace;
+  end else begin
+    _clb.OnClickCheck := nil;
+    if _ChangeColor then
+      _clb.Color := clWindow;
+  end;
+end;
+
+procedure TCheckListBoxHelper.HandleClickCheck(_Sender: TObject);
+var
+  clb: TCheckListBox;
+  Idx: integer;
+begin
+  clb := _Sender as TCheckListBox;
+  Idx := clb.ItemIndex;
+  if Idx <> -1 then begin
+    clb.Checked[Idx] := not clb.Checked[Idx];
+  end;
+end;
+
+initialization
+finalization
+  FreeAndNil(gblCheckListBoxHelper);
 end.
 
