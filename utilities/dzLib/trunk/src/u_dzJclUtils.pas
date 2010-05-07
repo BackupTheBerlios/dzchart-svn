@@ -35,7 +35,7 @@ type
     property OnHandleDirectory: TFileHandler read FOnHandleDirectory write FOnHandleDirectory;
   end;
 
-procedure SigEnumDirectories(const _Root: string; const _HandleDirectory: TFileHandler;
+procedure dzEnumDirectories(const _Root: string; const _HandleDirectory: TFileHandler;
   const _IncludeHiddenDirectories: Boolean = false; const _SubDirectoriesMask: string = '');
 
 ///<summary> appends ' - [fileversion projectversion] to the form's caption
@@ -89,7 +89,7 @@ end;
 
 // copied from JclFileUtils and modified
 
-procedure SigEnumDirectories(const _Root: string; const _HandleDirectory: TFileHandler;
+procedure dzEnumDirectories(const _Root: string; const _HandleDirectory: TFileHandler;
   const _IncludeHiddenDirectories: Boolean = false; const _SubDirectoriesMask: string = '');
 
   function CanonicalizedSearchPath(const _Directory: string): string;
