@@ -26,6 +26,7 @@ type
 
 type
   ILogger = interface ['{BE5D915E-C384-4648-9272-621981A48AED}']
+    function LogLevel2Str(_Level: TLogLevel): string;
     procedure LogLine(const _s: string; _Level: TLogLevel = llDump); deprecated; // use Log method instead
     procedure LogException(_e: exception; const _Where: string = ''; _IncludeCallstack: boolean = true);
     procedure LogError(const _s: string);
@@ -63,6 +64,7 @@ type
     FCallback: TOnLog;
     procedure doCallback(const _s: string; _Level: TLogLevel);
   protected // implements ILogger
+    function LogLevel2Str(_Level: TLogLevel): string;
     // the following methods are now preferred because they are easier to use with code completion:
     ///<summary> This is the main logging method, all other methods eventually call Log
     ///          In this implementation it does nothing but call doCallback which calls the registered
@@ -370,6 +372,18 @@ end;
 procedure TAbstractLogger.LogInfo(const _s: string);
 begin
   LogLine(_s, llInfo);
+end;
+
+function TAbstractLogger.LogLevel2Str(_Level: TLogLevel): string;
+begin
+  case _Level of
+    llDump: Result := 'Dump';
+    llTrace: Result := 'Trace';
+    llDebug: Result := 'Debug';
+    llInfo: Result := 'Info';
+    llWarning: Result := 'Warning';
+    llError: Result := 'Error';
+  end;
 end;
 
 procedure TAbstractLogger.LogLine(const _s: string; _Level: TLogLevel);
