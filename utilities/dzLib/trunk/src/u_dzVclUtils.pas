@@ -130,6 +130,9 @@ function TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
 ///          @returns the new ColCount </summary>
 function TGrid_SetNonfixedColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
 
+///<summary> sets the grid's current row without triggering an OnClick event
+procedure TGrid_SetRowNoClick(_Grid: TDrawGrid; _Row: integer);
+
 ///<summary> sets the row count to FixedRows + 1 and clears all non-fixed cells </summary>
 procedure TStringGrid_Clear(_Grid: TStringGrid);
 
@@ -717,6 +720,19 @@ end;
 procedure TStringGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer);
 begin
   TGrid_SetColCount(_Grid, _ColCount);
+end;
+
+procedure TGrid_SetRowNoClick(_Grid: TDrawGrid; _Row: integer);
+var
+  Event: TNotifyEvent;
+begin
+  Event := _Grid.OnClick;
+  try
+    _Grid.OnClick := nil;
+    _Grid.Row := _Row;
+  finally
+    _Grid.OnClick := Event;
+  end;
 end;
 
 procedure TStringGrid_ExportToFile(_Grid: TCustomGrid; const _Filename: string);
