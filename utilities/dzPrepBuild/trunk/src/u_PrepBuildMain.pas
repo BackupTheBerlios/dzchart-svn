@@ -183,7 +183,6 @@ var
   IntValue: integer;
   IconFile: string;
   Project: string;
-  dt: TDateTime;
 begin
   WriteLn('dzPrepBuild version ' + TApplication_GetFileVersion + ' built ' + TApplication_GetProductVersion);
 
