@@ -1,27 +1,26 @@
 PrepBuild is a commandline tool for handling the version information
 for Delphi projects when compiling using the dcc32.exe commandline
-compiler. It can also be used as a Pre-Build tool in Delphi 2007.
+compiler. It can also be used as a Pre-Build tool in Delphi 2007 and up.
 
-It can read and update three different kinds of sources for the
+It can read and update four different kinds of sources for the
 version information:
 * <projectname>.dof files (used up to Delphi 7)
 * <projectname>.bdsproj files (used in BDS 2005 and 2006)
-* <projectname>_version.ini files (uses the same format as .dof)
-
-It cannot read the .dproj file format of Delphi/Rad Studio 2007,
-in this case I suggest using an .ini file instead.
+* <projectname>.dproj files (used in Delphi 2007, 2009 and 2010)
+* <projectname>_version.ini files (uses the same format as .dof but has some
+                                   extensions)
 
 If you call the programm with the --help or -? option, it will display
 usage information.
 
-Example 1:
+Use case 1, Delphi 7:
 
 Let's assume you are using Delphi 7, so you probably store the version
 in the <projectname>.dof file and let the IDE autoincrement the build
 number. Now, for release builds you don't want to use the IDE because
 you want to make sure that the process is 100% repeatable without
-relying on a particular IDE setup. So you use the commandline compiler
-dcc32.exe rather than the IDE which is called from a script called
+relying on a particular IDE setup. So instead of the IDE you use the
+commandline compiler dcc32.exe which is called from a script called
 build.cmd:
 
 -------------
@@ -117,7 +116,7 @@ that are usually set):
 %dzProject% - the project name passed by the --ReadDof / --ReadBdsProj
               or --ReadIni option without extension
 
-The following values are read from the .dof / .bdsproj / .ini file and
+The following values are read from the .dof / .bdsproj / .dproj / .ini file and
 also passed as environment variables:
 
 %dzVersion.MajorVer% - the major version number
@@ -151,7 +150,7 @@ to move creating a tag in your SCM to this script because there you
 can use the current version number and build date/time for generating
 the tag's name.
 
-Example 2:
+Use case 2, Delphi 2007:
 
 Let's assume your company is using Delphi 2007 and there are
 multiple Developers working on the same project. You want to make
@@ -176,11 +175,20 @@ like this:
 Build=redirect:\\server\share\Testproject_Buildno.ini,Version Info,Build
 
 This will make PrepBuild read and write the build number to the
-central .ini file rather than the local one (*1).
+central .ini file rather than the local one (*1). Make sure that
+everybody involved has write permissions on that file.
 
 Now, you add PrepBuild as a prebuild event like this:
 
 prepbuild 
+
+to be continued ....
+
+dzPrepBuild itself uses the same mechanism, but not with a central file
+on a server but with a separate file in the repository. This is for two
+reasons:
+1. It demonstrates how it is done
+2. It reduces the changes to one single very small file.
 
 
 (*1: Of course there is the small chance of two developers doing
@@ -189,4 +197,3 @@ number, but this shouldn't happen very often and I was too lazy
 to try and implement some kind of locking mechanism to prevent
 this rare case. If you need it, you have got the source code....)
 
-to be continued ....
