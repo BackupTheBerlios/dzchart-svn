@@ -25,10 +25,10 @@
     <DCC_HppOutput>z:\dcu\dzprepbuild</DCC_HppOutput>
     <DCC_Define>DEBUG;no_translation;NO_TRANSLATION_HINT</DCC_Define>
     <DCC_ExeOutput>..</DCC_ExeOutput>
-    <DCC_UnitSearchPath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_UnitSearchPath>
-    <DCC_ResourcePath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_ResourcePath>
-    <DCC_ObjPath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_ObjPath>
-    <DCC_IncludePath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_IncludePath>
+    <DCC_UnitSearchPath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\dzCmdLineParser\src;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_UnitSearchPath>
+    <DCC_ResourcePath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\dzCmdLineParser\src;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_ResourcePath>
+    <DCC_ObjPath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\dzCmdLineParser\src;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_ObjPath>
+    <DCC_IncludePath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dztemplates\templates;..\libs\dztemplates\units;..\libs\dzCmdLineParser\src;..\libs\jcl\source;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl</DCC_IncludePath>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
     <DCC_Optimize>False</DCC_Optimize>
@@ -51,13 +51,7 @@
     <DelphiCompile Include="PrepBuild.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzDefaultMain.pas" />
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzGetOpt.pas" />
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzOptionDescList.pas" />
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzOptionFoundList.pas" />
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzOptionNameList.pas" />
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzParamDescList.pas" />
-    <DCCReference Include="..\libs\dzCmdLineParsersrc\u_dzParamFoundList.pas" />
+    <DCCReference Include="..\libs\dzCmdLineParser\src\u_dzDefaultMain.pas" />
     <DCCReference Include="..\libs\dzlib\forms\w_dzDialog.pas">
       <Form>f_dzDialog</Form>
     </DCCReference>
