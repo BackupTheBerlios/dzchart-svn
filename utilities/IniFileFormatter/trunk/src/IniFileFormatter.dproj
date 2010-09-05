@@ -24,7 +24,7 @@
 			<DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
 			<DCC_Define>no_translation;no_jcl;$(DCC_Define)</DCC_Define>
 			<DCC_DebugDCUs>true</DCC_DebugDCUs>
-			<DCC_DcuOutput>..\dcu</DCC_DcuOutput>
+			<DCC_DcuOutput>z:\dcu\IniFileFormatter</DCC_DcuOutput>
 			<DCC_ExeOutput>..</DCC_ExeOutput>
 			<DCC_UnitSearchPath>..\libs\dztemplates\Units;..\libs\dztemplates\templates;..\libs\dzlib\jedi_inc;..\libs\dzlib\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>..\IniFileFormatter.exe</DCC_DependencyCheckOutputName>
