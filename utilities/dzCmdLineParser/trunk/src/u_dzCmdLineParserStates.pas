@@ -208,7 +208,7 @@ var
   c: char;
 begin
   c := _Context.GetNextChar;
-  if c in ALPHANUMERIC_CHARS + ['?'] then begin
+  if CharInSet(c, ALPHANUMERIC_CHARS + ['?']) then begin
     _Context.AddToOption(c);
     Result := TEngineStateShortOption.Create;
   end else if c = '-' then
@@ -224,7 +224,7 @@ var
   c: char;
 begin
   c := _Context.GetNextChar;
-  if c in ALPHANUMERIC_CHARS then begin
+  if CharInSet(c, ALPHANUMERIC_CHARS) then begin
     _Context.AddToOption(c);
     Result := TEngineStateLongOption.Create;
   end else
