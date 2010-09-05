@@ -1,14 +1,10 @@
 program PrepBuild;
 
-
-
-
 {$APPTYPE CONSOLE}
 
 uses
   SysUtils,
   Forms,
-  oxmldom,
   d_XmlVersionInfo in 'd_XmlVersionInfo.pas' {dm_XmlVersionInfo: TDataModule},
   d_DprojVersionInfo in 'd_DprojVersionInfo.pas' {dm_DprojVersionInfo: TDataModule},
   d_BdsProjVersionInfo in 'd_BdsProjVersionInfo.pas' {dm_BdsProjVersionInfo: TDataModule},
