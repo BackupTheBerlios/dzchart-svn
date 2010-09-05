@@ -683,6 +683,21 @@
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF VER210}
 
+    {$ifdef VER220} // Rad Studio XE
+      {$DEFINE BDS}
+      {$DEFINE BDS8}
+      {$DEFINE COMPILER15}
+      {$IFDEF BCB}
+        {$DEFINE BCB15}
+      {$ELSE}
+        {$DEFINE DELPHI15}
+        {$DEFINE DELPHI2011} // synonym to DELPHI14
+        {$DEFINE DELPHICOMPILER14}
+      {$ENDIF BCB}
+      {$DEFINE RTL220_UP}
+      {$UNDEF UNKNOWN_COMPILER_VERSION}
+    {$endif VER220}
+
     {$IFDEF UNKNOWN_COMPILER_VERSION} // adjust for newer version (always use latest version)
       {$DEFINE BDS}
       {$DEFINE BDS7}
@@ -714,6 +729,7 @@
 { DELPHIX_UP from DELPHIX mappings                                             }
 {------------------------------------------------------------------------------}
 
+{$IFDEF Delphi15} {$DEFINE DELPHI_15_UP} {$ENDIF}
 {$IFDEF DELPHI14} {$DEFINE DELPHI14_UP} {$ENDIF}
 {$IFDEF DELPHI12} {$DEFINE DELPHI12_UP} {$ENDIF}
 {$IFDEF DELPHI11} {$DEFINE DELPHI11_UP} {$ENDIF}
@@ -731,6 +747,11 @@
 {------------------------------------------------------------------------------}
 { DELPHIX_UP from DELPHIX_UP mappings                                          }
 {------------------------------------------------------------------------------}
+
+{$IFDEF DELPHI15_UP}
+  {$DEFINE DELPHI2011_UP} // synonym to DELPHI15_UP
+  {$DEFINE DELPHI14_UP}
+{$ENDIF}
 
 {$IFDEF DELPHI14_UP}
   {$DEFINE DELPHI2010_UP} // synonym to DELPHI14_UP
@@ -796,6 +817,7 @@
 { BDSX_UP from BDSX mappings                                                   }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BDS8} {$DEFINE BDS8_UP} {$ENDIF}
 {$IFDEF BDS7} {$DEFINE BDS7_UP} {$ENDIF}
 {$IFDEF BDS6} {$DEFINE BDS6_UP} {$ENDIF}
 {$IFDEF BDS5} {$DEFINE BDS5_UP} {$ENDIF}
@@ -807,6 +829,7 @@
 { BDSX_UP from BDSX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BDS8_UP} {$DEFINE BDS7_UP} {$ENDIF}
 {$IFDEF BDS7_UP} {$DEFINE BDS6_UP} {$ENDIF}
 {$IFDEF BDS6_UP} {$DEFINE BDS5_UP} {$ENDIF}
 {$IFDEF BDS5_UP} {$DEFINE BDS4_UP} {$ENDIF}
@@ -817,6 +840,7 @@
 { DELPHICOMPILERX_UP from DELPHICOMPILERX mappings                             }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHICOMPILER15} {$DEFINE DELPHICOMPILER15_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER14} {$DEFINE DELPHICOMPILER14_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER12} {$DEFINE DELPHICOMPILER12_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER11} {$DEFINE DELPHICOMPILER11_UP} {$ENDIF}
@@ -835,6 +859,7 @@
 { DELPHICOMPILERX_UP from DELPHICOMPILERX_UP mappings                          }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHICOMPILER15_UP} {$DEFINE DELPHICOMPILER14_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER14_UP} {$DEFINE DELPHICOMPILER12_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER12_UP} {$DEFINE DELPHICOMPILER11_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER11_UP} {$DEFINE DELPHICOMPILER10_UP} {$ENDIF}
@@ -853,6 +878,7 @@
 { COMPILERX_UP from COMPILERX mappings                                         }
 {------------------------------------------------------------------------------}
 
+{$IFDEF COMPILER15} {$DEFINE COMPILER15_UP} {$ENDIF}
 {$IFDEF COMPILER14} {$DEFINE COMPILER14_UP} {$ENDIF}
 {$IFDEF COMPILER12} {$DEFINE COMPILER12_UP} {$ENDIF}
 {$IFDEF COMPILER11} {$DEFINE COMPILER11_UP} {$ENDIF}
@@ -872,6 +898,7 @@
 { COMPILERX_UP from COMPILERX_UP mappings                                      }
 {------------------------------------------------------------------------------}
 
+{$IFDEF COMPILER15_UP} {$DEFINE COMPILER14_UP} {$ENDIF}
 {$IFDEF COMPILER14_UP} {$DEFINE COMPILER12_UP} {$ENDIF}
 {$IFDEF COMPILER12_UP} {$DEFINE COMPILER11_UP} {$ENDIF}
 {$IFDEF COMPILER11_UP} {$DEFINE COMPILER10_UP} {$ENDIF}
@@ -890,6 +917,7 @@
 { RTLX_UP from RTLX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF RTL220_UP} {$DEFINE RTL210_UP} {$ENDIF}
 {$IFDEF RTL210_UP} {$DEFINE RTL200_UP} {$ENDIF}
 {$IFDEF RTL200_UP} {$DEFINE RTL190_UP} {$ENDIF}
 {$IFDEF RTL190_UP} {$DEFINE RTL185_UP} {$ENDIF}

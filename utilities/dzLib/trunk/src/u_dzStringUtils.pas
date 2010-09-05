@@ -13,6 +13,9 @@ uses
   Classes,
   StrUtils,
   SysUtils,
+{$IFDEF SUPPORTS_UNICODE_STRING}
+  AnsiStrings,
+{$ENDIF SUPPORTS_UNICODE_STRING}
   u_dzTranslator;
 
 type
@@ -36,9 +39,9 @@ const
     '0'..'9', 'ä', 'Ä', 'ö', 'Ö', 'ü', 'Ü', 'ß'];
   STANDARD_CONTROL_CHARS = [#0..' '];
 
-{$ifndef DELPHI2009_UP}
-function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
-{$endif DELPHI2009_UP}
+{$IFNDEF SUPPORTS_UNICODE_STRING}
+function CharInSet(_C: Char; const _CharSet: TSysCharSet): Boolean;
+{$ENDIF SUPPORTS_UNICODE_STRING}
 
 /// <summary>
 /// function is deprecated, use ExtractStr instead
@@ -88,7 +91,8 @@ function ExtractStr(var _Source: string; _Delimiter: char; out _Substr: string; 
 /// <summary>
 /// Converts a char to lower case.
 /// </summary>
-function LoCase(_c: char): char;
+function LoCase(_c: WideChar): WideChar; overload;
+function LoCase(_c: AnsiChar): AnsiChar; overload;
 
 // function UpStr(const _s: string): string; // use SysUtils.(Ansi)UpperCase instead
 // function LoStr(const _s: string): string; // use SysUtils.(Ansi)LowerCase instead
@@ -210,6 +214,9 @@ function UMatchStr(const _Searched, _Match: string): boolean;
 function LDotDotStr(const _s: string; _MaxLen: integer): string;
 ///<summary> Creates a string of the form 'Start of string...' with a maximum length. </summary>
 function RDotDotStr(const _s: string; _MaxLen: integer): string;
+
+function ZeroPadLeft(_Value: Integer; _Len: Integer): string;
+
 ///<summary> Centers the given string, that is right and left pads it with spaces to
 ///          MaxLenght characters. </summary>
 function CenterStr(const _s: string; _MaxLen: integer): string;
@@ -313,6 +320,13 @@ function ExtractFirstN(var _s: string; _N: integer): string;
 ///          @param Delimiter is a string containing all delimiter characters
 ///          @returns the sl parameter </summary>
 function SplitString(_sl: TStrings; _s: string; const _Delimiter: string): TStrings;
+
+{$IFDEF SUPPORTS_UNICODE_STRING}
+function Copy(const _s: AnsiString; _Pos, _Len: integer): AnsiString; overload;
+function Copy(const _s: AnsiString; _Pos: integer): AnsiString; overload;
+function Copy(const _s: string; _Pos, _Len: integer): string; overload;
+function Copy(const _s: string; _Pos: integer): string; overload;
+{$ENDIF SUPPORTS_UNICODE_STRING}
 
 ///<summary> Converts Tab characters into SpcCount spaces </summary>
 function Tab2Spaces(const _s: string; _SpcCount: integer): string;
@@ -441,12 +455,12 @@ begin
   _Ende := 0;
   i := 1;
   while i <= Length(_s) do begin
-    while (i <= Length(_s)) and (NthCharOf(_s, i) in _Delimiter) do
+    while (i <= Length(_s)) and CharInSet(NthCharOf(_s, i), _Delimiter) do
       Inc(i);
     Dec(_WordNo);
     if _WordNo = 0 then
       _Start := i;
-    while (i <= Length(_s)) and not (NthCharOf(_s, i) in _Delimiter) do
+    while (i <= Length(_s)) and not CharInSet(NthCharOf(_s, i), _Delimiter) do
       Inc(i);
     if _WordNo = 0 then begin
       _Ende := i;
@@ -467,6 +481,15 @@ begin
     Include(DelimiterSet, _Delimiter[i]);
   Result := nthWordStartAndEnd(_s, _WordNo, DelimiterSet, _Start, _Ende);
 end;
+
+{$IFDEF SUPPORTS_UNICODE_STRING}
+
+function nthWordStartAndEnd(const _s: string; _WordNo: integer;
+  const _Delimiter: string; var _Start, _Ende: integer): boolean; overload;
+begin
+  Result := nthWordStartAndEnd(_s, _WordNo, AnsiString(_Delimiter), _Start, _Ende);
+end;
+{$ENDIF SUPPORTS_UNICODE_STRING}
 
 function nthWord(const _s: string; _WordNo: integer; const _Delimiter: string): string;
 var
@@ -573,7 +596,7 @@ begin
   Result := '';
   Dup := false;
   for i := 1 to Length(_s) do begin
-    if _s[i] in _Search then begin
+    if CharInSet(_s[i], _Search) then begin
       if not Dup or not _RemoveDuplicates then begin
         Result := Result + _Replace;
         Dup := true;
@@ -609,7 +632,7 @@ var
 begin
   Result := false;
   for i := 1 to Length(_s) do
-    if not (_s[i] in _ValidChars) then
+    if not CharInSet(_s[i], _ValidChars) then
       exit;
   Result := True;
 end;
@@ -626,7 +649,7 @@ begin
   Result := '';
   Include(_ControlChars, AnsiChar(_Prefix));
   for i := 1 to Length(_s) do begin
-    if _s[i] in _ControlChars then
+    if CharInSet(_s[i], _ControlChars) then
       Result := Result + Format('%s%.2x', [_Prefix, Ord(_s[i])]) // do not translate
     else
       Result := Result + _s[i];
@@ -677,12 +700,12 @@ end;
 
 function MatchStr(const _Searched, _Match: string): boolean;
 begin
-  Result := (LeftStr(_Searched, Length(_Match)) = _Match);
+  Result := SameStr(LeftStr(_Searched, Length(_Match)), _Match);
 end;
 
 function UMatchStr(const _Searched, _Match: string): boolean;
 begin
-  Result := (AnsiLowerCase(LeftStr(_Searched, Length(_Match))) = AnsiLowerCase(_Match));
+  Result := SameText(LeftStr(_Searched, Length(_Match)), _Match);
 end;
 
 // this function is compatible with StrNew/StrDispose in *SysUtils*
@@ -796,12 +819,22 @@ end;
 //  Halt(1);
 //end;
 
-function LoCase(_c: char): char;
+function LoCase(_c: WideChar): WideChar;
 begin
-  if _c in ['A'..'Z'] then
-    Result := Chr(Ord(_c) + 32)
-  else
-    Result := _c;
+  Result := _c;
+  case _c of
+    'A'..'Z':
+      Result := WideChar(Word(_c) or $0020);
+  end;
+end;
+
+function LoCase(_c: AnsiChar): AnsiChar;
+begin
+  Result := _c;
+  case _c of
+    'A'..'Z':
+      Result := AnsiChar(Byte(_c) or $20);
+  end;
 end;
 
 {function UpStr(const _s: string): string;
@@ -876,7 +909,7 @@ begin
 
   p := 1;
   while p <= Length(_Source) do begin
-    if _Source[p] in _Delimiters then begin
+    if CharInSet(_Source[p], _Delimiters) then begin
       _Substr := LeftStr(_Source, p - 1);
       _Source := TailStr(_Source, p + 1);
       if _Source = '' then
@@ -1077,12 +1110,20 @@ end;
 
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 begin
+{$IFDEF RTL220_UP}
+  Result := TFormatSettings.Create(GetSystemDefaultLCID);
+{$ELSE}
   GetLocaleFormatSettings(GetSystemDefaultLCID, Result);
+{$ENDIF}
 end;
 
 function GetUserDefaultLocaleSettings: TFormatSettings;
 begin
+{$IFDEF RTL220_UP}
+  Result := TFormatSettings.Create(GetUserDefaultLCID);
+{$ELSE}
   GetLocaleFormatSettings(GetUserDefaultLCID, Result);
+{$ENDIF}
 end;
 
 { TLineBuilder }
@@ -1120,8 +1161,11 @@ begin
 end;
 
 function ZeroPadLeft(_Value: Integer; _Len: Integer): string;
+var
+  s: AnsiString;
 begin
-  Str(_Value, Result);
+  Str(_Value, s);
+  Result := string(s);
   while Length(Result) < _Len do
     Result := '0' + Result;
 end;
@@ -1221,12 +1265,36 @@ begin
   end;
 end;
 
-{$ifndef DELPHI2009_UP}
-function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
+{$IFNDEF SUPPORTS_UNICODE_STRING}
+
+function CharInSet(_C: Char; const _CharSet: TSysCharSet): Boolean;
 begin
-  Result := c in CharSet;
+  Result := _c in _CharSet;
 end;
-{$endif DELPHI2009_UP}
+{$ENDIF SUPPORTS_UNICODE_STRING}
+
+{$IFDEF SUPPORTS_UNICODE_STRING}
+function Copy(const _s: AnsiString; _Pos, _Len: integer): AnsiString;
+begin
+  SetLength(Result, _Len);
+  Move(_s[_Pos], Result[1], _Len);
+end;
+
+function Copy(const _s: AnsiString; _Pos: integer): AnsiString;
+begin
+  Result :=  Copy(_s, _Pos, Length(_s) - _Pos);
+end;
+
+function Copy(const _s: string; _Pos, _Len: integer): string; inline;
+begin
+  Result := System.Copy(_s, _Pos, _Len);
+end;
+
+function Copy(const _s: string; _Pos: integer): string; inline;
+begin
+  Result := System.Copy(_s, _Pos);
+end;
+{$ENDIF SUPPORTS_UNICODE_STRING}
 
 end.
 

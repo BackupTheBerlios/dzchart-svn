@@ -549,7 +549,15 @@ type
     /// </summary>
     class function FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
 
-    class function FileExists(const _Filename: string): boolean;
+    ///<summary>
+    /// @param RaiseException determines whether an exception should be raised if the file does not exist
+    /// @raises Exception if the file does not exist and RaiseException is true
+    class function FileExists(const _Filename: string; _RaiseException: boolean = false): boolean;
+
+    ///<summary>
+    /// @param RaiseException determines whether an exception should be raised if the directory does not exist
+    /// @raises Exception if the directory does not exist and RaiseException is true
+    class function DirExists(const _DirName: string; _RaiseException: boolean = false): boolean;
 
     /// <summary>
     /// deletes an empty directory using the SysUtils function RemoveDir
@@ -648,6 +656,16 @@ type
     /// Returns the free space (in bytes) on the disk with the given drive letter
     /// </summary>
     class function DiskFree(_DriveLetter: AnsiChar): Int64;
+
+    ///<summary> changes the "full" file extension where "full" means it handles multiple
+    ///          extensions like .doc.exe </summary>
+    class function ChangeFileExtFull(const _Filename, _NewExt: string): string;
+    ///<summary> extracts the "full" file extension where "full" means it handles multiple
+    ///          extensions like .doc.exe </summary>
+    class function ExtractFileExtFull(const _Filename: string): string;
+    ///<summary> removes the "full" file extension where "full" means it handles multiple
+    ///          extensions like .doc.exe </summary>
+    class function RemoveFileExtFull(const _Filename: string): string;
   end;
 
 type
@@ -985,7 +1003,11 @@ begin
     try
       _Info.Filename := _Filename;
       _Info.Size := sr.Size;
+{$IFDEF RTL220_UP}
+      _Info.Timestamp := sr.TimeStamp;
+{$ELSE}
       _Info.Timestamp := FileDateToDateTime(sr.Time);
+{$ENDIF}
     finally
       FindClose(sr);
     end;
@@ -1132,6 +1154,10 @@ type
     FOnProgress: TCopyFileProgressEvt;
   private
     CancelFlag: BOOL;
+    // should an exception be raised within the OnProgress callback, it is stored here
+    FExceptAddr: pointer;
+    FExceptMsg: string;
+    FExceptClass: string;
     function doProgress(): TCopyProgressStatus.TProgressResult;
   public
     constructor Create(_OnProgress: TCopyFileProgressEvt);
@@ -1152,27 +1178,34 @@ function ProgressCallback(
 var
   Status: TProgressRedir;
 begin
-  Status := TProgressRedir(_Data);
-  Status.FTotalFileSize := _TotalFileSize;
-  Status.FTotalBytesTransferred := _TotalBytesTransferred;
-  Status.FStreamSize := _StreamSize;
-  Status.FStreamBytesTransferred := _StreamBytesTransferred;
-  Status.FStreamNumber := _StreamNumber;
-  case _CallbackReason of
-    CALLBACK_CHUNK_FINISHED: Status.FCallbackReason := prChunkFinished;
-    CALLBACK_STREAM_SWITCH: Status.FCallbackReason := prStreamSwitch;
-  else
+  try
+    Status := TProgressRedir(_Data);
+    Status.FTotalFileSize := _TotalFileSize;
+    Status.FTotalBytesTransferred := _TotalBytesTransferred;
+    Status.FStreamSize := _StreamSize;
+    Status.FStreamBytesTransferred := _StreamBytesTransferred;
+    Status.FStreamNumber := _StreamNumber;
+    case _CallbackReason of
+      CALLBACK_CHUNK_FINISHED: Status.FCallbackReason := prChunkFinished;
+      CALLBACK_STREAM_SWITCH: Status.FCallbackReason := prStreamSwitch;
+    else
     // Shouldn't happen, assume CALLBACK_CHUNK_FINISHED for now
-    Status.FCallbackReason := prChunkFinished;
-  end;
-  Status.FSourceFile := _SourceFile;
-  Status.FDestinationFile := _DestinationFile;
-  case Status.doProgress() of
-    prContinue: Result := PROGRESS_CONTINUE;
-    prCancel: Result := PROGRESS_CANCEL;
-    prStop: Result := PROGRESS_STOP;
-    prQuiet: Result := PROGRESS_QUIET;
-  else // should not happen, assume prContinue
+      Status.FCallbackReason := prChunkFinished;
+    end;
+    Status.FSourceFile := _SourceFile;
+    Status.FDestinationFile := _DestinationFile;
+    case Status.doProgress() of
+      prContinue: Result := PROGRESS_CONTINUE;
+      prCancel: Result := PROGRESS_CANCEL;
+      prStop: Result := PROGRESS_STOP;
+      prQuiet: Result := PROGRESS_QUIET;
+    else // should not happen, assume prContinue
+      Result := PROGRESS_CONTINUE;
+    end;
+  except
+    // Ignore exceptions here since the progess display should not affect the actual copying.
+    // Any exceptions whithin doProgress should be handled there and communicated to the main
+    // thread.
     Result := PROGRESS_CONTINUE;
   end;
 end;
@@ -1189,6 +1222,7 @@ var
   Res: BOOL;
   LastError: DWORD;
 begin
+  Result := cfwError;
   Redir := TProgressRedir.Create(_Progress);
   try
     Flags := 0;
@@ -1198,6 +1232,13 @@ begin
       Flags := Flags or COPY_FILE_RESTARTABLE;
     Res := Windows.CopyFileEx(PChar(_Source), PChar(_Dest), @ProgressCallback, Redir,
       @Redir.CancelFlag, Flags);
+    if Redir.FExceptAddr <> nil then begin
+      if cfwRaiseException in _Flags then begin
+        raise Exception.CreateFmt(_('Error %s (%s) in progress callback while trying to copy "%s" to "%s".'), [Redir.FExceptMsg, Redir.FExceptClass, _Source, _Dest])at Redir.FExceptAddr;
+      end;
+      Result := cfwError;
+      exit;
+    end;
     if not Res then begin
       LastError := GetLastError;
       if LastError = ERROR_REQUEST_ABORTED then
@@ -1367,7 +1408,7 @@ begin
   end;
 end;
 
-class function TFileSystem.FileExists(const _Filename: string): boolean;
+class function TFileSystem.FileExists(const _Filename: string; _RaiseException: boolean = false): boolean;
 var
   OldErrorMode: Cardinal;
 begin
@@ -1377,6 +1418,22 @@ begin
   finally
     SetErrorMode(OldErrorMode)
   end;
+  if not Result and _RaiseException then
+    raise Exception.CreateFmt(_('File not found: %s'), [_Filename]);
+end;
+
+class function TFileSystem.DirExists(const _DirName: string; _RaiseException: boolean = false): boolean;
+var
+  OldErrorMode: Cardinal;
+begin
+  OldErrorMode := SetErrorMode(SEM_NOOPENFILEERRORBOX);
+  try
+    Result := SysUtils.DirectoryExists(_DirName);
+  finally
+    SetErrorMode(OldErrorMode)
+  end;
+  if not Result and _RaiseException then
+    raise Exception.CreateFmt(_('Directory not found: %s'), [_DirName]);
 end;
 
 class function TFileSystem.FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
@@ -1509,14 +1566,6 @@ begin
   end;
 end;
 
-{$IFNDEF VER200 // Delphi 2009}
-
-function CharInSet(_c: AnsiChar; _Set: TSysCharSet): boolean; inline;
-begin
-  Result := _c in _Set;
-end;
-{$ENDIF VER200}
-
 class function TFileSystem.IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean;
 var
   i: Integer;
@@ -1553,6 +1602,28 @@ begin
   Result := IsValidFilename(_s, ErrPos, _AllowDot);
 end;
 
+class function TFileSystem.ExtractFileExtFull(const _Filename: string): string;
+begin
+  Result := TailStrOf(_Filename, '.');
+  if Result <> '' then
+    Result := '.' + Result;
+end;
+
+class function TFileSystem.RemoveFileExtFull(const _Filename: string): string;
+var
+  Path: string;
+begin
+  Path := ExtractFilePath(_FileName);
+  if Path <> '' then
+    itpd(Path);
+  Result := Path + LeftStrOf(ExtractFileName(_Filename), '.');
+end;
+
+class function TFileSystem.ChangeFileExtFull(const _Filename: string; const _NewExt: string): string;
+begin
+  Result := RemoveFileExtFull(_Filename) + _NewExt;
+end;
+
 { TProgressRedir }
 
 constructor TProgressRedir.Create(_OnProgress: TCopyFileProgressEvt);
@@ -1564,8 +1635,16 @@ end;
 function TProgressRedir.doProgress(): TCopyProgressStatus.TProgressResult;
 begin
   Result := prContinue;
-  if Assigned(FOnProgress) then
-    FOnProgress(Self, Result);
+  try
+    if Assigned(FOnProgress) then
+      FOnProgress(Self, Result);
+  except
+    on e: Exception do begin
+      FExceptAddr := ExceptAddr;
+      FExceptMsg := e.Message;
+      FExceptClass := e.ClassName;
+    end;
+  end;
 end;
 
 { TFileGenerationHandler }

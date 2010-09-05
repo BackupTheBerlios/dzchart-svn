@@ -104,7 +104,7 @@ constructor Tf_dbCreatorWizard.Create(_Owner: TComponent);
 begin
   inherited;
   FLogConsole := TdzLogConsole.Create(Self);
-  gblLogger := TEventLogger.Create(FLogConsole.LogCallback);
+  SetGlobalLogger(TEventLogger.Create(FLogConsole.LogCallback));
 //  LogProgramVersion(LL_INFO);
   FSourceFile := Tf_SourceFile.Create(self);
   FSourceFile.TheFormStorage.AppStorage := TheAppRegistryStorage;
@@ -120,7 +120,7 @@ end;
 
 destructor Tf_dbCreatorWizard.Destroy;
 begin
-  gblLogger := nil;
+  SetGlobalLogger(nil);
   inherited;
 end;
 

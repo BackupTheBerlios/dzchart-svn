@@ -9,6 +9,7 @@ unit u_dzDateUtils;
 interface
 
 uses
+  Sysutils,
   u_dzTranslator;
 
 type
@@ -74,7 +75,6 @@ function Str2Date(const _s: string): TDateTime;
 implementation
 
 uses
-  SysUtils,
   SysConst,
   DateUtils,
   u_dzStringUtils;

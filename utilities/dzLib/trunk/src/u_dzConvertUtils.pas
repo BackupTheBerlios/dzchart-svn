@@ -47,7 +47,7 @@ const
   /// <summary>
   /// String containing all characters that can be used as digits
   /// </summary>
-  DIGIT_CHARS: string[36] = '0123456789ABCDEFGHIJKlMNOPQRSTUVWXYZ';
+  DIGIT_CHARS: string = '0123456789ABCDEFGHIJKlMNOPQRSTUVWXYZ';
 
 // Str <-> Decimal conversion
 /// <summary>
@@ -315,13 +315,13 @@ const
 function SecondsToHumanReadableString(_Seconds: Int64): string;
 
 /// <summary>
-/// returns the default locale settings as read from the user's regional settings }
+/// returns the default locale settings as read from the user's regional settings
 /// </summary>
-function GetUserDefaultLocaleSettings: TFormatSettings;
+function GetUserDefaultLocaleSettings: TFormatSettings; deprecated; // use u_dzStringUtils.GetSystemDefaultLocaleSettings instead
 /// <summary>
-/// returns the default locale settings as read from the system's regional settings }
+/// returns the default locale settings as read from the system's regional settings
 /// </summary>
-function GetSystemDefaultLocaleSettings: TFormatSettings;
+function GetSystemDefaultLocaleSettings: TFormatSettings; deprecated; // use u_dzStringUtils.GetSystemDefaultLocaleSettings instead
 
 ///<summary>
 /// returns the long word split into an array of byte
@@ -481,8 +481,11 @@ begin
 end;
 
 function Long2Dec(_l: ULong): string;
+var
+  s: AnsiString;
 begin
-  Str(_l, Result);
+  Str(_l, s);
+  Result := string(s);
 end;
 
 function Long2Dec2(_l: ULong): string;
@@ -574,13 +577,16 @@ begin
 end;
 
 function Float2Str(_flt: extended; _Width, _Decimals: integer): string;
+var
+  s: AnsiString;
 begin
-  Str(_flt: _Width: _Decimals, Result);
+  Str(_flt: _Width: _Decimals, s);
+  Result := string(s);
 end;
 
 function Float2Str(_flt: extended; _Decimals: integer): string;
 begin
-  Str(_Flt: 0: _Decimals, Result);
+  Result := Float2Str(_flt, 0, _Decimals);
 end;
 
 function TryRound(_flt: extended; out _wrd: word): boolean;
@@ -658,17 +664,12 @@ end;
 
 function TryStr2Float(_s: string; out _flt: extended; _DecSeparator: char = '.'): boolean;
 var
-  TmpDecSeparator: char;
+  FmtSettings: TFormatSettings;
 begin
   if _DecSeparator = #0 then
     _DecSeparator := GuessDecimalSeparator(_s);
-  TmpDecSeparator := DecimalSeparator;
-  DecimalSeparator := _DecSeparator;
-  try
-    Result := TextToFloat(PChar(_s), _flt, fvExtended);
-  finally
-    DecimalSeparator := TmpDecSeparator;
-  end;
+  FmtSettings.DecimalSeparator := _DecSeparator;
+  Result := TextToFloat(PChar(_s), _flt, fvExtended, FmtSettings);
 end;
 
 function TryStr2Float(_s: string; out _flt: double; _DecSeparator: char = '.'): boolean;
@@ -737,12 +738,20 @@ end;
 
 function GetSystemDefaultLocaleSettings: TFormatSettings;
 begin
+{$ifdef RTL220_UP}
+  Result := TFormatSettings.Create(GetSystemDefaultLCID);
+{$else}
   GetLocaleFormatSettings(GetSystemDefaultLCID, Result);
+{$endif}
 end;
 
 function GetUserDefaultLocaleSettings: TFormatSettings;
 begin
+{$ifdef RTL220_UP}
+  Result := TFormatSettings.Create(GetUserDefaultLCID);
+{$else}
   GetLocaleFormatSettings(GetUserDefaultLCID, Result);
+{$endif}
 end;
 
 function LongWord2ByteArr(_Value: LongWord; _MsbFirst: boolean = false): TBytes;
@@ -784,7 +793,7 @@ end;
 
 
 initialization
-  DZ_FORMAT_DECIMAL_POINT := GetUserDefaultLocaleSettings;
+  DZ_FORMAT_DECIMAL_POINT := u_dzStringUtils.GetUserDefaultLocaleSettings;
   DZ_FORMAT_DECIMAL_POINT.DecimalSeparator := '.';
   DZ_FORMAT_DECIMAL_POINT.ThousandSeparator := #0;
 end.

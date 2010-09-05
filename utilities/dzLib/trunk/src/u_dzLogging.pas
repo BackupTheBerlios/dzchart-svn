@@ -325,11 +325,11 @@ begin
   if _IncludeCallstack and Assigned(gblOnGetCallstack) then begin
     sl := TStringList.Create;
     try
-      LogError('<begin call stack>');
+      LogDebug('<begin call stack>');
       gblOnGetCallstack(sl);
       for s in sl do
-        LogError(s);
-      LogError('<end call stack>');
+        LogDebug(s);
+      LogDebug('<end call stack>');
     finally
       sl.Free;
     end;

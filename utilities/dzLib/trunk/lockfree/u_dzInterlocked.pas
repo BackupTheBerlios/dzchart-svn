@@ -28,7 +28,7 @@ procedure InterlockedOrSpin(var _Destination: LongWord; _Mask: LongWord); inline
 
 implementation
 
-// InterlockedCompareExchange implements the following as an atomar operation:
+// InterlockedCompareExchange implements the following as an atomic operation:
 // function InterlockedCompareExchange(var _Destination: integer; _NewValue, _OldValue: integer);
 // begin
 //   Result := _Destination;

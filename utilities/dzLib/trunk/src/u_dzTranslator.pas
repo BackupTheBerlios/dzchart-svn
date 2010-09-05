@@ -222,8 +222,12 @@ initialization
   AddDomainForResourceString('delphi2009');
 {$ELSE}{$IFDEF DELPHI14}
   AddDomainForResourceString('delphi2010');
+{$ELSE}{$IFDEF DELPHI15}
+  // until we get Delphi XP translations, we use those from Delphi 2010
+  AddDomainForResourceString('delphi2010');
 {$ELSE}
   'unknown Delphi version!';
+{$ENDIF}
 {$ENDIF}
 {$ENDIF}
 {$ENDIF}

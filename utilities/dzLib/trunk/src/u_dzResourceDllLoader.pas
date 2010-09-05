@@ -8,6 +8,7 @@ uses
   SysUtils,
   Classes,
   u_dzTranslator,
+  Contnrs,
   u_dzCustomDllLoader;
 
 type
@@ -75,6 +76,17 @@ begin
 end;
 
 { TdzResourceDllLoader }
+
+type
+  TDllEntry = class
+    LoadCount: Integer;
+    FileName: string;
+    Handle: Pointer;
+    constructor Create(_FileName: string; _Handle: Pointer);
+  end;
+
+var
+  FDllList: TObjectList;
 
 constructor TdzResourceDllLoader.Create(const _DllName: string; _DllHandle: Pointer);
 begin
@@ -187,7 +199,19 @@ var
   dwmemsize: DWord;
   i: Integer;
   pAll: Pointer;
+  DllEntry: TDllEntry;
 begin
+  FDllHandle := nil;
+
+  for i := FDllList.Count - 1 downto 0 do begin
+    DllEntry := FDllList[i] as TDllEntry;
+    if SameText(DllEntry.FileName, FDllName) then begin
+      DllEntry.LoadCount := DllEntry.LoadCount + 1;
+      FDllHandle := DllEntry.Handle;
+      Exit; // ---> already loaded
+    end;
+  end;
+
   FKernelHandle := GetModuleHandle('kernel32.dll');
   FMyHandle := GetModuleHandle(nil);
 
@@ -244,6 +268,8 @@ begin
     DllMain(DWord(pAll), DLL_PROCESS_ATTACH, 0);
   end;
   FDllHandle := pAll;
+
+  FDllList.Add(TDllEntry.Create(FDllName, FDllHandle));
 end;
 
 procedure TdzResourceDllLoader.UnloadDll;
@@ -251,6 +277,8 @@ var
   DllMain: function(dwHandle, dwReason, dwReserved: DWord): DWord; stdcall;
   IDH: PImageDosHeader;
   INH: PImageNtHeaders;
+  i: integer;
+  DllEntry: TDllEntry;
 begin
   IDH := FDllHandle;
   if (isBadReadPtr(IDH, SizeOf(TImageDosHeader))) or
@@ -265,8 +293,20 @@ begin
   end;
 
   @DllMain := Pointer(INH^.OptionalHeader.AddressOfEntryPoint + DWord(IDH));
-  if Assigned(DllMain) then
-    DllMain(DWord(IDH), DLL_PROCESS_DETACH, 0);
+
+  for i := FDllList.Count - 1 downto 0 do begin
+    DllEntry := (FDllList[i] as TDllEntry);
+    if DllEntry.Handle = IDH then begin
+      DllEntry.LoadCount := DllEntry.LoadCount - 1;
+      if DllEntry.LoadCount = 0 then begin
+        if Assigned(DllMain) then
+          DllMain(DWord(IDH), DLL_PROCESS_DETACH, 0);
+
+        VirtualFree(IDH, INH.OptionalHeader.SizeOfImage, MEM_DECOMMIT);
+        FDllList.Delete(i);
+      end;
+    end;
+  end;
 end;
 
 function tdzResourceDllLoader.GetEntryPoint(const _EntryPoint: string): pointer;
@@ -384,6 +424,21 @@ begin
     end;
   end;
 end;
+
+{ TDllEntry }
+
+constructor TDllEntry.Create(_FileName: string; _Handle: Pointer);
+begin
+  LoadCount := 1;
+  FileName := _FileName;
+  Handle := _Handle;
+end;
+
+initialization
+  FDllList := TObjectList.Create;
+
+finalization
+  FreeAndNil(FDllList);
 
 end.
 

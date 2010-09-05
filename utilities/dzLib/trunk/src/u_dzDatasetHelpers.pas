@@ -7,11 +7,13 @@ interface
 
 uses
   SysUtils,
+  Classes,
   AdoDb,
   DB,
   DBTables,
   u_dzTranslator,
-  u_dzGuidUtils;
+  u_dzGuidUtils,
+  u_dzNameValueList;
 
 type
   ///<summary> Interface definition for the Dataset-Helper, the idea is to have simplified
@@ -117,6 +119,18 @@ type
     procedure ClearField(const _Fieldname: string);
 
     function HasField(const _Fieldname: string): boolean;
+    function Fields: TFields;
+
+    ///<summary> Copies all values of the current record to the given NameValueList, ignoring
+    ///          all fields that either contain NULL or are listed in Ignore.
+    ///          @param NameValueList is a TdzNameValueList that returns the current record as name=value pairs
+    ///          @param Ignore is an array of string with all field names that should not be copied
+    ///</summary>
+    procedure ToNameValueList(_Values: TNameValueList; const _Ignore: array of string);
+    ///<summary> Copies all values from the given NameValueList to the current record
+    ///          @param NameValueList is a TdzNameValueList that contains the values
+    ///</summary>
+    procedure FromNameValueList(_Values: TNameValueList);
     ///<summary> allows access to field values as variants </summary>
     property FieldValues[const _FieldName: string]: Variant read GetFieldValue write SetFieldValue; default;
   end;
@@ -200,7 +214,10 @@ type
     procedure SetFieldValue(const _FieldName: string; const _Value: Variant);
     function TrySetFieldValue(const _FieldName: string; const _Value: Variant): boolean;
     procedure ClearField(const _Fieldname: string);
+    function Fields: TFields;
     function HasField(const _Fieldname: string): boolean;
+    procedure ToNameValueList(_Values: TNameValueList; const _Ignore: array of string);
+    procedure FromNameValueList(_Values: TNameValueList);
     property FieldValues[const _FieldName: string]: Variant read GetFieldValue write SetFieldValue; default;
   end;
 
@@ -391,6 +408,44 @@ begin
   FDataset.Close;
 end;
 
+procedure TDatasetHelper.ToNameValueList(_Values: TNameValueList; const _Ignore: array of string);
+
+  function IsIgnored(const _s: string): boolean;
+  var
+    s: string;
+  begin
+    Result := false;
+    for s in _Ignore do begin
+      if SameText(s, _s) then begin
+        Result := true;
+        exit;
+      end;
+    end;
+  end;
+
+var
+  Field: TField;
+  Fieldname: string;
+  Value: string;
+begin
+  Assert(Assigned(_Values));
+
+  for Field in Fields do begin
+    Fieldname := Field.FieldName;
+    if not IsIgnored(FieldName) then
+      if TryFieldAsString(Fieldname, Value) then
+        _Values.ByName[Fieldname] := Value;
+  end;
+end;
+
+procedure TDatasetHelper.FromNameValueList(_Values: TNameValueList);
+var
+  i: integer;
+begin
+  for i := 0 to _Values.Count - 1 do
+    FieldValues[_Values[i].Name] := _Values[i].Value;
+end;
+
 function TDatasetHelper.Eof: boolean;
 begin
   Result := FDataset.Eof;
@@ -431,6 +486,11 @@ end;
 function TDatasetHelper.HasField(const _Fieldname: string): boolean;
 begin
   Result := (FDataset.FindField(_Fieldname) <> nil);
+end;
+
+function TDatasetHelper.Fields: TFields;
+begin
+  Result := FDataset.Fields;
 end;
 
 procedure TDatasetHelper.SetFieldValue(const _FieldName: string; const _Value: Variant);
@@ -531,13 +591,7 @@ end;
 
 procedure TDatasetHelper.Post;
 begin
-  try
-    FDataset.Post;
-  except
-    on e: Exception do begin
-      raise Exception.CreateFmt(_('Error posting a dataset to "%s". (%s)'), [FTableName, e.Message]);
-    end;
-  end;
+  FDataset.Post;
 end;
 
 end.

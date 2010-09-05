@@ -229,6 +229,7 @@ end;
 
 function TCustomFileInfo.FileVersionRec: TFileVersionRec;
 begin
+  FillChar(Result, SizeOf(Result), 0);
   Result.IsValid := GetFileBuildInfo(FFileName, Result.Major, Result.Minor, Result.Revision, Result.Build);
 end;
 
@@ -237,14 +238,17 @@ var
   Rec: TFileVersionRec;
 begin
   Rec := FileVersionRec;
-  case _Parts of
-    vpMajor: Result := IntToStr(Rec.Major);
-    vpMajorMinor: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor);
-    vpMajorMinorRevision: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor) + '.' + IntToStr(Rec.Revision);
-    vpFull: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor) + '.' + IntToStr(Rec.Revision) + '.' + IntToStr(Rec.Build)
-  else
-    raise Exception.CreateFmt('Invalid version part (%d)', [Ord(_Parts)]);
-  end;
+  if Rec.IsValid then begin
+    case _Parts of
+      vpMajor: Result := IntToStr(Rec.Major);
+      vpMajorMinor: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor);
+      vpMajorMinorRevision: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor) + '.' + IntToStr(Rec.Revision);
+      vpFull: Result := IntToStr(Rec.Major) + '.' + IntToStr(Rec.Minor) + '.' + IntToStr(Rec.Revision) + '.' + IntToStr(Rec.Build)
+    else
+      raise Exception.CreateFmt(_('Invalid version part (%d)'), [Ord(_Parts)]);
+    end;
+  end else
+    Result := _('<no version information>');
 end;
 
 function TCustomFileInfo.ProductName: string;
@@ -286,7 +290,7 @@ end;
 procedure TFileVersionRec.CheckValid;
 begin
   if not IsValid then
-    raise EAIInvalidVersionInfo.Create('Invalid version info');
+    raise EAIInvalidVersionInfo.Create(_('Invalid version info'));
 end;
 
 class operator TFileVersionRec.Equal(_a, _b: TFileVersionRec): boolean;

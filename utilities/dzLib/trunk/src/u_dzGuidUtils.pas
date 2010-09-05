@@ -3,13 +3,15 @@ unit u_dzGuidUtils;
 interface
 
 uses
-  SysUtils;
+  SysUtils,
+  u_dzNullableTypesUtils;
 
 type
   TNullableGuid = record
   private
     FValue: TGuid;
     FIsValid: IInterface;
+    procedure DeclareValid; inline;
   public
     ///<summary> Generates a new GUID using WinAPI calls </summary>
     procedure GenerateNew;
@@ -19,6 +21,8 @@ type
     function AssignVariant(_v: Variant): boolean;
     ///<summary> explicit cast to string "string(GUID)" converts to standard string form </summary>
     class operator Explicit(_a: TNullableGuid): string;
+    ///<summary> explicit cast converts from standard string form </summary>
+    class operator Explicit(const _a: string): TNullableGuid;
     ///<summary> compares two NullableGuids, returns true, if the are equal, raises exception if one
     ///          is not valid </summary>
     class operator Equal(_a, _b: TNullableGuid): boolean;
@@ -30,6 +34,8 @@ type
     function Value: TGuid;
     ///<summary> returns true, if valid, false otherwise </summary>
     function IsValid: boolean;
+    ///<summary> invalidates the GUID </summary>
+    procedure Invalidate;
     ///<summary> returns a new, valid GUID </summary>
     class function Generate: TNullableGuid; static;
   end;
@@ -45,41 +51,6 @@ uses
   u_dzVariantUtils,
   ActiveX;
 
-// this is a fake interfaced object that only exists as the VMT
-// It can still be used to trick the compiler into believing an interface pointer is assigned
-
-function NopAddref(inst: Pointer): Integer; stdcall;
-begin
-  Result := -1;
-end;
-
-function NopRelease(inst: Pointer): Integer; stdcall;
-begin
-  Result := -1;
-end;
-
-function NopQueryInterface(inst: Pointer; const IID: TGUID; out Obj): HResult; stdcall;
-begin
-  Result := E_NOINTERFACE;
-end;
-
-const
-  FlagInterfaceVTable: array[0..2] of Pointer =
-    (
-    @NopQueryInterface,
-    @NopAddref,
-    @NopRelease
-    );
-const
-  FlagInterfaceInstance: Pointer = @FlagInterfaceVTable;
-
-function GetNullableTypesFlagInterface: IInterface;
-begin
-  Result := IInterface(@FlagInterfaceInstance);
-end;
-
-{ TGuidEx }
-
 function TryStr2GUID(const _s: string; out _GUID: TGUID): boolean;
 begin
   Result := Succeeded(CLSIDFromString(PWideChar(WideString(_s)), _GUID));
@@ -94,13 +65,15 @@ begin
     Result := TryStr2GUID(s, _GUID);
 end;
 
+{ TNullableGuid }
+
 function TNullableGuid.AssignVariant(_v: Variant): boolean;
 begin
   Result := TryVar2GUID(_v, FValue);
   if Result then
-    FIsValid := GetNullableTypesFlagInterface
+    DeclareValid
   else
-    FIsValid := nil;
+    Invalidate;
 end;
 
 function TNullableGuid.ToVariant: Variant;
@@ -110,9 +83,19 @@ end;
 
 function TNullableGuid.Value: TGuid;
 begin
-  if not Assigned(FIsValid) then
+  if not IsValid then
     raise Exception.Create('TNullableGuid is not valid');
   Result := FValue;
+end;
+
+procedure TNullableGuid.Invalidate;
+begin
+  FIsValid := nil;
+end;
+
+procedure TNullableGuid.DeclareValid;
+begin
+  FIsValid := GetNullableTypesFlagInterface;
 end;
 
 class operator TNullableGuid.Equal(_a, _b: TNullableGuid): boolean;
@@ -126,6 +109,14 @@ begin
     Result := not IsEqualGUID(_a.Value, _b.Value)
   else
     Result := _a.IsValid or _b.IsValid;
+end;
+
+class operator TNullableGuid.Explicit(const _a: string): TNullableGuid;
+begin
+  if _a = '' then
+    Result.Invalidate
+  else
+    Result := StringToGUID(_a);
 end;
 
 class operator TNullableGuid.Explicit(_a: TNullableGuid): string;
@@ -144,15 +135,15 @@ end;
 procedure TNullableGuid.GenerateNew;
 begin
   if Succeeded(CreateGUID(FValue)) then
-    FIsValid := GetNullableTypesFlagInterface
+    DeclareValid
   else
-    FIsValid := nil;
+    Invalidate;
 end;
 
 class operator TNullableGuid.Implicit(_a: TGUID): TNullableGuid;
 begin
   Result.FValue := _a;
-  Result.FIsValid := GetNullableTypesFlagInterface;
+  Result.DeclareValid;
 end;
 
 function TNullableGuid.IsValid: boolean;

@@ -44,10 +44,10 @@
     <DCC_DcuOutput>..\dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\dcu</DCC_HppOutput>
-    <DCC_UnitSearchPath>..\..\..\..\jcl\source;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_UnitSearchPath>
-    <DCC_ResourcePath>..\..\..\..\jcl\source;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_ResourcePath>
-    <DCC_ObjPath>..\..\..\..\jcl\source;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_ObjPath>
-    <DCC_IncludePath>..\..\..\..\jcl\source;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_IncludePath>
+    <DCC_UnitSearchPath>..\..\..\..\jcl\source\include;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\..\..\jcl\source\include;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\..\..\jcl\source\include;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_ObjPath>
+    <DCC_IncludePath>..\..\..\..\jcl\source\include;..\..\..\..\jcl\source\common;..\..\..\..\jcl\source\windows;..\..\..\..\jcl\source\vcl;..\..\..\src;..\..\..\..\dztemplates\templates;..\..\..\..\dztemplates\units;..\..\..\..\jvcl\common;..\..\..\..\jvcl\run;..\..\..\..\jvcl\resources;..\..\..\..\tregexpr\source</DCC_IncludePath>
     <DCC_Define>debug;use_jedi_jcl;NO_TRANSLATION</DCC_Define>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>

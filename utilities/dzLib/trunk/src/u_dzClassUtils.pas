@@ -146,7 +146,13 @@ function TIniFile_ReadChar(_Ini: TCustomIniFile; const _Section, _Ident: string;
 
 ///<summary> Like TIniFile.ReadString but allows to specify whether to use the Default if the read string
 ///          is empty. </summary>
-function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: string; const _Default: string; _DefaultIfEmtpy: boolean = false): string;
+function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: string; const _Default: string; _DefaultIfEmtpy: boolean = false): string; overload;
+///<summary> Like TIniFile.ReadString but allows to specify whether to use the Default if the read string
+///          is empty. </summary>
+function TIniFile_ReadString(const _Filename: string; const _Section, _Ident: string; const _Default: string; _DefaultIfEmtpy: boolean = false): string; overload;
+///<summary>
+/// Reads a string from the ini-file, raises an exception if the value is empty </summary>
+function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: string): string; overload;
 
 ///<summary>
 /// reads a string list from an ini file section of the form
@@ -162,12 +168,18 @@ function TIniFile_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st:
 /// Tries to read a floating point value from the ini-file, always using '.' as decimal separator.
 /// @returns true, if a value could be read and converted
 ///</summary>
-function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
+function TIniFile_TryReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean; overload;
+function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean; overload deprecated; // use TryReadFloat instead
+function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string): extended; overload;
 
 ///<summary>
 /// Writes a floating point value to the ini-file, always using '.' as decimal separator.
 ///</summary>
 procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; _Value: extended);
+
+///<summary>
+/// Reads an integer from the ini-file, raises an exception if the value is not an integer </summary>
+function TIniFile_ReadInt(_Ini: TCustomIniFile; const _Section, _Ident: string): integer;
 
 implementation
 
@@ -384,6 +396,25 @@ begin
     Result := _Default;
 end;
 
+function TIniFile_ReadString(const _Filename: string; const _Section, _Ident: string; const _Default: string; _DefaultIfEmtpy: boolean = false): string; overload;
+var
+  Ini: TMemIniFile;
+begin
+  Ini := TMemIniFile.Create(_Filename);
+  try
+    Result := TIniFile_ReadString(Ini, _Section, _Ident, _Default, _DefaultIfEmtpy);
+  finally
+    FreeAndNil(Ini);
+  end;
+end;
+
+function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: string): string;
+begin
+  Result := _Ini.ReadString(_Section, _Ident, '');
+  if Result = '' then
+    raise Exception.CreateFmt(_('Invalid empty string value in ini file for [%s]%s'), [_Section, _Ident]);
+end;
+
 function TIniFile_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
 var
   i: integer;
@@ -393,7 +424,7 @@ begin
     _st.Add(_Ini.ReadString(_Section, 'Item' + IntToStr(i), ''));
 end;
 
-function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
+function TIniFile_TryReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
 var
   s: string;
 begin
@@ -401,9 +432,32 @@ begin
   Result := TryStr2Float(s, _Value);
 end;
 
+function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
+begin
+  Result := TIniFile_TryReadFloat(_Ini, _Section, _Ident, _Value);
+end;
+
+function TIniFile_ReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string): extended;
+var
+  s: string;
+begin
+  s := _Ini.ReadString(_Section, _Ident, '');
+  if not TryStr2Float(s, Result) then
+    raise Exception.CreateFmt(_('Invalid floating point value %s in ini file for [%s]%s'), [s, _Section, _Ident]);
+end;
+
 procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; _Value: extended);
 begin
   _Ini.WriteString(_Section, _Ident, Float2Str(_Value));
+end;
+
+function TIniFile_ReadInt(_Ini: TCustomIniFile; const _Section, _Ident: string): integer;
+var
+  s: string;
+begin
+  s := _Ini.ReadString(_Section, _Ident, '');
+  if not TryStrToInt(s, Result) then
+    raise Exception.CreateFmt(_('Invalid integer value "%s" in ini file for [%s]%s'), [s, _Section, _Ident]);
 end;
 
 end.

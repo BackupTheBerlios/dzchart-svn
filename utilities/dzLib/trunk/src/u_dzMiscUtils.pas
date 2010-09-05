@@ -200,6 +200,7 @@ uses
 {$ENDIF}
   FileCtrl,
   StrUtils,
+  u_dzFileUtils,
   u_dzStringUtils,
   u_dzConvertUtils;
 
@@ -347,16 +348,16 @@ begin
   MaskFound := false;
   i := Length(_Wildcard);
   while i > 0 do begin
-    if _Wildcard[i] in ['*', '?'] then
+    if CharInSet(_Wildcard[i], ['*', '?']) then
       MaskFound := true;
     if _Wildcard[i] = '\' then begin
-      if MaskFound or not DirectoryExists(_Wildcard) then begin
+      if MaskFound or not TFileSystem.DirExists(_Wildcard) then begin
         // if we had a mask, this is easy, just split the wildcard at position i
         // if there was no mask, and the whole thing is not a directory,
         // split at position i
         _Mask := TailStr(_Wildcard, i + 1);
         _Path := LeftStr(_Wildcard, i - 1);
-        Result := DirectoryExists(_Path);
+        Result := TFileSystem.DirExists(_Path);
       end else begin
         // there was no mask and the whole thing is a directory
         Result := true;
@@ -373,7 +374,7 @@ begin
 
   // if there was a mask, or the thing is not a directory, it is a file in
   // the current directory
-  if MaskFound or not DirectoryExists(_Wildcard) then begin
+  if MaskFound or not TFileSystem.DirExists(_Wildcard) then begin
     _Path := '.';
     _Mask := _Wildcard;
     Result := true;

@@ -57,7 +57,7 @@ type
       var _ParamCount: integer; var _Percent: boolean;
       var _Error: string): boolean;
   public
-    constructor Create(_Owner: TComponent); overload; override;
+    constructor Create(_Owner: TComponent); override;
     property FormCaption: string read FFormCaption write SetFormCaption;
     property ProgressPos: integer read FProgressPos write SetProgressPos;
     property ProgressMax: integer read FMax write SetMax;

@@ -3,6 +3,8 @@
 ///          @author        twm </summary>
 unit u_dzVclUtils;
 
+{$include jedi.inc}
+
 interface
 
 uses
@@ -206,6 +208,11 @@ function TStringGrid_CellToInt(_grid: TStringGrid; _Col, _Row: integer; _FocusCe
 ///          @param Memo is the memo to work on
 ///          @param Retain is the number of lines to retain </summary>
 procedure TMemo_DeleteTopLines(_Memo: TMemo; _Retain: integer);
+
+///<summary> Gets the cursor position (actually the start of the selection) of the memo </summary>
+function TMemo_GetCursorPos(_Memo: TMemo): integer;
+procedure TMemo_SetCursorPos(_Memo: TMemo; _CharIdx: integer);
+procedure TMemo_ScrollToCursorPos(_Memo: TMemo);
 
 ///<summary> Scrolls the memo to the end </summary>
 procedure TMemo_ScrollToEnd(_Memo: TMemo);
@@ -420,7 +427,8 @@ procedure TCheckListBox_CheckAll(_clb: TCheckListBox; _IncludeDisabled: boolean 
 ///          @param Checked is a TStrings to which the selected items and objects are to be added
 ///          @param IncludeDisabled determines whether the disabled items should also be returned if they are checked
 ///          @returns the number of Items in Checked </summary>
-function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer;
+function TCheckListBox_GetChecked(_clb: TCheckListBox; _Checked: TStrings; _IncludeDisabled: boolean = false): integer; overload;
+function TCheckListBox_GetChecked(_clb: TCheckListbox; _IncludeDisabled: boolean = false): string; overload;
 ///<summary> Returns the objects associated with the checked items
 ///          @param clb is the TCheckListBox
 ///          @param Objects is a TList to which the selected objects are to be added
@@ -593,6 +601,9 @@ uses
   Consts,
   JPEG,
   StrUtils,
+{$IFDEF SUPPORTS_UNICODE_STRING}
+  AnsiStrings,
+{$ENDIF SUPPORTS_UNICODE_STRING}
 {$IFDEF GIFByRx}
   RxGConst,
   rxGif,
@@ -1561,6 +1572,19 @@ begin
   Result := _Checked.Count;
 end;
 
+function TCheckListBox_GetChecked(_clb: TCheckListbox; _IncludeDisabled: boolean = false): string; overload;
+var
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    TCheckListBox_GetChecked(_clb, sl, _IncludeDisabled);
+    Result := StringReplace(sl.Text, #13#10, ',', [rfReplaceAll]);
+  finally
+    FreeAndNil(sl);
+  end;
+end;
+
 function TCheckListBox_GetCheckedObjects(_clb: TCheckListBox; _Objects: TList; _IncludeDisabled: boolean = false): integer;
 var
   i: Integer;
@@ -2069,6 +2093,22 @@ begin
     Offset := SendMessage(_Memo.Handle, EM_LINELENGTH, 0, 0);
   SendMessage(_Memo.Handle, EM_SETSEL, 0, Offset);
   SendMessage(_Memo.Handle, EM_REPLACESEL, 0, Longint(EmptyStr));
+end;
+
+function TMemo_GetCursorPos(_Memo: TMemo): integer;
+begin
+  SendMessage(_Memo.Handle, EM_GETSEL, integer(@Result), 0);
+end;
+
+procedure TMemo_SetCursorPos(_Memo: TMemo; _CharIdx: integer);
+begin
+  SendMessage(_Memo.Handle, EM_SETSEL, _CharIdx, _CharIdx);
+  TMemo_ScrollToCursorPos(_Memo);
+end;
+
+procedure TMemo_ScrollToCursorPos(_Memo: TMemo);
+begin
+  SendMessage(_Memo.Handle, EM_SCROLLCARET, 0, 0);
 end;
 
 procedure TMemo_ScrollToEnd(_Memo: TMemo);
