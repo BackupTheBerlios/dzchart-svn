@@ -1,5 +1,5 @@
 Pre-Build events:
-..\buildtools\prepbuild.exe --incbuild --readini=$(PROJECTPATH) --exec=..\buildtools\prep.cmd
+..\buildtools\prebuild.cmd $(PROJECTPATH)
 
 Post-Build events:
-..\buildtools\makejcldbg -e $(OUTPUTDIR)\$(OUTPUTNAME).map
+..\buildtools\postbuild.cmd $(OUTPUTDIR)$(OUTPUTNAME)

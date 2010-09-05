@@ -12,7 +12,15 @@ goto :eof
 
 :locexists
 
+if not exist libs\dzlib\translations\de\dzlib.po goto nodzlib
+@echo compile German dzlib.po
+%~dp0\msgfmt libs\dzlib\translations\de\dzlib.po -o locale\de\lc_messages\dzlib.mo
+:nodzlib
 
+if not exist libs\dxgettext\translations\de\delphi2007.po goto nodelphi
+@echo compile German delphi2007.po
+%~dp0\msgfmt libs\dxgettext\translations\de\delphi2007.po -o locale\de\lc_messages\delphi2007.mo
+:nodelphi
 @echo compile German default.po
 %~dp0\msgfmt locale\de\lc_messages\default.po -o locale\de\lc_messages\default.mo
 

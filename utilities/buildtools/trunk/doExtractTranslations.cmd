@@ -12,23 +12,25 @@ set POFILES=
 set OUTDIR=.
 
 set BASE=.
-dxgettext %MASKS% -r -b %BASE%\src -o %BASE%
-msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
+%~dp0\dxgettext %MASKS% -r -b %BASE%\src -o %BASE%
+%~dp0\msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
 move %BASE%\filtered.po %BASE%\default.po
 set POFILES=%POFILES% %BASE%\default.po
-msgcat -o default.po %POFILES%
+%~dp0\msgcat -o default.po %POFILES%
 
+if "%SKIPDE%"=="1" goto skipde
 @rem German:
 set LNG=de
 call :HandLng
+:skipde
 
-goto skipfr
+if "%SKIPFR%"=="1" goto skipfr
 @rem French:
 set LNG=fr
 call :HandLng
 :skipfr
 
-goto skipen
+if "%SKIPEN%"=="1" goto skipen
 @rem English:
 set LNG=en
 call :HandLng
@@ -41,10 +43,10 @@ goto :eof
 :HandLng
 @echo ** handling language %LNG% **
 @rem merge translations
-msgmerge --no-wrap --update locale\%LNG%\lc_messages\default.po default.po
+%~dp0\msgmerge --no-wrap --update locale\%LNG%\lc_messages\default.po default.po
 @rem compile
-msgfmt locale\%LNG%\lc_messages\default.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\default.mo
+%~dp0\msgfmt locale\%LNG%\lc_messages\default.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\default.mo
 @rem add Delphi, sigunits and dzlib translations
-msgfmt libs\dxgettext\translations\%LNG%\delphi2007.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\delphi2007.mo
-msgfmt libs\sigunits\translations\%LNG%\sigunits.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\sigunits.mo
-msgfmt libs\dzlib\translations\%LNG%\dzlib.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\dzlib.mo
+%~dp0\msgfmt libs\dxgettext\translations\%LNG%\delphi2007.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\delphi2007.mo
+%~dp0\msgfmt libs\sigunits\translations\%LNG%\sigunits.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\sigunits.mo
+%~dp0\msgfmt libs\dzlib\translations\%LNG%\dzlib.po --output-file=%OUTDIR%\locale\%LNG%\lc_messages\dzlib.mo
