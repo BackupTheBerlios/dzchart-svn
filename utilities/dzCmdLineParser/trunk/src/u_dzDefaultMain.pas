@@ -212,7 +212,8 @@ begin
   SetLength(ModuleName, 255);
   GetModuleFileNameA(MainInstance, PAnsiChar(ModuleName), Length(ModuleName));
   OemToAnsi(PAnsiChar(ModuleName), PAnsiChar(ModuleName));
-  Result := PAnsiChar(ModuleName);
+  ModuleName := PAnsiChar(ModuleName);
+  Result := string(ModuleName);
 end;
 
 function TDefaultMain.GetProgName: string;

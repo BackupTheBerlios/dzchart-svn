@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dzCmdLineParser 1.0\n"
 "POT-Creation-Date: 2009-06-30 11:42\n"
-"PO-Revision-Date: 2009-06-30 11:46+0100\n"
+"PO-Revision-Date: 2010-04-27 17:26+0100\n"
 "Last-Translator: Thomas Mueller <info@schniering.com>\n"
 "Language-Team: twm <nospam@dummzeuch.de>\n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgstr "Nicht genügend %s Parameter (min: %d)"
 
 #: u_dzGetOpt.pas:329
 msgid "Option %s is unknown"
-msgstr "Option %s ist nciht bekannt"
+msgstr "Option %s ist nicht bekannt"
 
 #: u_dzGetOpt.pas:333
 msgid "Option %s requires a value."
