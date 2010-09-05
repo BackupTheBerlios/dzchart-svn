@@ -167,7 +167,7 @@ type
        copied to the StdOut property. }
     property RedirectStdErr: boolean read fRedirectStdErr write fRedirectStdErr;
     {: Set this to the standard input you want to supply to the process. }
-    property StdIn: string read fStdIn write fStdIn;
+    property StdIn: AnsiString read fStdIn write fStdIn;
     {: After the process has terminated this contains the standard output. When
        accessed before the process has terminated this will raise either a ENoProcess
        or EProcessRunning exception }
