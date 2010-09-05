@@ -1,4 +1,4 @@
-{**************************************************************************************************}
+﻿{**************************************************************************************************}
 {                                                                                                  }
 {  The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");}
 {  you may not use this file except in compliance with the License. You may obtain a copy of the   }
@@ -134,6 +134,10 @@ ALERT_jedi_inc_incompatible
       {$I jcld14.inc}
       {$DEFINE JCL_CONFIGURED}
     {$ENDIF BDS7}
+    {$IFDEF BDS8} // Rad Studio XE
+      {$I jcld15.inc}
+      {$DEFINE JCL_CONFIGURED}
+    {$ENDIF BDS8}
     {----------------------------}
     {$IFDEF FPC}
       {$I jclfpc.inc}
