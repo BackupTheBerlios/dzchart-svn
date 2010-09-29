@@ -36,7 +36,8 @@ requires
   vcljpg,
   vcldb,
   dbrtl,
-  vclshlctrls;
+  vclshlctrls,
+  Jcl;
 
 contains
   c_dzShellControls in '..\..\components\c_dzShellControls.pas',
@@ -45,6 +46,15 @@ contains
   u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
   u_dzStringUtils in '..\..\src\u_dzStringUtils.pas',
   u_dzTranslator in '..\..\src\u_dzTranslator.pas',
-  u_dzClassUtils in '..\..\src\u_dzClassUtils.pas';
+  u_dzClassUtils in '..\..\src\u_dzClassUtils.pas',
+  u_dzShellApiUtils in '..\..\src\u_dzShellApiUtils.pas',
+  u_dzVariantUtils in '..\..\src\u_dzVariantUtils.pas',
+  u_dzDateUtils in '..\..\src\u_dzDateUtils.pas',
+  u_dzFileStreams in '..\..\src\u_dzFileStreams.pas',
+  u_dzFileUtils in '..\..\src\u_dzFileUtils.pas',
+  u_dzMiscUtils in '..\..\src\u_dzMiscUtils.pas',
+  u_dzLogging in '..\..\src\u_dzLogging.pas',
+  u_dzVersionInfo in '..\..\src\u_dzVersionInfo.pas',
+  u_dzOsUtils in '..\..\src\u_dzOsUtils.pas';
 
 end.
