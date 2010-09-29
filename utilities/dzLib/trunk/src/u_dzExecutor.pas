@@ -59,33 +59,33 @@ type
   TExecutor = class
   protected
     {: stores the ExeName property }
-    fExeName: string;
+    FExeName: string;
     {: stores the Commandline property }
-    fCommandline: string;
+    FCommandline: string;
     {: stores the Environment property }
     FEnvironment: TStringList;
     {: stores the WorkingDir property }
-    fWorkingDir: string;
+    FWorkingDir: string;
     {: stores the RedirectStdOut property }
-    fRedirectStdOut: boolean;
+    FRedirectStdOut: boolean;
     {: stores the RedirectStdErr property }
-    fRedirectStdErr: boolean;
+    FRedirectStdErr: boolean;
     {: stores the StdIn property }
-    fStdIn: AnsiString;
+    FStdIn: AnsiString;
     {: stores the ExitCode property }
-    fExitCode: DWORD;
+    FExitCode: DWORD;
     {: stores the Visible property }
-    fVisible: boolean;
+    FVisible: boolean;
     {: temporary file stream to be used as standard input for the process }
-    fInputFile: TdzTempFile;
+    FInputFile: TdzTempFile;
     {: temporary file stream to be used as standard output for the process }
-    fOutputFile: TdzTempFile;
+    FOutputFile: TdzTempFile;
     {: temporary file stream to be used as standard error for the process }
-    fErrorFile: TdzTempFile;
+    FErrorFile: TdzTempFile;
     {: Process information for CreateProcess }
-    fProcessInfo: TProcessInformation;
+    FProcessInfo: TProcessInformation;
     {: stores the Status property }
-    fStatus: TExecutorStatus;
+    FStatus: TExecutorStatus;
     {: gets the process handle, raises an ENoProcess exception if status is esInvalid
        @returns the process handle value }
     function GetProcessHandle: THandle;
@@ -147,27 +147,27 @@ type
        used if only the filename is known. Alternatively this can be left
        empty in which case the first parameter in CommanLine is used as
        executable name. }
-    property ExeName: string read fExeName write fExeName;
+    property ExeName: string read FExeName write FExeName;
     {: Commandline to pass to the process. If ExeName is empty the first
        parameter is used as executable name. }
-    property Commandline: string read fCommandline write fCommandline;
+    property Commandline: string read FCommandline write FCommandline;
     property Environment: TStringList read FEnvironment;
     {: determines whether the process is started visible or not. If set
        to true, starting a commandline program form a GUI app will open
        a console window. }
-    property Visible: boolean read fVisible write fVisible;
+    property Visible: boolean read FVisible write FVisible;
     {: True if StdIn is redirected }
     property RedirectStdIn: boolean read GetRedirectStdIn;
     {: Set to true to redirect the process' standard output. This will result
        in having all text the process writes to its standard output handle
        copied to the StdOut property. }
-    property RedirectStdOut: boolean read fRedirectStdOut write fRedirectStdOut;
+    property RedirectStdOut: boolean read FRedirectStdOut write FRedirectStdOut;
     {: Set to true to redirect the process' standard output. This will result
        in having all text the process writes to its standard output handle
        copied to the StdOut property. }
-    property RedirectStdErr: boolean read fRedirectStdErr write fRedirectStdErr;
+    property RedirectStdErr: boolean read FRedirectStdErr write FRedirectStdErr;
     {: Set this to the standard input you want to supply to the process. }
-    property StdIn: AnsiString read fStdIn write fStdIn;
+    property StdIn: AnsiString read FStdIn write FStdIn;
     {: After the process has terminated this contains the standard output. When
        accessed before the process has terminated this will raise either a ENoProcess
        or EProcessRunning exception }
@@ -192,13 +192,13 @@ type
     property Status: TExecutorStatus read GetStatus;
     {: Contains the working directory the process should be started in. If
        left empty the process will start in the current directory. }
-    property WorkingDir: string read fWorkingDir write fWorkingDir;
+    property WorkingDir: string read FWorkingDir write FWorkingDir;
   end;
 
 implementation
 
 uses
-  JclSysInfo,
+  u_dzOsUtils,
   u_dzMiscUtils;
 
 function _(const _s: string): string; inline;
@@ -206,17 +206,37 @@ begin
   Result := dzDGetText(_s, 'dzlib');
 end;
 
+// Auteur Thaddy de Koning
+// adapted to unicode by twm
+type
+  TEnvironmentBlockReader = class(TStringList)
+  public
+    constructor Create;
+  end;
+
+  TEnvironmentBlockWriter = class(TStringStream)
+  private
+    FClosed: Boolean;
+    function GetBlockPtr: PChar;
+  protected
+    procedure Close;
+  public
+    procedure Add(const aValue: string); overload;
+    procedure Add(const aToken, aValue: string); overload;
+    property Block: PChar read GetBlockPtr;
+  end;
+
 { TExecutor }
 
 constructor TExecutor.Create;
 begin
   inherited;
-  fStatus := esInvalid;
-  fRedirectStdOut := false;
-  fRedirectStdErr := false;
-  FEnvironment := TStringList.Create;
-  FEnvironment.Sorted := false;
-  GetEnvironmentVars(FEnvironment, False);
+  FStatus := esInvalid;
+  FRedirectStdOut := false;
+  FRedirectStdErr := false;
+  FEnvironment := TEnvironmentBlockReader.Create;
+  ZeroMemory(@FProcessInfo, SizeOf(FProcessInfo));
+  FWorkingDir := 'c:\';
 end;
 
 destructor TExecutor.Destroy;
@@ -225,17 +245,17 @@ begin
   if (Status = esRunning) and
     (RedirectStdIn or RedirectStdOut or RedirectStdErr) then
     raise ERedirectedProcess.Create(_('Can not free Executor while a process using redirection is still running.'));
-  fInputFile.Free;
-  fOutputFile.Free;
-  fErrorFile.Free;
+  FInputFile.Free;
+  FOutputFile.Free;
+  FErrorFile.Free;
   //  Kernel objects, like the process and the files we created in this case,
   //  are maintained by a usage count.
   //  So, for cleaning up purposes we have to close the handles
   //  to inform the system that we don't need the objects anymore
-  if fProcessInfo.hThread <> 0 then
-    CloseHandle(fProcessInfo.hThread);
-  if fProcessInfo.hProcess <> 0 then
-    CloseHandle(fProcessInfo.hProcess);
+  if FProcessInfo.hThread <> 0 then
+    CloseHandle(FProcessInfo.hThread);
+  if FProcessInfo.hProcess <> 0 then
+    CloseHandle(FProcessInfo.hProcess);
 end;
 
 function TExecutor.FindExecutable(_ExeName: string): boolean;
@@ -244,14 +264,14 @@ var
   Found: string;
 begin
   if _ExeName = '' then
-    _ExeName := fExeName;
+    _ExeName := FExeName;
   Result := _ExeName <> '';
   if Result then begin
     SearchPath := GetEnvironmentVariable('path');
     Found := FileSearch(_ExeName, SearchPath);
     Result := Found <> '';
     if Result then
-      fExeName := Found;
+      FExeName := Found;
   end;
 end;
 
@@ -270,20 +290,20 @@ end;
 
 function TExecutor.GetStatus: TExecutorStatus;
 begin
-  if fStatus = esRunning then begin
-    Win32Check(GetExitCodeProcess(fProcessInfo.hProcess, fExitCode));
-    if fExitCode = STILL_ACTIVE then
-      fStatus := esRunning
+  if FStatus = esRunning then begin
+    Win32Check(GetExitCodeProcess(FProcessInfo.hProcess, FExitCode));
+    if FExitCode = STILL_ACTIVE then
+      FStatus := esRunning
     else
-      fStatus := esTerminated;
+      FStatus := esTerminated;
   end;
-  Result := fStatus;
+  Result := FStatus;
 end;
 
 function TExecutor.GetExitCode: DWORD;
 begin
   AssertStatus([esRunning, esTerminated]);
-  Result := fExitCode;
+  Result := FExitCode;
 end;
 
 function TExecutor.Wait(_Timeout: DWORD): DWORD;
@@ -296,7 +316,7 @@ function TExecutor.Kill: boolean;
 begin
   case GetStatus of
     esInvalid: raise ENoProcess.Create(_('Process has not yet been started'));
-    esRunning: Result := TerminateProcess(fProcessInfo.hProcess, $FFFFFFFF);
+    esRunning: Result := TerminateProcess(FProcessInfo.hProcess, $FFFFFFFF);
   else
     Result := true;
   end;
@@ -305,18 +325,18 @@ end;
 function TExecutor.GetProcessHandle: THandle;
 begin
   AssertStatus([esRunning, esTerminated]);
-  Result := fProcessInfo.hProcess;
+  Result := FProcessInfo.hProcess;
 end;
 
 function TExecutor.GetThreadHandle: THandle;
 begin
   AssertStatus([esRunning, esTerminated]);
-  Result := fProcessInfo.hThread;
+  Result := FProcessInfo.hThread;
 end;
 
 function TExecutor.GetRedirectStdIn: boolean;
 begin
-  Result := fStdIn <> '';
+  Result := FStdIn <> '';
 end;
 
 function TExecutor.Execute: boolean;
@@ -324,99 +344,117 @@ var
   StartupInfo: TStartupInfo;
   SecurityAttributes: TSecurityAttributes;
   Cmdline: string;
-  env: string;
+  env: TEnvironmentBlockWriter;
   i: Integer;
   LastError: LongWord;
+  pCmdLine: PChar;
+  pEnv: PChar;
+  PExeName: PChar;
+  CreationFlags: DWORD;
 begin
-  // prepare SecurityAttribute, set InheritHandle to true
-  FillChar(SecurityAttributes, SizeOf(SecurityAttributes), #0);
+  if FStatus <> esInvalid then
+    raise Exception.Create(_('Process has already been started.'));
+
+  // prepare SecurityAttributes for files, set InheritHandle to true
+  ZeroMemory(@SecurityAttributes, SizeOf(SecurityAttributes));
   SecurityAttributes.nLength := SizeOf(SecurityAttributes);
   SecurityAttributes.lpSecurityDescriptor := nil;
   SecurityAttributes.bInheritHandle := true;
 
   // prepare StartupInfo structure
-  FillChar(StartupInfo, SizeOf(StartupInfo), #0);
+  ZeroMemory(@StartupInfo, sizeof(StartupInfo));
   StartupInfo.cb := SizeOf(StartupInfo);
+  StartupInfo.lpDesktop := 'winsta0\default';
   StartupInfo.hStdOutput := 0;
   StartupInfo.hStdInput := 0;
   StartupInfo.hStdError := 0;
   StartupInfo.dwFlags := 0;
 
   if RedirectStdIn then begin
-    fInputFile := TdzTempFile.Create;
+    FInputFile := TdzTempFile.Create;
     try
-      fInputFile.SecurityAttributes := @SecurityAttributes;
-      fInputFile.Open;
-      fInputFile.Write(fStdIn[1], Length(fStdIn));
-      fInputFile.Seek(0, soFromBeginning);
+      FInputFile.SecurityAttributes := @SecurityAttributes;
+      FInputFile.Open;
+      FInputFile.Write(FStdIn[1], Length(FStdIn));
+      FInputFile.Seek(0, soFromBeginning);
       StartupInfo.dwFlags := StartupInfo.dwFlags or STARTF_USESTDHANDLES;
-      StartupInfo.hStdInput := fInputFile.Handle;
+      StartupInfo.hStdInput := FInputFile.Handle;
     except
-      fInputFile.Free;
-      fInputFile := nil;
+      FInputFile.Free;
+      FInputFile := nil;
       raise;
     end;
   end;
 
   if RedirectStdOut then begin
-    fOutputFile := TdzTempFile.Create;
-    fOutputFile.SecurityAttributes := @SecurityAttributes;
-    fOutputFile.Open;
+    FOutputFile := TdzTempFile.Create;
+    FOutputFile.SecurityAttributes := @SecurityAttributes;
+    FOutputFile.Open;
     StartupInfo.dwFlags := StartupInfo.dwFlags or STARTF_USESTDHANDLES;
-    StartupInfo.hStdOutput := fOutputFile.Handle;
+    StartupInfo.hStdOutput := FOutputFile.Handle;
   end;
 
   if RedirectStdErr then begin
-    fErrorFile := TdzTempFile.Create;
-    fErrorFile.SecurityAttributes := @SecurityAttributes;
-    fErrorFile.Open;
+    FErrorFile := TdzTempFile.Create;
+    FErrorFile.SecurityAttributes := @SecurityAttributes;
+    FErrorFile.Open;
     StartupInfo.dwFlags := StartupInfo.dwFlags or STARTF_USESTDHANDLES;
-    StartupInfo.hStdError := fErrorFile.Handle;
+    StartupInfo.hStdError := FErrorFile.Handle;
   end;
 
-  if not fVisible then begin
+  if not FVisible then begin
     StartupInfo.dwFlags := StartupInfo.dwFlags or STARTF_USESHOWWINDOW;
     StartupInfo.wShowWindow := SW_HIDE;
   end;
 
-  if fExeName <> '' then
-    CmdLine := Format('"%s" %s', [fExeName, fCommandLine])
-  else
-    CmdLine := fCommandline;
-
-  env := '';
-  for i := 0 to Environment.Count - 1 do begin
-    if Env <> '' then
-      Env := Env + #0;
-    Env := Env + Environment[i];
+  if FExeName <> '' then begin
+    CmdLine := Format('"%s" %s', [FExeName, FCommandline]);
+    PExeName := PChar(FExeName);
+  end else begin
+    PExeName := nil;
+    CmdLine := FCommandline;
   end;
-  Env := Env + #0#0;
 
-  // start the program, ExeName and Commandline are casted to pointers rather
-  // than PChar because we want to pass a nil pointer if the string is empty.
-  Result := CreateProcess(
-    pointer(fExeName), // pointer to the executable (or nil)
-    pointer(CmdLine), // pointer to command line string (or nil)
-    nil, // pointer to process security attributes
-    nil, // pointer to thread security attributes
-    true, // handle inheritance flag
-    NORMAL_PRIORITY_CLASS, // creation flags
-    PChar(Env), // pointer to new environment block
-    pointer(fWorkingDir), // pointer to current directory name
-    StartupInfo, // pointer to STARTUPINFO
-    fProcessInfo); // pointer to PROCESS_INF
+  env := nil;
+  pCmdLine := StrNew(Pchar(Cmdline));
+  try
+    env := TEnvironmentBlockWriter.Create('');
+    for i := 0 to Environment.Count - 1 do begin
+      Env.Add(Environment[i]);
+    end;
+    pEnv := env.Block;
 
-  if Result then
-    fStatus := esRunning
-  else begin
-    LastError := GetLastError;
-    RaiseLastOsErrorEx(LastError, Format(_('%1:s (%0:d) in CreateProcess("%s", "%s")'), [fExeName, CmdLine]));
+    CreationFlags := NORMAL_PRIORITY_CLASS;
+{$IFDEF SUPPORTS_UNICODE_STRING}
+    CreationFlags := CreationFlags or CREATE_UNICODE_ENVIRONMENT;
+{$ENDIF SUPPORTS_UNICODE_STRING}
+
+    Result := CreateProcess(
+      PExeName, // pointer to the executable (or nil)
+      pCmdLine, // pointer to command line string (or nil)
+      nil, // pointer to process security attributes
+      nil, // pointer to thread security attributes
+      true, // handle inheritance flag
+      CreationFlags, // creation flags
+      pEnv, // pointer to new environment block
+      PChar(FWorkingDir), // pointer to current directory name
+      StartupInfo, // pointer to STARTUPINFO
+      FProcessInfo); // pointer to PROCESS_INF
+    if Result then begin
+      FStatus := esRunning;
+    end else begin
+      LastError := GetLastError;
+      RaiseLastOsErrorEx(LastError, Format(_('%%1:s (%%0:d) in CreateProcess("%s", "%s")'), [FExeName, CmdLine]));
+    end;
+  finally
+    StrDispose(pCmdLine);
+    FreeAndNil(env);
   end;
 end; // TExecutor.Execute
 
 procedure TExecutor.ResetStatus;
 begin
-  fStatus := esTerminated;
+  FStatus := esTerminated;
 end;
 
 function TExecutor.GetStdErr: string;
@@ -425,11 +463,11 @@ var
 begin
   AssertStatus([esTerminated]);
   if RedirectStdErr then begin
-    fErrorFile.Seek(0, soFromBeginning);
-    Size := fErrorFile.Size;
+    FErrorFile.Seek(0, soFromBeginning);
+    Size := FErrorFile.Size;
     if Size <> 0 then begin
       SetLength(Result, Size);
-      fErrorFile.Read(Result[1], Size);
+      FErrorFile.Read(Result[1], Size);
     end;
   end else
     raise ENotRedirected.Create(_('StdErr was not redirected'));
@@ -441,14 +479,82 @@ var
 begin
   AssertStatus([esTerminated]);
   if RedirectStdOut then begin
-    fOutputFile.Seek(0, soFromBeginning);
-    Size := fOutputFile.Size;
+    FOutputFile.Seek(0, soFromBeginning);
+    Size := FOutputFile.Size;
     if Size <> 0 then begin
       SetLength(Result, Size);
-      fOutputFile.Read(Result[1], Size);
+      FOutputFile.Read(Result[1], Size);
     end;
   end else
     raise ENotRedirected.Create(_('StdOut was not redirected'));
+end;
+
+// Auteur Thaddy de Koning
+// adapted to unicode by twm
+
+const
+  // Terminator gedefinieerd als typed const
+  // (Zoadat het een memory reference heeft)
+  NullChar: Char = #0;
+
+{ TEnvironmentBlockWriter }
+
+procedure TEnvironmentBlockWriter.Add(const aValue: string);
+// Is het blok gesloten?
+// Zoja, ga een positie terug
+// Schrijf de string
+// Schrijf terminating #0
+begin
+  if FClosed then begin
+    Seek(-1, soFromEnd);
+    Fclosed := False;
+  end;
+  WriteString(aValue);
+  Write(NullChar, 1);
+end;
+
+procedure TEnvironmentBlockWriter.Add(const aToken, aValue: string);
+begin
+  Add(aToken + '=' + aValue);
+end;
+
+// Block afsluiten door een extra #0 te schrijven, als gespecificeerd
+
+procedure TEnvironmentBlockWriter.Close;
+begin
+  if not FClosed then begin
+    write(NullChar, 1);
+    FClosed := True;
+  end;
+end;
+
+// Als we het block uitlezen nemen we aan dat het gesloten is!
+
+function TEnvironmentBlockWriter.GetBlockPtr: PChar;
+begin
+  Close;
+  Result := PChar(DataString);
+end;
+
+{ TEnvironmentBlockReader }
+
+constructor TEnvironmentBlockReader.Create;
+var
+  FBlock: PChar;
+  StrPtr: PChar;
+begin
+  inherited;
+  FBlock := GetEnvironmentStrings;
+  if FBlock <> nil then
+    try
+      StrPtr := FBlock;
+      repeat
+        Add(StrPtr);
+        inc(StrPtr, Succ(StrLen(StrPtr)));
+      until StrPtr^ = #0;
+    finally
+      FreeEnvironmentStrings(Fblock);
+    end;
 end;
 
 end.
