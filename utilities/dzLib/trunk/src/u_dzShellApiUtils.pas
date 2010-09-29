@@ -22,13 +22,30 @@ const
   CSIDL_PROGRAM_FILES_COMMON = $2B;
 
 type
-  TSHGetFolderPath = function(hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: DWORD; pszPath: PChar): HResult; Stdcall;
+  TSHGetFolderPathA = function(hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: DWORD; pszPath: PAnsiChar): HResult; Stdcall;
+  TSHGetFolderPathW = function(hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: DWORD; pszPath: PWideChar): HResult; Stdcall;
+{$IFDEF SUPPORTS_UNICODE_STRING}
+  TSHGetFolderPath = TSHGetFolderPathW;
+{$ELSE}
+  TSHGetFolderPath = TSHGetFolderPathA;
+{$ENDIF}
+const
+{$IFDEF SUPPORTS_UNICODE_STRING}
+  SHGetFolderPathEntryPoint = 'SHGetFolderPathW';
+{$ELSE}
+  SHGetFolderPathEntryPoint = 'SHGetFolderPathA';
+{$ENDIF}
 
 type
-  ///<summary> TWindowsShell is a wrapper object for several ShellApi functions </summary>
+  ///<summary> TWindowsShell is a wrapper object for several ShellApi functions.
+  ///          For most SHGetFolderPath functions there are two methods. One is called GetXxxxx
+  ///          and is a regular method of TWindowsShell (so you must instantiate the
+  ///          object to use it). The other is called GetXxxxxDir a class
+  ///          method that internally instantiates and frees an object instance
+  ///          (so you don't have to do that explicitly). </summary>
   TWindowsShell = class
   private
-    function LoadSHFolder(var SHGetFolderPath: TSHGetFolderPath): Integer;
+    function LoadSHFolder(var _SHGetFolderPath: TSHGetFolderPath): Integer;
   protected
     FAppHandle: THandle;
     function GetSpecialFolder(_CSIDL: integer): string;
@@ -83,15 +100,15 @@ uses
 const
   SHGFP_TYPE_CURRENT = 0;
 
-function TWindowsShell.LoadSHFolder(var SHGetFolderPath: TSHGetFolderPath): Integer;
+function TWindowsShell.LoadSHFolder(var _SHGetFolderPath: TSHGetFolderPath): Integer;
 var
   Hdl: Hwnd;
 begin
   Result := 0;
   Hdl := LoadLibrary('SHFOLDER.DLL');
   if Hdl <> 0 then begin
-    @SHGetFolderPath := GetProcAddress(Hdl, 'SHGetFolderPathA');
-    if @SHGetFolderPath <> nil then
+    @_SHGetFolderPath := GetProcAddress(Hdl, SHGetFolderPathEntryPoint);
+    if @_SHGetFolderPath <> nil then
       Result := Hdl;
   end;
 end;
