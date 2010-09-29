@@ -24,6 +24,8 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UnitSearchPath>..\libs\dzlib\src;..\libs\dzlib\jedi_inc;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_Define>NO_TRANSLATION;$(DCC_Define)</DCC_Define>
 			<DCC_UsePackage>vcl;vclx;VclSmp;rtl;vclimg;svnui;svn;bdertl;vclactnband;vcldb;dbrtl;vcldbx;vcltouch;xmlrtl;dsnap;dsnapcon;vclib;ibxpress;adortl;IndyProtocols;inet;vclie;inetdb;webdsnap;websnap;inetdbbde;inetdbxpress;soaprtl;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds</DCC_UsePackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
@@ -61,7 +63,9 @@
 				<Form>dm_ContextMenu</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
-			<None Include="c:\dzcontextmenu.ini"/>
+			<DCCReference Include="..\libs\dzLib\src\u_dzShellApiUtils.pas"/>
+			<DCCReference Include="..\libs\dzLib\src\u_dzExecutor.pas"/>
+			<None Include="C:\Documents and Settings\twm\Application Data\dzContextMenu\menu.ini"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -112,7 +116,7 @@
 						<Source Name="MainSource">dzcontextmenu.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">/n, /e, C:\src\test\contextmenu\src</Parameters>
+						<Parameters Name="RunParams">/n, /e, C:\src\berlios.dzContextMenu</Parameters>
 						<Parameters Name="HostApplication">C:\WINDOWS\explorer.exe</Parameters>
 					</Parameters>
 					<Excluded_Packages>

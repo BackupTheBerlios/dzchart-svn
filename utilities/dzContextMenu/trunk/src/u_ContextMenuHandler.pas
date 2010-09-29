@@ -20,7 +20,6 @@ type
   {*)}
   private
     FCmdCount: LongWord;
-    FLog: TextFile;
     FDm: Tdm_ContextMenu;
   protected
     function IShellExtInit.Initialize = IShellExtInit_Initialize;
@@ -49,15 +48,10 @@ begin
   inherited;
   FCmdCount := $FFFFFFFF;
   FDm := Tdm_ContextMenu.Create(nil);
-  AssignFile(FLog, 'c:\log.txt');
-  Rewrite(FLog);
-  WriteLn(FLog, 'TContextMenu.Initialize');
 end;
 
 destructor TContextMenu.Destroy;
 begin
-  WriteLn(FLog, 'TContextMenu.Destroy');
-  CloseFile(FLog);
   FreeAndNil(FDm);
   inherited;
 end;
@@ -71,41 +65,35 @@ var
   Files: TStringList;
   FileName: array[0..MAX_PATH] of Char;
 begin
-  WriteLn(FLog, 'enter TContextMenu.IShellExtInit_Initialize');
-
-  try
     // if lpdobj is nil, fail
-    if (_lpdobj = nil) then begin
-      Result := E_INVALIDARG;
-      Exit;
-    end;
+  if (_lpdobj = nil) then begin
+    Result := E_INVALIDARG;
+    Exit;
+  end;
 
-    Files := FDm.Files;
-    Files.Clear;
+  Files := FDm.Files;
+  Files.Clear;
 
-    // initialize clipboard format
-    FormatEtc.CfFormat := CF_HDROP;
-    FormatEtc.Ptd := nil;
-    FormatEtc.DwAspect := DVASPECT_CONTENT;
-    FormatEtc.Lindex := 1;
-    FormatEtc.Tymed := TYMED_HGLOBAL;
-    Result := _lpdobj.GetData(FormatEtc, StgMedium);
-    if Succeeded(Result) then begin
-      try
-        // get selected files count
-        Count := DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0);
-        // get selected files
-        for i := 0 to Count - 1 do begin
-          DragQueryFile(StgMedium.hGlobal, i, FileName, SizeOf(FileName));
-          Files.Add(FileName);
-        end;
-      finally
-        ReleaseStgMedium(StgMedium);
+  // initialize clipboard format
+  FormatEtc.CfFormat := CF_HDROP;
+  FormatEtc.Ptd := nil;
+  FormatEtc.DwAspect := DVASPECT_CONTENT;
+  FormatEtc.Lindex := 1;
+  FormatEtc.Tymed := TYMED_HGLOBAL;
+  Result := _lpdobj.GetData(FormatEtc, StgMedium);
+  if Succeeded(Result) then begin
+    try
+      // get selected files count
+      Count := DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0);
+      // get selected files
+      for i := 0 to Count - 1 do begin
+        DragQueryFile(StgMedium.hGlobal, i, FileName, SizeOf(FileName));
+        Files.Add(FileName);
       end;
-      Result := NOERROR;
+    finally
+      ReleaseStgMedium(StgMedium);
     end;
-  finally
-    WriteLn(FLog, 'exit TContextMenu.IShellExtInit_Initialize');
+    Result := NOERROR;
   end;
 end;
 
@@ -114,31 +102,28 @@ var
   Id: integer;
   mii: TMenuItemInfo;
   Submenu: HMENU;
+  MenuTitle: string;
 begin
-  WriteLn(FLog, 'enter TContextMenu.QueryContextMenu');
-  try
-    Result := 0;
-    if ((_UFlags and $0000000F) = CMF_NORMAL) or ((_UFlags and CMF_EXPLORE) <> 0) then begin
-      Id := Integer(_idCmdFirst);
-      Submenu := CreatePopupMenu;
-      FDm.UpdateSubmenu(Submenu, Id);
-      FillChar(mii, sizeof(mii), 0);
-      mii.cbSize := sizeof(mii);
-      mii.fMask := MIIM_SUBMENU or MIIM_ID or MIIM_TYPE or MIIM_STATE;
-      mii.wID := Id;
-      mii.hSubMenu := Submenu;
-      mii.fType := MFT_STRING;
-      mii.fState := MFS_ENABLED;
-      mii.dwTypeData := 'Submenu';
-      InsertMenuItem(_Menu, _indexMenu, LongBool(True), mii);
-      Inc(Id);
+  Result := 0;
+  if ((_UFlags and $0000000F) = CMF_NORMAL) or ((_UFlags and CMF_EXPLORE) <> 0) then begin
+    MenuTitle := FDm.IniFile.ReadString('global', 'caption', 'Submenu');
+    Id := Integer(_idCmdFirst);
+    Submenu := CreatePopupMenu;
+    FDm.UpdateSubmenu(Submenu, Id);
+    FillChar(mii, sizeof(mii), 0);
+    mii.cbSize := sizeof(mii);
+    mii.fMask := MIIM_SUBMENU or MIIM_ID or MIIM_TYPE or MIIM_STATE;
+    mii.wID := Id;
+    mii.hSubMenu := Submenu;
+    mii.fType := MFT_STRING;
+    mii.fState := MFS_ENABLED;
+    mii.dwTypeData := PChar(MenuTitle);
+    InsertMenuItem(_Menu, _indexMenu, LongBool(True), mii);
+    Inc(Id);
 
-      // Return value is number of items added to context menu
-      FCmdCount := Id - integer(_idCmdFirst);
-      Result := MakeResult(SEVERITY_SUCCESS, 0, FCmdCount);
-    end;
-  finally
-    WriteLn(FLog, 'exit TContextMenu.QueryContextMenu');
+    // Return value is number of items added to context menu
+    FCmdCount := Id - integer(_idCmdFirst);
+    Result := MakeResult(SEVERITY_SUCCESS, 0, FCmdCount);
   end;
 end;
 
@@ -147,20 +132,15 @@ function TContextMenu.GetCommandString(_idCmd, _uType: UINT; _pwReserved: PUINT;
 var
   szName: PWideChar absolute _PszName;
 begin
-  WriteLn(FLog, 'enter TContextMenu.GetCommandString(' + IntToStr(_idCmd) + ')');
-  try
-    Result := E_INVALIDARG;
-    if _idCmd < FCmdCount then begin
-      case _uType of
-        GCS_HELPTEXTW: begin
+  Result := E_INVALIDARG;
+  if _idCmd < FCmdCount then begin
+    case _uType of
+      GCS_HELPTEXTW: begin
           // Return the menu item's help
-            StrLCopy(szName, PChar('execute some command'), _cchMax);
-            Result := S_OK;
-          end;
-      end;
+          StrLCopy(szName, PChar('execute some command'), _cchMax);
+          Result := S_OK;
+        end;
     end;
-  finally
-    WriteLn(FLog, 'exit TContextMenu.GetCommandString');
   end;
 end;
 
@@ -182,15 +162,10 @@ function TContextMenu.InvokeCommand(var _ici: TCMInvokeCommandInfo): HResult;
 var
   ici: TCMInvokeCommandInfoHack absolute _ici;
 begin
-  WriteLn(FLog, 'enter TContextMenu.InvokeCommand');
-  try
-    Result := E_FAIL;
-    if ici.VerbHi = 0 then begin
-      FDm.DoCommand(ici.VerbLo);
-      Result := S_OK;
-    end;
-  finally
-    WriteLn(FLog, 'exit TContextMenu.InvokeCommand');
+  Result := E_FAIL;
+  if ici.VerbHi = 0 then begin
+    FDm.DoCommand(ici.VerbLo);
+    Result := S_OK;
   end;
 end;
 
@@ -219,9 +194,13 @@ begin
       Ini.ReadSections(Sections);
       for i := 0 to Sections.Count - 1 do begin
         FileType := Sections[i];
-        CreateRegKey(FileType + '\shellex', '', '');
-        CreateRegKey(FileType + '\shellex\ContextMenuHandlers', '', '');
-        CreateRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu', '', ClassID);
+        if SameText(FileType, 'Global') then begin
+          // maybe do something later on
+        end else begin
+          CreateRegKey(FileType + '\shellex', '', '');
+          CreateRegKey(FileType + '\shellex\ContextMenuHandlers', '', '');
+          CreateRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu', '', ClassID);
+        end;
       end;
 
     finally

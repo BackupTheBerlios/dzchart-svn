@@ -1,5 +1,9 @@
 unit d_ContextMenu;
 
+{$IFDEF debug}
+{.$DEFINE show_attach_dialog}
+{$ENDIF debug}
+
 interface
 
 uses
@@ -15,6 +19,7 @@ type
   private
     FFiles: TStringList;
     FMaxItemCount: Integer;
+    FSection: string;
     FItems: TStringList;
     procedure UpdatePopup;
   public
@@ -32,10 +37,13 @@ implementation
 {$R *.dfm}
 
 uses
-  Dialogs;
+  u_dzShellApiUtils,
+  u_dzFileUtils,
+  u_dzOsUtils,
+  u_dzExecutor;
 
 const
-  INI_FILE = 'c:\dzcontextmenu.ini';
+  INI_FILE = 'menu.ini';
 
 var
   gblIni: TMemIniFile = nil;
@@ -77,9 +85,28 @@ begin
 end;
 
 procedure Tdm_ContextMenu.DoCommand(_Idx: integer);
+var
+  Executable: string;
+  Exec: TExecutor;
+  s: string;
 begin
-  if _Idx < FItems.Count then
-    MessageBox(0, PChar(FItems[_Idx] + #13#10 + FFiles.Text), 'Execute', MB_ICONINFORMATION or MB_OK);
+  if _Idx < FItems.Count then begin
+    Executable := IniFile.ReadString(FSection, FItems[_Idx], '');
+    Exec := TExecutor.Create;
+    try
+      if not Exec.FindExecutable(Executable) then
+        raise Exception.CreateFmt('Could not find executable %s', [Executable]);
+      FFiles.Delimiter := ' ';
+      FFiles.QuoteChar := '"';
+      s := FFiles.DelimitedText;
+      Exec.Commandline := s;
+      Exec.Visible := true;
+      Exec.WorkingDir := Extractfiledir(FFiles[0]);
+      Exec.Execute;
+    finally
+      FreeAndNil(Exec)
+    end;
+  end;
 end;
 
 procedure Tdm_ContextMenu.UpdatePopup;
@@ -103,7 +130,8 @@ begin
         SectExt := IniFile.ReadString(Sections[SecIdx], 'extension', '');
         if SameText(Ext, SectExt) then begin
           FItems.Clear;
-          IniFile.ReadSection(Sections[SecIdx], FItems);
+          FSection := Sections[SecIdx];
+          IniFile.ReadSection(FSection, FItems);
           FItems.Delete(0);
           for ItemIdx := 0 to FItems.Count - 1 do begin
             mi := TMenuItem.Create(Self);
@@ -150,10 +178,29 @@ begin
   Result := gblIni;
 end;
 
-initialization
-//  MessageBox(0, 'Attach debugger now!', 'Initialization', MB_ICONINFORMATION or MB_OK);
-  gblIni := TMemIniFile.Create(INI_FILE);
-finalization
+procedure Initialize;
+var
+  AppDataDir: string;
+  ModuleName: string;
+  IniName: string;
+begin
+  ModuleName := GetModuleFilename;
+  AppDataDir := TWindowsShell.GetAppDataDir;
+  IniName := itpd(AppDataDir) + ChangeFileExt(ExtractFileName(ModuleName), '') + '\' + INI_FILE;
+  gblIni := TMemIniFile.Create(IniName);
+end;
+
+procedure Finalize;
+begin
   FreeAndNil(gblIni);
+end;
+
+initialization
+{$IFDEF show_attach_dialog}
+  MessageBox(0, 'Attach debugger now!', 'Initialization', MB_ICONINFORMATION or MB_OK);
+{$ENDIF show_attach_dialog}
+  Initialize;
+finalization
+  Finalize;
 end.
 
