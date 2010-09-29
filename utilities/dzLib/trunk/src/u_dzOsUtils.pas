@@ -28,6 +28,11 @@ function GetHomeDir: string;
 
 ///<summary> Calls the windows function with the same name and returns its result </summary>
 function ExpandEnvironmentStrings(const _WithVariables: string): string;
+///<summary> Calls the windows API function GetEnvironmentStrings and returns them result
+///          in the string list.
+///          @param Vars is the string list that contains the environment
+///          @returns true, if the function succeeded, false otherwise. </summary>
+function GetEnvironmentVars(const _Vars: TStrings): Boolean;
 
 ///<summary> Reads an integer value from the registry.
 ///          @param RootKey is the HK_* constant specifying the registry branch to read
@@ -154,6 +159,34 @@ begin
     RaiseLastOsErrorEx(LastError, _('Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings'));
   end;
   SetLength(Result, Res - 1);
+end;
+
+function GetEnvironmentVars(const _Vars: TStrings): Boolean;
+var
+  Vars: PChar;
+  P: PChar;
+begin
+  Result := false;
+  _Vars.BeginUpdate;
+  try
+    _Vars.Clear;
+    Vars := Windows.GetEnvironmentStrings;
+    if Vars <> nil then begin
+      try
+        P := Vars;
+        while P^ <> #0 do begin
+          _Vars.Add(P);
+          P := StrEnd(P);
+          Inc(P);
+        end;
+      finally
+        Windows.FreeEnvironmentStrings(Vars);
+      end;
+      Result := True;
+    end;
+  finally
+    _Vars.EndUpdate;
+  end;
 end;
 
 function GetHomeDir: string;
