@@ -110,14 +110,37 @@ begin
 end;
 
 procedure Tdm_ContextMenu.UpdatePopup;
+
+  function HandleSection(const _Section: string): boolean;
+  var
+    i: integer;
+    Ext: string;
+    SectExt: string;
+    ItemIdx: Integer;
+    mi: TMenuItem;
+  begin
+   Result := false;
+    for i := 0 to FFiles.Count - 1 do begin
+      Ext := ExtractFileExt(FFiles[i]);
+      SectExt := IniFile.ReadString(_Section, 'extension', '');
+      if SameText(Ext, SectExt) then begin
+        FItems.Clear;
+        FSection := _Section;
+        IniFile.ReadSection(FSection, FItems);
+        FItems.Delete(0);
+        for ItemIdx := 0 to FItems.Count - 1 do begin
+          mi := TMenuItem.Create(Self);
+          mi.Caption := FItems[ItemIdx];
+          ThePopupMenu.Items.Add(mi);
+        end;
+        exit(true);
+      end;
+    end;
+  end;
+
 var
   SecIdx: Integer;
-  SectExt: string;
-  Ext: string;
   Sections: TStringList;
-  i: Integer;
-  ItemIdx: Integer;
-  mi: TMenuItem;
 begin
   ThePopupMenu.Items.Clear;
 
@@ -125,22 +148,8 @@ begin
   try
     IniFile.ReadSections(Sections);
     for SecIdx := 0 to Sections.Count - 1 do begin
-      for i := 0 to Files.Count - 1 do begin
-        Ext := ExtractFileExt(Files[i]);
-        SectExt := IniFile.ReadString(Sections[SecIdx], 'extension', '');
-        if SameText(Ext, SectExt) then begin
-          FItems.Clear;
-          FSection := Sections[SecIdx];
-          IniFile.ReadSection(FSection, FItems);
-          FItems.Delete(0);
-          for ItemIdx := 0 to FItems.Count - 1 do begin
-            mi := TMenuItem.Create(Self);
-            mi.Caption := FItems[ItemIdx];
-            ThePopupMenu.Items.Add(mi);
-          end;
-          exit;
-        end;
-      end;
+      if HandleSection(Sections[SecIdx]) then
+        exit;
     end;
   finally
     FreeAndNil(Sections);
