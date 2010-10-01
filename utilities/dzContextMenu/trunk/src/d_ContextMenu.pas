@@ -89,9 +89,11 @@ var
   Executable: string;
   Exec: TExecutor;
   s: string;
+  mi: TMenuItem;
 begin
-  if _Idx < FItems.Count then begin
-    Executable := IniFile.ReadString(FSection, FItems[_Idx], '');
+  if _Idx < ThePopupMenu.Items.Count then begin
+    mi := ThePopupMenu.Items[_Idx];
+    Executable := mi.Hint;
     Exec := TExecutor.Create;
     try
       if not Exec.FindExecutable(Executable) then
@@ -131,6 +133,7 @@ procedure Tdm_ContextMenu.UpdatePopup;
         for ItemIdx := 0 to FItems.Count - 1 do begin
           mi := TMenuItem.Create(Self);
           mi.Caption := FItems[ItemIdx];
+          mi.Hint := IniFile.ReadString(_Section, FItems[ItemIdx], '');
           ThePopupMenu.Items.Add(mi);
         end;
         exit(true);
