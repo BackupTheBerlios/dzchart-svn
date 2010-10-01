@@ -371,6 +371,7 @@
   SUPPORTS_NODEFINE              Compiler supports the $NODEFINE directive (D4+/BCB3+)
   SUPPORTS_LONGWORD              Compiler supports the LongWord type (unsigned 32 bit) (D4+/BCB4+)
   SUPPORTS_INT64                 Compiler supports the Int64 type (D4+/BCB4+)
+  SUPPORTS_UINT64                Compiler supports the UInt64 type (D XE+ ?)
   SUPPORTS_DYNAMICARRAYS         Compiler supports dynamic arrays (D4+/BCB4+)
   SUPPORTS_DEFAULTPARAMS         Compiler supports default parameters (D4+/BCB4+)
   SUPPORTS_OVERLOAD              Compiler supports overloading (D4+/BCB4+)
@@ -691,8 +692,8 @@
         {$DEFINE BCB15}
       {$ELSE}
         {$DEFINE DELPHI15}
-        {$DEFINE DELPHI2011} // synonym to DELPHI14
-        {$DEFINE DELPHICOMPILER14}
+        {$DEFINE DELPHI2011} // synonym to DELPHI15
+        {$DEFINE DELPHICOMPILER15}
       {$ENDIF BCB}
       {$DEFINE RTL220_UP}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
@@ -729,7 +730,7 @@
 { DELPHIX_UP from DELPHIX mappings                                             }
 {------------------------------------------------------------------------------}
 
-{$IFDEF Delphi15} {$DEFINE DELPHI_15_UP} {$ENDIF}
+{$IFDEF Delphi15} {$DEFINE DELPHI15_UP} {$ENDIF}
 {$IFDEF DELPHI14} {$DEFINE DELPHI14_UP} {$ENDIF}
 {$IFDEF DELPHI12} {$DEFINE DELPHI12_UP} {$ENDIF}
 {$IFDEF DELPHI11} {$DEFINE DELPHI11_UP} {$ENDIF}
@@ -1203,6 +1204,10 @@
   {$DEFINE HAS_UNIT_ANSISTRINGS}
   {$DEFINE HAS_UNIT_PNGIMAGE}
 {$ENDIF RTL200_UP}
+
+{$IFDEF RTL220_UP}
+  {$DEFINE SUPPORTS_UINT64}
+{$ENDIF RTL220_UP}
 
 {------------------------------------------------------------------------------}
 { Cross-platform related defines                                               }
