@@ -24,6 +24,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_MapFile>3</DCC_MapFile>
 			<DCC_UnitSearchPath>..\libs\dzlib\src;..\libs\dzlib\jedi_inc;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_Define>NO_TRANSLATION;$(DCC_Define)</DCC_Define>
 			<DCC_UsePackage>vcl;vclx;VclSmp;rtl;vclimg;svnui;svn;bdertl;vclactnband;vcldb;dbrtl;vcldbx;vcltouch;xmlrtl;dsnap;dsnapcon;vclib;ibxpress;adortl;IndyProtocols;inet;vclie;inetdb;webdsnap;websnap;inetdbbde;inetdbxpress;soaprtl;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds</DCC_UsePackage>
@@ -65,7 +66,6 @@
 			</DCCReference>
 			<DCCReference Include="..\libs\dzLib\src\u_dzShellApiUtils.pas"/>
 			<DCCReference Include="..\libs\dzLib\src\u_dzExecutor.pas"/>
-			<None Include="C:\Documents and Settings\twm\Application Data\dzContextMenu\menu.ini"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -80,6 +80,10 @@
 		</ItemGroup>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
 		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\8.0\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\8.0\UserTools.proj"/>
+		<PropertyGroup>
+			<PreBuildEvent><![CDATA[..\buildtools\prebuild.cmd $(PROJECTPATH)]]></PreBuildEvent>
+			<PostBuildEvent><![CDATA[..\buildtools\postbuild.cmd $(OUTPUTDIR)$(OUTPUTNAME)]]></PostBuildEvent>
+		</PropertyGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
 			<Borland.ProjectType/>

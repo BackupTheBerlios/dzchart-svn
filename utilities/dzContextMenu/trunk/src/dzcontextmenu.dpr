@@ -13,7 +13,7 @@ exports
   DllRegisterServer,
   DllUnregisterServer;
 
-{$R *.RES}
+{$R *_version.RES}
 
 begin
 
