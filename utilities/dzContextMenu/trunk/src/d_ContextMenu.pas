@@ -40,10 +40,8 @@ uses
   u_dzShellApiUtils,
   u_dzFileUtils,
   u_dzOsUtils,
-  u_dzExecutor;
-
-const
-  INI_FILE = 'menu.ini';
+  u_dzExecutor,
+  u_dzConfigUtils;
 
 var
   gblIni: TMemIniFile = nil;
@@ -52,9 +50,11 @@ type
   TMenuItemEx = class(TMenuItem)
   private
     FExecutable: string;
+    procedure SetExecutable(const _Value: string);
   public
+    procedure AddToSubmenu(_SubMenu: HMenu; _Position: integer; var _Id: integer);
     procedure Execute(_Files: TStrings);
-    property Executable: string read FExecutable write FExecutable;
+    property Executable: string read FExecutable write SetExecutable;
   end;
 
 constructor Tdm_ContextMenu.Create(_Owner: TComponent);
@@ -154,30 +154,14 @@ end;
 procedure Tdm_ContextMenu.UpdateSubmenu(_SubMenu: HMenu; var _Id: integer);
 var
   i: integer;
-  mi: TMenuItem;
-  mii: TMenuItemInfo;
+  mi: TMenuItemeX;
 begin
   UpdatePopup;
 
   for i := 0 to ThePopupMenu.Items.Count - 1 do begin
-    mi := ThePopupMenu.Items[i];
-
-    FillChar(mii, sizeof(mii), 0);
-    mii.cbSize := sizeof(mii);
-    mii.fMask := MIIM_CHECKMARKS or MIIM_ID or MIIM_TYPE or MIIM_STATE or MIIM_DATA;
-    mii.wID := _Id;
-    mii.hSubMenu := _SubMenu;
-    if mi.IsLine then
-      mii.fType := MFT_SEPARATOR
-    else
-      mii.fType := MFT_STRING;
-    mii.fState := MFS_ENABLED;
-    mii.dwItemData := integer(mi);
-    mii.dwTypeData := PChar(mi.Caption);
-    InsertMenuItem(_SubMenu, i, LongBool(True), mii);
-    Inc(_Id);
+    mi := ThePopupMenu.Items[i] as TMenuItemEx;
+    mi.AddToSubmenu(_SubMenu, i, _Id);
   end;
-
 end;
 
 class function Tdm_ContextMenu.IniFile: TMemIniFile;
@@ -187,13 +171,16 @@ end;
 
 procedure Initialize;
 var
-  AppDataDir: string;
-  ModuleName: string;
   IniName: string;
+  cfg: TdzConfig;
 begin
-  ModuleName := GetModuleFilename;
-  AppDataDir := TWindowsShell.GetAppDataDir;
-  IniName := itpd(AppDataDir) + ChangeFileExt(ExtractFileName(ModuleName), '') + '\' + INI_FILE;
+  cfg := TdzConfig.Create(HInstance);
+  try
+    cfg.ExeName := 'menu';
+    IniName := cfg.GetUserCfgFile(false);
+  finally
+    FreeAndNil(cfg);
+  end;
   gblIni := TMemIniFile.Create(IniName);
 end;
 
@@ -223,6 +210,35 @@ begin
   finally
     FreeAndNil(Exec)
   end;
+end;
+
+procedure TMenuItemEx.SetExecutable(const _Value: string);
+begin
+  FExecutable := _Value;
+  Enabled := (FExecutable <> '');
+end;
+
+procedure TMenuItemEx.AddToSubmenu(_SubMenu: HMenu; _Position: integer; var _Id: integer);
+var
+  mii: TMenuItemInfo;
+begin
+  FillChar(mii, sizeof(mii), 0);
+  mii.cbSize := sizeof(mii);
+  mii.fMask := MIIM_CHECKMARKS or MIIM_ID or MIIM_TYPE or MIIM_STATE or MIIM_DATA;
+  mii.wID := _Id;
+  mii.hSubMenu := _SubMenu;
+  if IsLine then
+    mii.fType := MFT_SEPARATOR
+  else
+    mii.fType := MFT_STRING;
+  if Enabled then
+    mii.fState := MFS_ENABLED
+  else
+    mii.fState := MFS_DISABLED;
+  mii.dwItemData := integer(self);
+  mii.dwTypeData := PChar(Caption);
+  Windows.InsertMenuItem(_SubMenu, _Position, LongBool(True), mii);
+  Inc(_Id);
 end;
 
 initialization

@@ -25,7 +25,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_UnitSearchPath>..\libs\dzlib\src;..\libs\dzlib\jedi_inc;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\libs\dzlib\src;..\libs\dzlib\jedi_inc;..\libs\jcl\source\include;..\libs\jcl\source\common;..\libs\jcl\source\windows;..\libs\jcl\source\vcl;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_Define>NO_TRANSLATION;$(DCC_Define)</DCC_Define>
 			<DCC_UsePackage>vcl;vclx;VclSmp;rtl;vclimg;svnui;svn;bdertl;vclactnband;vcldb;dbrtl;vcldbx;vcltouch;xmlrtl;dsnap;dsnapcon;vclib;ibxpress;adortl;IndyProtocols;inet;vclie;inetdb;webdsnap;websnap;inetdbbde;inetdbxpress;soaprtl;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds</DCC_UsePackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
@@ -64,6 +64,7 @@
 				<Form>dm_ContextMenu</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
+			<DCCReference Include="..\libs\dzLib\src\u_dzConfigUtils.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
