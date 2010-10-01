@@ -48,6 +48,15 @@ const
 var
   gblIni: TMemIniFile = nil;
 
+type
+  TMenuItemEx = class(TMenuItem)
+  private
+    FExecutable: string;
+  public
+    procedure Execute(_Files: TStrings);
+    property Executable: string read FExecutable write FExecutable;
+  end;
+
 constructor Tdm_ContextMenu.Create(_Owner: TComponent);
 var
   Sections: TStringList;
@@ -86,28 +95,11 @@ end;
 
 procedure Tdm_ContextMenu.DoCommand(_Idx: integer);
 var
-  Executable: string;
-  Exec: TExecutor;
-  s: string;
-  mi: TMenuItem;
+  mi: TMenuItemEx;
 begin
   if _Idx < ThePopupMenu.Items.Count then begin
-    mi := ThePopupMenu.Items[_Idx];
-    Executable := mi.Hint;
-    Exec := TExecutor.Create;
-    try
-      if not Exec.FindExecutable(Executable) then
-        raise Exception.CreateFmt('Could not find executable %s', [Executable]);
-      FFiles.Delimiter := ' ';
-      FFiles.QuoteChar := '"';
-      s := FFiles.DelimitedText;
-      Exec.Commandline := s;
-      Exec.Visible := true;
-      Exec.WorkingDir := Extractfiledir(FFiles[0]);
-      Exec.Execute;
-    finally
-      FreeAndNil(Exec)
-    end;
+    mi := ThePopupMenu.Items[_Idx] as TMenuItemEx;
+    mi.Execute(FFiles);
   end;
 end;
 
@@ -119,7 +111,7 @@ procedure Tdm_ContextMenu.UpdatePopup;
     Ext: string;
     SectExt: string;
     ItemIdx: Integer;
-    mi: TMenuItem;
+    mi: TMenuItemEx;
   begin
     Result := false;
     for i := 0 to FFiles.Count - 1 do begin
@@ -131,9 +123,9 @@ procedure Tdm_ContextMenu.UpdatePopup;
         IniFile.ReadSection(FSection, FItems);
         FItems.Delete(0);
         for ItemIdx := 0 to FItems.Count - 1 do begin
-          mi := TMenuItem.Create(Self);
+          mi := TMenuItemEx.Create(Self);
           mi.Caption := FItems[ItemIdx];
-          mi.Hint := IniFile.ReadString(_Section, FItems[ItemIdx], '');
+          mi.Executable := IniFile.ReadString(_Section, FItems[ItemIdx], '');
           ThePopupMenu.Items.Add(mi);
         end;
         exit(true);
@@ -208,6 +200,29 @@ end;
 procedure Finalize;
 begin
   FreeAndNil(gblIni);
+end;
+
+{ TMenuItemEx }
+
+procedure TMenuItemEx.Execute(_Files: TStrings);
+var
+  Exec: TExecutor;
+  s: string;
+begin
+  Exec := TExecutor.Create;
+  try
+    if not Exec.FindExecutable(Executable) then
+      raise Exception.CreateFmt('Could not find executable %s', [Executable]);
+    _Files.Delimiter := ' ';
+    _Files.QuoteChar := '"';
+    s := _Files.DelimitedText;
+    Exec.Commandline := s;
+    Exec.Visible := true;
+    Exec.WorkingDir := Extractfiledir(_Files[0]);
+    Exec.Execute;
+  finally
+    FreeAndNil(Exec)
+  end;
 end;
 
 initialization
