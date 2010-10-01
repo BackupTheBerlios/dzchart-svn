@@ -642,6 +642,7 @@ type
     destructor Destroy; override;
     class function VersionLanguageId(const LangIdRec: TLangIdRec): string;
     class function VersionLanguageName(const LangId: Word): string;
+    class function FileHasVersionInfo(const FileName: string): boolean;
     function TranslationMatchesLanguages(Exact: Boolean = True): Boolean;
     property BinFileVersion: string read GetBinFileVersion;
     property BinProductVersion: string read GetBinProductVersion;
@@ -4872,6 +4873,13 @@ begin
   FreeAndNil(FItemList);
   FreeAndNil(FItems);
   inherited Destroy;
+end;
+
+class function TJclFileVersionInfo.FileHasVersionInfo(const FileName: string): boolean;
+var
+  Dummy: DWord;
+begin
+  Result := GetFileVersionInfoSize(PChar(FileName), Dummy) <> 0;
 end;
 
 procedure TJclFileVersionInfo.CheckLanguageIndex(Value: Integer);
