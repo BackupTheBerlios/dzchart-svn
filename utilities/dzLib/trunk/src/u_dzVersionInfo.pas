@@ -13,7 +13,8 @@ type
   EAIInvalidVersionInfo = class(EApplicationInfo);
 
 type
-  TFileProperty = (FpProductName, FpProductVersion, FpFileDescription, FpFileVersion, FpCopyright, FpCompanyName);
+  TFileProperty = (FpProductName, FpProductVersion, FpFileDescription, FpFileVersion, FpCopyright, FpCompanyName,
+    fpInternalName, fpOriginalFilename);
   TFilePropertySet = set of TFileProperty;
 
 type
@@ -60,6 +61,8 @@ type
     function Company: string;
     ///<summary> The LegalCopyRight string from the file version resources </summary>
     function LegalCopyRight: string;
+    function InternalName: string;
+    function OriginalFilename: string;
   end;
 
 type
@@ -89,6 +92,8 @@ type
     function Company: string;
     ///<summary> The LegalCopyRight string from the file version resources </summary>
     function LegalCopyRight: string;
+    function InternalName: string;
+    function OriginalFilename: string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -129,7 +134,8 @@ uses
   IniFiles,
   JclFileUtils,
   u_dzTranslator,
-  u_dzOsUtils;
+  u_dzOsUtils,
+  JclResources;
 
 { TCustomFileInfo }
 
@@ -172,16 +178,25 @@ function TCustomFileInfo.GetFileProperty(_Property: TFileProperty): string;
 var
   fi: TJclFileVersionInfo;
 begin
-  result := '';
+  Result := '';
 
   if not (_Property in FFilePropertiesRead) then begin
     try
       case _Property of
         FpProductName,
           FpProductVersion,
+          FpCompanyName,
           FpFileDescription,
           FpFileVersion,
-          FpCopyright: begin
+          FpCopyright,
+          fpInternalName,
+          fpOriginalFilename: begin
+            if not TJclFileVersionInfo.FileHasVersionInfo(FileName) then begin
+              if FAllowExceptions then
+                raise EJclFileVersionInfoError.CreateRes(@RsFileUtilsNoVersionInfo);
+              exit;
+            end;
+
             fi := TJclFileVersionInfo.Create(FileName);
             try
               FFileProperties[FpFileVersion] := fi.FileVersion;
@@ -190,6 +205,8 @@ begin
               FFileProperties[FpProductVersion] := fi.ProductVersion;
               FFileProperties[FpCopyright] := fi.LegalCopyright;
               FFileProperties[FpCompanyName] := fi.CompanyName;
+              FFileProperties[fpOriginalFilename] := fi.OriginalFilename;
+              FFileProperties[fpInternalName] := fi.InternalName;
 
               Include(FFilePropertiesRead, FpFileVersion);
               Include(FFilePropertiesRead, FpFileDescription);
@@ -197,6 +214,8 @@ begin
               Include(FFilePropertiesRead, FpProductName);
               Include(FFilePropertiesRead, FpCopyright);
               Include(FFilePropertiesRead, FpCompanyName);
+              Include(FFilePropertiesRead, fpOriginalFilename);
+              Include(FFilePropertiesRead, fpInternalName);
             finally
               fi.Free;
             end;
@@ -212,6 +231,11 @@ begin
   Result := FFileProperties[_Property];
 end;
 
+function TCustomFileInfo.InternalName: string;
+begin
+  Result := GetFileProperty(fpInternalName);
+end;
+
 function TCustomFileInfo.Company: string;
 begin
   Result := GetFileProperty(FpCompanyName);
@@ -220,6 +244,11 @@ end;
 function TCustomFileInfo.LegalCopyRight: string;
 begin
   Result := GetFileProperty(FpCopyright);
+end;
+
+function TCustomFileInfo.OriginalFilename: string;
+begin
+  Result := GetFileProperty(fpOriginalFilename);
 end;
 
 function TCustomFileInfo.FileVersion: string;
