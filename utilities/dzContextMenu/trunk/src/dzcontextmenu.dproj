@@ -64,8 +64,6 @@
 				<Form>dm_ContextMenu</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
-			<DCCReference Include="..\libs\dzLib\src\u_dzShellApiUtils.pas"/>
-			<DCCReference Include="..\libs\dzLib\src\u_dzExecutor.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -120,7 +118,7 @@
 						<Source Name="MainSource">dzcontextmenu.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">/n, /e, C:\src\berlios.dzContextMenu</Parameters>
+						<Parameters Name="RunParams">/n, /e, C:\src\berlios\dzContextMenu\src</Parameters>
 						<Parameters Name="HostApplication">C:\WINDOWS\explorer.exe</Parameters>
 					</Parameters>
 					<Excluded_Packages>

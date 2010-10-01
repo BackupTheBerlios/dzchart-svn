@@ -119,7 +119,7 @@ procedure Tdm_ContextMenu.UpdatePopup;
     ItemIdx: Integer;
     mi: TMenuItem;
   begin
-   Result := false;
+    Result := false;
     for i := 0 to FFiles.Count - 1 do begin
       Ext := ExtractFileExt(FFiles[i]);
       SectExt := IniFile.ReadString(_Section, 'extension', '');
@@ -172,7 +172,10 @@ begin
     mii.fMask := MIIM_CHECKMARKS or MIIM_ID or MIIM_TYPE or MIIM_STATE or MIIM_DATA;
     mii.wID := _Id;
     mii.hSubMenu := _SubMenu;
-    mii.fType := MFT_STRING;
+    if mi.IsLine then
+      mii.fType := MFT_SEPARATOR
+    else
+      mii.fType := MFT_STRING;
     mii.fState := MFS_ENABLED;
     mii.dwItemData := integer(mi);
     mii.dwTypeData := PChar(mi.Caption);

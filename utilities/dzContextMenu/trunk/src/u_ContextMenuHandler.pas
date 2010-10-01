@@ -4,6 +4,7 @@ interface
 
 uses
   Windows,
+  SysUtils,
   Classes,
   Menus,
   ActiveX,
@@ -37,10 +38,8 @@ implementation
 
 uses
   ComServ,
-  SysUtils,
   Shellapi,
   Registry,
-  Dialogs,
   IniFiles;
 
 procedure TContextMenu.Initialize;
@@ -65,35 +64,40 @@ var
   Files: TStringList;
   FileName: array[0..MAX_PATH] of Char;
 begin
-    // if lpdobj is nil, fail
-  if (_lpdobj = nil) then begin
-    Result := E_INVALIDARG;
-    Exit;
-  end;
+  Result := E_INVALIDARG;
+  try
+  // if lpdobj is nil, fail
+    if (_lpdobj = nil) then begin
+      Exit;
+    end;
 
-  Files := FDm.Files;
-  Files.Clear;
+    Files := FDm.Files;
+    Files.Clear;
 
   // initialize clipboard format
-  FormatEtc.CfFormat := CF_HDROP;
-  FormatEtc.Ptd := nil;
-  FormatEtc.DwAspect := DVASPECT_CONTENT;
-  FormatEtc.Lindex := 1;
-  FormatEtc.Tymed := TYMED_HGLOBAL;
-  Result := _lpdobj.GetData(FormatEtc, StgMedium);
-  if Succeeded(Result) then begin
-    try
+    FormatEtc.CfFormat := CF_HDROP;
+    FormatEtc.Ptd := nil;
+    FormatEtc.DwAspect := DVASPECT_CONTENT;
+    FormatEtc.Lindex := 1;
+    FormatEtc.Tymed := TYMED_HGLOBAL;
+    Result := _lpdobj.GetData(FormatEtc, StgMedium);
+    if Succeeded(Result) then begin
+      try
       // get selected files count
-      Count := DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0);
+        Count := DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0);
       // get selected files
-      for i := 0 to Count - 1 do begin
-        DragQueryFile(StgMedium.hGlobal, i, FileName, SizeOf(FileName));
-        Files.Add(FileName);
+        for i := 0 to Count - 1 do begin
+          DragQueryFile(StgMedium.hGlobal, i, FileName, SizeOf(FileName));
+          Files.Add(FileName);
+        end;
+      finally
+        ReleaseStgMedium(StgMedium);
       end;
-    finally
-      ReleaseStgMedium(StgMedium);
+      Result := NOERROR;
     end;
-    Result := NOERROR;
+  except
+    on e: Exception do
+      MessageBox(0, PChar(Format('Error: %s (%s)', [e.Message, e.ClassName])), 'dzContextMenu', MB_ICONERROR or MB_OK);
   end;
 end;
 
@@ -105,25 +109,30 @@ var
   MenuTitle: string;
 begin
   Result := 0;
-  if ((_UFlags and $0000000F) = CMF_NORMAL) or ((_UFlags and CMF_EXPLORE) <> 0) then begin
-    MenuTitle := FDm.IniFile.ReadString('global', 'caption', 'Submenu');
-    Id := Integer(_idCmdFirst);
-    Submenu := CreatePopupMenu;
-    FDm.UpdateSubmenu(Submenu, Id);
-    FillChar(mii, sizeof(mii), 0);
-    mii.cbSize := sizeof(mii);
-    mii.fMask := MIIM_SUBMENU or MIIM_ID or MIIM_TYPE or MIIM_STATE;
-    mii.wID := Id;
-    mii.hSubMenu := Submenu;
-    mii.fType := MFT_STRING;
-    mii.fState := MFS_ENABLED;
-    mii.dwTypeData := PChar(MenuTitle);
-    InsertMenuItem(_Menu, _indexMenu, LongBool(True), mii);
-    Inc(Id);
+  try
+    if ((_UFlags and $0000000F) = CMF_NORMAL) or ((_UFlags and CMF_EXPLORE) <> 0) then begin
+      MenuTitle := FDm.IniFile.ReadString('global', 'caption', 'Submenu');
+      Id := Integer(_idCmdFirst);
+      Submenu := CreatePopupMenu;
+      FDm.UpdateSubmenu(Submenu, Id);
+      FillChar(mii, sizeof(mii), 0);
+      mii.cbSize := sizeof(mii);
+      mii.fMask := MIIM_SUBMENU or MIIM_ID or MIIM_TYPE or MIIM_STATE;
+      mii.wID := Id;
+      mii.hSubMenu := Submenu;
+      mii.fType := MFT_STRING;
+      mii.fState := MFS_ENABLED;
+      mii.dwTypeData := PChar(MenuTitle);
+      InsertMenuItem(_Menu, _indexMenu, LongBool(True), mii);
+      Inc(Id);
 
     // Return value is number of items added to context menu
-    FCmdCount := Id - integer(_idCmdFirst);
-    Result := MakeResult(SEVERITY_SUCCESS, 0, FCmdCount);
+      FCmdCount := Id - integer(_idCmdFirst);
+      Result := MakeResult(SEVERITY_SUCCESS, 0, FCmdCount);
+    end;
+  except
+    on e: Exception do
+      MessageBox(0, PChar(Format('Error: %s (%s)', [e.Message, e.ClassName])), 'dzContextMenu', MB_ICONERROR or MB_OK);
   end;
 end;
 
@@ -133,14 +142,19 @@ var
   szName: PWideChar absolute _PszName;
 begin
   Result := E_INVALIDARG;
-  if _idCmd < FCmdCount then begin
-    case _uType of
-      GCS_HELPTEXTW: begin
+  try
+    if _idCmd < FCmdCount then begin
+      case _uType of
+        GCS_HELPTEXTW: begin
           // Return the menu item's help
-          StrLCopy(szName, PChar('execute some command'), _cchMax);
-          Result := S_OK;
-        end;
+            StrLCopy(szName, PChar('execute some command'), _cchMax);
+            Result := S_OK;
+          end;
+      end;
     end;
+  except
+    on e: Exception do
+      MessageBox(0, PChar(Format('Error: %s (%s)', [e.Message, e.ClassName])), 'dzContextMenu', MB_ICONERROR or MB_OK);
   end;
 end;
 
@@ -163,9 +177,14 @@ var
   ici: TCMInvokeCommandInfoHack absolute _ici;
 begin
   Result := E_FAIL;
-  if ici.VerbHi = 0 then begin
-    FDm.DoCommand(ici.VerbLo);
-    Result := S_OK;
+  try
+    if ici.VerbHi = 0 then begin
+      FDm.DoCommand(ici.VerbLo);
+      Result := S_OK;
+    end;
+  except
+    on e: Exception do
+      MessageBox(0, PChar(Format('Error: %s (%s)', [e.Message, e.ClassName])), 'dzContextMenu', MB_ICONERROR or MB_OK);
   end;
 end;
 
@@ -183,54 +202,59 @@ var
   i: Integer;
   FileType: string;
 begin
-  ClassID := GUIDToString(TContextMenu.GUID);
-  if _Register then begin
-    inherited UpdateRegistry(_Register);
+  try
+    ClassID := GUIDToString(TContextMenu.GUID);
+    if _Register then begin
+      inherited UpdateRegistry(_Register);
 
-    Sections := nil;
-    Ini := Tdm_ContextMenu.IniFile;
-    Sections := TStringList.Create;
-    try
-      Ini.ReadSections(Sections);
-      for i := 0 to Sections.Count - 1 do begin
-        FileType := Sections[i];
-        if SameText(FileType, 'Global') then begin
+      Sections := nil;
+      Ini := Tdm_ContextMenu.IniFile;
+      Sections := TStringList.Create;
+      try
+        Ini.ReadSections(Sections);
+        for i := 0 to Sections.Count - 1 do begin
+          FileType := Sections[i];
+          if SameText(FileType, 'Global') then begin
           // maybe do something later on
-        end else begin
-          CreateRegKey(FileType + '\shellex', '', '');
-          CreateRegKey(FileType + '\shellex\ContextMenuHandlers', '', '');
-          CreateRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu', '', ClassID);
+          end else begin
+            CreateRegKey(FileType + '\shellex', '', '');
+            CreateRegKey(FileType + '\shellex\ContextMenuHandlers', '', '');
+            CreateRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu', '', ClassID);
+          end;
         end;
+
+      finally
+        FreeAndNil(Sections);
       end;
+      if (Win32Platform = VER_PLATFORM_WIN32_NT) then
+        with TRegistry.Create do
+          try
+            RootKey := HKEY_LOCAL_MACHINE;
+            OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
+            OpenKey('Approved', True);
+            WriteString(ClassID, 'dzContextMenu');
+          finally
+            Free;
+          end;
+    end else begin
+      DeleteRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu');
 
-    finally
-      FreeAndNil(Sections);
+      if (Win32Platform = VER_PLATFORM_WIN32_NT) then
+        with TRegistry.Create do
+          try
+            RootKey := HKEY_LOCAL_MACHINE;
+            OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
+            OpenKey('Approved', True);
+            DeleteValue(ClassID);
+          finally
+            Free;
+          end;
+
+      inherited UpdateRegistry(_Register);
     end;
-    if (Win32Platform = VER_PLATFORM_WIN32_NT) then
-      with TRegistry.Create do
-        try
-          RootKey := HKEY_LOCAL_MACHINE;
-          OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
-          OpenKey('Approved', True);
-          WriteString(ClassID, 'dzContextMenu');
-        finally
-          Free;
-        end;
-  end else begin
-    DeleteRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu');
-
-    if (Win32Platform = VER_PLATFORM_WIN32_NT) then
-      with TRegistry.Create do
-        try
-          RootKey := HKEY_LOCAL_MACHINE;
-          OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
-          OpenKey('Approved', True);
-          DeleteValue(ClassID);
-        finally
-          Free;
-        end;
-
-    inherited UpdateRegistry(_Register);
+  except
+    on e: Exception do
+      MessageBox(0, PChar(Format('Error: %s (%s)', [e.Message, e.ClassName])), 'dzContextMenu', MB_ICONERROR or MB_OK);
   end;
 end;
 
