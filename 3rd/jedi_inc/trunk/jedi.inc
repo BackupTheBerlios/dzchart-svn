@@ -39,9 +39,9 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Last modified: $Date:: 2009-08-07 10:25:11 +0200 (ven. 07 août 2009)                         $ }
-{ Revision:      $Rev:: 126                                                                      $ }
-{ Author:        $Author:: outch                                                                 $ }
+{ Last modified: $Date:: 2010-09-17 18:30:14 +0200 (Fr, 17 Sep 2010)                             $ }
+{ Revision:      $Rev:: 70                                                                       $ }
+{ Author:        $Author:: outchy                                                                $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -140,6 +140,8 @@
   DELPHI2009          Alias for DELPHI12
   DELPHI14            Defined when compiling with Delphi 2010 for Win32 (Codename WEAVER)
   DELPHI2010          Alias for DELPHI14
+  DELPHI15            Defined when compiling with Delphi XE for Win32 (Codename FULCRUM)
+  DELPHIXE            Alias for DELPHI15
   DELPHI1_UP          Defined when compiling with Delphi 1 or higher
   DELPHI2_UP          Defined when compiling with Delphi 2 or higher
   DELPHI3_UP          Defined when compiling with Delphi 3 or higher
@@ -158,6 +160,8 @@
   DELPHI2009_UP       Alias for DELPHI12_UP
   DELPHI14_UP         Defined when compiling with Delphi 2010 for Win32 or higher
   DELPHI2010_UP       Alias for DELPHI14_UP
+  DELPHI15_UP         Defined when compiling with Delphi XE for Win32 or higher
+  DELPHIXE_UP         Alias for DELPHI15_UP
 
 
 - Kylix Versions
@@ -193,6 +197,7 @@
   DELPHICOMPILER11     Defined when compiling with Delphi 2007 for Win32
   DELPHICOMPILER12     Defined when compiling with Delphi Personality of BDS 6.0
   DELPHICOMPILER14     Defined when compiling with Delphi Personality of BDS 7.0
+  DELPHICOMPILER15     Defined when compiling with Delphi Personality of BDS 8.0
   DELPHICOMPILER1_UP   Defined when compiling with Delphi 1 or higher
   DELPHICOMPILER2_UP   Defined when compiling with Delphi 2 or higher
   DELPHICOMPILER3_UP   Defined when compiling with Delphi 3 or higher
@@ -206,6 +211,7 @@
   DELPHICOMPILER11_UP  Defined when compiling with Delphi 2007 for Win32 or higher
   DELPHICOMPILER12_UP  Defined when compiling with Delphi 2009 for Win32 or higher
   DELPHICOMPILER14_UP  Defined when compiling with Delphi 2010 for Win32 or higher
+  DELPHICOMPILER15_UP  Defined when compiling with Delphi XE for Win32 or higher
 
 
 - C++Builder Versions
@@ -234,9 +240,10 @@
   BCB11_UP     Defined when compiling with C++Builder Personality of RAD Studio 2007 or higher
   BCB12_UP     Defined when compiling with C++Builder Personality of RAD Studio 2009 or higher
   BCB14_UP     Defined when compiling with C++Builder Personality of RAD Studio 2010 or higher
+  BCB15_UP     Defined when compiling with C++Builder Personality of RAD Studio XE or higher
 
 
-- CodeGear RAD Studio / Borland Developer Studio Versions
+- RAD Studio / Borland Developer Studio Versions
 
   The following directives are direct mappings from the VERXXX directives to a
   friendly name of the associated IDE. These directives are only defined if
@@ -253,13 +260,15 @@
   BDS4         Defined when compiling with BDS 4.0 (Borland Developer Studio 2006) (Codename DEXTER)
   BDS5         Defined when compiling with BDS 5.0 (CodeGear RAD Studio 2007) (Codename HIGHLANDER)
   BDS6         Defined when compiling with BDS 6.0 (CodeGear RAD Studio 2009) (Codename TIBURON)
-  BDS7         Defined when compiling with BDS 7.0 (CodeGear RAD Studio 2010) (Codename WEAVER)
+  BDS7         Defined when compiling with BDS 7.0 (Embarcadero RAD Studio 2010) (Codename WEAVER)
+  BDS8         Defined when compiling with BDS 8.0 (Embarcadero RAD Studio XE) (Codename FULCRUM)
   BDS2_UP      Defined when compiling with BDS 2.0 or higher
   BDS3_UP      Defined when compiling with BDS 3.0 or higher
   BDS4_UP      Defined when compiling with BDS 4.0 or higher
   BDS5_UP      Defined when compiling with BDS 5.0 or higher
   BDS6_UP      Defined when compiling with BDS 6.0 or higher
   BDS7_UP      Defined when compiling with BDS 7.0 or higher
+  BDS8_UP      Defined when compiling with BDS 8.0 or higher
 
 - Compiler Versions
 
@@ -285,6 +294,7 @@
   COMPILER11     Defined when compiling with Delphi or C++Builder Personalities of BDS 5.0
   COMPILER12     Defined when compiling with Delphi or C++Builder Personalities of BDS 6.0
   COMPILER14     Defined when compiling with Delphi or C++Builder Personalities of BDS 7.0
+  COMPILER15     Defined when compiling with Delphi or C++Builder Personalities of BDS 8.0
   COMPILER1_UP   Defined when compiling with Delphi 1 or higher
   COMPILER2_UP   Defined when compiling with Delphi 2 or C++Builder 1 or higher
   COMPILER3_UP   Defined when compiling with Delphi 3 or higher
@@ -299,6 +309,7 @@
   COMPILER11_UP  Defined when compiling with Delphi or C++Builder Personalities of BDS 5.0 or higher
   COMPILER12_UP  Defined when compiling with Delphi or C++Builder Personalities of BDS 6.0 or higher
   COMPILER14_UP  Defined when compiling with Delphi or C++Builder Personalities of BDS 7.0 or higher
+  COMPILER15_UP  Defined when compiling with Delphi or C++Builder Personalities of BDS 8.0 or higher
 
 
 - RTL Versions
@@ -330,6 +341,7 @@
   RTL190_UP     Defined when compiling with Delphi.NET of BDS 5.0 or higher
   RTL200_UP     Defined when compiling with Delphi or C++Builder Personalities of BDS 6.0 or higher
   RTL210_UP     Defined when compiling with Delphi or C++Builder Personalities of BDS 7.0 or higher
+  RTL220_UP     Defined when compiling with Delphi or C++Builder Personalities of BDS 8.0 or higher
 
 
 - CLR Versions
@@ -371,6 +383,7 @@
   SUPPORTS_NODEFINE              Compiler supports the $NODEFINE directive (D4+/BCB3+)
   SUPPORTS_LONGWORD              Compiler supports the LongWord type (unsigned 32 bit) (D4+/BCB4+)
   SUPPORTS_INT64                 Compiler supports the Int64 type (D4+/BCB4+)
+  SUPPORTS_UINT64                Compiler supports the UInt64 type (D XE+ ?)
   SUPPORTS_DYNAMICARRAYS         Compiler supports dynamic arrays (D4+/BCB4+)
   SUPPORTS_DEFAULTPARAMS         Compiler supports default parameters (D4+/BCB4+)
   SUPPORTS_OVERLOAD              Compiler supports overloading (D4+/BCB4+)
@@ -390,6 +403,7 @@
   SUPPORTS_CLASS_FIELDS          Compiler supports class fields (D9.NET, D10+)
   SUPPORTS_CLASS_HELPERS         Compiler supports class helpers (D9.NET, D10+)
   SUPPORTS_CLASS_OPERATORS       Compiler supports class operators (D9.NET, D10+)
+  SUPPORTS_CLASS_CTORDTORS       Compiler supports class contructors/destructors (D14+)
   SUPPORTS_STRICT                Compiler supports strict keyword (D9.NET, D10+)
   SUPPORTS_STATIC                Compiler supports static keyword (D9.NET, D10+)
   SUPPORTS_FINAL                 Compiler supports final keyword (D9.NET, D10+)
@@ -417,11 +431,16 @@
   HAS_UNIT_DATEUTILS             Unit DateUtils exists (D6+/BCB6+/FPC)
   HAS_UNIT_CONTNRS               Unit contnrs exists (D6+/BCB6+/FPC)
   HAS_UNIT_HTTPPROD              Unit HTTPProd exists (D9+)
+  HAS_UNIT_GIFIMG                Unit GifImg exists (D11+)
   HAS_UNIT_ANSISTRINGS           Unit AnsiStrings exists (D12+)
   HAS_UNIT_PNGIMAGE              Unit PngImage exists (D12+)
   XPLATFORM_RTL                  The RTL supports crossplatform function names (e.g. RaiseLastOSError) (D6+/BCB6+/FPC)
   SUPPORTS_UNICODE               string type is aliased to an unicode string (WideString or UnicodeString) (DX.NET, D12+)
   SUPPORTS_UNICODE_STRING        Compiler supports UnicodeString (D12+)
+  SUPPORTS_INT_ALIASES           Types Int8, Int16, Int32, UInt8, UInt16 and UInt32 are defined in the unit System (D12+)
+  HAS_UNIT_RTTI                  Unit RTTI is available (D14+)
+  SUPPORTS_CAST_INTERFACE_TO_OBJ The compiler supports casts from interfaces to objects (D14+)
+  SUPPORTS_DELAYED_LOADING       The compiler generates stubs for delaying imported function loads (D14+)
 
 
 - Compiler Settings
@@ -441,6 +460,7 @@
   IOCHECKS_ON            Compiling in the I+ state (I/O checking enabled)
   WRITEABLECONST_ON      Compiling in the J+ state (typed constants can be modified)
   LOCALSYMBOLS           Compiling in the L+ state (local symbol generation)
+  LOCALSYMBOLS_ON        Alias of LOCALSYMBOLS
   TYPEINFO_ON            Compiling in the M+ state (RTTI generation on)
   OPTIMIZATION_ON        Compiling in the O+ state (code optimization on)
   OPENSTRINGS_ON         Compiling in the P+ state (variable string parameters are openstrings)
@@ -683,7 +703,7 @@
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF VER210}
 
-    {$ifdef VER220} // Rad Studio XE
+    {$IFDEF VER220} // RAD Studio XE
       {$DEFINE BDS}
       {$DEFINE BDS8}
       {$DEFINE COMPILER15}
@@ -691,25 +711,25 @@
         {$DEFINE BCB15}
       {$ELSE}
         {$DEFINE DELPHI15}
-        {$DEFINE DELPHI2011} // synonym to DELPHI14
-        {$DEFINE DELPHICOMPILER14}
+        {$DEFINE DELPHIXE} // synonym to DELPHI15
+        {$DEFINE DELPHICOMPILER15}
       {$ENDIF BCB}
       {$DEFINE RTL220_UP}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
-    {$endif VER220}
+    {$ENDIF VER220}
 
     {$IFDEF UNKNOWN_COMPILER_VERSION} // adjust for newer version (always use latest version)
       {$DEFINE BDS}
       {$DEFINE BDS7}
-      {$DEFINE COMPILER14}
+      {$DEFINE COMPILER15}
       {$IFDEF BCB}
-        {$DEFINE BCB14}
+        {$DEFINE BCB15}
       {$ELSE}
-        {$DEFINE DELPHI14}
-        {$DEFINE DELPHI2010} // synonym to DELPHI14
-        {$DEFINE DELPHICOMPILER14}
+        {$DEFINE DELPHI15}
+        {$DEFINE DELPHIXE} // synonym to DELPHI15
+        {$DEFINE DELPHICOMPILER15}
       {$ENDIF BCB}
-      {$DEFINE RTL210_UP}
+      {$DEFINE RTL220_UP}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF}
 
@@ -729,7 +749,7 @@
 { DELPHIX_UP from DELPHIX mappings                                             }
 {------------------------------------------------------------------------------}
 
-{$IFDEF Delphi15} {$DEFINE DELPHI_15_UP} {$ENDIF}
+{$IFDEF DELPHI15} {$DEFINE DELPHI15_UP} {$ENDIF}
 {$IFDEF DELPHI14} {$DEFINE DELPHI14_UP} {$ENDIF}
 {$IFDEF DELPHI12} {$DEFINE DELPHI12_UP} {$ENDIF}
 {$IFDEF DELPHI11} {$DEFINE DELPHI11_UP} {$ENDIF}
@@ -749,7 +769,7 @@
 {------------------------------------------------------------------------------}
 
 {$IFDEF DELPHI15_UP}
-  {$DEFINE DELPHI2011_UP} // synonym to DELPHI15_UP
+  {$DEFINE DELPHIXE_UP} // synonym to DELPHI15_UP
   {$DEFINE DELPHI14_UP}
 {$ENDIF}
 
@@ -790,6 +810,7 @@
 { BCBX_UP from BCBX mappings                                                   }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BCB15} {$DEFINE BCB15_UP} {$ENDIF}
 {$IFDEF BCB14} {$DEFINE BCB14_UP} {$ENDIF}
 {$IFDEF BCB12} {$DEFINE BCB12_UP} {$ENDIF}
 {$IFDEF BCB11} {$DEFINE BCB11_UP} {$ENDIF}
@@ -804,6 +825,7 @@
 { BCBX_UP from BCBX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BCB15_UP} {$DEFINE BCB15_UP} {$ENDIF}
 {$IFDEF BCB14_UP} {$DEFINE BCB12_UP} {$ENDIF}
 {$IFDEF BCB12_UP} {$DEFINE BCB11_UP} {$ENDIF}
 {$IFDEF BCB11_UP} {$DEFINE BCB10_UP} {$ENDIF}
@@ -1173,11 +1195,19 @@
 {$IFDEF COMPILER12_UP}
   {$DEFINE SUPPORTS_GENERICS}
   {$DEFINE SUPPORTS_DEPRECATED_DETAILS}
+  {$DEFINE SUPPORTS_INT_ALIASES}
   {$IFNDEF CLR}
     {$DEFINE SUPPORTS_UNICODE}
     {$DEFINE SUPPORTS_UNICODE_STRING}
   {$ENDIF  CLR}
 {$ENDIF COMPILER12_UP}
+
+{$IFDEF COMPILER14_UP}
+  {$DEFINE SUPPORTS_CLASS_CTORDTORS}
+  {$DEFINE HAS_UNIT_RTTI}
+  {$DEFINE SUPPORTS_CAST_INTERFACE_TO_OBJ}
+  {$DEFINE SUPPORTS_DELAYED_LOADING}
+{$ENDIF COMPILER14_UP}
 
 {$IFDEF RTL130_UP}
   {$DEFINE HAS_UNIT_CONTNRS}
@@ -1199,10 +1229,18 @@
   {$DEFINE HAS_UNIT_HTTPPROD}
 {$ENDIF RTL170_UP}
 
+{$IFDEF RTL185_UP}
+  {$DEFINE HAS_UNIT_GIFIMG}
+{$ENDIF RTL185_UP}
+
 {$IFDEF RTL200_UP}
   {$DEFINE HAS_UNIT_ANSISTRINGS}
   {$DEFINE HAS_UNIT_PNGIMAGE}
 {$ENDIF RTL200_UP}
+
+{$IFDEF RTL220_UP}
+  {$DEFINE SUPPORTS_UINT64}
+{$ENDIF RTL220_UP}
 
 {------------------------------------------------------------------------------}
 { Cross-platform related defines                                               }
@@ -1252,7 +1290,7 @@
 {$IFDEF COMPILER2_UP}
   {$IFOPT J+} {$DEFINE WRITEABLECONST_ON} {$ENDIF}
 {$ENDIF}
-{$IFOPT L+} {$DEFINE LOCALSYMBOLS} {$ENDIF}
+{$IFOPT L+} {$DEFINE LOCALSYMBOLS} {$DEFINE LOCALSYMBOLS_ON} {$ENDIF}
 {$IFOPT M+} {$DEFINE TYPEINFO_ON} {$ENDIF}
 {$IFOPT O+} {$DEFINE OPTIMIZATION_ON} {$ENDIF}
 {$IFOPT P+} {$DEFINE OPENSTRINGS_ON} {$ENDIF}
