@@ -12,7 +12,7 @@ pushd %directory%
 
 echo building project %project%.dproj
 
-call "%ProgramFiles%\CodeGear\RAD Studio\5.0\bin\rsvars.bat"
+call buildtools\InitForDelphi2007.cmd
 
 pushd src
 msbuild %project%.dproj
