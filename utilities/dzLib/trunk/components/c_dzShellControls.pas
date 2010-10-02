@@ -11,6 +11,8 @@
 
 unit c_dzShellControls;
 
+{$I 'jedi.inc'}
+
 interface
 
 uses
@@ -862,7 +864,7 @@ begin
   end;
   { This is a hack bug fix to get around Windows Shell Controls returning
     spurious "?"s in date/time detail fields } 
-  if (Length(Result) > 1) and (Result[1] = '?') and (Result[2] in ['0'..'9']) then
+  if (Length(Result) > 1) and (Result[1] = '?') and (AnsiChar(Result[2]) in ['0'..'9']) then
     Result := StringReplace(Result,'?','',[rfReplaceAll]);
 end;
 
@@ -932,7 +934,7 @@ begin
     begin
       ICmd := LongInt(Command) - 1;
       HR := CM.GetCommandString(ICmd, GCS_VERBA, nil, ZVerb, SizeOf(ZVerb));
-      Verb := StrPas(ZVerb);
+      Verb := String(StrPas(ZVerb));
       Handled := False;
       if Supports(Owner, IShellCommandVerb, SCV) then
       begin
@@ -1498,7 +1500,11 @@ begin
     FThread := TShellChangeThread.Create(FOnChange);
     FThread.SetDirectoryOptions(FRoot,
       LongBool(FWatchSubTree), NotifyOptionFlags);
+{$IFDEF DELPHIXE_UP}
+    FThread.Start;
+{$ELSE}
     FThread.Resume;
+{$ENDIF}
   end;
 end;
 

@@ -12,7 +12,7 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('dzlib', [TdzShellTreeView]);
+  RegisterComponents('dzlib', [TdzShellTreeView, TdzShellComboBox, TdzShellListView]);
 end;
 
 end.
