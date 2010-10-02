@@ -146,7 +146,7 @@ begin
     if _idCmd < FCmdCount then begin
       case _uType of
         GCS_HELPTEXTW: begin
-          // Return the menu item's help
+            // Return the menu item's help
             StrLCopy(szName, PChar('execute some command'), _cchMax);
             Result := S_OK;
           end;

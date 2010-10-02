@@ -22,6 +22,7 @@ type
     FSection: string;
     FItems: TStringList;
     procedure UpdatePopup;
+    procedure HandleConfigureClick(_Sender: TObject);
   public
     class function IniFile: TMemIniFile;
     constructor Create(_Owner: TComponent); override;
@@ -41,20 +42,33 @@ uses
   u_dzFileUtils,
   u_dzOsUtils,
   u_dzExecutor,
-  u_dzConfigUtils;
+  u_dzConfigUtils,
+  w_Configure;
 
 var
   gblIni: TMemIniFile = nil;
 
 type
   TMenuItemEx = class(TMenuItem)
+  public
+    procedure AddToSubmenu(_SubMenu: HMenu; _Position: integer; var _Id: integer);
+    procedure Execute(_Files: TStrings); virtual; abstract;
+  end;
+
+type
+  TMenuItemExExternal = class(TMenuItemEx)
   private
     FExecutable: string;
     procedure SetExecutable(const _Value: string);
   public
-    procedure AddToSubmenu(_SubMenu: HMenu; _Position: integer; var _Id: integer);
-    procedure Execute(_Files: TStrings);
+    procedure Execute(_Files: TStrings); override;
     property Executable: string read FExecutable write SetExecutable;
+  end;
+
+type
+  TMenuItemExInternal = class(TMenuItemEx)
+  public
+    procedure Execute(_Files: TStrings); override;
   end;
 
 constructor Tdm_ContextMenu.Create(_Owner: TComponent);
@@ -103,6 +117,12 @@ begin
   end;
 end;
 
+procedure Tdm_ContextMenu.HandleConfigureClick(_Sender: TObject);
+begin
+  if tf_Configure.Execute(Self, IniFile) then
+    IniFile.UpdateFile;
+end;
+
 procedure Tdm_ContextMenu.UpdatePopup;
 
   function HandleSection(const _Section: string): boolean;
@@ -111,7 +131,9 @@ procedure Tdm_ContextMenu.UpdatePopup;
     Ext: string;
     SectExt: string;
     ItemIdx: Integer;
-    mi: TMenuItemEx;
+    mie: TMenuItemExExternal;
+    mi: TMenuItemExInternal;
+    s: string;
   begin
     Result := false;
     for i := 0 to FFiles.Count - 1 do begin
@@ -123,11 +145,21 @@ procedure Tdm_ContextMenu.UpdatePopup;
         IniFile.ReadSection(FSection, FItems);
         FItems.Delete(0);
         for ItemIdx := 0 to FItems.Count - 1 do begin
-          mi := TMenuItemEx.Create(Self);
-          mi.Caption := FItems[ItemIdx];
-          mi.Executable := IniFile.ReadString(_Section, FItems[ItemIdx], '');
-          ThePopupMenu.Items.Add(mi);
+          mie := TMenuItemExExternal.Create(Self);
+          mie.Caption := FItems[ItemIdx];
+          mie.Executable := IniFile.ReadString(_Section, FItems[ItemIdx], '');
+          ThePopupMenu.Items.Add(mie);
         end;
+
+        mie := TMenuItemExExternal.Create(self);
+        mie.Caption := '-';
+        mie.Executable := '';
+        ThePopupMenu.Items.Add(mie);
+
+        mi := TMenuItemExInternal.Create(Self);
+        mi.Caption := 'Configure ...';
+        mi.OnClick := HandleConfigureClick;
+        ThePopupMenu.Items.Add(mi);
         exit(true);
       end;
     end;
@@ -171,33 +203,6 @@ end;
 
 { TMenuItemEx }
 
-procedure TMenuItemEx.Execute(_Files: TStrings);
-var
-  Exec: TExecutor;
-  s: string;
-begin
-  Exec := TExecutor.Create;
-  try
-    if not Exec.FindExecutable(Executable) then
-      raise Exception.CreateFmt('Could not find executable %s', [Executable]);
-    _Files.Delimiter := ' ';
-    _Files.QuoteChar := '"';
-    s := _Files.DelimitedText;
-    Exec.Commandline := s;
-    Exec.Visible := true;
-    Exec.WorkingDir := Extractfiledir(_Files[0]);
-    Exec.Execute;
-  finally
-    FreeAndNil(Exec)
-  end;
-end;
-
-procedure TMenuItemEx.SetExecutable(const _Value: string);
-begin
-  FExecutable := _Value;
-  Enabled := (FExecutable <> '');
-end;
-
 procedure TMenuItemEx.AddToSubmenu(_SubMenu: HMenu; _Position: integer; var _Id: integer);
 var
   mii: TMenuItemInfo;
@@ -219,6 +224,44 @@ begin
   mii.dwTypeData := PChar(Caption);
   Windows.InsertMenuItem(_SubMenu, _Position, LongBool(True), mii);
   Inc(_Id);
+end;
+
+{ TMenuItemExExternal }
+
+procedure TMenuItemExExternal.Execute(_Files: TStrings);
+var
+  Exec: TExecutor;
+  s: string;
+begin
+  Exec := TExecutor.Create;
+  try
+    if not Exec.FindExecutable(Executable) then
+      raise Exception.CreateFmt('Could not find executable %s', [Executable]);
+    _Files.Delimiter := ' ';
+    _Files.QuoteChar := '"';
+    s := _Files.DelimitedText;
+    Exec.Commandline := s;
+    Exec.Visible := true;
+    Exec.WorkingDir := Extractfiledir(_Files[0]);
+    Exec.Execute;
+  finally
+    FreeAndNil(Exec)
+  end;
+end;
+
+procedure TMenuItemExExternal.SetExecutable(const _Value: string);
+begin
+  FExecutable := _Value;
+  Enabled := (FExecutable <> '');
+  if FExecutable = '-' then
+    Caption := '-';
+end;
+
+{ TMenuItemExInternal }
+
+procedure TMenuItemExInternal.Execute(_Files: TStrings);
+begin
+  Click;
 end;
 
 procedure Initialize;
