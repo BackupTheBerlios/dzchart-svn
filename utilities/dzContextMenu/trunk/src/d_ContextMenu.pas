@@ -169,26 +169,6 @@ begin
   Result := gblIni;
 end;
 
-procedure Initialize;
-var
-  IniName: string;
-  cfg: TdzConfig;
-begin
-  cfg := TdzConfig.Create(HInstance);
-  try
-    cfg.ExeName := 'menu';
-    IniName := cfg.GetUserCfgFile(false);
-  finally
-    FreeAndNil(cfg);
-  end;
-  gblIni := TMemIniFile.Create(IniName);
-end;
-
-procedure Finalize;
-begin
-  FreeAndNil(gblIni);
-end;
-
 { TMenuItemEx }
 
 procedure TMenuItemEx.Execute(_Files: TStrings);
@@ -239,6 +219,26 @@ begin
   mii.dwTypeData := PChar(Caption);
   Windows.InsertMenuItem(_SubMenu, _Position, LongBool(True), mii);
   Inc(_Id);
+end;
+
+procedure Initialize;
+var
+  IniName: string;
+  cfg: TdzConfig;
+begin
+  cfg := TdzConfig.Create(HInstance);
+  try
+    cfg.ExeName := 'menu';
+    IniName := cfg.GetUserCfgFile(false);
+  finally
+    FreeAndNil(cfg);
+  end;
+  gblIni := TMemIniFile.Create(IniName);
+end;
+
+procedure Finalize;
+begin
+  FreeAndNil(gblIni);
 end;
 
 initialization
