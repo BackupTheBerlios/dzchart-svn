@@ -1,11 +1,11 @@
 
-{*********************************************************}
-{                                                         }
-{       Borland Delphi Visual Component Library           }
-{                                                         }
-{       Copyright (c) 1995, 2001-2002 Borland Corporation }
-{                                                         }
-{*********************************************************}
+{*********************************************************		}
+{                                                         		}
+{       Delphi Visual Component Library           			}
+{                                                         		}
+// Copyright (c) 1995-2010 Embarcadero Technologies, Inc.
+{                                                         		}
+{*********************************************************		}
 
 // Bugfixes by twm
 
@@ -142,8 +142,8 @@ type
     property OnChange;
   end;
 
-  TCustomShellComboBox = class;
-  TCustomShellListView = class;
+  TdzCustomShellComboBox = class;
+  TdzCustomShellListView = class;
 
   TAddFolderEvent = procedure(Sender: TObject; AFolder: TShellFolder;
     var CanAdd: Boolean) of object;
@@ -162,8 +162,8 @@ type
     FLoadingRoot,
     FAutoContext,
     FUpdating: Boolean;
-    FComboBox: TCustomShellComboBox;
-    FListView: TCustomShellListView;
+    FComboBox: TdzCustomShellComboBox;
+    FListView: TdzCustomShellListView;
     FAutoRefresh,
     FImageListChanging,
     FUseShellImages: Boolean;
@@ -174,8 +174,8 @@ type
     function FolderExists(FindID: PItemIDList; InNode: TTreeNode): TTreeNode;
     function GetFolder(Index: Integer): TShellFolder;
     function GetPath: string;
-    procedure SetComboBox(Value: TCustomShellComboBox);
-    procedure SetListView(const Value: TCustomShellListView);
+    procedure SetComboBox(Value: TdzCustomShellComboBox);
+    procedure SetListView(const Value: TdzCustomShellListView);
     procedure SetPath(const Value: string);
     procedure SetPathFromID(ID: PItemIDList);
     procedure SetRoot(const Value: TRoot);
@@ -218,15 +218,15 @@ type
     property AutoContextMenus: Boolean read FAutoContext write FAutoContext default True;
     property ObjectTypes: TShellObjectTypes read FObjectTypes write SetObjectTypes;
     property Root: TRoot read FRoot write SetRoot;
-    property ShellComboBox: TCustomShellComboBox read FComboBox write SetComboBox;
-    property ShellListView: TCustomShellListView read FListView write SetListView;
+    property ShellComboBox: TdzCustomShellComboBox read FComboBox write SetComboBox;
+    property ShellListView: TdzCustomShellListView read FListView write SetListView;
     property UseShellImages: Boolean read FUseShellImages write SetUseShellImages;
     property OnAddFolder: TAddFolderEvent read FOnAddFolder write FOnAddFolder;
     procedure CommandCompleted(Verb: String; Succeeded: Boolean);
     procedure ExecuteCommand(Verb: String; var Handled: Boolean);
   end;
 
-{ TShellTreeView }
+{ TdzShellTreeView }
 
   TdzShellTreeView = class(TdzCustomShellTreeView)
   published
@@ -292,9 +292,9 @@ type
     property OnGetSelectedIndex;
   end;
 
-{ TCustomShellComboBox }
+{ TdzCustomShellComboBox }
 
-  TCustomShellComboBox = class(TCustomComboBoxEx)
+  TdzCustomShellComboBox = class(TCustomComboBoxEx)
   private
     FImages,
     FImageHeight,
@@ -304,7 +304,7 @@ type
     FRoot: TRoot;
     FRootFolder: TShellFolder;
     FTreeView: TdzCustomShellTreeView;
-    FListView: TCustomShellListView;
+    FListView: TdzCustomShellListView;
     FObjectTypes: TShellObjectTypes;
     FUseShellImages,
     FUpdating: Boolean;
@@ -316,7 +316,7 @@ type
     procedure SetPathFromID(ID: PItemIDList);
     procedure SetRoot(const Value: TRoot);
     procedure SetTreeView(Value: TdzCustomShellTreeView);
-    procedure SetListView(Value: TCustomShellListView);
+    procedure SetListView(Value: TdzCustomShellListView);
     procedure SetUseShellImages(const Value: Boolean);
     function GetShellImageIndex(AFolder: TShellFolder): integer;
   protected
@@ -344,14 +344,14 @@ type
     property Root: TRoot read FRoot write SetRoot;
     property ObjectTypes: TShellObjectTypes read FObjectTypes write SetObjectTypes;
     property ShellTreeView: TdzCustomShellTreeView read FTreeView write SetTreeView;
-    property ShellListView: TCustomShellListView read FListView write SetListView;
+    property ShellListView: TdzCustomShellListView read FListView write SetListView;
     property UseShellImages: Boolean read FUseShellImages write SetUseShellImages;
     property OnGetImageIndex: TGetImageIndexEvent read FOnGetImageIndex write FOnGetImageIndex;
   end;
 
-{ TShellComboBox }
+{ TdzShellComboBox }
 
-  TShellComboBox = class(TCustomShellComboBox)
+  TdzShellComboBox = class(TdzCustomShellComboBox)
   published
     property Images;
     property Root;
@@ -400,9 +400,9 @@ type
     property OnStartDrag;
   end;
 
-{ TCustomShellListView }
+{ TdzCustomShellListView }
 
-  TCustomShellListView = class(TCustomListView, IShellCommandVerb)
+  TdzCustomShellListView = class(TCustomListView, IShellCommandVerb)
   private
     FOldRoot: TRoot;
     FRoot: TRoot;
@@ -418,7 +418,7 @@ type
     FOnAddFolder: TAddFolderEvent;
     FFolders: TList;
     FTreeView: TdzCustomShellTreeView;
-    FComboBox: TCustomShelLComboBox;
+    FComboBox: TdzCustomShelLComboBox;
     FNotifier: TShellChangeNotifier;
     FOnEditing: TLVEditingEvent;
     FSettingRoot: boolean;
@@ -428,7 +428,7 @@ type
     procedure SetAutoRefresh(const Value: Boolean);
     procedure SetSorted(const Value: Boolean);
     procedure SetTreeView(Value: TdzCustomShellTreeView);
-    procedure SetComboBox(Value: TCustomShellComboBox);
+    procedure SetComboBox(Value: TdzCustomShellComboBox);
     procedure TreeUpdate(NewRoot: PItemIDList);
     procedure SetPathFromID(ID: PItemIDList);
     procedure SynchPaths;
@@ -470,7 +470,7 @@ type
     property ObjectTypes: TShellObjectTypes read FObjectTypes write SetObjectTypes;
     property Root: TRoot read FRoot write SetRoot;
     property ShellTreeView: TdzCustomShellTreeView read FTreeView write SetTreeView;
-    property ShellComboBox: TCustomShellComboBox read FComboBox write SetComboBox;
+    property ShellComboBox: TdzCustomShellComboBox read FComboBox write SetComboBox;
     property Sorted: Boolean read FSorted write SetSorted;
     property OnAddFolder: TAddFolderEvent read FOnAddFolder write FOnAddFolder;
     property OnEditing: TLVEditingEvent read FOnEditing write FOnEditing;
@@ -478,9 +478,9 @@ type
     procedure ExecuteCommand(Verb: String; var Handled: Boolean);
   end;
 
-{ TShellListView }
+{ TdzShellListView }
 
-  THkShellListView = class(TCustomShellListView)
+  TdzShellListView = class(TdzCustomShellListView)
   published
     property AutoContextMenus;
     property AutoRefresh;
@@ -559,7 +559,7 @@ const
 
 
 var
-  cmvProperties: PChar = 'properties';  { Do not localize }
+  cmvProperties: PAnsiChar = 'properties';  { Do not localize }
   ICM: IContextMenu = nil;
   ICM2: IContextMenu2 = nil;
   DesktopFolder: TShellFolder = nil;
@@ -586,7 +586,7 @@ end;
 function NextPIDL(IDList: PItemIDList): PItemIDList;
 begin
   Result := IDList;
-  Inc(PChar(Result), IDList^.mkid.cb);
+  Inc(PByte(Result), IDList^.mkid.cb);
 end;
 
 procedure StripLastID(IDList: PItemIDList);
@@ -642,6 +642,7 @@ end;
 function ConcatPIDLs(IDList1, IDList2: PItemIDList): PItemIDList;
 var
   cb1, cb2: Integer;
+  p: PByte;
 begin
   if Assigned(IDList1) then
     cb1 := GetPIDLSize(IDList1) - SizeOf(IDList1^.mkid.cb)
@@ -655,7 +656,9 @@ begin
   begin
     if Assigned(IDList1) then
       CopyMemory(Result, IDList1, cb1);
-    CopyMemory(PChar(Result) + cb1, IDList2, cb2);
+    p := PByte(Result);
+    Inc(p, cb1);
+    CopyMemory(p, IDList2, cb2);
   end;
 end;
 
@@ -841,11 +844,11 @@ end;
 
 function StrRetToString(PIDL: PItemIDList; StrRet: TStrRet; Flag:string=''): string;
 var
-  P: PChar;
+  P: PAnsiChar;
 begin
   case StrRet.uType of
     STRRET_CSTR:
-      SetString(Result, StrRet.cStr, lStrLen(StrRet.cStr));
+      SetString(Result, StrRet.cStr, lStrLenA(StrRet.cStr));
     STRRET_OFFSET:
       begin
         P := @PIDL.mkid.abID[StrRet.uOffset - SizeOf(PIDL.mkid.cb)];
@@ -900,7 +903,7 @@ var
   P: TPoint;
   Command: LongBool;
   ICmd: integer;
-  ZVerb: array[0..255] of char;
+  ZVerb: array[0..255] of AnsiChar;
   Verb: string;
   Handled: boolean;
   SCV: IShellCommandVerb;
@@ -944,7 +947,7 @@ begin
         begin
           cbSize := SizeOf(ICI);
           hWND := Owner.Handle;
-          lpVerb := MakeIntResource(ICmd);
+          lpVerb := MakeIntResourceA(ICmd);
           nShow := SW_SHOWNORMAL;
         end;
         HR := CM.InvokeCommand(ICI);
@@ -958,7 +961,7 @@ begin
   end;
 end;
 
-procedure DoContextMenuVerb(AFolder: TShellFolder; Verb: PChar);
+procedure DoContextMenuVerb(AFolder: TShellFolder; Verb: PAnsiChar);
 var
   ICI: TCMInvokeCommandInfo;
   CM: IContextMenu;
@@ -1598,16 +1601,12 @@ begin
   FLoadingRoot := False;
 end;
 
-destructor TdzCustomShellTreeView.Destroy;
-begin
-   FRootFolder.Free;
-  inherited;
-end;
-
 procedure TdzCustomShellTreeView.ClearItems;
 var
   I: Integer;
 begin
+  if not HandleAllocated or (Items.Count = 0) then
+    Exit;
   Items.BeginUpdate;
   try
     for I := 0 to Items.Count-1 do
@@ -1631,6 +1630,13 @@ begin
   { TODO : What is the Items.Count test for here? }
   if (not FLoadingRoot) {and (Items.Count = 0)} then
     CreateRoot;
+end;
+
+destructor TdzCustomShellTreeView.Destroy;
+begin
+  ClearItems;
+  FRootFolder.Free;
+  inherited;
 end;
 
 procedure TdzCustomShellTreeView.DestroyWnd;
@@ -2254,7 +2260,7 @@ begin
     inherited;
 end;
 
-procedure TdzCustomShellTreeView.SetComboBox(Value: TCustomShellComboBox);
+procedure TdzCustomShellTreeView.SetComboBox(Value: TdzCustomShellComboBox);
 begin
   if Value = FComboBox then Exit;
   if Value <> nil then
@@ -2270,7 +2276,7 @@ begin
   FComboBox := Value;
 end;
 
-procedure TdzCustomShellTreeView.SetListView(const Value: TCustomShellListView);
+procedure TdzCustomShellTreeView.SetListView(const Value: TdzCustomShellListView);
 begin
   if Value = FListView then Exit;
   if Value <> nil then
@@ -2309,9 +2315,9 @@ begin
   end;
 end;
 
-{ TCustomShellComboBox }
+{ TdzCustomShellComboBox }
 
-constructor TCustomShellComboBox.Create(AOwner: TComponent);
+constructor TdzCustomShellComboBox.Create(AOwner: TComponent);
 var
   FileInfo: TSHFileInfo;
 begin
@@ -2327,7 +2333,7 @@ begin
   FUseShellImages := True;
 end;
 
-procedure TCustomShellComboBox.ClearItems;
+procedure TdzCustomShellComboBox.ClearItems;
 var
   I: Integer;
 begin
@@ -2345,7 +2351,7 @@ begin
   end;    
 end;
 
-procedure TCustomShellComboBox.CreateRoot;
+procedure TdzCustomShellComboBox.CreateRoot;
 var
   AFolder: TShellFolder;
   Text: string;
@@ -2376,7 +2382,7 @@ begin
   end;    
 end;
 
-procedure TCustomShellComboBox.CreateWnd;
+procedure TdzCustomShellComboBox.CreateWnd;
 begin
   inherited CreateWnd;
   if FImages <> 0 then
@@ -2386,19 +2392,19 @@ begin
     CreateRoot;
 end;
 
-procedure TCustomShellComboBox.DestroyWnd;
+procedure TdzCustomShellComboBox.DestroyWnd;
 begin
   ClearItems;
   inherited DestroyWnd;
 end;
 
-procedure TCustomShellComboBox.SetObjectTypes(Value: TShellObjectTypes);
+procedure TdzCustomShellComboBox.SetObjectTypes(Value: TShellObjectTypes);
 begin
   FObjectTypes := Value;
   RootChanged;
 end;
 
-procedure TCustomShellComboBox.TreeUpdate(NewPath: PItemIDList);
+procedure TdzCustomShellComboBox.TreeUpdate(NewPath: PItemIDList);
 begin
   if FUpdating or ((ItemIndex > -1)
     and SamePIDL(Folders[ItemIndex].AbsoluteID, NewPath)) then Exit;
@@ -2410,7 +2416,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.SetTreeView(Value: TdzCustomShellTreeView);
+procedure TdzCustomShellComboBox.SetTreeView(Value: TdzCustomShellTreeView);
 begin
   if Value = FTreeView then Exit;
   if Value <> nil then
@@ -2426,7 +2432,7 @@ begin
   FTreeView := Value;
 end;
 
-procedure TCustomShellComboBox.SetListView(Value: TCustomShellListView);
+procedure TdzCustomShellComboBox.SetListView(Value: TdzCustomShellListView);
 begin
   if Value = FListView then Exit;
   if Value <> nil then
@@ -2442,7 +2448,7 @@ begin
   FListView := Value;
 end;
 
-procedure TCustomShellComboBox.Notification(AComponent: TComponent;
+procedure TdzCustomShellComboBox.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
@@ -2457,14 +2463,14 @@ begin
   end;    
 end;
 
-function TCustomShellComboBox.GetFolder(Index: Integer): TShellFolder;
+function TdzCustomShellComboBox.GetFolder(Index: Integer): TShellFolder;
 begin
   if Index > ItemsEx.Count - 1 then
     Index := ItemsEx.Count - 1;
   Result := TShellFolder(ItemsEx[Index].Data);
 end;
 
-function TCustomShellComboBox.InitItem(ParentFolder: TShellFolder; ID: PItemIDList): TShellFolder;
+function TdzCustomShellComboBox.InitItem(ParentFolder: TShellFolder; ID: PItemIDList): TShellFolder;
 var
   SF: IShellFolder;
 begin
@@ -2500,7 +2506,7 @@ begin
     PItemIDList(Item1), PItemIDList(Item2)));
 end;
 
-procedure TCustomShellComboBox.AddItems(Index: Integer; ParentFolder: TShellFolder);
+procedure TdzCustomShellComboBox.AddItems(Index: Integer; ParentFolder: TShellFolder);
 var
   EnumList: IEnumIDList;
   ID: PItemIDList;
@@ -2547,7 +2553,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.Init;
+procedure TdzCustomShellComboBox.Init;
 var
   MyComputer: PItemIDList;
   Index: Integer;
@@ -2570,7 +2576,7 @@ begin
   end;    
 end;
 
-function TCustomShellComboBox.IndexFromID(AbsoluteID: PItemIDList): Integer;
+function TdzCustomShellComboBox.IndexFromID(AbsoluteID: PItemIDList): Integer;
 begin
   Result := ItemsEx.Count-1;
   while Result >= 0 do
@@ -2583,7 +2589,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.SetRoot(const Value: TRoot);
+procedure TdzCustomShellComboBox.SetRoot(const Value: TRoot);
 begin
   if not SameText(FRoot, Value) then
   begin
@@ -2593,7 +2599,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.RootChanged;
+procedure TdzCustomShellComboBox.RootChanged;
 begin
   FUpdating := True;
   try
@@ -2608,7 +2614,7 @@ begin
   end;
 end;
 
-function TCustomShellComboBox.GetPath: string;
+function TdzCustomShellComboBox.GetPath: string;
 var
   Folder : TShellFolder;
 begin
@@ -2623,7 +2629,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.SetPath(const Value: string);
+procedure TdzCustomShellComboBox.SetPath(const Value: string);
 var
   P: PWideChar;
   NewPIDL: PItemIDList;
@@ -2648,7 +2654,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.SetPathFromID(ID: PItemIDList);
+procedure TdzCustomShellComboBox.SetPathFromID(ID: PItemIDList);
 var
   Pidls: TList;
   I, Item, Temp: Integer;
@@ -2712,7 +2718,7 @@ begin
   end;
 end;
 
-function TCustomShellComboBox.GetShellImageIndex(
+function TdzCustomShellComboBox.GetShellImageIndex(
   AFolder: TShellFolder): integer;
 begin
   if FUseShellImages then
@@ -2721,7 +2727,7 @@ begin
     Result := -1;
 end;
 
-procedure TCustomShellComboBox.SetUseShellImages(const Value: Boolean);
+procedure TdzCustomShellComboBox.SetUseShellImages(const Value: Boolean);
 var
   ImageListHandle: THandle;
 begin
@@ -2750,13 +2756,13 @@ begin
     end;
 end;
 
-destructor TCustomShellComboBox.Destroy;
+destructor TdzCustomShellComboBox.Destroy;
 begin
   inherited Destroy;
   if Assigned(FImageList) then FImageList.Free;
 end;
 
-procedure TCustomShellComboBox.Loaded;
+procedure TdzCustomShellComboBox.Loaded;
 begin
   inherited Loaded;
   CreateRoot;
@@ -2765,7 +2771,7 @@ end;
 type
   TAccessItemUpdateCount = class(TComboExItems);
 
-procedure TCustomShellComboBox.Change;
+procedure TdzCustomShellComboBox.Change;
 var
   Node : TShellFolder;
 begin
@@ -2790,7 +2796,7 @@ begin
   end;
 end;
 
-procedure TCustomShellComboBox.Click;
+procedure TdzCustomShellComboBox.Click;
 var
   Temp: PItemIDList;
 begin
@@ -2809,9 +2815,9 @@ begin
   end;    
 end;
 
-{ TCustomShellListView }
+{ TdzCustomShellListView }
 
-constructor TCustomShellListView.Create(AOwner: TComponent);
+constructor TdzCustomShellListView.Create(AOwner: TComponent);
 var
   FileInfo: TSHFileInfo;
 begin
@@ -2835,18 +2841,19 @@ begin
   HideSelection := False;
 end;
 
-destructor TCustomShellListView.Destroy;
+destructor TdzCustomShellListView.Destroy;
 begin
   ClearItems;
   FFolders.Free;
+  FreeAndNil(FRootFolder);
   inherited;
 end;
 
-procedure TCustomShellListView.ClearItems;
+procedure TdzCustomShellListView.ClearItems;
 var
   I: Integer;
 begin
-  if not (csDestroying in ComponentState) then
+  if HandleAllocated then
     Items.Count := 0;
   for I := 0 to FFolders.Count-1 do
     if Assigned(Folders[i]) then
@@ -2855,7 +2862,7 @@ begin
   FFolders.Clear;
 end;
 
-procedure TCustomShellListView.CommandCompleted(Verb: String;
+procedure TdzCustomShellListView.CommandCompleted(Verb: String;
   Succeeded: Boolean);
 begin
   if not Succeeded then Exit;
@@ -2865,7 +2872,7 @@ begin
     SetCurrentDirectory(PChar(FSavePath));
 end;
 
-procedure TCustomShellListView.ExecuteCommand(Verb: String;
+procedure TdzCustomShellListView.ExecuteCommand(Verb: String;
   var Handled: Boolean);
 var
   szPath: array[0..MAX_PATH] of char;
@@ -2884,7 +2891,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.CreateWnd;
+procedure TdzCustomShellListView.CreateWnd;
 begin
   inherited CreateWnd;
   if HandleAllocated then
@@ -2898,20 +2905,20 @@ begin
   RootChanged;
 end;
 
-procedure TCustomShellListView.DestroyWnd;
+procedure TdzCustomShellListView.DestroyWnd;
 begin
   ClearItems;
   inherited DestroyWnd;
 end;
 
-procedure TCustomShellListView.SetObjectTypes(Value: TShellObjectTypes);
+procedure TdzCustomShellListView.SetObjectTypes(Value: TShellObjectTypes);
 begin
   FObjectTypes := Value;
   if not (csLoading in ComponentState) then
     RootChanged;
 end;
 
-procedure TCustomShellListView.RootChanged;
+procedure TdzCustomShellListView.RootChanged;
 var
   StayFresh: boolean;
 begin
@@ -2930,7 +2937,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.Populate;
+procedure TdzCustomShellListView.Populate;
 var
   ID: PItemIDList;
   EnumList: IEnumIDList;
@@ -2988,7 +2995,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TdzCustomShellListView.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
   if (Operation = opRemove) then
@@ -3000,7 +3007,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.DblClick;
+procedure TdzCustomShellListView.DblClick;
 begin
   if FAutoNavigate and (Selected <> nil) then
     with Folders[Selected.Index] do
@@ -3012,13 +3019,13 @@ begin
   inherited DblClick;
 end;
 
-procedure TCustomShellListView.EditText;
+procedure TdzCustomShellListView.EditText;
 begin
   if Selected <> nil then
     ListView_EditLabel(Handle, Selected.Index);
 end;
 
-procedure TCustomShellListView.Edit(const Item: TLVItem);
+procedure TdzCustomShellListView.Edit(const Item: TLVItem);
 var
   S: string;
 begin
@@ -3034,7 +3041,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.SetAutoRefresh(const Value: Boolean);
+procedure TdzCustomShellListView.SetAutoRefresh(const Value: Boolean);
 begin
   FAutoRefresh := Value;
   if not (csLoading in ComponentState) then
@@ -3054,7 +3061,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.SetRoot(const Value: TRoot);
+procedure TdzCustomShellListView.SetRoot(const Value: TRoot);
 begin
   if not SameText(Value, FRoot) then
   begin
@@ -3066,13 +3073,13 @@ begin
   end;
 end;
 
-function TCustomShellListView.SelectedFolder: TShellFolder;
+function TdzCustomShellListView.SelectedFolder: TShellFolder;
 begin
   Result := nil;
   if Selected <> nil then Result := Folders[Selected.Index];
 end;
 
-function TCustomShellListView.OwnerDataFetch(Item: TListItem;
+function TdzCustomShellListView.OwnerDataFetch(Item: TListItem;
   Request: TItemRequest): Boolean;
 
 var
@@ -3131,12 +3138,12 @@ begin
   (**)
 end;
 
-function TCustomShellListView.GetFolder(Index: Integer): TShellFolder;
+function TdzCustomShellListView.GetFolder(Index: Integer): TShellFolder;
 begin
   Result := TShellFolder(FFolders[Index]);
 end;
 
-function TCustomShellListView.OwnerDataFind(Find: TItemFind;
+function TdzCustomShellListView.OwnerDataFind(Find: TItemFind;
   const FindString: string; const FindPosition: TPoint; FindData: Pointer;
   StartIndex: Integer; Direction: TSearchDirection;
   Wrap: Boolean): Integer;
@@ -3161,7 +3168,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.SetSorted(const Value: Boolean);
+procedure TdzCustomShellListView.SetSorted(const Value: Boolean);
 begin
   if FSorted <> Value then
   begin
@@ -3170,7 +3177,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.Loaded;
+procedure TdzCustomShellListView.Loaded;
 begin
   inherited Loaded;
   Populate;
@@ -3180,7 +3187,7 @@ begin
 
 end;
 
-procedure TCustomShellListView.DoContextPopup(MousePos: TPoint;
+procedure TdzCustomShellListView.DoContextPopup(MousePos: TPoint;
   var Handled: Boolean);
 begin
   if FAutoContext and (SelectedFolder <> nil) then
@@ -3191,7 +3198,7 @@ begin
     inherited;
 end;
 
-procedure TCustomShellListView.Back;
+procedure TdzCustomShellListView.Back;
 var
   RootPIDL: PItemIDList;
 begin
@@ -3227,7 +3234,7 @@ checking for SFGAO_FILESYSTEM.  This returns false for printers, scheduled
 tasks, etc.
 
 (**)
-procedure TCustomShellListView.EnumColumns;
+procedure TdzCustomShellListView.EnumColumns;
 
 var
   ColNames: TStringList;
@@ -3359,7 +3366,7 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.KeyDown(var Key: Word; Shift: TShiftState);
+procedure TdzCustomShellListView.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   inherited;
   if FAutoNavigate then
@@ -3382,14 +3389,14 @@ begin
     end;
 end;
 
-procedure TCustomShellListView.SetViewStyle(Value: TViewStyle);
+procedure TdzCustomShellListView.SetViewStyle(Value: TViewStyle);
 begin
   inherited;
   if (Value = vsReport) and not (csLoading in ComponentState) then
     EnumColumns;
 end;
 
-procedure TCustomShellListView.SetTreeView(Value: TdzCustomShellTreeView);
+procedure TdzCustomShellListView.SetTreeView(Value: TdzCustomShellTreeView);
 begin
   if Value = FTreeView then Exit;
   if Value <> nil then
@@ -3405,7 +3412,7 @@ begin
   FTreeView := Value;
 end;
 
-procedure TCustomShellListView.SetComboBox(Value: TCustomShellComboBox);
+procedure TdzCustomShellListView.SetComboBox(Value: TdzCustomShellComboBox);
 begin
   if Value = FComboBox then Exit;
   if Value <> nil then
@@ -3421,14 +3428,14 @@ begin
   FComboBox := Value;
 end;
 
-procedure TCustomShellListView.TreeUpdate(NewRoot: PItemIDList);
+procedure TdzCustomShellListView.TreeUpdate(NewRoot: PItemIDList);
 begin
   if FUpdating or (Assigned(FRootFolder)
     and SamePIDL(FRootFolder.AbsoluteID, NewRoot)) then Exit;
   SetPathFromID(NewRoot);
 end;
 
-procedure TCustomShellListView.WndProc(var Message: TMessage);
+procedure TdzCustomShellListView.WndProc(var Message: TMessage);
 begin
   //to handle submenus of context menus.
   with Message do
@@ -3441,7 +3448,7 @@ begin
   inherited;
 end;
 
-procedure TCustomShellListView.Refresh;
+procedure TdzCustomShellListView.Refresh;
 var
   SelectedIndex: Integer;
   RootPIDL: PItemIDList;
@@ -3460,7 +3467,7 @@ begin
     Selected := Items[SelectedIndex];
 end;
 
-procedure TCustomShellListView.SetPathFromID(ID: PItemIDList);
+procedure TdzCustomShellListView.SetPathFromID(ID: PItemIDList);
 begin
   if FUpdating then Exit;
 
@@ -3475,12 +3482,12 @@ begin
   RootChanged;
 end;
 
-procedure TCustomShellListView.CreateRoot;
+procedure TdzCustomShellListView.CreateRoot;
 begin
   FRootFolder := CreateRootFolder(FRootFolder, FOldRoot, FRoot);
 end;
 
-procedure TCustomShellListView.SynchPaths;
+procedure TdzCustomShellListView.SynchPaths;
 begin
   try
     if FSettingRoot then
@@ -3502,12 +3509,15 @@ begin
   end;
 end;
 
+
 initialization
+//  MessageBox(0, 'Before initialization', '', MB_ICONINFORMATION or MB_OK);
 
   CreateDesktopFolder;
   InitializeCriticalSection(CS);
   OleInitialize(nil);
-  
+
+//  MessageBox(0, 'After initialization', '', MB_ICONINFORMATION or MB_OK);
 finalization
 
   if Assigned(DesktopFolder) then

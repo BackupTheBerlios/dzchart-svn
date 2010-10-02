@@ -33,16 +33,14 @@ requires
   rtl,
   vcl,
   vclx,
-  vcljpg,
   vcldb,
   dbrtl,
   vclshlctrls,
-  Jcl;
+  Jcl,
+  vcljpg;
 
 contains
-  c_dzShellControls in '..\..\components\c_dzShellControls.pas',
   c_dzVirtualStringGrid in '..\..\components\c_dzVirtualStringGrid.pas',
-  u_dzVclUtils in '..\..\src\u_dzVclUtils.pas',
   u_dzConvertUtils in '..\..\src\u_dzConvertUtils.pas',
   u_dzStringUtils in '..\..\src\u_dzStringUtils.pas',
   u_dzTranslator in '..\..\src\u_dzTranslator.pas',
@@ -55,6 +53,8 @@ contains
   u_dzMiscUtils in '..\..\src\u_dzMiscUtils.pas',
   u_dzLogging in '..\..\src\u_dzLogging.pas',
   u_dzVersionInfo in '..\..\src\u_dzVersionInfo.pas',
-  u_dzOsUtils in '..\..\src\u_dzOsUtils.pas';
+  u_dzOsUtils in '..\..\src\u_dzOsUtils.pas',
+  u_dzVclUtils in '..\..\src\u_dzVclUtils.pas',
+  c_dzShellControls in '..\..\components\c_dzShellControls.pas';
 
 end.
