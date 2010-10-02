@@ -201,11 +201,26 @@ var
   Sections: TStringList;
   i: Integer;
   FileType: string;
+  reg: TRegistry;
+  sl: TStringList;
+  Key: string;
 begin
   try
     ClassID := GUIDToString(TContextMenu.GUID);
     if _Register then begin
       inherited UpdateRegistry(_Register);
+
+      if (Win32Platform = VER_PLATFORM_WIN32_NT) then begin
+        reg := TRegistry.Create;
+        try
+          reg.RootKey := HKEY_LOCAL_MACHINE;
+          reg.OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
+          reg.OpenKey('Approved', True);
+          reg.WriteString(ClassID, 'dzContextMenu');
+        finally
+          FreeAndNil(reg);
+        end;
+      end;
 
       Sections := nil;
       Ini := Tdm_ContextMenu.IniFile;
@@ -222,34 +237,41 @@ begin
             CreateRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu', '', ClassID);
           end;
         end;
-
       finally
         FreeAndNil(Sections);
       end;
-      if (Win32Platform = VER_PLATFORM_WIN32_NT) then
-        with TRegistry.Create do
-          try
-            RootKey := HKEY_LOCAL_MACHINE;
-            OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
-            OpenKey('Approved', True);
-            WriteString(ClassID, 'dzContextMenu');
-          finally
-            Free;
-          end;
     end else begin
-      DeleteRegKey(FileType + '\shellex\ContextMenuHandlers\dzContextMenu');
+      if (Win32Platform = VER_PLATFORM_WIN32_NT) then begin
+        reg := TRegistry.Create;
+        try
+          reg.RootKey := HKEY_LOCAL_MACHINE;
+          reg.OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
+          reg.OpenKey('Approved', True);
+          reg.DeleteValue(ClassID);
+        finally
+          FreeAndNil(reg);
+        end;
+      end;
 
-      if (Win32Platform = VER_PLATFORM_WIN32_NT) then
-        with TRegistry.Create do
-          try
-            RootKey := HKEY_LOCAL_MACHINE;
-            OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions', True);
-            OpenKey('Approved', True);
-            DeleteValue(ClassID);
-          finally
-            Free;
+      sl := nil;
+      reg := TRegistry.Create;
+      try
+        sl := TStringList.Create;
+        reg.RootKey := HKEY_CLASSES_ROOT;
+        reg.OpenKeyReadOnly('\');
+        reg.GetKeyNames(sl);
+        reg.CloseKey;
+        for i := 0 to sl.Count - 1 do begin
+          Key := '\' + sl[i] + '\shellex\ContextMenuHandlers\dzContextMenu';
+          if reg.OpenKeyReadOnly(Key) then begin
+            reg.CloseKey;
+            reg.DeleteKey(Key);
           end;
-
+        end;
+      finally
+        FreeAndNil(reg);
+        FreeAndNil(sl);
+      end;
       inherited UpdateRegistry(_Register);
     end;
   except
@@ -260,7 +282,7 @@ end;
 
 initialization
   TContextMenuFactory.Create(ComServer, TContextMenu, TContextMenu.GUID,
-    '', 'Context Menu Shell Extension', ciMultiInstance, tmApartment);
+    '', 'dzlib Context Menu Shell Extension', ciMultiInstance, tmApartment);
 
 end.
 
