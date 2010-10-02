@@ -87,7 +87,17 @@ function GetFileProductInfo(_Filename: string; _AllowException: boolean = false)
 function GetModuleFilename: string; overload;
 function GetModuleFilename(const _Module: Cardinal): string; overload;
 
-procedure RegisterFileAssociation(const _Extension, _DocumentName, _OpenCommand: string);
+///<summary> registers an open command for a file extension
+///          @param Extension is the file extension to register e.g. '.bla'
+///          @param DocumentName is the user friendly name for the file type e.g. 'Bla bla file'
+///          @param OpenCommand is the command that must be executed to open that file
+///                             e.g. '"c:\program files\My Company\My App\myprog.exe" "%1"'
+///                             Don't forget to put quotes around both, the executable name and
+///                             the parameter, and also don't forget to pass the parameter.
+///          @param ShortDocName is an internal, short name for the file type e.g. 'MyProg.bla'
+//                               You should always supply one
+procedure RegisterFileAssociation(const _Extension, _DocumentName, _OpenCommand: string); overload; deprecated;
+procedure RegisterFileAssociation(const _Extension, _ShortDocName, _DocumentName, _OpenCommand: string); overload;
 
 function OsHasNTSecurity: boolean;
 
@@ -238,12 +248,16 @@ begin
   end;
 end;
 
+procedure RegisterFileAssociation(const _Extension, _ShortDocName, _DocumentName, _OpenCommand: string);
+begin
+  SetRegValue(HKEY_CLASSES_ROOT, _Extension, '', _ShortDocName);
+  SetRegValue(HKEY_CLASSES_ROOT, _ShortDocName, '', _DocumentName);
+  SetRegValue(HKEY_CLASSES_ROOT, Format('%s\shell\command', [_ShortDocName]), '', _OpenCommand);
+end;
+
 procedure RegisterFileAssociation(const _Extension, _DocumentName, _OpenCommand: string);
 begin
-  SetRegValue(HKEY_CLASSES_ROOT, _Extension, '', _DocumentName);
-  SetRegValue(HKEY_CLASSES_ROOT, _DocumentName, '', _DocumentName);
-  SetRegValue(HKEY_CLASSES_ROOT, Format('%s\shell\command', [_DocumentName]),
-    '', _OpenCommand);
+  RegisterFileAssociation(_Extension, _DocumentName, _DocumentName, _OpenCommand);
 end;
 
 function GetModuleFilename(const _Module: Cardinal): string;
