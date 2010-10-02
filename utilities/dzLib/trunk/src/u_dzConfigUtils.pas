@@ -15,8 +15,12 @@ type
     FExtension: string;
     FForcedUserCfg: string;
     FForcedCommonCfg: string;
+    FHModule: Cardinal;
     function BuildCfgFilename(const _Base: string): string;
     procedure GetCompanyAndProductFromPath(_ModuleName: string);
+    function ExpandVariables(const _s: string): string;
+    procedure SetForcedCommonCfg(const _Value: string);
+    procedure SetForcedUserCfg(const _Value: string);
   public
     ///<summary> @param HModule is the module handle of the file to use for version information
     ///                         and for the default RedirIni filename, defaults to 0 (the
@@ -69,17 +73,20 @@ type
     property ExeName: string read FExeName write FExeName;
     ///<summary> Extension defaults to '.ini'
     property Extension: string read FExtension write FExtension;
-    ///<summary> if set, this will always be returned by GetUserCfgFile,
-    ///          Initialized from <ExeNameBase>.ini [global]usercfg </summary>
-    property ForcedUserCfg: string read FForcedUserCfg write FForcedUserCfg;
-    ///<summary> if set, this will always be returned by GetCommonCfgFile </summary>
-    property ForcedCommonCfg: string read FForcedCommonCfg write FForcedCommonCfg;
+    ///<summary> If set, this will always be returned by GetUserCfgFile,
+    ///          Initialized from <ExeNameBase>.ini [global]usercfg
+    ///          When set, variable expansion takes place. </summary>
+    property ForcedUserCfg: string read FForcedUserCfg write SetForcedUserCfg;
+    ///<summary> If set, this will always be returned by GetCommonCfgFile
+    ///          When set, variable expansion takes place. </summary>
+    property ForcedCommonCfg: string read FForcedCommonCfg write SetForcedCommonCfg;
 
   end;
 
 implementation
 
 uses
+  StrUtils,
   u_dzOsUtils,
   u_dzFileUtils,
   u_dzClassutils,
@@ -92,15 +99,20 @@ constructor TdzConfig.Create(_HModule: Cardinal = 0; _RedirIni: string = ''; _Re
 var
   VerInfo: IFileInfo;
   ModuleName: string;
+  s: string;
 begin
   inherited Create;
-  ModuleName := GetModuleFilename(_HModule);
+  FHModule := _HModule;
+  ModuleName := GetModuleFilename(FHModule);
+
   if _RedirIni = '' then
     _RedirIni := ChangeFileExt(ModuleName, '.ini');
   if _RedirSection <> '' then begin
     if TFileSystem.FileExists(_RedirIni) then begin
-      FForcedUserCfg := TIniFile_ReadString(_RedirIni, _RedirSection, 'usercfg', '');
-      FForcedCommonCfg := TIniFile_ReadString(_RedirIni, _RedirSection, 'commoncfg', '')
+      s := TIniFile_ReadString(_RedirIni, _RedirSection, 'usercfg', '');
+      SetForcedUserCfg(s);
+      s := TIniFile_ReadString(_RedirIni, _RedirSection, 'commoncfg', '');
+      SetForcedCommonCfg(s);
     end;
   end;
 
@@ -119,6 +131,28 @@ begin
 
   if FExeName = '' then
     FExeName := ChangeFileExt(ExtractFileName(ModuleName), '');
+end;
+
+function TdzConfig.ExpandVariables(const _s: string): string;
+begin
+  // the following variables are supported:
+  // * AppData
+  // * LocalAppData
+  // * CommonAppData
+  // * ExeName
+  // * ExeDir
+  // they must be enclosed in curly braces "{" and "}"
+  Result := _s;
+  if Pos('{', Result) <> 0 then
+    Result := ReplaceText(Result, '{AppData}', TWindowsShell.GetAppDataDir);
+  if Pos('{', Result) <> 0 then
+    Result := ReplaceText(Result, '{LocalAppData}', TWindowsShell.GetLocalAppDataDir);
+  if Pos('{', Result) <> 0 then
+    Result := ReplaceText(Result, '{CommonAppData}', TWindowsShell.GetCommonAppDataDir);
+  if Pos('{', Result) <> 0 then
+    Result := ReplaceText(Result, '{ExeName}', ExtractFileName(GetModuleFilename(FHModule)));
+  if Pos('{', Result) <> 0 then
+    Result := ReplaceText(Result, '{ExeDir}', ExtractFileDir(GetModuleFilename(FHModule)));
 end;
 
 procedure TdzConfig.GetCompanyAndProductFromPath(_ModuleName: string);
@@ -177,6 +211,16 @@ begin
       Base := TWindowsShell.GetLocalAppDataDir;
     Result := BuildCfgFilename(Base);
   end;
+end;
+
+procedure TdzConfig.SetForcedCommonCfg(const _Value: string);
+begin
+  FForcedCommonCfg := ExpandVariables(_Value);
+end;
+
+procedure TdzConfig.SetForcedUserCfg(const _Value: string);
+begin
+  FForcedUserCfg := ExpandVariables(_Value);
 end;
 
 end.
