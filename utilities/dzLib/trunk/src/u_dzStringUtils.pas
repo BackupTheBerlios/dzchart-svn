@@ -964,19 +964,6 @@ begin
     Result := Result + ' ';
 end;
 
-function LeftStr(const _s: string; _Len: integer): string;
-begin
-  Result := Copy(_s, 1, _Len);
-end;
-
-function RightStr(const _s: string; _Len: integer): string;
-begin
-  if Length(_s) > _Len then
-    Result := TailStr(_s, Length(_s) - _Len + 1)
-  else
-    Result := _s;
-end;
-
 function TailStr(const _s: string; _Start: integer): string;
 begin
   if _Start > Length(_s) then

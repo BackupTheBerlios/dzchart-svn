@@ -9,6 +9,14 @@ uses
   u_dzNamedThread;
 
 type
+  TBeepSequenceEntry = record
+    Frequency: Cardinal;
+    Duration: Cardinal;
+    class function Create(_Frequence, _Duration: Cardinal): TBeepSequenceEntry; static;
+  end;
+
+  TBeepSequenceList = array of TBeepSequenceEntry;
+
   ///<summary> Windows.Beep is synchronous, so it does not return until
   ///          the beep's duration has passed. This is a problem if you
   ///          cannot afford to block the current thread that long.
@@ -22,16 +30,17 @@ type
   ///          would cause is some weird beeping, so I can't be bothered.
   TBeeper = class(TNamedThread)
   private
-    FFrequency: DWord;
-    FDuration: DWord;
+    FSequence: array of TBeepSequenceEntry;
     FEvent: TEvent;
+    FMutex: TMutex;
     procedure Terminate;
   protected
     procedure Execute; override;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Beep(_Frequency, _Duration: DWord);
+    procedure Beep(_Frequency, _Duration: Cardinal); overload;
+    procedure Beep(_Sequence: array of TBeepSequenceEntry); overload;
   end;
 
 var
@@ -41,40 +50,65 @@ implementation
 
 { TBeeper }
 
-procedure TBeeper.Beep(_Frequency, _Duration: DWord);
+procedure TBeeper.Beep(_Frequency, _Duration: Cardinal);
 begin
-  if _Duration > 0 then begin
-    FFrequency := _Frequency;
-    FDuration := _Duration;
-    FEvent.SetEvent;
+  Beep([TBeepSequenceEntry.Create(_Frequency, _Duration)]);
+end;
+
+procedure TBeeper.Beep(_Sequence: array of TBeepSequenceEntry);
+var
+  i: Integer;
+begin
+  // only beep if no other beep is active
+  // protect the beep sequence
+  if FMutex.WaitFor(0) = wrSignaled then begin
+    try
+      SetLength(FSequence, Length(_Sequence));
+      for i := Low(_Sequence) to High(_Sequence) do
+        FSequence[i] := _Sequence[i];
+      FEvent.SetEvent;
+    finally
+      FMutex.Release;
+    end;
   end;
 end;
 
 constructor TBeeper.Create;
 begin
-  FEvent := TEvent.Create();
+  FMutex := TMutex.Create;
+  FEvent := TEvent.Create;
   inherited Create(false);
 end;
 
 destructor TBeeper.Destroy;
 begin
-  FEvent.Free;
+  Terminate;
   inherited;
+  FreeAndNil(FEvent);
+  FreeAndNil(FMutex);
 end;
 
 procedure TBeeper.Execute;
 var
-  Duration: DWord;
+  wr: TWaitResult;
+  i: integer;
 begin
   inherited;
-  while not Terminated and (FEvent.WaitFor(INFINITE) = wrSignaled) do begin
+  while not Terminated do begin
+    wr := FEvent.WaitFor(INFINITE);
+    if Terminated or (wr <> wrSignaled) then
+      Exit; // --->
+    // protecte the sequence
+    // If we can't get the mutex, we set a new sequence
+    if FMutex.WaitFor(0) = wrSignaled then begin
+      try
+        for i := Low(FSequence) to High(FSequence) do
+          Windows.Beep(FSequence[i].Frequency, FSequence[i].Duration);
+      finally
+        FMutex.Release;
+      end;
+    end;
     FEvent.ResetEvent;
-    if Terminated then
-      exit;
-    Duration := FDuration;
-    FDuration := 0;
-    if Duration > 0 then
-      Windows.Beep(FFrequency, Duration);
   end;
 end;
 
@@ -82,10 +116,21 @@ procedure TBeeper.Terminate;
 begin
   inherited Terminate;
   FEvent.SetEvent;
+  WaitFor;
+end;
+
+{ TBeepSequenceEntry }
+
+class function TBeepSequenceEntry.Create(_Frequence,
+  _Duration: Cardinal): TBeepSequenceEntry;
+begin
+  Result.Frequency := _Frequence;
+  Result.Duration := _Duration;
 end;
 
 initialization
   Beeper := TBeeper.Create;
+
 finalization
   if Assigned(Beeper) then begin
     Beeper.Terminate;

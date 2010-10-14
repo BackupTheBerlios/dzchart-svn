@@ -322,7 +322,7 @@ end;
 function _NULLABLE_NUMBER_.Value: _NULLABLE_TYPE_BASE_;
 begin
   if not IsValid then
-    raise EInvalidValue.Create(_('NullableInteger value is invalid'));
+    raise EInvalidValue.Create(_('Nullable value is invalid'));
   Result := FValue;
 end;
 

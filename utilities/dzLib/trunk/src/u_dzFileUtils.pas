@@ -221,14 +221,24 @@ type
   /// defines the action to take if a file already exists but has a different content
   /// </summary>
   TFileExistsAction = (feaIgnore, feaOverwrite);
+  TQueryFileSyncAction = (fsaCopy, fsaSkip);
   TOnSyncing = procedure(_Sender: TObject; const _SrcDir, _DstDir: string) of object;
-  TOnSyncingFile = procedure(_Sender: TObject; const _SrcDir, _DstDir: string; _Total, _Done: Int64) of object;
+  TOnSyncingFile = procedure(_Sender: TObject; const _Source, _Dest: string; _Total, _Done: Int64) of object;
 
-  /// <summary>
+  ///<summary>
   /// called if a destination file already exists
   /// @param Action is the action to take, default is feaIgnore
-  /// </summary>
-  TOnFileExists = procedure(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec; var _Action: TFileExistsAction) of object;
+  ///</summary>
+  TOnFileExists = procedure(_Sender: TObject; const _SrcFile, _DstFile: TFileInfoRec;
+    var _Action: TFileExistsAction) of object;
+
+  ///<summary>
+  /// Called instead of TOnFileExists if a destination file does not exist to allow filtering
+  /// of e.g. file types.
+  /// @param SyncIt must be set to false if the file should be skipped, default is true for copying the file
+  ///</summary>
+  TOnQueryFileSync = procedure(_Sender: TObject; const _SrcFile: TFileInfoRec; const _DstFile: string;
+    var _Action: TQueryFileSyncAction) of object;
 
   /// <summary>
   /// Synchronizes two directories
@@ -240,12 +250,17 @@ type
     FOnSyncingDir: TOnSyncing;
     FOnSyncingFile: TOnSyncingFile;
     FOnFileExists: TOnFileExists;
+    FOnQueryFileSync: TOnQueryFileSync;
 //    FOnDifferentFileExists: TOnDifferentFileExists;
 //    FCheckContent: boolean;
 //    procedure doOnDifferentFileExists(const _Filename: string; var _Action: TFileExistsAction);
     procedure doOnSyncingDir(const _SrcDir, _DstDir: string);
+    ///<summary>
+    /// Called before once before copying a file and possible several times while it is being
+    /// copied to display a progress. </summary>
     procedure doOnSyncingFile(const _SrcFile, _DstFile: string; _Total, _Done: Int64);
     function doOnFileExists(const _SrcDir, _DstDir, _Filename: string): TFileExistsAction;
+    function doOnQueryFileSync(const _SrcFile, _DstFile: string): TQueryFileSyncAction;
     procedure ProgressStatusCallback(_Status: TCopyProgressStatus; var _Continue: TCopyProgressStatus.TProgressResult);
   public
     /// <summary>
@@ -255,7 +270,7 @@ type
     /// </summary>
     procedure CheckOneWay(const _SrcDir, _DstDir: string);
     /// <summary>
-    /// copies all files from DirA to DirB if they don't already exists
+    /// copies all files from DirA to DirB if they don't already exist
     /// (not implemented: if CheckContent=true, the content existing files will be checked and if
     ///                   it doesn't match, OnDifferentFileExists is called)
     /// @param FlattenDirHierarchy determines whether all files should be copied
@@ -287,6 +302,11 @@ type
     /// called from CheckOneWay if a destination file already exists
     /// </summary>
     property OnFileExists: TOnFileExists read FOnFileExists write FOnFileExists;
+    ///<summary>
+    /// Called from CheckOneWay instead of OnFileExists if the destination file does not
+    /// exist. This is to allow filtering on e.g. file type.
+    ///</summary>
+    property OnQueryFileSync: TOnQueryFileSync read FOnQueryFileSync write FOnQueryFileSync;
   end;
 
   /// <summary>
@@ -738,6 +758,7 @@ function etpd(const _Dirname: string): string; inline;
 implementation
 
 uses
+  StrUtils,
   Masks,
   u_dzMiscUtils,
   u_dzStringUtils,
@@ -1603,8 +1624,14 @@ begin
 end;
 
 class function TFileSystem.ExtractFileExtFull(const _Filename: string): string;
+var
+  p: Integer;
 begin
-  Result := TailStrOf(_Filename, '.');
+  p := Pos('.', _Filename);
+  if p = 0 then
+    Result := ''
+  else
+    Result := TailStr(_Filename, p + 1);
   if Result <> '' then
     Result := '.' + Result;
 end;
@@ -1612,11 +1639,21 @@ end;
 class function TFileSystem.RemoveFileExtFull(const _Filename: string): string;
 var
   Path: string;
+  fn: string;
+  p: Integer;
 begin
   Path := ExtractFilePath(_FileName);
-  if Path <> '' then
+  fn := ExtractFileName(_Filename);
+  p := Pos('.', fn);
+  if p = 0 then
+    Result := ''
+  else
+    Result := LeftStr(fn, p - 1);
+
+  if Path <> '' then begin
     itpd(Path);
-  Result := Path + LeftStrOf(ExtractFileName(_Filename), '.');
+    Result := Path + Result;
+  end;
 end;
 
 class function TFileSystem.ChangeFileExtFull(const _Filename: string; const _NewExt: string): string;
@@ -1819,10 +1856,28 @@ begin
   Result := feaIgnore;
   if not Assigned(FOnFileExists) then
     exit;
+  if not TFileSystem.TryGetFileInfo(_SrcDir + _Filename, Src) then
+    exit;
+  if not TFileSystem.TryGetFileInfo(_DstDir + _Filename, Dst) then
+    exit;
 
-  Src := TFileSystem.GetFileInfo(_SrcDir + _Filename);
-  Dst := TFileSystem.GetFileInfo(_DstDir + _Filename);
   FOnFileExists(self, Src, Dst, Result);
+end;
+
+function TDirectorySync.doOnQueryFileSync(const _SrcFile, _DstFile: string): TQueryFileSyncAction;
+var
+  Src: TFileInfoRec;
+begin
+  Result := fsaCopy;
+  if not Assigned(FOnQueryFileSync) then
+    exit;
+
+  if not TFileSystem.TryGetFileInfo(_SrcFile, Src) then begin
+    // File vanished
+    Result := fsaSkip;
+    exit;
+  end;
+  FOnQueryFileSync(self, Src, _DstFile, Result);
 end;
 
 procedure TDirectorySync.doOnSyncingDir(const _SrcDir, _DstDir: string);
@@ -1884,6 +1939,8 @@ begin
   doOnSyncingDir(_SrcDir, _DstDir);
   SrcDirBS := itpd(_SrcDir);
   DstDirBS := itpd(_DstDir);
+  if not DirectoryExists(DstDirBS) then
+    TFileSystem.ForceDir(DstDirBS);
   EnumA := TSimpleDirEnumerator.Create(SrcDirBS + '*.*');
   try
     while EnumA.FindNext(Filename) do begin
@@ -1893,19 +1950,19 @@ begin
           FCurrentDest := _DstDir
         else begin
           FCurrentDest := DstDirBS + Filename;
-          if not DirectoryExists(FCurrentDest) then
-            TFileSystem.CreateDir(FCurrentDest);
         end;
         SyncOneWay(FCurrentSource, FCurrentDest, _FlattenDirHierarchy);
       end else begin
         FCurrentDest := DstDirBS + Filename;
         if FileExists(FCurrentDest) then begin
           if doOnFileExists(SrcDirBS, DstDirBS, Filename) = feaOverwrite then begin
-            if cfwOK <> TFileSystem.CopyFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, [cfwRaiseException]) then
+            doOnSyncingFile(FCurrentSource, FCurrentDest, EnumA.Sr.Size, 0);
+            if cfwOK <> TFileSystem.CopyFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, []) then
               SysUtils.Abort;
           end;
-        end else begin
-          if cfwOK <> TFileSystem.CopyFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, [cfwRaiseException, cfwFailIfExists]) then
+        end else if doOnQueryFileSync(FCurrentSource, FCurrentDest) = fsaCopy then begin
+          doOnSyncingFile(FCurrentSource, FCurrentDest, EnumA.Sr.Size, 0);
+          if cfwOK <> TFileSystem.CopyFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, [cfwFailIfExists]) then
             SysUtils.Abort;
         end;
       end;

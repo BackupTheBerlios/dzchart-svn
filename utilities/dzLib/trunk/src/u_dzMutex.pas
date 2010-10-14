@@ -4,7 +4,8 @@ interface
 
 uses
   Windows,
-  SyncObjs;
+  SyncObjs,
+  u_dzTranslator;
 
 type
   TdzMutex = class(TMutex)
@@ -20,8 +21,7 @@ type
 implementation
 
 uses
-  u_dzMiscUtils,
-  u_dzTranslator;
+  u_dzMiscUtils;
 
 function _(const _s: string): string; inline;
 begin
@@ -35,6 +35,7 @@ var
   Res: TWaitResult;
 begin
   Res := WaitFor(_Timeout);
+  Result := False;
   case res of
     wrSignaled, wrAbandoned: begin
         Result := true;
