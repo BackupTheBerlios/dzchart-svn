@@ -36,6 +36,7 @@ type
     constructor Create(const _ProgName: string = '');
     ///<summary> standard destructor </summary>
     destructor Destroy; override;
+    procedure AddOption(const _Name: string; const _Value: string);
     ///<summary> registers a commandline option
     ///          @param Names is an array of string containing the names of the option
     ///                       (usually one long, descriptive name and one short, one
@@ -148,6 +149,15 @@ begin
   FreeAndNil(FParamDescList);
   FreeAndNil(FParamsFoundList);
   inherited;
+end;
+
+procedure TGetOpt.AddOption(const _Name, _Value: string);
+var
+  Option: TOptionDesc;
+begin
+  if not FOptionDescList.Find(_Name, Option) then
+    raise Exception.CreateFmt(_('Unknown option %s'), [_Name]);
+  FOptionsFoundList.Add(TOptionFound.Create(Option, _Name, _Value));
 end;
 
 function TGetOpt.GetCmdLineDesc: string;

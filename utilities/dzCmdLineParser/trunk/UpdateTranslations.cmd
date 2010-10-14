@@ -17,4 +17,7 @@ set BASE=.
 @rem merge English translations
 ..\..\buildtools\msgmerge --no-wrap --update %BASE%\translations\en\dzCmdLineParser.po %BASE%\filtered.po
 
+@rem merge French translations
+..\..\buildtools\msgmerge --no-wrap --update %BASE%\translations\fr\dzCmdLineParser.po %BASE%\filtered.po
+
 pause
