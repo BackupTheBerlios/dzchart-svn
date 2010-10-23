@@ -1,0 +1,21 @@
+#  Ignore list. Remove those that you do want to have translated.
+
+#  Seems like a Font.Name extract
+#. f_IniFileFormatter..Font.Name
+#: w_IniFileFormatter.dfm:11
+msgid "Tahoma"
+msgstr ""
+
+#  Doesn't have any letters
+#. f_IniFileFormatter..b_Filename..Caption
+#. f_IniFileFormatter..b_Template..Caption
+#: w_IniFileFormatter.dfm:63  w_IniFileFormatter.dfm:196
+msgid "..."
+msgstr ""
+
+#  Looks like a file extension or file mask
+#. f_IniFileFormatter..sd_Filename..DefaultExt
+#: w_IniFileFormatter.dfm:206
+msgid ".ini"
+msgstr ""
+
