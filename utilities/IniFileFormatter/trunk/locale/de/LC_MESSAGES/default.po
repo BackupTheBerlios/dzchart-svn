@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-23 16:54\n"
+"POT-Creation-Date: 2010-10-23 19:05\n"
 "PO-Revision-Date: 2010-10-23 16:47\n"
 "Last-Translator: Somebody <your.email@address.com>\n"
 "MIME-Version: 1.0\n"
@@ -47,19 +47,19 @@ msgstr ""
 
 #. f_IniFileFormatter..gb_SortSections..rb_SectionsUnsorted..Caption
 #. f_IniFileFormatter..gb_SortItems..rb_ItemsUnsorted..Caption
-#: w_IniFileFormatter.dfm:99  w_IniFileFormatter.dfm:136
+#: w_IniFileFormatter.dfm:99 w_IniFileFormatter.dfm:136
 msgid "Unsorted"
 msgstr ""
 
 #. f_IniFileFormatter..gb_SortSections..rb_SectionsAlpha..Caption
 #. f_IniFileFormatter..gb_SortItems..rb_ItemsAlpha..Caption
-#: w_IniFileFormatter.dfm:108  w_IniFileFormatter.dfm:145
+#: w_IniFileFormatter.dfm:108 w_IniFileFormatter.dfm:145
 msgid "Alphabetically"
 msgstr "Alphabetisch"
 
 #. f_IniFileFormatter..gb_SortSections..rb_SectionsByTemplate..Caption
 #. f_IniFileFormatter..gb_SortItems..rb_ItemsByTemplate..Caption
-#: w_IniFileFormatter.dfm:119  w_IniFileFormatter.dfm:156
+#: w_IniFileFormatter.dfm:119 w_IniFileFormatter.dfm:156
 msgid "By Template"
 msgstr "nach einer Vorlage"
 
@@ -80,7 +80,7 @@ msgstr ""
 
 #. f_IniFileFormatter..od_Filename..Filter
 #. f_IniFileFormatter..sd_Filename..Filter
-#: w_IniFileFormatter.dfm:201  w_IniFileFormatter.dfm:207
+#: w_IniFileFormatter.dfm:201 w_IniFileFormatter.dfm:207
 msgid "All files (*.*)|*.*"
 msgstr "Alle Dateien (*.*)|*.*"
 
@@ -103,7 +103,7 @@ msgstr ""
 #: u_IniFileFormatterMain.pas:31
 msgid ""
 "Sort items. Possible values: no, alpha, template (default: "
-"alpha"
+"alpha)"
 msgstr ""
 
 #: u_IniFileFormatterMain.pas:32
@@ -120,7 +120,8 @@ msgid ""
 "automatically"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:63  u_IniFileFormatterMain.pas:73
+#: u_IniFileFormatterMain.pas:63 u_IniFileFormatterMain.pas:73
+#, object-pascal-format
 msgid ""
 "Invalid value \"%s\" for option SortSections, must be one of \"no\", "
 "\"alpha\" or \"template\""
