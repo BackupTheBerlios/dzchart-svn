@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-23 16:47\n"
+"POT-Creation-Date: 2010-10-23 16:54\n"
 "PO-Revision-Date: 2010-10-23 16:47\n"
 "Last-Translator: Somebody <your.email@address.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,11 +18,6 @@ msgstr ""
 #. f_IniFileFormatter..Caption
 #: w_IniFileFormatter.dfm:4
 msgid "INI File Formatter"
-msgstr ""
-
-#. f_IniFileFormatter..Font.Name
-#: w_IniFileFormatter.dfm:11
-msgid "Tahoma"
 msgstr ""
 
 #. f_IniFileFormatter..l_Filename..Caption
@@ -44,12 +39,6 @@ msgstr ""
 #: w_IniFileFormatter.dfm:47
 msgid "Template File"
 msgstr ""
-
-#. f_IniFileFormatter..b_Filename..Caption
-#. f_IniFileFormatter..b_Template..Caption
-#: w_IniFileFormatter.dfm:63  w_IniFileFormatter.dfm:196
-msgid "..."
-msgstr "..."
 
 #. f_IniFileFormatter..gb_SortSections..Caption
 #: w_IniFileFormatter.dfm:92
@@ -99,11 +88,6 @@ msgstr "Alle Dateien (*.*)|*.*"
 #: w_IniFileFormatter.dfm:202
 msgid "Select file"
 msgstr ""
-
-#. f_IniFileFormatter..sd_Filename..DefaultExt
-#: w_IniFileFormatter.dfm:206
-msgid ".ini"
-msgstr ".ini"
 
 #. f_IniFileFormatter..sd_Filename..Title
 #: w_IniFileFormatter.dfm:208
