@@ -173,13 +173,18 @@ function RemoveFileExtIfMatching(const _s, _Suffix: string): string; deprecated;
 function RemoveSuffixIfMatching(const _s, _Suffix: string): string;
 
 ///<summary> Appends spaces to the string S to bring it to the given length. If S is
-///          too long it is truncated, thus the result is guaranteed to be Len characters
-///          long. </summary>
-function RPadStr(const _s: string; _Len: integer): string;
+///          too long and AllowTruncate is true (default) it is truncated and thus the result is
+///          guaranteed to be Len characters long. If AllowTruncate is false, no truncation
+///          is done and the string is only guaranteed to be at least Len characters long. </summary>
+function RPadStr(const _s: string; _Len: integer; _AllowTruncate: boolean = true): string;
 ///<summary> Prepends spaces to the string S to bring it to the given length. If S is
 ///          too long it is truncated, thus the result is guaranteed to be Len characters
 ///          long. </summary>
-function LPadStr(const _s: string; _Len: integer): string;
+///<summary> Prepends spaces to the string S to bring it to the given length. If S is
+///          too long and AllowTruncate is true (default) it is truncated (at the start) and thus the
+///          result is guaranteed to be Len characters long. If AllowTruncate is false, no truncation
+///          is done and the string is only guaranteed to be at least Len characters long. </summary>
+function LPadStr(const _s: string; _Len: integer; _AllowTruncate: boolean = true): string;
 
 ///<summary> Returns true, if SubStr is found in Str and sets Head to the text before
 ///          and Tail to the text after SubStr. Otherwise Head and Tail are undefined. </summary>
@@ -733,19 +738,25 @@ begin
     Result := StrPas(_p);
 end;
 
-function RPadStr(const _s: string; _Len: integer): string;
+function RPadStr(const _s: string; _Len: integer; _AllowTruncate: boolean = true): string;
 begin
-  if Length(_s) >= _Len then
-    Result := LeftStr(_s, _Len)
-  else
+  if Length(_s) >= _Len then begin
+    if _AllowTruncate then
+      Result := LeftStr(_s, _Len)
+    else
+      Result := _s;
+  end else
     Result := _s + SpaceStr(_Len - Length(_s));
 end;
 
-function LPadStr(const _s: string; _Len: integer): string;
+function LPadStr(const _s: string; _Len: integer; _AllowTruncate: boolean = true): string;
 begin
-  if Length(_s) >= _Len then
-    Result := RightStr(_s, _Len)
-  else
+  if Length(_s) >= _Len then begin
+    if _AllowTruncate then
+      Result := RightStr(_s, _Len)
+    else
+      Result := _s;
+  end else
     Result := SpaceStr(_Len - Length(_s)) + _s;
 end;
 
@@ -1261,6 +1272,7 @@ end;
 {$ENDIF SUPPORTS_UNICODE_STRING}
 
 {$IFDEF SUPPORTS_UNICODE_STRING}
+
 function Copy(const _s: AnsiString; _Pos, _Len: integer): AnsiString;
 begin
   SetLength(Result, _Len);
@@ -1269,7 +1281,7 @@ end;
 
 function Copy(const _s: AnsiString; _Pos: integer): AnsiString;
 begin
-  Result :=  Copy(_s, _Pos, Length(_s) - _Pos);
+  Result := Copy(_s, _Pos, Length(_s) - _Pos);
 end;
 
 function Copy(const _s: string; _Pos, _Len: integer): string; inline;
