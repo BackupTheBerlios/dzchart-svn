@@ -108,7 +108,8 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils,
+  u_dzStringUtils;
 
 function _(const _s: string): string; inline;
 begin
