@@ -2,7 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
@@ -16,123 +16,129 @@ msgstr ""
 "X-Generator: dxgettext 1.2.2\n"
 
 #. f_IniFileFormatter..Caption
-#: w_IniFileFormatter.dfm:4 
+#: w_IniFileFormatter.dfm:4
 msgid "INI File Formatter"
 msgstr ""
 
 #. f_IniFileFormatter..Font.Name
-#: w_IniFileFormatter.dfm:11 
+#: w_IniFileFormatter.dfm:11
 msgid "Tahoma"
 msgstr ""
 
 #. f_IniFileFormatter..l_Filename..Caption
-#: w_IniFileFormatter.dfm:26 
+#: w_IniFileFormatter.dfm:26
 msgid "Filename"
-msgstr ""
+msgstr "Dateiname"
 
 #. f_IniFileFormatter..l_Original..Caption
-#: w_IniFileFormatter.dfm:33 
+#: w_IniFileFormatter.dfm:33
 msgid "Original"
 msgstr ""
 
 #. f_IniFileFormatter..l_Preview..Caption
-#: w_IniFileFormatter.dfm:40 
+#: w_IniFileFormatter.dfm:40
 msgid "Preview"
 msgstr ""
 
 #. f_IniFileFormatter..l_Template..Caption
-#: w_IniFileFormatter.dfm:47 
+#: w_IniFileFormatter.dfm:47
 msgid "Template File"
 msgstr ""
 
 #. f_IniFileFormatter..b_Filename..Caption
 #. f_IniFileFormatter..b_Template..Caption
-#: w_IniFileFormatter.dfm:63  w_IniFileFormatter.dfm:196
+#: w_IniFileFormatter.dfm:63  w_IniFileFormatter.dfm:196
 msgid "..."
-msgstr ""
+msgstr "..."
 
 #. f_IniFileFormatter..gb_SortSections..Caption
-#: w_IniFileFormatter.dfm:92 
+#: w_IniFileFormatter.dfm:92
 msgid "Sort Sections"
 msgstr ""
 
 #. f_IniFileFormatter..gb_SortSections..rb_SectionsUnsorted..Caption
 #. f_IniFileFormatter..gb_SortItems..rb_ItemsUnsorted..Caption
-#: w_IniFileFormatter.dfm:99  w_IniFileFormatter.dfm:136
+#: w_IniFileFormatter.dfm:99  w_IniFileFormatter.dfm:136
 msgid "Unsorted"
 msgstr ""
 
 #. f_IniFileFormatter..gb_SortSections..rb_SectionsAlpha..Caption
 #. f_IniFileFormatter..gb_SortItems..rb_ItemsAlpha..Caption
-#: w_IniFileFormatter.dfm:108  w_IniFileFormatter.dfm:145
+#: w_IniFileFormatter.dfm:108  w_IniFileFormatter.dfm:145
 msgid "Alphabetically"
-msgstr ""
+msgstr "Alphabetisch"
 
 #. f_IniFileFormatter..gb_SortSections..rb_SectionsByTemplate..Caption
 #. f_IniFileFormatter..gb_SortItems..rb_ItemsByTemplate..Caption
-#: w_IniFileFormatter.dfm:119  w_IniFileFormatter.dfm:156
+#: w_IniFileFormatter.dfm:119  w_IniFileFormatter.dfm:156
 msgid "By Template"
-msgstr ""
+msgstr "nach einer Vorlage"
 
 #. f_IniFileFormatter..gb_SortItems..Caption
-#: w_IniFileFormatter.dfm:129 
+#: w_IniFileFormatter.dfm:129
 msgid "Sort Items"
 msgstr ""
 
 #. f_IniFileFormatter..b_Close..Caption
-#: w_IniFileFormatter.dfm:168 
+#: w_IniFileFormatter.dfm:168
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #. f_IniFileFormatter..b_SaveAs..Caption
-#: w_IniFileFormatter.dfm:178 
+#: w_IniFileFormatter.dfm:178
 msgid "Save As ..."
 msgstr ""
 
 #. f_IniFileFormatter..od_Filename..Filter
 #. f_IniFileFormatter..sd_Filename..Filter
-#: w_IniFileFormatter.dfm:201  w_IniFileFormatter.dfm:207
+#: w_IniFileFormatter.dfm:201  w_IniFileFormatter.dfm:207
 msgid "All files (*.*)|*.*"
-msgstr ""
+msgstr "Alle Dateien (*.*)|*.*"
 
 #. f_IniFileFormatter..od_Filename..Title
-#: w_IniFileFormatter.dfm:202 
+#: w_IniFileFormatter.dfm:202
 msgid "Select file"
 msgstr ""
 
 #. f_IniFileFormatter..sd_Filename..DefaultExt
-#: w_IniFileFormatter.dfm:206 
+#: w_IniFileFormatter.dfm:206
 msgid ".ini"
-msgstr ""
+msgstr ".ini"
 
 #. f_IniFileFormatter..sd_Filename..Title
-#: w_IniFileFormatter.dfm:208 
+#: w_IniFileFormatter.dfm:208
 msgid "Save File As"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:29 
-msgid "Sort sections. Possible values: no, alpha, template (default: alpha)"
+#: u_IniFileFormatterMain.pas:29
+msgid ""
+"Sort sections. Possible values: no, alpha, template (default: "
+"alpha)"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:31 
-msgid "Sort items. Possible values: no, alpha, template (default: alpha"
+#: u_IniFileFormatterMain.pas:31
+msgid ""
+"Sort items. Possible values: no, alpha, template (default: "
+"alpha"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:32 
+#: u_IniFileFormatterMain.pas:32
 msgid "Template file for sorting by template"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:34 
+#: u_IniFileFormatterMain.pas:34
 msgid "Source INI file to read and format"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:35 
+#: u_IniFileFormatterMain.pas:35
 msgid ""
-"Destination INI file to write, if given, the program exits automatically"
+"Destination INI file to write, if given, the program exits "
+"automatically"
 msgstr ""
 
-#: u_IniFileFormatterMain.pas:63  u_IniFileFormatterMain.pas:73
+#: u_IniFileFormatterMain.pas:63  u_IniFileFormatterMain.pas:73
 msgid ""
-"Invalid value \"%s\" for option SortSections, must be one of \"no\", \"alpha"
-"\" or \"template\""
+"Invalid value \"%s\" for option SortSections, must be one of \"no\", "
+"\"alpha\" or \"template\""
 msgstr ""
+
