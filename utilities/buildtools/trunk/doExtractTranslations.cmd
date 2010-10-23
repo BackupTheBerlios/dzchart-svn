@@ -12,14 +12,15 @@ set POFILES=
 set OUTDIR=.
 
 set BASE=.
-%~dp0\dxgettext %MASKS% -r -b %BASE%\src -o %BASE%
+%~dp0\dxgettext %MASKS% -r --no-wrap -b %BASE%\src -o %BASE%
+
 if not exist %BASE%\ignore.po goto noIgnore
-%~dp0\msgremove %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
+%~dp0\msgremove --no-wrap %BASE%\default.po -i %BASE%\ignore.po -o %BASE%\filtered.po
 move %BASE%\filtered.po %BASE%\default.po
 :noIgnore
 
 set POFILES=%POFILES% %BASE%\default.po
-%~dp0\msgcat -o default.po %POFILES%
+%~dp0\msgcat --no-wrap -o default.po %POFILES%
 
 if "%SKIPDE%"=="1" goto skipde
 @rem German:
