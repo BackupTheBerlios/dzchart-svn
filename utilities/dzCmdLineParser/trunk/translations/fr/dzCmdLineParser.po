@@ -88,7 +88,7 @@ msgstr "Le nom de l'option ·doit · démarrage · avec · un · caractère · a
 
 #: u_dzOptionDescList.pas:126
 msgid "Option name contains invalid character \"%s\" at position %d."
-msgstr "Le nom de l'option contient · un caractère ·invalide  \"% s\" · à ·position %d."
+msgstr "Le nom de l'option contient · un caractère ·invalide  \"%s\" · à ·position %d."
 
 #. should never happen
 #: u_dzOptionDescList.pas:136  u_dzOptionDescList.pas:141
