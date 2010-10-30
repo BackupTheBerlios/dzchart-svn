@@ -237,9 +237,8 @@ msgstr "Prozess wurde bereits gestartet"
 
 #. pointer to PROCESS_INF
 #: u_dzExecutor.pas:447
-#, fuzzy
 msgid "%%1:s (%%0:d) in CreateProcess(\"%s\", \"%s\")"
-msgstr "%1:s (%0:d) in CreateProcess(\"%s\", \"%s\")"
+msgstr "%%1:s (%%0:d) in CreateProcess(\"%s\", \"%s\")"
 
 #: u_dzExecutor.pas:473
 msgid "StdErr was not redirected"
