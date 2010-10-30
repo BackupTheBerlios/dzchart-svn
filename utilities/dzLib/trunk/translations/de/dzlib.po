@@ -386,7 +386,7 @@ msgstr "%s (Code %d) beim Aufruf von Windows.GetUsername"
 #. 16 KB should be enough for everybody... ;-)
 #: u_dzOsUtils.pas:159
 msgid "Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings"
-msgstr "Fehler %%1:s (%%0:d) beim Aufruf von Windows.ExpandEnvironmentStrings"
+msgstr "Fehler %1:s (%0:d) beim Aufruf von Windows.ExpandEnvironmentStrings"
 
 #: u_dzOsUtils.pas:345  u_dzOsUtils.pas:360
 msgid "No version information available for %s"

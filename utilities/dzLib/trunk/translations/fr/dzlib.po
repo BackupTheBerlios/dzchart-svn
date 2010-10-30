@@ -27,7 +27,7 @@ msgstr "Chaîne valeur non valide dans le fichier ini pour [%s]%s"
 
 #: u_dzClassUtils.pas:446
 msgid "Invalid floating point value %s in ini file for [%s]%s"
-msgstr "valeur du point flottante non valide %s dans le fichier ini pour [% s]%s"
+msgstr "valeur du point flottante non valide %s dans le fichier ini pour [%s]%s"
 
 #: u_dzClassUtils.pas:460
 msgid "Invalid integer value \"%s\" in ini file for [%s]%s"
@@ -300,7 +300,7 @@ msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShort
 
 #: u_dzFileUtils.pas:1093
 msgid "Short pathname is longer than MAX_PATH (%d) characters"
-msgstr "La longueur du chemin de fichier dépasse MAX_PATH (%d) caractères "
+msgstr "La longueur du chemin de fichier dépasse MAX_PATH (%d) caractères"
 
 #. duplicate % so they get passed through the format function
 #: u_dzFileUtils.pas:1105
@@ -518,7 +518,7 @@ msgstr "<pas d'information sur la version>"
 
 #: u_dzVersionInfo.pas:322
 msgid "Invalid version info"
-msgstr "Info (sur la version) non valide "
+msgstr "Info (sur la version) non valide"
 
 #. f_dzInputDialog..Caption
 #: w_dzInputDialog.dfm:5
