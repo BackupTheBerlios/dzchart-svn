@@ -65,12 +65,8 @@ msgid "There are too many parameters."
 msgstr "There are too many parameters."
 
 #: u_dzGetOpt.pas:326  u_dzGetOpt.pas:332
-msgid ""
-"There are not enough %s parameters (min: "
-"%d)"
-msgstr ""
-"There are not enough %s parameters (min: "
-"%d)"
+msgid "There are not enough %s parameters (min: %d)"
+msgstr "There are not enough %s parameters (min: %d)"
 
 #: u_dzGetOpt.pas:339
 msgid "Option %s is unknown"
@@ -89,20 +85,12 @@ msgid "Option name cannot be empty."
 msgstr "Option name cannot be empty."
 
 #: u_dzOptionDescList.pas:123
-msgid ""
-"Option name must start with an alphanumeric "
-"character."
-msgstr ""
-"Option name must start with an alphanumeric "
-"character."
+msgid "Option name must start with an alphanumeric character."
+msgstr "Option name must start with an alphanumeric character."
 
 #: u_dzOptionDescList.pas:126
-msgid ""
-"Option name contains invalid character \"%s\" at position "
-"%d."
-msgstr ""
-"Option name contains invalid character \"%s\" at position "
-"%d."
+msgid "Option name contains invalid character \"%s\" at position %d."
+msgstr "Option name contains invalid character \"%s\" at position %d."
 
 #. should never happen
 #: u_dzOptionDescList.pas:136  u_dzOptionDescList.pas:141

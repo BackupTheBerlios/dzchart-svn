@@ -4,7 +4,8 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
-msgstr "Project-Id-Version: dzCmdLineParser 1.0\n"
+msgstr ""
+"Project-Id-Version: dzCmdLineParser 1.0\n"
 "POT-Creation-Date: 2010-10-13 17:20\n"
 "PO-Revision-Date: 2010-04-27 17:26+0100\n"
 "Last-Translator: Thomas Mueller <info@schniering.com>\n"
@@ -52,16 +53,12 @@ msgid "Option name cannot be empty."
 msgstr "Optionsname kann nicht leer sein."
 
 #: u_dzOptionDescList.pas:126
-msgid "Option name contains invalid character \"%s\" at position "
-"%d."
-msgstr "Optionsname enthält ungültiges Zeichen \"%s\" bei Position "
-"%d."
+msgid "Option name contains invalid character \"%s\" at position %d."
+msgstr "Optionsname enthält ungültiges Zeichen \"%s\" bei Position %d."
 
 #: u_dzOptionDescList.pas:123
-msgid "Option name must start with an alphanumeric "
-"character."
-msgstr "Optionsname muss mit einem alphanumerischen Zeichen "
-"beginnen."
+msgid "Option name must start with an alphanumeric character."
+msgstr "Optionsname muss mit einem alphanumerischen Zeichen beginnen."
 
 #: u_dzDefaultMain.pas:152
 msgid "Options:"
@@ -76,8 +73,7 @@ msgid "Synopsis: %s %s"
 msgstr "Aufruf: %s %s"
 
 #: u_dzGetOpt.pas:326  u_dzGetOpt.pas:332
-msgid "There are not enough %s parameters (min: "
-"%d)"
+msgid "There are not enough %s parameters (min: %d)"
 msgstr "Nicht genügend %s Parameter (min: %d)"
 
 #: u_dzGetOpt.pas:316
