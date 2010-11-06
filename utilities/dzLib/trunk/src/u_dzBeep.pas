@@ -12,7 +12,8 @@ type
   TBeepSequenceEntry = record
     Frequency: Cardinal;
     Duration: Cardinal;
-    class function Create(_Frequence, _Duration: Cardinal): TBeepSequenceEntry; static;
+    class function Create(_Frequency, _Duration: Cardinal): TBeepSequenceEntry; static;
+    procedure Init(_Frequency, _Duration: Cardinal); inline;
   end;
 
   TBeepSequenceList = array of TBeepSequenceEntry;
@@ -102,8 +103,16 @@ begin
     // If we can't get the mutex, we set a new sequence
     if FMutex.WaitFor(0) = wrSignaled then begin
       try
-        for i := Low(FSequence) to High(FSequence) do
-          Windows.Beep(FSequence[i].Frequency, FSequence[i].Duration);
+        for i := Low(FSequence) to High(FSequence) do begin
+          if FSequence[i].Frequency = 0 then
+            Sleep(FSequence[i].Duration)
+          else if FSequence[i].Frequency < 37 then
+            Windows.Beep(37, FSequence[i].Duration)
+          else if FSequence[i].Frequency > 32767 then begin
+            Windows.Beep(32767, FSequence[i].Duration);
+          end else
+            Windows.Beep(FSequence[i].Frequency, FSequence[i].Duration);
+        end;
       finally
         FMutex.Release;
       end;
@@ -121,11 +130,15 @@ end;
 
 { TBeepSequenceEntry }
 
-class function TBeepSequenceEntry.Create(_Frequence,
-  _Duration: Cardinal): TBeepSequenceEntry;
+class function TBeepSequenceEntry.Create(_Frequency, _Duration: Cardinal): TBeepSequenceEntry;
 begin
-  Result.Frequency := _Frequence;
-  Result.Duration := _Duration;
+  Result.Init(_Frequency, _Duration);
+end;
+
+procedure TBeepSequenceEntry.Init(_Frequency, _Duration: Cardinal);
+begin
+  Frequency := _Frequency;
+  Duration := _Duration;
 end;
 
 initialization
