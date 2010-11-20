@@ -46,6 +46,8 @@ type
     FFormCaption: string;
     FFormCaptionParams: integer;
     FFormCaptionPercent: boolean;
+    FLastTickCount: Cardinal;
+    FProgressTimeInterval: Cardinal;
     procedure SetFormCaption(const _FormCaption: string);
     procedure InternalSetCaption;
     procedure SetProgressPos(_ProgressPos: integer);
@@ -66,6 +68,7 @@ type
     property IsActionVisible: boolean read FIsActionVisible write SetIsActionVisible;
     procedure Progress(_Position: integer; const _Action: string; var _Abort: boolean); overload;
     procedure Progress(_Position: integer; var _Abort: boolean); overload;
+    property ProgressTimeInterval: Cardinal read FProgressTimeInterval write FProgressTimeInterval;
   end;
 
 implementation
@@ -84,6 +87,8 @@ end;
 constructor Tf_dzProgress.Create(_Owner: tComponent);
 begin
   inherited;
+  FProgressTimeInterval := 200;
+  FLastTickCount := 0;
   pb_Progress.Position := 0;
   FMax := 100;
   l_Action.Caption := '';
@@ -123,12 +128,24 @@ begin
 end;
 
 procedure Tf_dzProgress.Progress(_Position: integer; var _Abort: boolean);
+var
+  NextTickCount: Int64;
 begin
-  FProgressPos := _Position;
-  pb_Progress.Position := _Position;
-  InternalSetCaption;
-  Application.ProcessMessages;
+  // Durch ProcessMessages dauert die Anzeige meistens laenger als die eigentliche Berechnung
+  // innerhalb der Schleife bei der die Progress-Funktion aufgerufen wird.
+  // Deshalb nur alle 200msec updaten -> SUPER GESCHWINDIGKEITSOPTIMIERUNG
+  // z.b. in Rd2Ea und Ea2Er (wurde sonst über AuswerteOdometer gemacht)
+  // aber Vorsicht: GetTickCount laeuft nach ca. 25 Tagen ueber
+
+  NextTickCount := (Int64(FLastTickCount) + Int64(FProgressTimeInterval)) and $FFFFFFFF;
+  if GetTickCount > NextTickCount then begin
+    FProgressPos := _Position;
+    pb_Progress.Position := _Position;
+    InternalSetCaption;
+    Application.ProcessMessages;
   _Abort := FCancelPressed;
+    FLastTickCount := GetTickCount;
+  end;
 end;
 
 procedure Tf_dzProgress.Progress(_Position: integer; const _Action: string;
