@@ -181,6 +181,11 @@ procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: stri
 /// Reads an integer from the ini-file, raises an exception if the value is not an integer </summary>
 function TIniFile_ReadInt(_Ini: TCustomIniFile; const _Section, _Ident: string): integer;
 
+/// <summary>
+/// Reads the given section from the given .INI file and returns it as a TStrings
+/// @raises Exception if the section does not exist. </summary>
+procedure TIniFile_ReadSection(const _Filename, _Section: string; _sl: TStrings); inline;
+
 implementation
 
 uses
@@ -458,6 +463,20 @@ begin
   s := _Ini.ReadString(_Section, _Ident, '');
   if not TryStrToInt(s, Result) then
     raise Exception.CreateFmt(_('Invalid integer value "%s" in ini file for [%s]%s'), [s, _Section, _Ident]);
+end;
+
+procedure TIniFile_ReadSection(const _Filename, _Section: string; _sl: TStrings);
+var
+  Ini: TMemIniFile;
+begin
+  Ini := TMemIniFile.Create(_Filename);
+  try
+    if not Ini.SectionExists(_Section) then
+      raise Exception.CreateFmt('Section %s does not exist in file %s.', [_Section, _Filename]);
+    Ini.ReadSection(_Section, _sl);
+  finally
+    FreeAndNil(Ini);
+  end;
 end;
 
 end.
