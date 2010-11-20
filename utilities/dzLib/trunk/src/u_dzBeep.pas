@@ -13,7 +13,7 @@ type
     Frequency: Cardinal;
     Duration: Cardinal;
     class function Create(_Frequency, _Duration: Cardinal): TBeepSequenceEntry; static;
-    procedure Init(_Frequency, _Duration: Cardinal); inline;
+    procedure Init(_Frequency, _Duration: Cardinal); // inline does not work!
   end;
 
   TBeepSequenceList = array of TBeepSequenceEntry;
