@@ -25,6 +25,7 @@ type
     class function InputQuery(const _Caption: string; const _Prompt: string; var _Value: string): Boolean;
     class function InputBox(const _Caption: string; const _Prompt: string; const _Default: string): string;
     class function Execute(_Owner: TWinControl; const _Caption: string; const _Prompt: string; var _Value: string): Boolean;
+    class procedure Display(_Owner: TWinControl; const _Caption, _Prompt, _Value: string);
   end;
 
 implementation
@@ -35,6 +36,25 @@ uses
   u_dzVclUtils;
 
 { Tf_dzInputDialog }
+
+class procedure Tf_dzInputDialog.Display(_Owner: TWinControl; const _Caption, _Prompt, _Value: string);
+var
+  frm: Tf_dzInputDialog;
+begin
+  frm := Tf_dzInputDialog.Create(_Owner);
+  try
+    TForm_CenterOn(frm, _Owner);
+    frm.Caption := _Caption;
+    frm.l_Query.Caption := _Prompt;
+    frm.ed_Input.Text := _Value;
+    frm.b_Ok.Visible := false;
+    frm.b_Cancel.Caption := 'Close';
+    frm.b_Cancel.Default := true;
+    frm.ShowModal;
+  finally
+    FreeAndNil(frm);
+  end;
+end;
 
 class function Tf_dzInputDialog.Execute(_Owner: TWinControl; const _Caption,
   _Prompt: string; var _Value: string): Boolean;
