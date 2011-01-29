@@ -3,7 +3,7 @@
 ///          @author        twm </summary>
 unit u_dzVclUtils;
 
-{$include jedi.inc}
+{$INCLUDE jedi.inc}
 
 interface
 
@@ -129,6 +129,10 @@ procedure TGrid_ExportToStream(_Grid: TCustomGrid; _Stream: TStream; _IncludeFix
 ///<summary> sets the row count, taking the fixed rows into account
 ///          @returns the new RowCount </summary>
 function TGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer): integer;
+
+///<summary> sets the nonfixd row count
+///          @returns the new RowCount </summary>
+function TGrid_SetNonfixedRowCount(_Grid: TCustomGrid; _RowCount: integer): integer;
 
 ///<summary> sets the column count, taking the fixed columns into account
 ///          @returns the new ColCount </summary>
@@ -751,6 +755,15 @@ begin
   Grid := TGridHack(_Grid);
   Result := Grid.FixedCols + _ColCount;
   Grid.ColCount := Result;
+end;
+
+function TGrid_SetNonfixedRowCount(_Grid: TCustomGrid; _RowCount: integer): integer;
+var
+  Grid: TGridHack;
+begin
+  Grid := TGridHack(_Grid);
+  Result := Grid.FixedRows + _RowCount;
+  Grid.RowCount := Result;
 end;
 
 procedure TStringGrid_SetRowCount(_Grid: TCustomGrid; _RowCount: integer);
