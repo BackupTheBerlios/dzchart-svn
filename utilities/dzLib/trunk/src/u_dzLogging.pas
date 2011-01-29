@@ -29,6 +29,7 @@ type
     function LogLevel2Str(_Level: TLogLevel): string;
     procedure LogLine(const _s: string; _Level: TLogLevel = llDump); deprecated; // use Log method instead
     procedure LogException(_e: exception; const _Where: string = ''; _IncludeCallstack: boolean = true);
+    procedure LogCallstack(_Level: TLogLevel);
     procedure LogError(const _s: string);
     procedure LogWarning(const _s: string);
     procedure LogInfo(const _s: string);
@@ -84,6 +85,7 @@ type
        @param Level is the log level, defaults to llDump }
     procedure LogLine(const _s: string; _Level: TLogLevel = llDump); virtual; deprecated; // use Log method instead
     procedure LogException(_e: exception; const _Where: string = ''; _IncludeCallstack: boolean = true);
+    procedure LogCallstack(_Level: TLogLevel);
     {: Logs a string at error level }
     procedure LogError(const _s: string); deprecated;
     {: Logs a string at warning level }
@@ -186,6 +188,7 @@ type
   TOnGetCallstack = procedure(_sl: TStrings);
 const
   gblOnGetCallstack: TOnGetCallstack = nil;
+  gblOnGetCurrentCallstack: TOnGetCallstack = nil;
 
 implementation
 
@@ -330,6 +333,25 @@ begin
       for s in sl do
         LogDebug(s);
       LogDebug('<end call stack>');
+    finally
+      sl.Free;
+    end;
+  end;
+end;
+
+procedure TAbstractLogger.LogCallstack(_Level: TLogLevel);
+var
+  sl: TStringList;
+  s: string;
+begin
+  if Assigned(gblOnGetCurrentCallstack) then begin
+    sl := TStringList.Create;
+    try
+      Log('<begin call stack>', _Level);
+      gblOnGetCurrentCallstack(sl);
+      for s in sl do
+        Log(s, _Level);
+      Log('<end call stack>', _Level);
     finally
       sl.Free;
     end;
