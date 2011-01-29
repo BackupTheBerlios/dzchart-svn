@@ -25,8 +25,8 @@ type
     property Action: string read GetAction write SetAction;
     property IsCancelVisible: boolean read GetIsCancelVisible write SetIsCancelVisible;
     property IsActionVisible: boolean read GetIsActionVisible write SetIsActionVisible;
-    procedure Progress(_Position: integer; const _Action: string; var _Abort: boolean); overload;
-    procedure Progress(_Position: integer; var _Abort: boolean); overload;
+    procedure Progress(_Position: integer; const _Action: string {; var _Abort: boolean}); overload;
+    procedure Progress(_Position: integer {; var _Abort: boolean}); overload;
   end;
 
 type
@@ -44,8 +44,8 @@ type
     procedure SetIsCancelVisible(const _Value: boolean);
     procedure SetProgressMax(const _Value: integer);
     procedure SetProgressPos(const _Value: integer);
-    procedure Progress(_Position: integer; const _Action: string; var _Abort: boolean); overload;
-    procedure Progress(_Position: integer; var _Abort: boolean); overload;
+    procedure Progress(_Position: integer; const _Action: string {; var _Abort: boolean}); overload;
+    procedure Progress(_Position: integer {; var _Abort: boolean}); overload;
   public
     constructor Create(_Owner: TWinControl; const _Caption: string);
     destructor Destroy; override;
@@ -98,14 +98,14 @@ begin
   Result := FForm.ProgressPos;
 end;
 
-procedure TdzProgress.Progress(_Position: integer; const _Action: string; var _Abort: boolean);
+procedure TdzProgress.Progress(_Position: integer; const _Action: string {; var _Abort: boolean});
 begin
-  FForm.Progress(_Position, _Action, _Abort);
+  FForm.Progress(_Position, _Action {, _Abort});
 end;
 
-procedure TdzProgress.Progress(_Position: integer; var _Abort: boolean);
+procedure TdzProgress.Progress(_Position: integer {; var _Abort: boolean});
 begin
-  FForm.Progress(_Position, _Abort);
+  FForm.Progress(_Position {, _Abort});
 end;
 
 procedure TdzProgress.SetAction(const _Value: string);

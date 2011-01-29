@@ -66,8 +66,8 @@ type
     property Action: string read FAction write SetAction;
     property IsCancelVisible: boolean read FIsCancelVisible write SetIsCancelVisible;
     property IsActionVisible: boolean read FIsActionVisible write SetIsActionVisible;
-    procedure Progress(_Position: integer; const _Action: string; var _Abort: boolean); overload;
-    procedure Progress(_Position: integer; var _Abort: boolean); overload;
+    procedure Progress(_Position: integer; const _Action: string {; var _Abort: boolean}); overload;
+    procedure Progress(_Position: integer {; var _Abort: boolean}); overload;
     property ProgressTimeInterval: Cardinal read FProgressTimeInterval write FProgressTimeInterval;
   end;
 
@@ -127,7 +127,7 @@ begin
   end;
 end;
 
-procedure Tf_dzProgress.Progress(_Position: integer; var _Abort: boolean);
+procedure Tf_dzProgress.Progress(_Position: integer {; var _Abort: boolean});
 var
   NextTickCount: Int64;
 begin
@@ -143,17 +143,18 @@ begin
     pb_Progress.Position := _Position;
     InternalSetCaption;
     Application.ProcessMessages;
-  _Abort := FCancelPressed;
+    if FCancelPressed then
+      Abort;
+    //_Abort := FCancelPressed;
     FLastTickCount := GetTickCount;
   end;
 end;
 
-procedure Tf_dzProgress.Progress(_Position: integer; const _Action: string;
-  var _Abort: boolean);
+procedure Tf_dzProgress.Progress(_Position: integer; const _Action: string {;var _Abort: boolean});
 begin
   FAction := _Action;
   l_Action.Caption := _Action;
-  Progress(_Position, _Abort);
+  Progress(_Position {, _Abort});
 end;
 
 function Tf_dzProgress.AnalyseCaption(const _Caption: string; var _ParamCount: integer;
