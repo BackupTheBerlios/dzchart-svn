@@ -676,6 +676,9 @@ type
     /// Returns the free space (in bytes) on the disk with the given drive letter
     /// </summary>
     class function DiskFree(_DriveLetter: AnsiChar): Int64;
+    class function GetVolumeName(_DriveLetter: AnsiChar): string;
+    class function GetRemoteVolumeName(const _Share: string): string;
+    class procedure GetLocalVolumeNames(_sl: TStrings; _HdOnly: boolean = False; _IgnoreEmpty: Boolean = True);
 
     ///<summary> changes the "full" file extension where "full" means it handles multiple
     ///          extensions like .doc.exe </summary>
@@ -928,6 +931,60 @@ begin
     end;
   end;
   SetLength(Result, Res);
+end;
+
+// declared wrongly in WINDOWS
+
+function GetVolumeInformation(lpRootPathName: PChar;
+  lpVolumeNameBuffer: PChar; nVolumeNameSize: DWORD; lpVolumeSerialNumber: PDWORD;
+  lpMaximumComponentLength, lpFileSystemFlags: LPDWORD;
+  lpFileSystemNameBuffer: PChar; nFileSystemNameSize: DWORD): BOOL; stdcall; external kernel32 name 'GetVolumeInformationA';
+
+class function TFileSystem.GetVolumeName(_DriveLetter: AnsiChar): string;
+begin
+  Result := GetRemoteVolumeName(_DriveLetter + ':\');
+end;
+
+class function TFileSystem.GetRemoteVolumeName(const _Share: string): string;
+var
+  Res: LongBool;
+begin
+  SetLength(Result, MAX_PATH + 1);
+  Res := GetVolumeInformation(PChar(itpd(_Share)), PChar(Result), Length(Result), nil, nil, nil, nil, 0);
+  if Res then begin
+    Result := PChar(Result);
+  end else
+    Result := '';
+end;
+
+class procedure TFileSystem.GetLocalVolumeNames(_sl: TStrings; _HdOnly: boolean = False; _IgnoreEmpty: Boolean = True);
+type
+  TDriveType = (dtUnknown, dtNoDrive, dtFloppy, dtFixed, dtNetwork, dtCDROM, dtRAM);
+var
+  DriveBits: set of 0..25;
+  DriveNum: Integer;
+  DriveChar: Char;
+  DriveType: TDriveType;
+  s: string;
+begin
+  Integer(DriveBits) := Windows.GetLogicalDrives;
+  for DriveNum := 0 to 25 do begin
+    if not (DriveNum in DriveBits) then
+      Continue;
+    DriveChar := Char(DriveNum + Ord('a'));
+    DriveType := TDriveType(Windows.GetDriveType(PChar(DriveChar + ':\')));
+    if not _HdOnly or (DriveType = dtFixed) then begin
+      s := GetVolumeName(DriveChar);
+      if s <> '' then begin
+        _sl.AddObject(s, Pointer(DriveNum));
+      end else begin
+        if not _IgnoreEmpty then begin
+          s := _('<no volume name>');
+          _sl.AddObject(s, Pointer(DriveNum));
+        end;
+      end;
+    end;
+  end;
 end;
 
 class function TFileSystem.CreateDir(const _DirectoryName: string;
@@ -1646,7 +1703,7 @@ begin
   fn := ExtractFileName(_Filename);
   p := Pos('.', fn);
   if p = 0 then
-    Result := ''
+    Result := fn
   else
     Result := LeftStr(fn, p - 1);
 
