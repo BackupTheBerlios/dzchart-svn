@@ -82,8 +82,6 @@ type
     procedure SetFileAttributes(_FileAttributes: DWORD);
     ///<summary> Set method for FileFlags property </summary>
     procedure SetFileFlags(_FileFlags: DWORD);
-    ///<summary> Set method for Filename property </summary>
-    procedure SetFilename(const _Filename: string);
   public
     ///<summary> Creates a TdzFile object.
     ///          @param Filename is a string containing the name of the file to open </summary>
@@ -107,7 +105,7 @@ type
     ///<summary> returns true if Position = Size </summary>
     function EOF: boolean;
     ///<summary> The file's name as passed to the Create constructor. </summary>
-    property Filename: string read FFilename write SetFilename;
+    property Filename: string read FFilename;
     ///<summary> The file's access mode.
     ///          Can be set to [faRead], [faWrite] or [faRead, faWrite]. </summary>
     property AccessMode: TFileAccessModeSet read FAccessMode write FAccessMode;
@@ -320,6 +318,11 @@ begin
   FFileFlags := _FileFlags;
 end;
 
+function TdzFile.EOF: boolean;
+begin
+  Result := Position = Size;
+end;
+
 { TdzTempFile }
 
 constructor TdzTempFile.Create(_Directory: string; const _Prefix: string; _Unique: word);
@@ -330,18 +333,6 @@ begin
   CreateDisposition := fcCreateTruncateIfExists;
   FileAttributes := FILE_ATTRIBUTE_TEMPORARY;
   FileFlags := FILE_FLAG_DELETE_ON_CLOSE;
-end;
-
-procedure TdzFile.SetFilename(const _Filename: string);
-begin
-  if Int64(Self.Handle) <> Int64(INVALID_HANDLE_VALUE) then
-    raise EdzFile.Create(_('Cannot change filename when file is open.'));
-  FFilename := _Filename;
-end;
-
-function TdzFile.EOF: boolean;
-begin
-  Result := Position = Size;
 end;
 
 end.
