@@ -15,4 +15,4 @@ echo this file must be copied to the main project directory since it does not wo
 
 :ende
 pause
-"buildtools\gorm.exe" locale\de\lc_messages\default.po
+start "buildtools\gorm.exe" locale\de\lc_messages\default.po
