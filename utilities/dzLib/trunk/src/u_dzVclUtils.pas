@@ -23,6 +23,7 @@ uses
   Grids,
   DbGrids,
   Buttons,
+  ActnList,
   u_dzTranslator;
 
 type
@@ -609,6 +610,12 @@ procedure TButtonControl_SetCaption(_bctrl: TButtonControl; _Value: string);
 ///          goes out of scope </summary>
 function TCursor_TemporaryChange(_NewCursor: TCursor = crHourGlass): IInterface;
 
+//<summary> If the Checked property of the action = the Checked parameter nothing happens and
+//          the function returns true. If they are different, it calls the action's Execute
+//          method and returns its result.
+//          @returns true, if Execute was called and returned true, false otherwise </summary>
+function TAction_SetCheckedExecute(_act: TCustomAction; _Checked: boolean): boolean;
+
 implementation
 
 uses
@@ -1121,7 +1128,7 @@ begin
     if ArrayContains(Col, _ConstantCols) then
       MinWidth := Grid.ColWidths[Col]
     else begin
-      MinWidth := Grid.DefaultColWidth;
+      MinWidth := 0;
 
       if not (roIgnoreHeader in _Options) then
         for Row := 0 to Grid.FixedRows - 1 do
@@ -1133,6 +1140,8 @@ begin
       if goVertLine in Grid.Options then
         Inc(MinWidth, Grid.GridLineWidth);
       Inc(MinWidth, 4); // 2 Punkte rechts und links, wie in TStringGrid.DrawCell
+      if MinWidth < Grid.DefaultColWidth then
+        MinWidth := Grid.DefaultColWidth;
     end;
     ColWidths[Col] := MinWidth;
     Inc(SumWidths, MinWidth);
@@ -2276,6 +2285,13 @@ begin
   for i := 0 to _lv.Items.Count - 1 do
     if _lv.Items[i].Selected then
       Inc(Result);
+end;
+
+function TAction_SetCheckedExecute(_act: TCustomAction; _Checked: boolean): boolean;
+begin
+  Result := _act.Checked <> _Checked;
+  if Result then
+    Result := _act.Execute;
 end;
 
 function TStatusBar_GetClickedPanel(_sb: TStatusBar): integer;
