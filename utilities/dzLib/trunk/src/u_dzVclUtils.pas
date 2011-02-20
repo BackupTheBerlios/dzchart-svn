@@ -13,8 +13,10 @@ uses
   SysUtils,
   Graphics,
   Forms,
+  Messages,
   Controls,
   ComCtrls,
+  ExtCtrls,
   CheckLst,
   StdCtrls,
   ExtCtrls,
@@ -315,6 +317,16 @@ type
   public
     property SimpleText: string read GetSimpleText write SetSimpleText;
   end;
+
+{$IFDEF DELPHI2009_UP}
+type
+  TdzButtonedEdit = class(TButtonedEdit)
+  protected
+    procedure KeyDown(var _Key: Word; _Shift: TShiftState); override;
+  public
+    procedure Loaded; override;
+  end;
+{$ENDIF DELPHI2009_UP}
 
 ///<summary> sets the control and all its child controls Enabled property and changes their
 ///          caption to reflect this
@@ -2405,6 +2417,26 @@ begin
     clb.Checked[Idx] := not clb.Checked[Idx];
   end;
 end;
+
+{$IFDEF DELPHI2009_UP}
+{ TdzButtonedEdit }
+
+procedure TdzButtonedEdit.KeyDown(var _Key: Word; _Shift: TShiftState);
+begin
+  inherited;
+  if (_Key = VK_RETURN) and (ssCtrl in _Shift) then
+    OnRightButtonClick(Self);
+end;
+
+procedure TdzButtonedEdit.Loaded;
+begin
+  inherited;
+  if RightButton.Visible and (RightButton.Hint = '') then begin
+    RightButton.Hint := _('Ctrl+Return to ''click'' right button.');
+    ShowHint := true;
+  end;
+end;
+{$ENDIF DELPHI2009_UP}
 
 initialization
 finalization
