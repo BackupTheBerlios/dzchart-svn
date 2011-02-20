@@ -141,6 +141,7 @@ type
     procedure InsertEnd(const _Element); override;
     ///<summary> extracts the first Element from the buffer </summary>
     procedure ExtractFront(var _Element); override;
+    function TryExtractFront(var _Element): boolean;
     ///<summary> gets the Element with the index Idx </summary>
     procedure GetElement(_Idx: integer; var _Element); override;
     ///<summary> sets the Element with the index Idx, note: No finalization is done
@@ -148,6 +149,7 @@ type
     procedure SetElement(_Idx: integer; const _Element); override;
     ///<summary> gets the first Element from the buffer </summary>
     procedure GetFirst(var _Element); override;
+    function TryGetFirst(var _Element): boolean;
     ///<summary> returns true, if the buffer is full </summary>
     function IsFull: boolean; override;
     ///<summary> returns true, if the buffer is empty </summary>
@@ -450,6 +452,20 @@ end;
 procedure TdzRingQueue.GetFirst(var _Element);
 begin
   inherited;
+end;
+
+function TdzRingQueue.TryExtractFront(var _Element): boolean;
+begin
+  Result := not IsEmpty;
+  if Result then
+    ExtractFront(_Element);
+end;
+
+function TdzRingQueue.TryGetFirst(var _Element): boolean;
+begin
+  Result := not IsEmpty;
+  if Result then
+    GetFirst(_Element);
 end;
 
 procedure TdzRingQueue.InsertEnd(const _Element);
