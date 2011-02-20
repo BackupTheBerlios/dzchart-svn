@@ -309,6 +309,10 @@ type
     property OnQueryFileSync: TOnQueryFileSync read FOnQueryFileSync write FOnQueryFileSync;
   end;
 
+  IUniqueTempDir = interface ['{D9A4A428-66AE-4BBC-B1CA-22CE4DE2FACB}']
+    function Path: string;
+  end;
+
   /// <summary>
   /// This class owns all utility functions as class methods so they don't pollute the name space
   /// </summary>
@@ -379,6 +383,7 @@ type
     /// @returns the name of the created directory
     /// </summary>
     class function CreateUniqueDirectory(_BaseDir: string = ''; const _Prefix: string = 'dz'): string;
+    class function CreateUniqueTempDir(_Prefix: string = 'dz'): IUniqueTempDir;
 
     /// <summary>
     /// Calls the Win32Api function GetTempPath but returns a string rather than
@@ -1025,6 +1030,24 @@ begin
         raise ECreateUniqueDir.CreateFmt(_('Could not find a unique directory name based on "%s"'), [Result]);
     end;
   end;
+end;
+
+type
+  TUniqueTempDir = class(TInterfacedObject, IUniqueTempDir)
+  private
+    FPath: string;
+    function Path: string;
+  public
+    constructor Create(const _Path: string);
+    destructor Destroy; override;
+  end;
+
+class function TFileSystem.CreateUniqueTempDir(_Prefix: string): IUniqueTempDir;
+var
+  s: string;
+begin
+  s := CreateUniqueDirectory(GetTempPath, _Prefix);
+  Result := TUniqueTempDir.Create(s);
 end;
 
 class function TFileSystem.GetTempFileName(_Directory: string = ''; const _Prefix: string = 'dz';
@@ -2033,6 +2056,26 @@ procedure TDirectorySync.SyncBothWays(const _DirA, _DirB: string);
 begin
   SyncOneWay(_DirA, _DirB);
   SyncOneWay(_DirB, _DirA);
+end;
+
+{ TUniqueTempDir }
+
+constructor TUniqueTempDir.Create(const _Path: string);
+begin
+  inherited Create;
+  FPath := _Path;
+end;
+
+destructor TUniqueTempDir.Destroy;
+begin
+  // delete directory, fail silently on errors
+  TFileSystem.DelDirTree(FPath, False);
+  inherited;
+end;
+
+function TUniqueTempDir.Path: string;
+begin
+  Result := FPath;
 end;
 
 end.
