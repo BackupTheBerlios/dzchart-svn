@@ -5,7 +5,7 @@ REM - extrahiert ihn und ruft dann bds mit %projekt%.dproj auf.
 setlocal
 call :GetLastDir %0
 set project=%result%
-start "Delphi XE" "%ProgramFiles%\Embarcadero\RAD Studio\8.0\bin\bds.exe" -pDelphi src\%project%.dproj
+start "Delphi 2007" "%ProgramFiles%\CodeGear\RAD Studio\5.0\bin\bds.exe" -pDelphi src\%project%.dproj
 endlocal
 goto :eof
 
