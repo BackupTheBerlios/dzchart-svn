@@ -311,6 +311,8 @@ type
 
   IUniqueTempDir = interface ['{D9A4A428-66AE-4BBC-B1CA-22CE4DE2FACB}']
     function Path: string;
+    ///<summary> Path including trailing path delimiter </summary>
+    function PathBS: string;
   end;
 
   /// <summary>
@@ -322,6 +324,9 @@ type
   type
     TCopyFileFlags = (cfFailIfExists, cfForceOverwrite, cfRaiseException);
     TCopyFileFlagSet = set of TCopyFileFlags;
+    TMoveFileExFlags = (mfCopyAllowed, {mfCreateHardlink,} mfDelayUntilReboot, mfFailIfNotTrackable,
+      mfReplaceExisting, mfWriteThrough);
+    TMoveFileexFlagSet = set of TMoveFileExFlags;
     TMatchingFileResult = (mfNotFound, mfDirectory, mfFile, mfSpecial);
     TCopyFileWithProgressFlags = (cfwFailIfExists, cfwRestartable, cfwRaiseException);
     TCopyFileWithProgressFlagSet = set of TCopyFileWithProgressFlags;
@@ -383,7 +388,7 @@ type
     /// @returns the name of the created directory
     /// </summary>
     class function CreateUniqueDirectory(_BaseDir: string = ''; const _Prefix: string = 'dz'): string;
-    class function CreateUniqueTempDir(_Prefix: string = 'dz'): IUniqueTempDir;
+    class function CreateUniqueTempDir(_DeleteOnlyIfEmpty: boolean = false; _Prefix: string = 'dz'): IUniqueTempDir;
 
     /// <summary>
     /// Calls the Win32Api function GetTempPath but returns a string rather than
@@ -403,6 +408,19 @@ type
     /// @returns true, if the file could be moved, false otherwise.
     /// </summary>
     class function MoveFile(const _Source, _Dest: string; _RaiseException: boolean = true): boolean;
+    /// <summary>
+    /// Moves the file Source to Dest using the Windows MoveFileEx function.
+    /// @param Source is a string containing the name of the existing file
+    /// @param Dest is a string containing the destination file name
+    /// @Param Flags is a set of flags corresponding to the Windows MoveEx flags
+    /// @param RaiseException is a boolean which controls whether the function
+    ///        retrieves the Windows error and raises an exception
+    ///        if it fails. If false, it will not raise an exception
+    ///        but just return false if moving the file fails.
+    /// @returns true, if the file could be moved, false otherwise.
+    /// </summary>
+    class function MoveFileEx(const _Source, _Dest: string; _Flags: TMoveFileExFlagSet;
+      _RaiseException: boolean = true): boolean;
 
     /// <summary>
     /// Copies the file Source to Dest using the Windows CopyFile function.
@@ -968,7 +986,7 @@ type
 var
   DriveBits: set of 0..25;
   DriveNum: Integer;
-  DriveChar: AnsiChar;
+  DriveChar: Char;
   DriveType: TDriveType;
   s: string;
 begin
@@ -976,7 +994,7 @@ begin
   for DriveNum := 0 to 25 do begin
     if not (DriveNum in DriveBits) then
       Continue;
-    DriveChar := AnsiChar(DriveNum + Ord('a'));
+    DriveChar := Char(DriveNum + Ord('a'));
     DriveType := TDriveType(Windows.GetDriveType(PChar(DriveChar + ':\')));
     if not _HdOnly or (DriveType = dtFixed) then begin
       s := GetVolumeName(DriveChar);
@@ -1036,18 +1054,21 @@ type
   TUniqueTempDir = class(TInterfacedObject, IUniqueTempDir)
   private
     FPath: string;
+    FDeleteOnlyIfEmpty: Boolean;
     function Path: string;
+    ///<summary> Path including trailing path delimiter </summary>
+    function PathBS: string;
   public
-    constructor Create(const _Path: string);
+    constructor Create(const _Path: string; _DeleteOnlyIfEmpty: boolean = false);
     destructor Destroy; override;
   end;
 
-class function TFileSystem.CreateUniqueTempDir(_Prefix: string): IUniqueTempDir;
+class function TFileSystem.CreateUniqueTempDir(_DeleteOnlyIfEmpty: boolean = false; _Prefix: string = 'dz'): IUniqueTempDir;
 var
   s: string;
 begin
   s := CreateUniqueDirectory(GetTempPath, _Prefix);
-  Result := TUniqueTempDir.Create(s);
+  Result := TUniqueTempDir.Create(s, _DeleteOnlyIfEmpty);
 end;
 
 class function TFileSystem.GetTempFileName(_Directory: string = ''; const _Prefix: string = 'dz';
@@ -1180,6 +1201,32 @@ var
   LastError: Cardinal;
 begin
   Result := Windows.MoveFile(PChar(_Source), PChar(_Dest));
+  if not Result and _RaiseException then begin
+    LastError := GetLastError;
+    // duplicate % so they get passed through the format function
+    RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to move "%s" to "%s".'), [_Source, _Dest]));
+  end;
+end;
+
+class function TFileSystem.MoveFileEx(const _Source, _Dest: string; _Flags: TMoveFileExFlagSet;
+  _RaiseException: boolean): boolean;
+var
+  LastError: Cardinal;
+  Flags: DWORD;
+begin
+  Flags := 0;
+  if mfCopyAllowed in _Flags then
+    Flags := Flags or MOVEFILE_COPY_ALLOWED;
+  if mfDelayUntilReboot in _Flags then
+    Flags := Flags or MOVEFILE_DELAY_UNTIL_REBOOT;
+  if mfFailIfNotTrackable in _Flags then
+    Flags := Flags or MOVEFILE_FAIL_IF_NOT_TRACKABLE;
+  if mfReplaceExisting in _Flags then
+    Flags := Flags or MOVEFILE_REPLACE_EXISTING;
+  if mfWriteThrough in _Flags then
+    Flags := Flags or MOVEFILE_WRITE_THROUGH;
+
+  Result := Windows.MoveFileEx(PChar(_Source), PChar(_Dest), Flags);
   if not Result and _RaiseException then begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
@@ -2060,22 +2107,31 @@ end;
 
 { TUniqueTempDir }
 
-constructor TUniqueTempDir.Create(const _Path: string);
+constructor TUniqueTempDir.Create(const _Path: string; _DeleteOnlyIfEmpty: boolean = false);
 begin
   inherited Create;
   FPath := _Path;
+  FDeleteOnlyIfEmpty := _DeleteOnlyIfEmpty;
 end;
 
 destructor TUniqueTempDir.Destroy;
 begin
   // delete directory, fail silently on errors
-  TFileSystem.DelDirTree(FPath, False);
+  if FDeleteOnlyIfEmpty then
+    TFileSystem.RemoveDir(FPath, False)
+  else
+    TFileSystem.DelDirTree(FPath, False);
   inherited;
 end;
 
 function TUniqueTempDir.Path: string;
 begin
   Result := FPath;
+end;
+
+function TUniqueTempDir.PathBS: string;
+begin
+  Result := itpd(FPath);
 end;
 
 end.
