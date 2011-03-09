@@ -269,7 +269,7 @@ type
       const _Buttons: array of TDialogButtonEnum; const _CustomButtons: array of string;
       const _CustomResults: array of integer;
       _Owner: TWinControl = nil;
-      const _OptionDesc: string = ''; _FocusButton: Integer = -1): integer; overload;
+      const _OptionDesc: string = ''; _FocusButton: Integer = -1; _Caption: string = ''): integer; overload;
     ///<summary> Creates a Tf_dzDialog instance, shows it and returns it. The created
     ///          dialog instance must be freed by the caller. Nonmodal in this context
     ///          means that the call returns to the caller rather than waiting for the
@@ -335,7 +335,8 @@ end;
 class function Tf_dzDialog.ShowMessage(_DialogType: TMsgDlgType;
   const _Message: string; const _Buttons: array of TDialogButtonEnum;
   const _CustomButtons: array of string; const _CustomResults: array of integer;
-  _Owner: TWinControl = nil; const _OptionDesc: string = ''; _FocusButton: Integer = -1): integer;
+  _Owner: TWinControl = nil; const _OptionDesc: string = ''; _FocusButton: Integer = -1;
+  _Caption: string = ''): integer;
 var
   frm: Tf_dzDialog;
   i: Integer;
@@ -355,6 +356,8 @@ begin
     frm.OptionDescription := _OptionDesc;
     frm.DialogType := _DialogType;
     frm.GenerateControls;
+	if _Caption <> '' then
+      frm.Caption := _Caption;
     TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
