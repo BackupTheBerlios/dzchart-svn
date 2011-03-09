@@ -19,6 +19,7 @@ uses
   ExtCtrls,
   CheckLst,
   StdCtrls,
+  ExtCtrls,
   Grids,
   DbGrids,
   Buttons,
@@ -145,7 +146,7 @@ function TGrid_SetColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
 function TGrid_SetNonfixedColCount(_Grid: TCustomGrid; _ColCount: integer): integer;
 
 ///<summary> sets the grid's current row without triggering an OnClick event
-procedure TGrid_SetRowNoClick(_Grid: TDrawGrid; _Row: integer);
+procedure TGrid_SetRowNoClick(_Grid: TCustomGrid; _Row: integer);
 
 ///<summary> sets the row count to FixedRows + 1 and clears all non-fixed cells </summary>
 procedure TStringGrid_Clear(_Grid: TStringGrid);
@@ -619,6 +620,7 @@ implementation
 
 uses
   Menus, // for StripHotKey function
+  Messages,
   Consts,
   JPEG,
   StrUtils,
@@ -793,16 +795,19 @@ begin
   TGrid_SetColCount(_Grid, _ColCount);
 end;
 
-procedure TGrid_SetRowNoClick(_Grid: TDrawGrid; _Row: integer);
+procedure TGrid_SetRowNoClick(_Grid: TCustomGrid; _Row: integer);
 var
   Event: TNotifyEvent;
+var
+  Grid: TGridHack;
 begin
-  Event := _Grid.OnClick;
+  Grid := TGridHack(_Grid);
+  Event := Grid.OnClick;
   try
-    _Grid.OnClick := nil;
-    _Grid.Row := _Row;
+    Grid.OnClick := nil;
+    Grid.Row := _Row;
   finally
-    _Grid.OnClick := Event;
+    Grid.OnClick := Event;
   end;
 end;
 
