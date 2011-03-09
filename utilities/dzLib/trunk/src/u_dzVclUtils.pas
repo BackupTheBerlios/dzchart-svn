@@ -16,7 +16,6 @@ uses
   Messages,
   Controls,
   ComCtrls,
-  ExtCtrls,
   CheckLst,
   StdCtrls,
   ExtCtrls,
@@ -620,7 +619,6 @@ implementation
 
 uses
   Menus, // for StripHotKey function
-  Messages,
   Consts,
   JPEG,
   StrUtils,
