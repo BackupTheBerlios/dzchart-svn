@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib\n"
-"POT-Creation-Date: 2010-11-20 12:52\n"
+"POT-Creation-Date: 2011-03-01 09:46\n"
 "PO-Revision-Date: 2010-10-10 20:17+0100\n"
 "Last-Translator: RH\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
@@ -17,21 +17,26 @@ msgstr ""
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: FRANCE\n"
 
-#: u_dzClassUtils.pas:382
+#: u_dzClassUtils.pas:397
 msgid "no matching object found"
 msgstr "aucun objet correspondant trouvé"
 
-#: u_dzClassUtils.pas:420
+#: u_dzClassUtils.pas:435
 #, object-pascal-format
 msgid "Invalid empty string value in ini file for [%s]%s"
 msgstr "Chaîne valeur non valide dans le fichier ini pour [%s]%s"
 
-#: u_dzClassUtils.pas:451
-#, object-pascal-format
-msgid "Invalid floating point value %s in ini file for [%s]%s"
+#: u_dzClassUtils.pas:466
+#, fuzzy, object-pascal-format
+msgid "Invalid floating point value \"%s\" in ini file for [%s]%s"
 msgstr "valeur du point flottante non valide %s dans le fichier ini pour [%s]%s"
 
-#: u_dzClassUtils.pas:465
+#: u_dzClassUtils.pas:488
+#, fuzzy, object-pascal-format
+msgid "Invalid date value \"%s\" in ini file for [%s]%s"
+msgstr "valeur entière non valide \"%s\" dans le fichier ini pour [%s]%s"
+
+#: u_dzClassUtils.pas:502
 #, object-pascal-format
 msgid "Invalid integer value \"%s\" in ini file for [%s]%s"
 msgstr "valeur entière non valide \"%s\" dans le fichier ini pour [%s]%s"
@@ -294,76 +299,76 @@ msgstr "StdErr n'a pas été redirigé"
 msgid "StdOut was not redirected"
 msgstr "StdOut n'a pas été redirigé"
 
-#: u_dzFileStreams.pas:259
+#: u_dzFileStreams.pas:257
 #, object-pascal-format
 msgid "%%1:s (%%0:d) trying to open \"%s\""
 msgstr "%%1:s (%%0:d) lors de la ouverture de \"%s\""
 
-#: u_dzFileStreams.pas:307
+#: u_dzFileStreams.pas:305
 msgid "Invalid file attributes"
 msgstr "Attributs fichiers non valide"
 
-#: u_dzFileStreams.pas:319
+#: u_dzFileStreams.pas:317
 msgid "Invalid file flags"
 msgstr "Flags fichiers non valide"
 
-#: u_dzFileStreams.pas:338
-msgid "Cannot change filename when file is open."
-msgstr "Ne peut pas changer le nom de fichier quand le fichier est ouvert."
-
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:919
+#: u_dzFileUtils.pas:927
 #, no-object-pascal-format
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:927
+#: u_dzFileUtils.pas:935
 #, no-object-pascal-format
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 
+#: u_dzFileUtils.pas:987
+msgid "<no volume name>"
+msgstr ""
+
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:944 u_dzFileUtils.pas:1502
+#: u_dzFileUtils.pas:1006 u_dzFileUtils.pas:1582
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) creating directory \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de la création du répertoire \"%s\""
 
-#: u_dzFileUtils.pas:968
+#: u_dzFileUtils.pas:1030
 #, object-pascal-format
 msgid "Could not find a unique directory name based on \"%s\""
 msgstr "Impossible de trouver un nom de répertoire unique sur la base de \"%s\""
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:986
+#: u_dzFileUtils.pas:1066
 #, no-object-pascal-format
 msgid "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 msgstr "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 
-#: u_dzFileUtils.pas:1041 u_dzFileUtils.pas:1047
+#: u_dzFileUtils.pas:1121 u_dzFileUtils.pas:1127
 #, object-pascal-format
 msgid "File not found: \"%s\""
 msgstr "Fichier non trouvé: \"%s\""
 
-#: u_dzFileUtils.pas:1092
+#: u_dzFileUtils.pas:1172
 #, no-object-pascal-format
 msgid "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 
-#: u_dzFileUtils.pas:1094
+#: u_dzFileUtils.pas:1174
 #, object-pascal-format
 msgid "Short pathname is longer than MAX_PATH (%d) characters"
 msgstr "La longueur du chemin de fichier dépasse MAX_PATH (%d) caractères"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1106
+#: u_dzFileUtils.pas:1186
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to \"%s\"."
 msgstr "Erreur %%1:s (%%0:d) lors du déplacement de \"%s\" vers \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1124
+#: u_dzFileUtils.pas:1204
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors du changement de l'indicateur lecture seule de \"%s\""
@@ -371,50 +376,50 @@ msgstr "Erreur %%1:s (%%0:d) lors du changement de l'indicateur lecture seule de
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1144 u_dzFileUtils.pas:1270 u_dzFileUtils.pas:1343
+#: u_dzFileUtils.pas:1224 u_dzFileUtils.pas:1350 u_dzFileUtils.pas:1423
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to \"%s\"."
 msgstr "Erreur %%1:s (%%0:d) lors de la copie de \"%s\" vers \"%s\"."
 
-#: u_dzFileUtils.pas:1258
+#: u_dzFileUtils.pas:1338
 #, object-pascal-format
 msgid "Error %s (%s) in progress callback while trying to copy \"%s\" to \"%s\"."
 msgstr "Erreur %s·(%s)  dans processus callback en essayant de copier \"%s\" vers \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1373
+#: u_dzFileUtils.pas:1453
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de l'effacement du fichier \"%s\""
 
-#: u_dzFileUtils.pas:1443
+#: u_dzFileUtils.pas:1523
 #, object-pascal-format
 msgid "File not found: %s"
 msgstr "Fichier non trouvé: %s"
 
-#: u_dzFileUtils.pas:1457
+#: u_dzFileUtils.pas:1537
 #, object-pascal-format
 msgid "Directory not found: %s"
 msgstr "Répertoire non trouvé: %s"
 
 #. ForceDirectories can raise EInOutError if the directory path contains empty parts
-#: u_dzFileUtils.pas:1494
+#: u_dzFileUtils.pas:1574
 #, object-pascal-format
 msgid "Error creating directory \"%s\": %s (%s)"
 msgstr "Erreur lors de la creation du répertoire \"%s\": %s (%s)"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1521
+#: u_dzFileUtils.pas:1601
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) deleting directory \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de l'effacement du répertoire \"%s\""
 
-#: u_dzFileUtils.pas:1539
+#: u_dzFileUtils.pas:1619
 #, object-pascal-format
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" n'existe pas ou n'est pas un répértoire"
 
-#: u_dzFileUtils.pas:1813
+#: u_dzFileUtils.pas:1893
 msgid "Combination of ResultContainsNumber and KeepOriginal is not allowed"
 msgstr "Combinaison de ResultContainsNumber et KeepOriginal n'est pas possible"
 
@@ -557,7 +562,7 @@ msgstr "RESOURCEDLL \"%s\" n'est pas valide (Check # 2)"
 msgid "RESOURCEDLL \"%s\" is not valid (Check #3)"
 msgstr "RESOURCEDLL \"%s\" n'est pas valide (Check # 3)"
 
-#: u_dzRingBuffer.pas:247 u_dzRingBuffer.pas:258
+#: u_dzRingBuffer.pas:249 u_dzRingBuffer.pas:260
 #, object-pascal-format
 msgid "Index %d out of bounds."
 msgstr "Indice %d en dehors des limites."
@@ -622,31 +627,31 @@ msgstr "La variation ne peut pas être convertie en %s: %s"
 msgid "Variant can not be converted to %s"
 msgstr "Un variant ne peut pas être converti en %s"
 
-#: u_dzVclUtils.pas:636
+#: u_dzVclUtils.pas:647
 #, object-pascal-format
 msgid "Glyph string contained invalid character at position %d."
 msgstr "Glyph chaîne contenue un caractère non valide à position %d."
 
-#: u_dzVclUtils.pas:894 u_dzVclUtils.pas:941
+#: u_dzVclUtils.pas:917 u_dzVclUtils.pas:964
 #, object-pascal-format
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
 # Integer = Dezimalzahl?
-#: u_dzVclUtils.pas:909 u_dzVclUtils.pas:973 u_dzVclUtils.pas:986
+#: u_dzVclUtils.pas:932 u_dzVclUtils.pas:996 u_dzVclUtils.pas:1009
 #, object-pascal-format
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
-#: u_dzVclUtils.pas:1382
+#: u_dzVclUtils.pas:1407
 msgid "No item selected in combobox"
 msgstr "Aucun élément sélectionné dans combobox"
 
-#: u_dzVclUtils.pas:1401
+#: u_dzVclUtils.pas:1426
 msgid "No item selected in listbox"
 msgstr "Aucun élément sélectionné dans listbox"
 
-#: u_dzVclUtils.pas:1965
+#: u_dzVclUtils.pas:1990
 msgid "JPEG Files"
 msgstr "Fichiers JPEG"
 
@@ -756,21 +761,21 @@ msgstr "Avancement (%d%%)"
 msgid "Do you really want to abort?"
 msgstr "Voulez-vous vraiment faire abandonnerr?"
 
-#: w_dzProgress.pas:170
+#: w_dzProgress.pas:171
 #, no-object-pascal-format
 msgid "must not contain a % at the end"
 msgstr "ne doit pas contenir un % à la fin"
 
-#: w_dzProgress.pas:179
+#: w_dzProgress.pas:180
 #, no-object-pascal-format
 msgid "\"%\" must be followed by \"d\" or \"%\"."
 msgstr "\"%\" doit être suivi par \"d\" ou \"%\"."
 
-#: w_dzProgress.pas:185
+#: w_dzProgress.pas:186
 msgid "too many parameters"
 msgstr "trop de paramètres"
 
-#: w_dzProgress.pas:197
+#: w_dzProgress.pas:198
 #, object-pascal-format
 msgid "Invalid FormCaption, %s"
 msgstr "FormCaption non valide, %s"
@@ -847,3 +852,5 @@ msgstr "Impossible ·d'appliquer · défaut %s, aucune variable avec ce nom."
 msgid "There is no script named %s in this db type"
 msgstr "Il n'ya pas de script %s dans ce type db"
 
+#~ msgid "Cannot change filename when file is open."
+#~ msgstr "Ne peut pas changer le nom de fichier quand le fichier est ouvert."
