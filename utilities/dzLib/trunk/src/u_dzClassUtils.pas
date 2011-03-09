@@ -44,6 +44,11 @@ procedure TStrings_FreeWithObjects(_Strings: TStrings);
 /// </summary>
 function TStrings_FreeAllObjects(_Strings: TStrings): TStrings;
 
+///<summary>
+/// searches the TStrings for the given string and deletes it if it can find it
+/// @returns true, if it was found and deleted, false if not </summary>
+function TStrings_DeleteString(_Strings: TStrings; const _s: string): boolean;
+
 /// <summary>
 /// frees the object and delets the entry from the list
 /// </summary>
@@ -163,6 +168,7 @@ function TIniFile_ReadString(_Ini: TCustomIniFile; const _Section, _Ident: strin
 /// @returns the number of strings read
 /// </summary>
 function TIniFile_ReadStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings): integer;
+procedure TIniFile_WriteStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings);
 
 ///<summary>
 /// Tries to read a floating point value from the ini-file, always using '.' as decimal separator.
@@ -181,6 +187,18 @@ procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: stri
 /// Reads an integer from the ini-file, raises an exception if the value is not an integer </summary>
 function TIniFile_ReadInt(_Ini: TCustomIniFile; const _Section, _Ident: string): integer;
 
+///<summary>
+/// Reads a date in ISO format from the ini-file, raises an exception if the value is not a valid date </summary>
+function TIniFile_ReadDate(_Ini: TCustomIniFile; const _Section, _Ident: string): TDateTime;
+///<summary>
+/// Tries to read a date in ISO format from the ini-file
+/// @returns true, if the date could be read and converted </summary>
+function TIniFile_TryReadDate(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: TDateTime): boolean;
+
+///<summary>
+/// Writes a date in ISO format to the ini file </summary>
+procedure TIniFile_WriteDate(_Ini: TCustomIniFile; const _Section, _Ident: string; const _Value: TDateTime);
+
 /// <summary>
 /// Reads the given section from the given .INI file and returns it as a TStrings
 /// @raises Exception if the section does not exist. </summary>
@@ -191,7 +209,8 @@ implementation
 uses
   StrUtils,
   u_dzConvertUtils,
-  u_dzStringUtils;
+  u_dzStringUtils,
+  u_dzDateUtils;
 
 function _(const _s: string): string; inline;
 begin
@@ -258,14 +277,26 @@ function TStrings_FreeAllObjects(_Strings: TStrings): TStrings;
 var
   i: Integer;
 begin
-  for i := 0 to _Strings.Count - 1 do
+  for i := 0 to _Strings.Count - 1 do begin
     _Strings.Objects[i].Free;
+    _Strings.Objects[i] := nil;
+  end;
   Result := _Strings;
 end;
 
 procedure TStrings_FreeWithObjects(_Strings: TStrings);
 begin
   TStrings_FreeAllObjects(_Strings).Free;
+end;
+
+function TStrings_DeleteString(_Strings: TStrings; const _s: string): boolean;
+var
+  Idx: integer;
+begin
+  Idx := _Strings.IndexOf(_s);
+  Result := (Idx <> -1);
+  if Result then
+    _Strings.Delete(Idx);
 end;
 
 procedure TStrings_DeleteAndFreeObject(_Strings: TStrings; _Idx: integer);
@@ -429,6 +460,18 @@ begin
     _st.Add(_Ini.ReadString(_Section, 'Item' + IntToStr(i), ''));
 end;
 
+procedure TIniFile_WriteStrings(_Ini: TCustomIniFile; const _Section: string; _st: TStrings);
+var
+  i: integer;
+begin
+  Assert(Assigned(_Ini));
+  Assert(Assigned(_st));
+
+  _Ini.WriteInteger(_Section, 'Count', _st.Count);
+  for i := 0 to _st.Count - 1 do
+    _Ini.WriteString(_Section, 'Item' + IntToStr(i), _st[i]);
+end;
+
 function TIniFile_TryReadFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: extended): boolean;
 var
   s: string;
@@ -448,12 +491,34 @@ var
 begin
   s := _Ini.ReadString(_Section, _Ident, '');
   if not TryStr2Float(s, Result) then
-    raise Exception.CreateFmt(_('Invalid floating point value %s in ini file for [%s]%s'), [s, _Section, _Ident]);
+    raise Exception.CreateFmt(_('Invalid floating point value "%s" in ini file for [%s]%s'), [s, _Section, _Ident]);
 end;
 
 procedure TIniFile_WriteFloat(_Ini: TCustomIniFile; const _Section, _Ident: string; _Value: extended);
 begin
   _Ini.WriteString(_Section, _Ident, Float2Str(_Value));
+end;
+
+function TIniFile_TryReadDate(_Ini: TCustomIniFile; const _Section, _Ident: string; out _Value: TDateTime): boolean;
+var
+  s: string;
+begin
+  s := _Ini.ReadString(_Section, _Ident, '');
+  Result := TryIso2Date(s, _Value);
+end;
+
+function TIniFile_ReadDate(_Ini: TCustomIniFile; const _Section, _Ident: string): TDateTime;
+var
+  s: string;
+begin
+  s := _Ini.ReadString(_Section, _Ident, '');
+  if not TryIso2Date(s, Result) then
+    raise Exception.CreateFmt(_('Invalid date value "%s" in ini file for [%s]%s'), [s, _Section, _Ident]);
+end;
+
+procedure TIniFile_WriteDate(_Ini: TCustomIniFile; const _Section, _Ident: string; const _Value: TDateTime);
+begin
+  _Ini.WriteString(_Section, _Ident, DateTime2Iso(_Value));
 end;
 
 function TIniFile_ReadInt(_Ini: TCustomIniFile; const _Section, _Ident: string): integer;
