@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dzLib\n"
-"POT-Creation-Date: 2011-03-01 09:46\n"
+"POT-Creation-Date: 2011-03-23 08:54\n"
 "PO-Revision-Date: 2010-10-10 20:17+0100\n"
 "Last-Translator: RH\n"
 "Language-Team: Thomas Mueller <dzlib@dummzeuch.de>\n"
@@ -17,26 +17,26 @@ msgstr ""
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: FRANCE\n"
 
-#: u_dzClassUtils.pas:397
+#: u_dzClassUtils.pas:445
 msgid "no matching object found"
 msgstr "aucun objet correspondant trouvé"
 
-#: u_dzClassUtils.pas:435
+#: u_dzClassUtils.pas:483
 #, object-pascal-format
 msgid "Invalid empty string value in ini file for [%s]%s"
 msgstr "Chaîne valeur non valide dans le fichier ini pour [%s]%s"
 
-#: u_dzClassUtils.pas:466
+#: u_dzClassUtils.pas:526
 #, fuzzy, object-pascal-format
 msgid "Invalid floating point value \"%s\" in ini file for [%s]%s"
 msgstr "valeur du point flottante non valide %s dans le fichier ini pour [%s]%s"
 
-#: u_dzClassUtils.pas:488
+#: u_dzClassUtils.pas:548
 #, fuzzy, object-pascal-format
 msgid "Invalid date value \"%s\" in ini file for [%s]%s"
 msgstr "valeur entière non valide \"%s\" dans le fichier ini pour [%s]%s"
 
-#: u_dzClassUtils.pas:502
+#: u_dzClassUtils.pas:562
 #, object-pascal-format
 msgid "Invalid integer value \"%s\" in ini file for [%s]%s"
 msgstr "valeur entière non valide \"%s\" dans le fichier ini pour [%s]%s"
@@ -313,62 +313,63 @@ msgid "Invalid file flags"
 msgstr "Flags fichiers non valide"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:927
+#: u_dzFileUtils.pas:945
 #, no-object-pascal-format
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath"
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:935
+#: u_dzFileUtils.pas:953
 #, no-object-pascal-format
 msgid "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 msgstr "TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath (2nd)"
 
-#: u_dzFileUtils.pas:987
+#: u_dzFileUtils.pas:1005
 msgid "<no volume name>"
 msgstr ""
 
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1006 u_dzFileUtils.pas:1582
+#: u_dzFileUtils.pas:1024 u_dzFileUtils.pas:1629
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) creating directory \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de la création du répertoire \"%s\""
 
-#: u_dzFileUtils.pas:1030
+#: u_dzFileUtils.pas:1048
 #, object-pascal-format
 msgid "Could not find a unique directory name based on \"%s\""
 msgstr "Impossible de trouver un nom de répertoire unique sur la base de \"%s\""
 
 #. GetLastError must be called before _(), otherwise the error code gets lost
-#: u_dzFileUtils.pas:1066
+#: u_dzFileUtils.pas:1087
 #, no-object-pascal-format
 msgid "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 msgstr "TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName"
 
-#: u_dzFileUtils.pas:1121 u_dzFileUtils.pas:1127
+#: u_dzFileUtils.pas:1142 u_dzFileUtils.pas:1148
 #, object-pascal-format
 msgid "File not found: \"%s\""
 msgstr "Fichier non trouvé: \"%s\""
 
-#: u_dzFileUtils.pas:1172
+#: u_dzFileUtils.pas:1193
 #, no-object-pascal-format
 msgid "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 msgstr "TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname"
 
-#: u_dzFileUtils.pas:1174
+#: u_dzFileUtils.pas:1195
 #, object-pascal-format
 msgid "Short pathname is longer than MAX_PATH (%d) characters"
 msgstr "La longueur du chemin de fichier dépasse MAX_PATH (%d) caractères"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1186
+#. duplicate % so they get passed through the format function
+#: u_dzFileUtils.pas:1207 u_dzFileUtils.pas:1233
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) while trying to move \"%s\" to \"%s\"."
 msgstr "Erreur %%1:s (%%0:d) lors du déplacement de \"%s\" vers \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1204
+#: u_dzFileUtils.pas:1251
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) while changing the readonly flag of \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors du changement de l'indicateur lecture seule de \"%s\""
@@ -376,50 +377,50 @@ msgstr "Erreur %%1:s (%%0:d) lors du changement de l'indicateur lecture seule de
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1224 u_dzFileUtils.pas:1350 u_dzFileUtils.pas:1423
+#: u_dzFileUtils.pas:1271 u_dzFileUtils.pas:1397 u_dzFileUtils.pas:1470
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) while trying to copy \"%s\" to \"%s\"."
 msgstr "Erreur %%1:s (%%0:d) lors de la copie de \"%s\" vers \"%s\"."
 
-#: u_dzFileUtils.pas:1338
+#: u_dzFileUtils.pas:1385
 #, object-pascal-format
 msgid "Error %s (%s) in progress callback while trying to copy \"%s\" to \"%s\"."
 msgstr "Erreur %s·(%s)  dans processus callback en essayant de copier \"%s\" vers \"%s\"."
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1453
+#: u_dzFileUtils.pas:1500
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) deleting file \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de l'effacement du fichier \"%s\""
 
-#: u_dzFileUtils.pas:1523
+#: u_dzFileUtils.pas:1570
 #, object-pascal-format
 msgid "File not found: %s"
 msgstr "Fichier non trouvé: %s"
 
-#: u_dzFileUtils.pas:1537
+#: u_dzFileUtils.pas:1584
 #, object-pascal-format
 msgid "Directory not found: %s"
 msgstr "Répertoire non trouvé: %s"
 
 #. ForceDirectories can raise EInOutError if the directory path contains empty parts
-#: u_dzFileUtils.pas:1574
+#: u_dzFileUtils.pas:1621
 #, object-pascal-format
 msgid "Error creating directory \"%s\": %s (%s)"
 msgstr "Erreur lors de la creation du répertoire \"%s\": %s (%s)"
 
 #. duplicate % so they get passed through the format function
-#: u_dzFileUtils.pas:1601
+#: u_dzFileUtils.pas:1648
 #, object-pascal-format
 msgid "Error %%1:s (%%0:d) deleting directory \"%s\""
 msgstr "Erreur %%1:s (%%0:d) lors de l'effacement du répertoire \"%s\""
 
-#: u_dzFileUtils.pas:1619
+#: u_dzFileUtils.pas:1666
 #, object-pascal-format
 msgid "\"%s\" does not exist or is not a directory"
 msgstr "\"%s\" n'existe pas ou n'est pas un répértoire"
 
-#: u_dzFileUtils.pas:1893
+#: u_dzFileUtils.pas:1940
 msgid "Combination of ResultContainsNumber and KeepOriginal is not allowed"
 msgstr "Combinaison de ResultContainsNumber et KeepOriginal n'est pas possible"
 
@@ -503,6 +504,7 @@ msgstr "Erreur système d'exploitation inconnue"
 msgid "Error \"%1:s (%0:d)\" while trying to acquire mutex."
 msgstr "Error \"%1:s (%0:d)\"  lors d'aquisition de mutex."
 
+#: u_dzNameValueList.pas:98 u_dzUnsortedNameValueList.pas:88
 #: u_dzNameValueList.pas:96
 #, object-pascal-format
 msgid "Entry \"%s\" not found."
@@ -593,6 +595,21 @@ msgstr "Valeur d'accès fichier non valide (%d)"
 msgid "%s accessing file %s"
 msgstr "%s lors de l'accès de fichier %s"
 
+#: u_dzUnsortedNameValueList.pas:56
+#, object-pascal-format
+msgid "NameValue \"%s\" does not contain a \"=\"."
+msgstr ""
+
+#: u_dzUnsortedNameValueList.pas:102
+#, object-pascal-format
+msgid "Duplicate value name \"%s\"."
+msgstr ""
+
+#: u_dzUnsortedNameValueList.pas:106
+#, object-pascal-format
+msgid "Empty value for \"%s\"."
+msgstr ""
+
 #. do not translate
 #. do not translate
 #. do not translate
@@ -627,33 +644,37 @@ msgstr "La variation ne peut pas être convertie en %s: %s"
 msgid "Variant can not be converted to %s"
 msgstr "Un variant ne peut pas être converti en %s"
 
-#: u_dzVclUtils.pas:647
+#: u_dzVclUtils.pas:660
 #, object-pascal-format
 msgid "Glyph string contained invalid character at position %d."
 msgstr "Glyph chaîne contenue un caractère non valide à position %d."
 
-#: u_dzVclUtils.pas:917 u_dzVclUtils.pas:964
+#: u_dzVclUtils.pas:940 u_dzVclUtils.pas:987
 #, object-pascal-format
 msgid "\"%s\" is not a valid floating point value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
 # Integer = Dezimalzahl?
-#: u_dzVclUtils.pas:932 u_dzVclUtils.pas:996 u_dzVclUtils.pas:1009
+#: u_dzVclUtils.pas:955 u_dzVclUtils.pas:1019 u_dzVclUtils.pas:1032
 #, object-pascal-format
 msgid "\"%s\" is not a valid integer value."
 msgstr "\"%s\" n'est pas une valeur décimale correcte."
 
-#: u_dzVclUtils.pas:1407
+#: u_dzVclUtils.pas:1430
 msgid "No item selected in combobox"
 msgstr "Aucun élément sélectionné dans combobox"
 
-#: u_dzVclUtils.pas:1426
+#: u_dzVclUtils.pas:1449
 msgid "No item selected in listbox"
 msgstr "Aucun élément sélectionné dans listbox"
 
-#: u_dzVclUtils.pas:1990
+#: u_dzVclUtils.pas:2013
 msgid "JPEG Files"
 msgstr "Fichiers JPEG"
+
+#: u_dzVclUtils.pas:2465
+msgid "Ctrl+Return to 'click' right button."
+msgstr ""
 
 #: u_dzVersionInfo.pas:277
 #, object-pascal-format
@@ -726,11 +747,11 @@ msgstr "< &Précédent"
 msgid "Invalid modal result %d."
 msgstr "Résultat modal non valide %d."
 
-#: w_dzDialog.pas:519
+#: w_dzDialog.pas:522
 msgid "Do not show again."
 msgstr "Ne pas afficher de nouveau."
 
-#: w_dzDialog.pas:601
+#: w_dzDialog.pas:604
 #, object-pascal-format
 msgid ""
 "An error occurred:\n"
@@ -740,15 +761,15 @@ msgstr ""
 "%s"
 
 #. 400;
-#: w_dzDialog.pas:625
+#: w_dzDialog.pas:628
 msgid "Additional information:"
 msgstr "Informations complémentaires:"
 
-#: w_dzDialog.pas:645 w_dzDialog.pas:755 w_dzDialog.pas:802
+#: w_dzDialog.pas:648 w_dzDialog.pas:758 w_dzDialog.pas:805
 msgid "&Details >>"
 msgstr "&Détails >>"
 
-#: w_dzDialog.pas:805
+#: w_dzDialog.pas:808
 msgid "&Details <<"
 msgstr "&Détails <<"
 
