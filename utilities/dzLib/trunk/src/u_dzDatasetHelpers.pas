@@ -138,6 +138,8 @@ type
 type
   ///<summary> implements the IDatasetHelper interface </summary>
   TDatasetHelper = class(TInterfacedObject, IDatasetHelper)
+  private
+    function FieldByName(const _Fieldname: string): TField;
   protected
     FDataset: TDataset;
     FTableName: string;
@@ -272,9 +274,16 @@ begin
   FDataset.Delete;
 end;
 
+function TDatasetHelper.FieldByName(const _Fieldname: string): TField;
+begin
+  Result := FDataset.FindField(_FieldName);
+  if not Assigned(Result) then
+    raise EDatabaseError.CreateFmt(_('Field "%s" not found in table "%s".'), [_Fieldname, FTablename]);
+end;
+
 function TDatasetHelper.FieldAsDate(const _Fieldname: string): TDateTime;
 begin
-  Result := Var2DateTimeEx(FDataset[_Fieldname], FTableName + '.' + _Fieldname);
+  Result := Var2DateTimeEx(FieldByName(_FieldName).Value, FTableName + '.' + _Fieldname);
 end;
 
 function TDatasetHelper.FieldAsDate(const _Fieldname: string; _Default: TDateTime): TDateTime;
@@ -285,12 +294,12 @@ end;
 
 function TDatasetHelper.TryFieldAsDate(const _Fieldname: string; out _Date: TDateTime): boolean;
 begin
-  Result := not IsEmpty and TryVar2DateTime(FDataset[_Fieldname], _Date);
+  Result := not IsEmpty and TryVar2DateTime(FieldByName(_FieldName).Value, _Date);
 end;
 
 function TDatasetHelper.TryFieldAsExtended(const _Fieldname: string; out _Value: extended): boolean;
 begin
-  Result := not IsEmpty and TryVar2Ext(FDataset[_Fieldname], _Value);
+  Result := not IsEmpty and TryVar2Ext(FieldByName(_FieldName).Value, _Value);
 end;
 
 function TDatasetHelper.TryFieldAsGuid(const _Fieldname: string; out _Value: TNullableGuid): boolean;
@@ -298,64 +307,64 @@ begin
   if IsEmpty then
     Result := false
   else begin
-    _Value.AssignVariant(FDataset[_Fieldname]);
+    _Value.AssignVariant(FieldByName(_FieldName).Value);
     Result := _Value.IsValid;
   end;
 end;
 
 function TDatasetHelper.TryFieldAsInteger(const _Fieldname: string; out _Value: integer): boolean;
 begin
-  Result := not IsEmpty and TryVar2Int(FDataset[_Fieldname], _Value);
+  Result := not IsEmpty and TryVar2Int(FieldByName(_FieldName).Value, _Value);
 end;
 
 function TDatasetHelper.FieldAsDouble(const _Fieldname: string): double;
 begin
-  Result := Var2DblEx(FDataset[_Fieldname], FTableName + '.' + _Fieldname);
+  Result := Var2DblEx(FieldByName(_FieldName).Value, FTableName + '.' + _Fieldname);
 end;
 
 function TDatasetHelper.FieldAsDouble(const _Fieldname, _Error: string): double;
 begin
-  Result := Var2DblEx(FDataset[_Fieldname], _Error);
+  Result := Var2DblEx(FieldByName(_FieldName).Value, _Error);
 end;
 
 function TDatasetHelper.FieldAsExtended(const _Fieldname: string): extended;
 begin
-  Result := Var2ExtEx(FDataset[_Fieldname], FTableName + '.' + _Fieldname);
+  Result := Var2ExtEx(FieldByName(_FieldName).Value, FTableName + '.' + _Fieldname);
 end;
 
 function TDatasetHelper.FieldAsExtended(const _Fieldname: string; const _Default: extended): extended;
 begin
-  Result := Var2Ext(FDataset[_Fieldname], _Default);
+  Result := Var2Ext(FieldByName(_FieldName).Value, _Default);
 end;
 
 function TDatasetHelper.FieldAsExtended(const _Fieldname, _Error: string): extended;
 begin
-  Result := Var2ExtEx(FDataset[_Fieldname], _Error);
+  Result := Var2ExtEx(FieldByName(_FieldName).Value, _Error);
 end;
 
 function TDatasetHelper.FieldAsGuid(const _FieldName: string): TNullableGuid;
 begin
-  Result.AssignVariant(FDataset[_FieldName]);
+  Result.AssignVariant(FieldByName(_FieldName).Value);
 end;
 
 function TDatasetHelper.FieldAsInteger(const _Fieldname: string): integer;
 begin
-  Result := Var2IntEx(FDataset[_Fieldname], FTableName + '.' + _Fieldname);
+  Result := Var2IntEx(FieldByName(_FieldName).Value, FTableName + '.' + _Fieldname);
 end;
 
 function TDatasetHelper.FieldAsInteger(const _Fieldname, _Error: string): integer;
 begin
-  Result := Var2IntEx(FDataset[_Fieldname], _Error);
+  Result := Var2IntEx(FieldByName(_FieldName).Value, _Error);
 end;
 
 function TDatasetHelper.FieldAsString(const _Fieldname: string): string;
 begin
-  Result := Trim(Var2StrEx(FDataset[_Fieldname], FTableName + '.' + _Fieldname));
+  Result := Trim(Var2StrEx(FieldByName(_FieldName).Value, FTableName + '.' + _Fieldname));
 end;
 
 function TDatasetHelper.TryFieldAsString(const _Fieldname: string; out _Value: string): boolean;
 begin
-  Result := not IsEmpty and TryVar2Str(FDataset[_Fieldname], _Value);
+  Result := not IsEmpty and TryVar2Str(FieldByName(_FieldName).Value, _Value);
 end;
 
 function TDatasetHelper.FieldAsBoolean(const _FieldName: string): boolean;
@@ -371,7 +380,7 @@ end;
 
 function TDatasetHelper.TryFieldAsDouble(const _Fieldname: string; out _Value: double): boolean;
 begin
-  Result := not IsEmpty and TryVar2Dbl(FDataset[_Fieldname], _Value);
+  Result := not IsEmpty and TryVar2Dbl(FieldByName(_FieldName).Value, _Value);
 end;
 
 function TDatasetHelper.FieldAsInteger(const _Fieldname: string; _Default: integer): integer;
@@ -382,7 +391,7 @@ end;
 
 function TDatasetHelper.FieldAsString(const _Fieldname, _Default: string): string;
 begin
-  Result := Trim(Var2Str(FDataset[_Fieldname], _Default));
+  Result := Trim(Var2Str(FieldByName(_FieldName).Value, _Default));
 end;
 
 function TDatasetHelper.FieldAsBoolean(const _FieldName: string; _Default: boolean): boolean;
@@ -393,14 +402,14 @@ end;
 procedure TDatasetHelper.SetFieldStringNotEmpty(const _Fieldname, _Value: string);
 begin
   if _Value = '' then
-    FDataset.Fields.FieldByName(_Fieldname).Clear
+    FieldByName(_FieldName).Clear
   else
-    FDataset[_Fieldname] := _Value;
+    FieldByName(_FieldName).Value := _Value;
 end;
 
 procedure TDatasetHelper.ClearField(const _Fieldname: string);
 begin
-  FDataset.Fields.FieldByName(_Fieldname).Clear
+  FieldByName(_FieldName).Clear;
 end;
 
 procedure TDatasetHelper.Close;
@@ -480,7 +489,7 @@ end;
 
 function TDatasetHelper.GetFieldValue(const _FieldName: string): Variant;
 begin
-  Result := FDataset[_FieldName];
+  Result := FieldByName(_FieldName).Value;
 end;
 
 function TDatasetHelper.HasField(const _Fieldname: string): boolean;
@@ -495,7 +504,7 @@ end;
 
 procedure TDatasetHelper.SetFieldValue(const _FieldName: string; const _Value: Variant);
 begin
-  FDataset[_FieldName] := _Value;
+  FieldByName(_FieldName).Value := _Value;
 end;
 
 function TDatasetHelper.TrySetFieldValue(const _FieldName: string; const _Value: Variant): boolean;
