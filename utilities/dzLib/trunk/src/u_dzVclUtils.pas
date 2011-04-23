@@ -158,6 +158,9 @@ procedure TStringGrid_Clear(_Grid: TStringGrid);
 ///          @returns the index of the new column </summary>
 function TStringGrid_AddColumn(_Grid: TStringGrid; const _Caption: string): integer;
 
+procedure TStringGrid_SetNonfixedCell(_Grid: TStringGrid; _col, _row: integer; const _Text: string);
+function TStringGrid_GetNonfixedCell(_Grid: TStringGrid; _col, _row: integer): string;
+
 ///<summary> exports the contents of the string grid to a tab separated text file (deprecated, use TGrid_ExportTofile instead)
 ///          @param Grid is the string grid to export
 ///          @param Filename is the name of the text file to create </summary>
@@ -187,6 +190,9 @@ function TStringGrid_DeleteRow(_Grid: TStringGrid; _Row: integer = -1): boolean;
 ///          @param Row is the index of the row to insert, or -1 to insert at the current row
 ///          @returns the inserted row index or -1 if the row cannot be inserted </summary>
 function TStringGrid_InsertRow(_Grid: TStringGrid; _Row: integer = -1): integer;
+
+///<summary> Appends a row to the string grid and returns the index of the new row </summary>
+function TStringGrid_AppendRow(_Grid: TStringGrid): integer;
 
 ///<summary> Tries to convert the grid cell to a double, if an error occurs, it raises
 ///          an exception and optionally focuses the cell.
@@ -290,6 +296,12 @@ procedure TTabControl_DrawTab(_TabControl: TTabControl; _TabIndex: integer;
 ///          to display horizontal text in tabs on the left or right hand side </summary>
 procedure TTabControl_AdjustTabWidth(_TabControl: TTabControl; _Form: TForm; _MinWidth: integer = 80);
 
+///<summary> Gets the object associated with the currently selected tab
+///          @param TabControl is the TTabControl to work on
+///          @param Obj is the object of the selected tab, only valid if Result=true
+///          @returns true, if TabIndex <> -1 </summary>
+function TTabControl_GetSelectedObject(_TabControl: TTabControl; out _Obj: pointer): boolean;
+
 ///<summary> Enables longer SimpleText (longer than 127 characters)
 ///          Call once to enable. Works, by adding a single panel with owner drawing and
 ///          setting the StatusBar's OnDrawPanel to a custom drawing method.
@@ -380,7 +392,11 @@ function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
 ///          @returns the index of the newly selected item or -1 if it doesn't exist </summary>
 function TComboBox_Select(_cmb: TCustomComboBox; const _Item: string; _DefaultIdx: integer = -1): integer;
 
-///<summary> Selects an item (or no Item, if Idx = -1) without triggering an OnChange event </summary>
+///<summary> Calls the protected Change method of the combobox </summary>
+procedure TComboBox_Change(_cmb: TCustomCombo);
+
+///<summary> Selects an item (or no Item, if Idx = -1) without triggering an OnChange event
+///          (I am not even sure whether setting the item index always triggers an OnChange event.) </summary>
 procedure TComboBox_SelectWithoutChangeEvent(_cmb: TComboBox; _Idx: integer);
 
 ///<summary> Sets the control to readonly by adding a TPanel as parent and disable it. Note that this does
@@ -581,6 +597,10 @@ procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign; Show: Bo
 ///          @param Form is the TForm to unmerge </summary>
 procedure UnMergeForm(_Form: TCustomForm); deprecated; // use a frame instead
 
+///<summary> Calls lv.Items.BeginUpdate and returns an interface which, when released calls
+///          lv.Items.EndUpdate. </summary>
+function TListView_BeginUpdate(_lv: TListView): IInterface;
+
 ///<summary> free all lv.Items[n].Data objects and then clear the items </summary>
 procedure TListView_ClearWithObjects(_lv: TListView);
 
@@ -590,6 +610,9 @@ procedure TListView_UnselectAll(_lv: TListView; _WithSelectEvents: boolean = tru
 
 ///<summary> Returns the number of selected items in the ListView </summary>
 function TListView_GetSelectedCount(_lv: TListView): integer;
+
+function TListView_GetSelected(_Lv: TListView; out _Idx: integer): boolean; overload;
+function TListView_GetSelected(_lv: TListView; out _Item: TListItem): boolean; overload;
 
 ///<summary> Returns the first item in the radio group with the caption ItemText </summary>
 function TRadioGroup_GetButton(_rg: TRadioGroup; _ItemText: string): TRadioButton; overload;
@@ -615,6 +638,12 @@ function TCursor_TemporaryChange(_NewCursor: TCursor = crHourGlass): IInterface;
 //          @returns true, if Execute was called and returned true, false otherwise </summary>
 function TAction_SetCheckedExecute(_act: TCustomAction; _Checked: boolean): boolean;
 
+///<summary> Sets the caption of a groupbox in the form '<prefix:><filename>' shortening the
+///          filename in the path part using '..' so the file name itself should be visible.
+///          Note that the Prefix is used as is, so include any whitespace and punctuation you
+///          might want to see. </summary>
+function TGroupBox_SetFileCaption(_grp: TCustomGroupBox; const _Prefix: string; const _Filename: string): string;
+
 implementation
 
 uses
@@ -631,7 +660,8 @@ uses
 {$ENDIF GIFByRx}
   u_dzConvertUtils,
   u_dzStringUtils,
-  u_dzClassUtils;
+  u_dzClassUtils,
+  FileCtrl;
 
 function _(const _s: string): string; inline;
 begin
@@ -823,6 +853,16 @@ begin
     _Grid.Cells[c, _Grid.FixedRows] := '';
 end;
 
+procedure TStringGrid_SetNonfixedCell(_Grid: TStringGrid; _col, _row: integer; const _Text: string);
+begin
+  _Grid.Cells[_col + _Grid.FixedCols, _row + _Grid.FixedRows] := _Text;
+end;
+
+function TStringGrid_GetNonfixedCell(_Grid: TStringGrid; _col, _row: integer): string;
+begin
+  Result := _Grid.Cells[_col + _Grid.FixedCols, _row + _Grid.FixedRows];
+end;
+
 function TStringGrid_AddColumn(_Grid: TStringGrid; const _Caption: string): integer;
 var
   i: Integer;
@@ -911,6 +951,12 @@ begin
   for c := 0 to _Grid.ColCount - 1 do
     _Grid.Cells[c, _Row] := '';
   Result := _Row;
+end;
+
+function TStringGrid_AppendRow(_Grid: TStringGrid): integer;
+begin
+  Result := _Grid.RowCount;
+  _Grid.RowCount := Result + 1;
 end;
 
 function TStringGrid_CellToDouble(_grid: TStringGrid; _Col, _Row: integer; _FocusCell: boolean = true): double;
@@ -1286,6 +1332,16 @@ begin
   end;
 end;
 
+function TTabControl_GetSelectedObject(_TabControl: TTabControl; out _Obj: pointer): boolean;
+var
+  Idx: Integer;
+begin
+  Idx := _TabControl.TabIndex;
+  Result := (Idx <> -1);
+  if Result then
+    _Obj := _TabControl.Tabs.Objects[Idx];
+end;
+
 type
   // Note: This class is never instantiated, only the DrawPanel method will be used
   //       without ever referencing the self pointer (which is NIL), so it should work
@@ -1391,7 +1447,7 @@ function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
   out _Obj: pointer; _FocusControl: boolean = false): boolean;
 begin
   _Idx := _cmb.ItemIndex;
-  Result := _Idx <> -1;
+  Result := (_Idx <> -1);
   if Result then
     _Obj := _cmb.Items.Objects[_Idx]
   else if _FocusControl then
@@ -1639,6 +1695,15 @@ begin
   if Result = -1 then
     Result := _DefaultIdx;
   _Cmb.ItemIndex := Result;
+end;
+
+type
+  TComboHack = class(TCustomCombo)
+  end;
+
+procedure TComboBox_Change(_cmb: TCustomCombo);
+begin
+  TComboHack(_cmb).Change;
 end;
 
 procedure TComboBox_SelectWithoutChangeEvent(_cmb: TComboBox; _Idx: integer);
@@ -2218,6 +2283,21 @@ begin
   _lv.Clear;
 end;
 
+type
+  TListViewEndUpdateClass = class(TInterfacedObject, IInterface)
+  private
+    FListView: TListView;
+  public
+    constructor Create(_ListView: TListView);
+    destructor Destroy; override;
+  end;
+
+function TListView_BeginUpdate(_lv: TListView): IInterface;
+begin
+  _lv.Items.BeginUpdate;
+  Result := TListViewEndUpdateClass.Create(_lv);
+end;
+
 function TRadioGroup_GetButton(_rg: TRadioGroup; _ItemIdx: integer): TRadioButton;
 // taken from http://delphi.about.com/od/adptips2006/qt/radiogroupbtns.htm
 begin
@@ -2288,11 +2368,46 @@ begin
       Inc(Result);
 end;
 
+function TListView_GetSelected(_Lv: TListView; out _Idx: integer): boolean;
+var
+  Idx: integer;
+begin
+  Idx := _Lv.ItemIndex;
+  Result := (Idx <> -1);
+  if Result then
+    _Idx := Idx;
+end;
+
+function TListView_GetSelected(_lv: TListView; out _Item: TListItem): boolean;
+var
+  Item: TListItem;
+begin
+  Item := _lv.Selected;
+  Result := Assigned(Item);
+  if Result then
+    _Item := Item;
+end;
+
 function TAction_SetCheckedExecute(_act: TCustomAction; _Checked: boolean): boolean;
 begin
   Result := _act.Checked <> _Checked;
   if Result then
     Result := _act.Execute;
+end;
+
+type
+  THackGroupBox = class(TCustomGroupBox)
+  end;
+
+function TGroupBox_SetFileCaption(_grp: TCustomGroupBox; const _Prefix: string; const _Filename: string): string;
+var
+  Len: Integer;
+  grp: THackGroupBox;
+begin
+  grp := THackGroupBox(_grp);
+  Len := grp.Canvas.TextWidth(_Prefix);
+  Result := _Prefix + MinimizeName(_Filename, grp.Canvas, grp.Width - Len);
+  grp.Caption := Result;
 end;
 
 function TStatusBar_GetClickedPanel(_sb: TStatusBar): integer;
@@ -2454,6 +2569,21 @@ begin
   end;
 end;
 {$ENDIF DELPHI2009_UP}
+
+{ TListViewEndUpdateClass }
+
+constructor TListViewEndUpdateClass.Create(_ListView: TListView);
+begin
+  inherited Create;
+  FListView := _ListView;
+end;
+
+destructor TListViewEndUpdateClass.Destroy;
+begin
+  if Assigned(FListView) then
+    FListView.Items.EndUpdate;
+  inherited;
+end;
 
 initialization
 finalization
