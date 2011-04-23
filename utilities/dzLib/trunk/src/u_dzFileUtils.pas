@@ -583,6 +583,32 @@ type
     class function DeleteMatchingFiles(const _Dir, _Mask: string; const _ExceptMasks: array of string;
       _RaiseException: boolean = true; _Force: boolean = false): integer; overload;
 
+    ///<summary>
+    /// Gets a list of directories matching the given mask.
+    /// @param Mask is the name mask to match, note that it can contain wildcards only in the
+    ///             last part of the name (e.g. 'c:\grmpf*\trallala' will NOT work)
+    /// @param sl is a TStrings to which all matching directories will be added (it will not be cleared)
+    ///           it can be NIL if the caller only wants the count, not the actual list.
+    /// @param IncludePath determines whether the list should contain only the directory names or
+    ///                    the full paths.
+    /// @returns the number of matching directories
+    ///</summary>
+    class function FindMatchingDirs(const _Mask: string; _sl: TStrings; _IncludePath: boolean = false): integer;
+
+    ///<summary>
+    /// Gets a list of files matching the given mask. Only regular files will be found, no
+    /// directories, no hidden files, no readonly files (files with faArchive will be found).
+    /// See TSimpleDirEnumerator if you need more flexibility.
+    /// @param Mask is the name mask to match, note that it can contain wildcards only in the
+    ///             last part of the name (e.g. 'c:\grmpf*\trallala' will NOT work)
+    /// @param sl is a TStrings to which all matching files will be added (it will not be cleared)
+    ///           it can be NIL if the caller only wants the count, not the actual list.
+    /// @param IncludePath determines whether the list should contain only the file names or
+    ///                    the full paths.
+    /// @returns the number of matching files
+    ///</summary>
+    class function FindMatchingFiles(const _Mask: string; _sl: TStrings; _IncludePath: boolean = false): integer;
+
     /// <summary>
     /// tries to find a matching file
     /// @param Mask is the filename mask to match
@@ -593,6 +619,8 @@ type
     class function FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
 
     ///<summary>
+    /// Returns true, if the given file exists. Note that wildcards are not supported! If you
+    /// need wildcards, use FindMatchingFile.
     /// @param RaiseException determines whether an exception should be raised if the file does not exist
     /// @raises Exception if the file does not exist and RaiseException is true
     class function FileExists(const _Filename: string; _RaiseException: boolean = false): boolean;
@@ -669,18 +697,29 @@ type
     /// </summary>
     class function IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean; overload;
 
+    class function ContainsWildcard(const _Mask: string): boolean;
+
     /// <summary> Returns true if the file exists and is readonly </summary>
     class function IsFileReadonly(const _Filename: string): boolean;
 
     /// <summary>
     /// creates a backup of the file appending the current date and time to the base
-    /// file name. See also TFileGenerationHandler.
+    /// file name. See also TFileGenerationHandler and GenerateBackupFilename
     /// @param Filename is the name of the file to back up
     /// @param BackupDir is a directory in which to create the backup file, if empty
     ///                  the same directory as the original file is used
     /// @returns the full filename of the created backup file
     /// </summary>
     class function BackupFile(const _Filename: string; _BackupDir: string = ''): string;
+
+    ///<summary>
+    /// Generates a backup of the filename by appending the current date and time to the base
+    /// @param Filename is the name of the file to back up
+    /// @param BackupDir is a directory in which to create the backup file, if empty
+    ///                  the same directory as the original file is used
+    /// @returns the full filename for the backup file
+    ///</summary>
+    class function GenerateBackupFilename(const _Filename: string; _BackupDir: string = ''): string;
 
     /// <summary>
     /// @returns a TFileInfoRec containing the filename, filesize and last access
@@ -1272,7 +1311,7 @@ begin
   end;
 end;
 
-class function TFileSystem.BackupFile(const _Filename: string; _BackupDir: string = ''): string;
+class function TFileSystem.GenerateBackupFilename(const _Filename: string; _BackupDir: string = ''): string;
 var
   Ext: string;
   FilenameOnly: string;
@@ -1285,7 +1324,17 @@ begin
   Ext := ExtractFileExt(FilenameOnly);
   Base := ChangeFileExt(FilenameOnly, '');
   Result := _BackupDir + Base + '_' + ReplaceChars(DateTime2Iso(now, true), ': ', '-_') + Ext;
+end;
+
+class function TFileSystem.BackupFile(const _Filename: string; _BackupDir: string = ''): string;
+begin
+  Result := GenerateBackupFilename(_Filename, _BackupDir);
   CopyFile(_Filename, Result, true);
+end;
+
+class function TFileSystem.ContainsWildcard(const _Mask: string): boolean;
+begin
+  Result := (Pos('?', _Mask) > 0) or (Pos('*', _Mask) > 0);
 end;
 
 class function TFileSystem.CopyFile(const _Source, _Dest: string; _Flags: TCopyFileFlagSet): boolean;
@@ -1582,6 +1631,26 @@ begin
   end;
   if not Result and _RaiseException then
     raise Exception.CreateFmt(_('Directory not found: %s'), [_DirName]);
+end;
+
+class function TFileSystem.FindMatchingDirs(const _Mask: string; _sl: TStrings;
+  _IncludePath: boolean = false): integer;
+var
+  enum: TSimpleDirEnumerator;
+begin
+  enum := TSimpleDirEnumerator.Create(_Mask, [dfaDirectory, dfaArchive]);
+  try
+    enum.MustHaveAttr := [dfaDirectory];
+    Result := enum.FindAll(_sl, _IncludePath);
+  finally
+    FreeAndNil(enum);
+  end;
+end;
+
+class function TFileSystem.FindMatchingFiles(const _Mask: string; _sl: TStrings;
+  _IncludePath: boolean): integer;
+begin
+  Result := TSimpleDirEnumerator.Execute(_Mask, _sl, [dfaArchive], _IncludePath);
 end;
 
 class function TFileSystem.FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
