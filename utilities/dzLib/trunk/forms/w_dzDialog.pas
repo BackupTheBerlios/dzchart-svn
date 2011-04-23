@@ -357,7 +357,7 @@ begin
     frm.DialogType := _DialogType;
     frm.GenerateControls;
 	if _Caption <> '' then
-      frm.Caption := _Caption;
+    frm.Caption := _Caption;
     TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
