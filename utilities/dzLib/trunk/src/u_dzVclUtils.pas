@@ -247,6 +247,17 @@ function TEdit_TextToDouble(_ed: TEdit; _FocusControl: boolean = true): double;
 function TEdit_TryTextToDouble(_ed: TEdit; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
 function TEdit_TryTextToDouble(_ed: TEdit; out _Value: double; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
 
+function TEdit_TryTextToFloat(_ed: TEdit; out _Value: extended;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+function TEdit_TryTextToFloat(_ed: TEdit; out _Value: double;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+function TEdit_TryTextToFloat(_ed: TEdit; out _Value: single;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+
+function TEdit_IsTextFloat(_ed: TEdit; _MinValue, _MaxValue: extended;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+function TEdit_IsTextFloat(_ed: TEdit; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean; overload;
+
 ///<summary> Tries to convert the edit control text to an integer, if an error occurs, it raises
 ///          an exception and optionally focuses the control.
 ///          @param ed is the edit control
@@ -384,6 +395,8 @@ function TComboBox_GetSelectedObject(_cmb: TCustomCombobox; out _Idx: integer;
 function TComboBox_GetSelected(_cmb: TCustomComboBox; out _Item: string;
   _FocusControl: boolean = false): boolean; overload;
 function TComboBox_GetSelected(_cmb: TCustomComboBox): string; overload;
+
+function TComboBox_IsSelected(_cmb: TComboBox; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
 
 ///<summary> Selects the item if it is in the list and returns the new ItemIndex
 ///          @param cmb is the TCustomCombobox (descendant) to use
@@ -651,6 +664,8 @@ uses
   Consts,
   JPEG,
   StrUtils,
+  Types,
+  Math,
 {$IFDEF SUPPORTS_UNICODE_STRING}
   AnsiStrings,
 {$ENDIF SUPPORTS_UNICODE_STRING}
@@ -1038,6 +1053,68 @@ var
   Value: double;
 begin
   Result := TEdit_TryTextToDouble(_ed, Value, _OkColor, _ErrColor);
+end;
+
+function TEdit_TryTextToFloat(_ed: TEdit; out _Value: extended;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  s: string;
+begin
+  s := _ed.Text;
+  Result := TryStr2Float(s, _Value, #0);
+  if Result then
+    _ed.Color := _OkColor
+  else
+    _ed.Color := _ErrColor;
+end;
+
+function TEdit_TryTextToFloat(_ed: TEdit; out _Value: double;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  s: string;
+begin
+  s := _ed.Text;
+  Result := TryStr2Float(s, _Value, #0);
+  if Result then
+    _ed.Color := _OkColor
+  else
+    _ed.Color := _ErrColor;
+end;
+
+function TEdit_TryTextToFloat(_ed: TEdit; out _Value: single;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  s: string;
+begin
+  s := _ed.Text;
+  Result := TryStr2Float(s, _Value, #0);
+  if Result then
+    _ed.Color := _OkColor
+  else
+    _ed.Color := _ErrColor;
+end;
+
+function TEdit_IsTextFloat(_ed: TEdit; _MinValue, _MaxValue: extended;
+  _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  Value: Extended;
+begin
+  Result := TEdit_TryTextToFloat(_ed, Value, _OkColor, _ErrColor);
+  if not Result then
+    exit;
+  Result := (CompareValue(_MinValue, Value) <> GreaterThanValue)
+    and (CompareValue(_MaxValue, Value) <> LessThanValue);
+  if Result then
+    _ed.Color := _OkColor
+  else
+    _ed.Color := _ErrColor;
+end;
+
+function TEdit_IsTextFloat(_ed: TEdit; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+var
+  Value: Extended;
+begin
+  Result := TEdit_TryTextToFloat(_ed, Value, _OkColor, _ErrColor);
 end;
 
 function TEdit_TextToInt(_ed: TEdit; _FocusControl: boolean = true): integer;
@@ -1504,6 +1581,15 @@ begin
         _Selected.AddObject(_lb.Items[i], _lb.Items.Objects[i]);
     end;
   end;
+end;
+
+function TComboBox_IsSelected(_cmb: TComboBox; _OkColor: TColor = clWindow; _ErrColor: TColor = clYellow): boolean;
+begin
+  Result := (_cmb.ItemIndex <> -1);
+  if Result then
+    _cmb.Color := _OkColor
+  else
+    _cmb.Color := _ErrColor;
 end;
 
 function TListBox_GetSelectedObject(_lst: TCustomListbox; out _Idx: integer; out _Obj: pointer): boolean;

@@ -12,7 +12,7 @@ implementation
 
 uses
   u_dzTranslator,
-  JvFormPlacement;
+  JvFormPlacement; // SIG: Wenn hier ein Compile-Error kommt, cond. Define no_jvcl ins Projekt schreiben
 
 initialization
 
