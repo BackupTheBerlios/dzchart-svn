@@ -111,7 +111,7 @@ type
     /// @param IncludePath determines whether the List of filenames includes the full path or not
     /// @returns the number of matching files
     /// </summary>
-    function FindAll(_List: TStrings = nil; _IncludePath: boolean = false): integer;
+    function FindAll(_List: TStrings = nil; _IncludePath: boolean = False): integer;
     /// <summary>
     /// Calls FindClose so FindNext will start again. Reset does not change any
     /// properties (e.g. Mask, MustHaveAttr, MayHaveAttr)
@@ -277,7 +277,7 @@ type
     ///                            directly DstDir or if subdirectories should
     ///                            be created, default is false
     /// </summary>
-    procedure SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = false);
+    procedure SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = False);
     /// <summary>
     /// calls SyncOneWay(DirA, DirB) and SyncOneWay(DirB, DirA)
     /// (not implemented: if CheckContent=true, the content existing files will be checked and if
@@ -388,7 +388,7 @@ type
     /// @returns the name of the created directory
     /// </summary>
     class function CreateUniqueDirectory(_BaseDir: string = ''; const _Prefix: string = 'dz'): string;
-    class function CreateUniqueTempDir(_DeleteOnlyIfEmpty: boolean = false; _Prefix: string = 'dz'): IUniqueTempDir;
+    class function CreateUniqueTempDir(_DeleteOnlyIfEmpty: boolean = False; _Prefix: string = 'dz'): IUniqueTempDir;
 
     /// <summary>
     /// Calls the Win32Api function GetTempPath but returns a string rather than
@@ -407,7 +407,7 @@ type
     ///        but just return false if moving the file fails.
     /// @returns true, if the file could be moved, false otherwise.
     /// </summary>
-    class function MoveFile(const _Source, _Dest: string; _RaiseException: boolean = true): boolean;
+    class function MoveFile(const _Source, _Dest: string; _RaiseException: boolean = True): boolean;
     /// <summary>
     /// Moves the file Source to Dest using the Windows MoveFileEx function.
     /// @param Source is a string containing the name of the existing file
@@ -420,7 +420,7 @@ type
     /// @returns true, if the file could be moved, false otherwise.
     /// </summary>
     class function MoveFileEx(const _Source, _Dest: string; _Flags: TMoveFileExFlagSet;
-      _RaiseException: boolean = true): boolean;
+      _RaiseException: boolean = True): boolean;
 
     /// <summary>
     /// Copies the file Source to Dest using the Windows CopyFile function.
@@ -437,8 +437,8 @@ type
     /// @returns true, if the file could be copied, false otherwise.
     /// @raises  EOSError if an error occurs and cfwRaiseException was passed
     /// </summary>
-    class function CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = true;
-      _RaiseException: boolean = true; _ForceOverwrite: boolean = false): boolean; overload;
+    class function CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = True;
+      _RaiseException: boolean = True; _ForceOverwrite: boolean = False): boolean; overload;
 
     /// <summary>
     /// Copies the file Source to Dest using the Windows CopyFile function.
@@ -521,7 +521,7 @@ type
     /// @returns true, if the directory was created
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
-    class function CreateDir(const _DirectoryName: string; _RaiseException: boolean = true): boolean;
+    class function CreateDir(const _DirectoryName: string; _RaiseException: boolean = True): boolean;
 
     /// <summary>
     /// Creates a new directory, including the creation of parent directories as needed.
@@ -530,7 +530,7 @@ type
     /// @returns true, if the directory was created
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
-    class function ForceDir(const _DirectoryPath: string; _RaiseException: boolean = true): boolean;
+    class function ForceDir(const _DirectoryPath: string; _RaiseException: boolean = True): boolean;
 
     /// <summary>
     /// Sets a file's readonly flag
@@ -539,7 +539,7 @@ type
     /// @returns true, if the readonly flag has been changed
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
-    class function SetReadonly(const _Filename: string; _Set: boolean; _RaiseException: boolean = true): boolean;
+    class function SetReadonly(const _Filename: string; _Set: boolean; _RaiseException: boolean = True): boolean;
 
     /// <summary>
     /// Deletes the file using the SysUtils.DeleteFile function.
@@ -554,8 +554,8 @@ type
     /// @returns true, if the file could be deleted, false otherwise.
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
-    class function DeleteFile(const _Filename: string; _RaiseException: boolean = true;
-      _Force: boolean = false): boolean;
+    class function DeleteFile(const _Filename: string; _RaiseException: boolean = True;
+      _Force: boolean = False): boolean;
 
     /// <summary>
     /// Deletes all files in a directory matching a given filemask (non-recursive)
@@ -577,11 +577,11 @@ type
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
     class function DeleteMatchingFiles(const _Dir, _Mask: string;
-      _RaiseException: boolean = true; _Force: boolean = false): integer; overload;
+      _RaiseException: boolean = True; _Force: boolean = False): integer; overload;
     class function DeleteMatchingFiles(const _Dir, _Mask: string; _ExceptMask: string = '';
-      _RaiseException: boolean = true; _Force: boolean = false): integer; overload; deprecated;
+      _RaiseException: boolean = True; _Force: boolean = False): integer; overload; deprecated;
     class function DeleteMatchingFiles(const _Dir, _Mask: string; const _ExceptMasks: array of string;
-      _RaiseException: boolean = true; _Force: boolean = false): integer; overload;
+      _RaiseException: boolean = True; _Force: boolean = False): integer; overload;
 
     ///<summary>
     /// Gets a list of directories matching the given mask.
@@ -593,7 +593,7 @@ type
     ///                    the full paths.
     /// @returns the number of matching directories
     ///</summary>
-    class function FindMatchingDirs(const _Mask: string; _sl: TStrings; _IncludePath: boolean = false): integer;
+    class function FindMatchingDirs(const _Mask: string; _sl: TStrings; _IncludePath: boolean = False): integer;
 
     ///<summary>
     /// Gets a list of files matching the given mask. Only regular files will be found, no
@@ -607,7 +607,7 @@ type
     ///                    the full paths.
     /// @returns the number of matching files
     ///</summary>
-    class function FindMatchingFiles(const _Mask: string; _sl: TStrings; _IncludePath: boolean = false): integer;
+    class function FindMatchingFiles(const _Mask: string; _sl: TStrings; _IncludePath: boolean = False): integer;
 
     /// <summary>
     /// tries to find a matching file
@@ -616,19 +616,20 @@ type
     /// @returns mfNotFound, if no file was found, or mfDirectory, mfFile or mfSpecial
     ///          describing the type of the file which has been found
     /// </summary>
-    class function FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult;
+    class function FindMatchingFile(const _Mask: string; out _Filename: string): TMatchingFileResult; overload;
+    class function FindMatchingFile(const _Mask: string): TMatchingFileResult; overload;
 
     ///<summary>
     /// Returns true, if the given file exists. Note that wildcards are not supported! If you
     /// need wildcards, use FindMatchingFile.
     /// @param RaiseException determines whether an exception should be raised if the file does not exist
     /// @raises Exception if the file does not exist and RaiseException is true
-    class function FileExists(const _Filename: string; _RaiseException: boolean = false): boolean;
+    class function FileExists(const _Filename: string; _RaiseException: boolean = False): boolean;
 
     ///<summary>
     /// @param RaiseException determines whether an exception should be raised if the directory does not exist
     /// @raises Exception if the directory does not exist and RaiseException is true
-    class function DirExists(const _DirName: string; _RaiseException: boolean = false): boolean;
+    class function DirExists(const _DirName: string; _RaiseException: boolean = False): boolean;
 
     /// <summary>
     /// deletes an empty directory using the SysUtils function RemoveDir
@@ -644,15 +645,15 @@ type
     /// @returns true, if the directory could be deleted, false otherwise.
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
-    class function RemoveDir(const _Dirname: string; _RaiseException: boolean = true;
-      _Force: boolean = false): boolean;
+    class function RemoveDir(const _Dirname: string; _RaiseException: boolean = True;
+      _Force: boolean = False): boolean;
 
     /// <summary>
     /// function is deprecated, use DelDirTree instead!
     /// Note the different order of parameters of the new function!
     /// </summary>
-    class function DelTree(const _Dirname: string; _Force: boolean = false;
-      _RaiseException: boolean = true): boolean; deprecated;
+    class function DelTree(const _Dirname: string; _Force: boolean = False;
+      _RaiseException: boolean = True): boolean; deprecated;
     /// <summary>
     /// Deletes a directory with all files and subdirectories.
     /// Note: This new function has a different order of parameters than
@@ -666,8 +667,8 @@ type
     /// @returns true, if the directory could be deleted, false otherwise.
     /// @raises EOSError if there was an error and RaiseException was true
     /// </summary>
-    class function DelDirTree(const _Dirname: string; _RaiseException: boolean = true;
-      _Force: boolean = false): boolean;
+    class function DelDirTree(const _Dirname: string; _RaiseException: boolean = True;
+      _Force: boolean = False): boolean;
 
     /// <summary>
     /// reads a text file and returns its content as a string
@@ -684,7 +685,7 @@ type
     ///        the default is true, but you might not want that
     /// @returns true, if the string is a valid filename, false otherwise
     /// </summary>
-    class function IsValidFilename(const _s: string; _AllowDot: boolean = true): boolean; overload;
+    class function IsValidFilename(const _s: string; _AllowDot: boolean = True): boolean; overload;
     /// <summary>
     /// checks whether the given string is a valid filename (without path), that is
     /// does not contain one of the characters defined in INVALID_FILENAME_CHARS and
@@ -695,7 +696,7 @@ type
     ///        the default is true, but you might not want that
     /// @returns true, if the string is a valid filename, false otherwise
     /// </summary>
-    class function IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean; overload;
+    class function IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = True): boolean; overload;
 
     class function ContainsWildcard(const _Mask: string): boolean;
 
@@ -793,11 +794,11 @@ type
     /// <summary>
     /// should the resulting filename contain a number?
     /// </summary>
-    property ResultContainsNumber: boolean read FResultContainsNumber write FResultContainsNumber default false;
+    property ResultContainsNumber: boolean read FResultContainsNumber write FResultContainsNumber default False;
     /// <summary>
     /// does the oldest file have the highest number?
     /// </summary>
-    property OldestIsHighest: boolean read FOldestIsHighest write FOldestIsHighest default true;
+    property OldestIsHighest: boolean read FOldestIsHighest write FOldestIsHighest default True;
     property PrependZeros: integer read FPrependZeros write FPrependZeros default 0;
     /// <summary>
     /// allows read access to the file's base name as passed to the constructor
@@ -863,7 +864,7 @@ end;
 
 class function TSimpleDirEnumerator.Execute(const _Mask: string; _List: TStrings;
   _MayHaveAttr: TFileAttributeSet = [dfaHidden, dfaSysFile, dfaVolumeID, dfaDirectory, dfaArchive];
-  _IncludePath: boolean = false): integer;
+  _IncludePath: boolean = False): integer;
 var
   enum: TSimpleDirEnumerator;
 begin
@@ -875,7 +876,7 @@ begin
   end;
 end;
 
-function TSimpleDirEnumerator.FindAll(_List: TStrings = nil; _IncludePath: boolean = false): integer;
+function TSimpleDirEnumerator.FindAll(_List: TStrings = nil; _IncludePath: boolean = False): integer;
 var
   s: string;
   Path: string;
@@ -899,10 +900,10 @@ var
 
   function AttrOk(_EnumAttr: TFileAttributes; _SysAttr: integer): boolean;
   begin
-    Result := true;
+    Result := True;
     if _EnumAttr in FMustHaveAttr then
       if (Attr and _SysAttr) = 0 then
-        Result := false;
+        Result := False;
   end;
 
   procedure CondAddAttr(_EnumAttr: TFileAttributes; _SysAttr: integer);
@@ -925,7 +926,7 @@ begin
       Res := FindFirst(FMask, Attr, FSr);
       Result := (Res = 0);
       if Result then
-        FActive := true;
+        FActive := True;
     end else begin
       Res := SysUtils.FindNext(FSr);
       Result := (Res = 0);
@@ -952,7 +953,7 @@ begin
     Inc(FMatchCount);
     _Filename := sr.Name;
     exit;
-  until false;
+  until False;
 end;
 
 function TSimpleDirEnumerator.FindNext: boolean;
@@ -966,7 +967,7 @@ procedure TSimpleDirEnumerator.Reset;
 begin
   if FActive then
     FindClose(FSr);
-  FActive := false;
+  FActive := False;
 end;
 
 { TFileSystem }
@@ -1050,7 +1051,7 @@ begin
 end;
 
 class function TFileSystem.CreateDir(const _DirectoryName: string;
-  _RaiseException: boolean = true): boolean;
+  _RaiseException: boolean = True): boolean;
 var
   LastError: Cardinal;
 begin
@@ -1077,10 +1078,10 @@ begin
   Pid := GetCurrentProcessId;
   s := itpd(_BaseDir) + _Prefix + '_' + IntToStr(Pid) + '_';
   Counter := 0;
-  Ok := false;
+  Ok := False;
   while not OK do begin
     Result := s + IntToStr(Counter);
-    OK := CreateDir(Result, false);
+    OK := CreateDir(Result, False);
     if not OK then begin
       Inc(Counter);
       if Counter > 1000 then
@@ -1098,11 +1099,11 @@ type
     ///<summary> Path including trailing path delimiter </summary>
     function PathBS: string;
   public
-    constructor Create(const _Path: string; _DeleteOnlyIfEmpty: boolean = false);
+    constructor Create(const _Path: string; _DeleteOnlyIfEmpty: boolean = False);
     destructor Destroy; override;
   end;
 
-class function TFileSystem.CreateUniqueTempDir(_DeleteOnlyIfEmpty: boolean = false; _Prefix: string = 'dz'): IUniqueTempDir;
+class function TFileSystem.CreateUniqueTempDir(_DeleteOnlyIfEmpty: boolean = False; _Prefix: string = 'dz'): IUniqueTempDir;
 var
   s: string;
 begin
@@ -1235,7 +1236,7 @@ begin
   Result := PChar(Result); // truncate at first #0
 end;
 
-class function TFileSystem.MoveFile(const _Source, _Dest: string; _RaiseException: boolean = true): boolean;
+class function TFileSystem.MoveFile(const _Source, _Dest: string; _RaiseException: boolean = True): boolean;
 var
   LastError: Cardinal;
 begin
@@ -1273,7 +1274,7 @@ begin
   end;
 end;
 
-class function TFileSystem.SetReadonly(const _Filename: string; _Set: boolean; _RaiseException: boolean = true): boolean;
+class function TFileSystem.SetReadonly(const _Filename: string; _Set: boolean; _RaiseException: boolean = True): boolean;
 var
   Attr: integer;
   LastError: Cardinal;
@@ -1289,19 +1290,19 @@ begin
       // duplicate % so they get passed through the format function
       RaiseLastOsErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while changing the readonly flag of "%s"'), [_Filename]));
     end;
-    Result := false
+    Result := False
   end else
-    Result := true;
+    Result := True;
 end;
 
-class function TFileSystem.CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = true;
-  _RaiseException: boolean = true; _ForceOverwrite: boolean = false): boolean;
+class function TFileSystem.CopyFile(const _Source, _Dest: string; _FailIfExists: boolean = True;
+  _RaiseException: boolean = True; _ForceOverwrite: boolean = False): boolean;
 var
   LastError: Cardinal;
 begin
   Result := Windows.CopyFile(PChar(_Source), PChar(_Dest), _FailIfExists);
   if not Result and not _FailIfExists and _ForceOverwrite then begin
-    SetReadonly(_Dest, False, false);
+    SetReadonly(_Dest, False, False);
     Result := Windows.CopyFile(PChar(_Source), PChar(_Dest), _FailIfExists);
   end;
   if not Result and _RaiseException then begin
@@ -1323,13 +1324,13 @@ begin
   FilenameOnly := ExtractFileName(_Filename);
   Ext := ExtractFileExt(FilenameOnly);
   Base := ChangeFileExt(FilenameOnly, '');
-  Result := _BackupDir + Base + '_' + ReplaceChars(DateTime2Iso(now, true), ': ', '-_') + Ext;
+  Result := _BackupDir + Base + '_' + ReplaceChars(DateTime2Iso(now, True), ': ', '-_') + Ext;
 end;
 
 class function TFileSystem.BackupFile(const _Filename: string; _BackupDir: string = ''): string;
 begin
   Result := GenerateBackupFilename(_Filename, _BackupDir);
-  CopyFile(_Filename, Result, true);
+  CopyFile(_Filename, Result, True);
 end;
 
 class function TFileSystem.ContainsWildcard(const _Mask: string): boolean;
@@ -1530,8 +1531,8 @@ begin
   end;
 end;
 
-class function TFileSystem.DeleteFile(const _Filename: string; _RaiseException: boolean = true;
-  _Force: boolean = false): boolean;
+class function TFileSystem.DeleteFile(const _Filename: string; _RaiseException: boolean = True;
+  _Force: boolean = False): boolean;
 var
   Attr: integer;
   LastError: Cardinal;
@@ -1574,11 +1575,11 @@ class function TFileSystem.DeleteMatchingFiles(const _Dir, _Mask: string;
     for i := Low(_ExceptMasks) to High(_ExceptMasks) do begin
       Mask := LowerCase(_ExceptMasks[i]);
       if MatchesMask(_s, Mask) then begin
-        Result := true;
+        Result := True;
         exit;
       end;
     end;
-    Result := false;
+    Result := False;
   end;
 
 var
@@ -1605,7 +1606,7 @@ begin
   end;
 end;
 
-class function TFileSystem.FileExists(const _Filename: string; _RaiseException: boolean = false): boolean;
+class function TFileSystem.FileExists(const _Filename: string; _RaiseException: boolean = False): boolean;
 var
   OldErrorMode: Cardinal;
 begin
@@ -1619,7 +1620,7 @@ begin
     raise Exception.CreateFmt(_('File not found: %s'), [_Filename]);
 end;
 
-class function TFileSystem.DirExists(const _DirName: string; _RaiseException: boolean = false): boolean;
+class function TFileSystem.DirExists(const _DirName: string; _RaiseException: boolean = False): boolean;
 var
   OldErrorMode: Cardinal;
 begin
@@ -1634,7 +1635,7 @@ begin
 end;
 
 class function TFileSystem.FindMatchingDirs(const _Mask: string; _sl: TStrings;
-  _IncludePath: boolean = false): integer;
+  _IncludePath: boolean = False): integer;
 var
   enum: TSimpleDirEnumerator;
 begin
@@ -1645,6 +1646,13 @@ begin
   finally
     FreeAndNil(enum);
   end;
+end;
+
+class function TFileSystem.FindMatchingFile(const _Mask: string): TMatchingFileResult;
+var
+  fn: string;
+begin
+  Result := FindMatchingFile(_Mask, fn);
 end;
 
 class function TFileSystem.FindMatchingFiles(const _Mask: string; _sl: TStrings;
@@ -1677,7 +1685,7 @@ begin
     end;
 end;
 
-class function TFileSystem.ForceDir(const _DirectoryPath: string; _RaiseException: boolean = true): boolean;
+class function TFileSystem.ForceDir(const _DirectoryPath: string; _RaiseException: boolean = True): boolean;
 var
   LastError: Cardinal;
 begin
@@ -1688,7 +1696,7 @@ begin
       // ForceDirectories can raise EInOutError if the directory path contains empty parts
       if _RaiseException then
         raise Exception.CreateFmt(_('Error creating directory "%s": %s (%s)'), [_DirectoryPath, e.Message, e.ClassName]);
-      Result := false;
+      Result := False;
       exit;
     end;
   end;
@@ -1699,7 +1707,7 @@ begin
   end;
 end;
 
-class function TFileSystem.RemoveDir(const _Dirname: string; _RaiseException: boolean = true; _Force: boolean = false): boolean;
+class function TFileSystem.RemoveDir(const _Dirname: string; _RaiseException: boolean = True; _Force: boolean = False): boolean;
 var
   Attr: integer;
   LastError: Cardinal;
@@ -1718,7 +1726,7 @@ begin
   end;
 end;
 
-class function TFileSystem.DelTree(const _Dirname: string; _Force: boolean = false; _RaiseException: boolean = true): boolean;
+class function TFileSystem.DelTree(const _Dirname: string; _Force: boolean = False; _RaiseException: boolean = True): boolean;
 begin
   Result := DelDirTree(_Dirname, _RaiseException, _Force);
 end;
@@ -1783,7 +1791,7 @@ begin
   end;
 end;
 
-class function TFileSystem.IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = true): boolean;
+class function TFileSystem.IsValidFilename(const _s: string; out _ErrPos: integer; _AllowDot: boolean = True): boolean;
 var
   i: Integer;
   NotAllowed: TCharSet;
@@ -1812,7 +1820,7 @@ begin
   Result := True;
 end;
 
-class function TFileSystem.IsValidFilename(const _s: string; _AllowDot: boolean = true): boolean;
+class function TFileSystem.IsValidFilename(const _s: string; _AllowDot: boolean = True): boolean;
 var
   ErrPos: integer;
 begin
@@ -1886,8 +1894,8 @@ constructor TFileGenerationHandler.Create(const _BaseName, _Suffix: string);
 begin
   inherited Create;
   FMaxGenerations := 5;
-  FOldestIsHighest := true;
-  FResultContainsNumber := false;
+  FOldestIsHighest := True;
+  FResultContainsNumber := False;
   FPrependZeros := 0;
   FBaseName := _BaseName;
   FSuffix := _Suffix;
@@ -1917,7 +1925,7 @@ function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
       TFileSystem.DeleteFile(dst);
     if FileExists(Result) then begin
       if _KeepOriginal then
-        TFileSystem.CopyFile(Result, dst, true)
+        TFileSystem.CopyFile(Result, dst, True)
       else
         TFileSystem.MoveFile(Result, dst);
     end;
@@ -1954,12 +1962,12 @@ function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
     if not FileExists(Result) then
       exit;
 
-    SlotFound := false;
+    SlotFound := False;
     MaxGen := FMaxGenerations - 1;
     for i := 1 to MaxGen do begin
       dst := GenerateFilename(i);
       if not FileExists(dst) then begin
-        SlotFound := true;
+        SlotFound := True;
         break;
       end;
     end;
@@ -1977,7 +1985,7 @@ function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
     end;
 
     if _KeepOriginal then
-      TFileSystem.CopyFile(Result, dst, true)
+      TFileSystem.CopyFile(Result, dst, True)
     else
       TFileSystem.MoveFile(Result, dst);
   end;
@@ -2000,7 +2008,7 @@ function TFileGenerationHandler.Execute(_KeepOriginal: boolean): string;
     end;
     Result := GenerateFilename(MaxGen);
     if _KeepOriginal then
-      TFileSystem.CopyFile(GenerateFilename(MaxGen - 1), Result, true);
+      TFileSystem.CopyFile(GenerateFilename(MaxGen - 1), Result, True);
   end;
 
 begin
@@ -2125,7 +2133,7 @@ begin
   end;
 end;
 
-procedure TDirectorySync.SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = false);
+procedure TDirectorySync.SyncOneWay(const _SrcDir, _DstDir: string; _FlattenDirHierarchy: boolean = False);
 var
   Filename: string;
   EnumA: TSimpleDirEnumerator;
@@ -2176,7 +2184,7 @@ end;
 
 { TUniqueTempDir }
 
-constructor TUniqueTempDir.Create(const _Path: string; _DeleteOnlyIfEmpty: boolean = false);
+constructor TUniqueTempDir.Create(const _Path: string; _DeleteOnlyIfEmpty: boolean = False);
 begin
   inherited Create;
   FPath := _Path;

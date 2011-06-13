@@ -120,6 +120,7 @@ msgstr "%dh %dm"
 msgid "%dm %ds"
 msgstr "%dm %ds"
 
+# Label: ignore
 #. Seconds only
 #: u_dzConvertUtils.pas:736
 #, object-pascal-format
