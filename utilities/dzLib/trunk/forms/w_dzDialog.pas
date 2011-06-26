@@ -372,6 +372,8 @@ var
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
+    if Assigned(_Owner) and (_Owner is TForm) then
+      frm.Font := TForm(_Owner).Font;
     frm.ShowDetailButton := false;
     frm.SetVisibleButtons(_Buttons);
     frm.SetFocusButton(_FocusButton);
@@ -422,6 +424,8 @@ var
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
+    if Assigned(_Owner) and (_Owner is TForm) then
+      frm.Font := TForm(_Owner).Font;
     if Assigned(_e) then begin
       frm.ExceptionClass := _e.ClassName;
       // frm.ExcptionAddress := ExceptAddr;
