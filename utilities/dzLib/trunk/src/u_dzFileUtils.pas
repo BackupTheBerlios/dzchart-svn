@@ -1037,7 +1037,7 @@ begin
     DriveChar := Char(DriveNum + Ord('a'));
     DriveType := TDriveType(Windows.GetDriveType(PChar(DriveChar + ':\')));
     if not _HdOnly or (DriveType = dtFixed) then begin
-      s := GetVolumeName(DriveChar);
+      s := GetVolumeName(AnsiChar(DriveChar));
       if s <> '' then begin
         _sl.AddObject(s, Pointer(DriveNum));
       end else begin
