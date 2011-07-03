@@ -20,6 +20,8 @@ type
     procedure AssignVariant(_a: Variant);
     function ToVariant: Variant;
     function Dump: string;
+    procedure AssignDate(_Value: TDateTime);
+    procedure AssignTime(_Value: TDateTime);
     class operator Negative(_a: TdzNullableDateTime): TdzNullableDateTime;
     class operator Positive(_a: TdzNullableDateTime): TdzNullableDateTime;
 //    class operator Inc(_a: TdzNullableDateTime): TdzNullableDateTime;
@@ -65,6 +67,26 @@ end;
 function TdzNullableDateTime.IsValid: boolean;
 begin
   Result := Assigned(FIsValid);
+end;
+
+procedure TdzNullableDateTime.AssignDate(_Value: TDateTime);
+begin
+  if IsValid then
+    FValue := TimeOf(FValue)
+  else
+    FValue := 0;
+  ReplaceDate(FValue, _Value);
+  FIsValid := GetNullableTypesFlagInterface;
+end;
+
+procedure TdzNullableDateTime.AssignTime(_Value: TDateTime);
+begin
+  if IsValid then
+    FValue := DateOf(FValue)
+  else
+    FValue := 0;
+  ReplaceTime(FValue, _Value);
+  FIsValid := GetNullableTypesFlagInterface;
 end;
 
 procedure TdzNullableDateTime.AssignVariant(_a: Variant);
