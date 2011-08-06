@@ -43,6 +43,11 @@ uses
   DateUtils,
   u_dzNullableTypesUtils;
 
+function _(const _s: string): string; inline;
+begin
+  Result := dzDGetText(_s, 'dzlib');
+end;
+
 { TdzNullableDuration }
 
 function TdzNullableDuration.Dump: string;

@@ -19,6 +19,8 @@ type
   TForm1 = class(TForm)
     b_Start: TButton;
     lv_Events: TListView;
+    rb_FeiertageNRW: TRadioButton;
+    rb_Example: TRadioButton;
     procedure b_StartClick(Sender: TObject);
   private
   public
@@ -34,25 +36,55 @@ implementation
 uses
   u_dzFileUtils,
   u_dzVclUtils,
-  u_dzICalendar;
+  u_dzNullableDate,
+  u_dzNullableDateTime,
+  u_dzICalendar,
+  u_dzICalParser;
 
 procedure TForm1.b_StartClick(Sender: TObject);
 const
-// IcsFile = 'feiertage_deutschland-2010-2013.ics';
-  IcsFile = 'example.ics';
+  Feiertage = 'feiertage_deutschland-2010-2013.ics';
+  Example = 'example.ics';
 var
   ICal: TdzICalendar;
+  Parser: TDzIcalendarParser;
   i: Integer;
   li: TListItem;
   Event: TdzICalendarEvent;
+  IcsFile: string;
 begin
+  if rb_FeiertageNRW.Checked then
+    IcsFile := Feiertage
+  else
+    IcsFile := Example;
   ICal := TdzICalendar.Create;
   try
-    ICal.LoadFromFile(itpd(TApplication_GetExePath) + IcsFile);
+    Parser := TDzIcalendarParser.Create;
+    try
+      Parser.ICalendar := ICal;
+      Parser.ParseFile(itpd(TApplication_GetExePath) + IcsFile);
+    finally
+      FreeAndNil(Parser);
+    end;
+
+    if rb_FeiertageNRW.Checked then begin
+      for i := ICal.Count - 1 downto 0 do begin
+        Event := ICal[i];
+      // remove years <>2011
+        if Event.DTStart.Date.Year <> 2011 then
+          ICal.Delete(i)
+      // remove holidays that are not valid vor NRW
+        else if Pos('NRW', Event.Description) = 0 then
+          ICal.Delete(i);
+      end;
+    end;
+
+    ICal.Sort;
+
     lv_Events.Items.BeginUpdate;
     try
-      for i := 0 to ICal.EventCount - 1 do begin
-        Event := ICal.Events[i];
+      for i := 0 to ICal.Count - 1 do begin
+        Event := ICal[i];
         li := lv_Events.Items.Add;
         if Event.DTStart.IsValid then
           li.Caption := string(Event.DTStart)

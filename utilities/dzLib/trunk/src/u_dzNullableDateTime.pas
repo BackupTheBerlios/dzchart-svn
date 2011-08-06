@@ -5,7 +5,9 @@ interface
 uses
   SysUtils,
   Variants,
-  u_dzTranslator;
+  u_dzTranslator,
+  u_dzNullableDate,
+  u_dzNullableTime;
 
 type
   TdzNullableDateTime = record
@@ -15,6 +17,8 @@ type
   public
     procedure Invalidate;
     function Value: TDateTime;
+    function Date: TdzNullableDate;
+    function Time: TdzNullableTime;
     function IsValid: boolean; inline;
     function GetValue(out _Value: TDateTime): boolean;
     procedure AssignVariant(_a: Variant);
@@ -42,6 +46,7 @@ type
     class function Compare(_a, _b: TdzNullableDateTime): integer; static;
     class function Invalid: TdzNullableDateTime; static;
     class function FromVariant(_a: Variant): TdzNullableDateTime; static;
+    class function Now: TdzNullableDateTime; static;
   end;
 
 implementation
@@ -110,6 +115,22 @@ begin
   Result := DateUtils.CompareDateTime(_a, _b);
 end;
 
+function TdzNullableDateTime.Date: TdzNullableDate;
+begin
+  if IsValid then
+    Result := Trunc(FValue)
+  else
+    Result.Invalidate;
+end;
+
+function TdzNullableDateTime.Time: TdzNullableTime;
+begin
+  if IsValid then
+    Result := Frac(FValue)
+  else
+    Result.Invalidate;
+end;
+
 function TdzNullableDateTime.Dump: string;
 begin
   if IsValid then
@@ -161,6 +182,11 @@ end;
 class operator TdzNullableDateTime.NotEqual(_a: TdzNullableDateTime; _b: TDateTime): boolean;
 begin
   Result := (DateUtils.CompareDateTime(_a.Value, _b) <> EqualsValue);
+end;
+
+class function TdzNullableDateTime.Now: TdzNullableDateTime;
+begin
+  Result := SysUtils.Now;
 end;
 
 class operator TdzNullableDateTime.GreaterThan(_a: TdzNullableDateTime; _b: TDateTime): boolean;

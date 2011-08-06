@@ -21,7 +21,7 @@ object Form1: TForm1
     Top = 320
     Width = 75
     Height = 25
-    Anchors = [akTop, akRight]
+    Anchors = [akRight, akBottom]
     Caption = 'Start'
     TabOrder = 0
     OnClick = b_StartClick
@@ -30,7 +30,7 @@ object Form1: TForm1
     Left = 8
     Top = 8
     Width = 617
-    Height = 297
+    Height = 305
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <
       item
@@ -57,6 +57,25 @@ object Form1: TForm1
     RowSelect = True
     TabOrder = 1
     ViewStyle = vsReport
-    ExplicitWidth = 521
+  end
+  object rb_FeiertageNRW: TRadioButton
+    Left = 8
+    Top = 320
+    Width = 145
+    Height = 17
+    Anchors = [akLeft, akBottom]
+    Caption = 'Bank Holidays 2011 NRW'
+    Checked = True
+    TabOrder = 2
+    TabStop = True
+  end
+  object rb_Example: TRadioButton
+    Left = 176
+    Top = 320
+    Width = 113
+    Height = 17
+    Anchors = [akLeft, akBottom]
+    Caption = 'Example'
+    TabOrder = 3
   end
 end
