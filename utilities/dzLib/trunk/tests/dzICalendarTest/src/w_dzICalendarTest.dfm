@@ -78,4 +78,12 @@ object Form1: TForm1
     Caption = 'Example'
     TabOrder = 3
   end
+  object rb_Dummzeuch: TRadioButton
+    Left = 304
+    Top = 320
+    Width = 113
+    Height = 17
+    Caption = 'Dummzeuch'
+    TabOrder = 4
+  end
 end

@@ -21,6 +21,7 @@ type
     lv_Events: TListView;
     rb_FeiertageNRW: TRadioButton;
     rb_Example: TRadioButton;
+    rb_Dummzeuch: TRadioButton;
     procedure b_StartClick(Sender: TObject);
   private
   public
@@ -45,6 +46,7 @@ procedure TForm1.b_StartClick(Sender: TObject);
 const
   Feiertage = 'feiertage_deutschland-2010-2013.ics';
   Example = 'example.ics';
+  dummzeuch = 'dummzeuch@gmail.com_dummzeuch@gmail.com.ics';
 var
   ICal: TdzICalendar;
   Parser: TDzIcalendarParser;
@@ -55,8 +57,10 @@ var
 begin
   if rb_FeiertageNRW.Checked then
     IcsFile := Feiertage
+  else if rb_Example.Checked then
+    IcsFile := Example
   else
-    IcsFile := Example;
+    IcsFile := dummzeuch;
   ICal := TdzICalendar.Create;
   try
     Parser := TDzIcalendarParser.Create;
