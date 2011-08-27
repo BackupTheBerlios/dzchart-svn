@@ -343,7 +343,7 @@ var
 begin
   frm := Tf_dzDialog.Create(_Owner);
   try
-    frm.ShowDetailButton := false;
+    frm.ShowDetailButton := False;
     frm.SetVisibleButtons(_Buttons);
     frm.SetFocusButton(_FocusButton);
     Assert(Length(_CustomButtons) = Length(frm.CustomButtonCaptions));
@@ -356,8 +356,8 @@ begin
     frm.OptionDescription := _OptionDesc;
     frm.DialogType := _DialogType;
     frm.GenerateControls;
-	if _Caption <> '' then
-    frm.Caption := _Caption;
+    if _Caption <> '' then
+      frm.Caption := _Caption;
     TForm_CenterOn(frm, _Owner);
     Result := frm.ShowModal;
   finally
@@ -374,7 +374,7 @@ begin
   try
     if Assigned(_Owner) and (_Owner is TForm) then
       frm.Font := TForm(_Owner).Font;
-    frm.ShowDetailButton := false;
+    frm.ShowDetailButton := False;
     frm.SetVisibleButtons(_Buttons);
     frm.SetFocusButton(_FocusButton);
     frm.UserMessage := _Message;
@@ -396,7 +396,7 @@ var
   i: Integer;
 begin
   Result := Tf_dzDialog.Create(_Owner);
-  Result.ShowDetailButton := false;
+  Result.ShowDetailButton := False;
   Result.SetVisibleButtons(_Buttons);
   Assert(Length(_CustomButtons) = Length(Result.CustomButtonCaptions));
   for i := Low(_CustomButtons) to High(_CustomButtons) do
@@ -446,7 +446,7 @@ begin
       end;
 {$ENDIF}
     end else
-      frm.ShowDetailButton := false;
+      frm.ShowDetailButton := False;
     frm.SetVisibleButtons(_Buttons);
     frm.UserMessage := _Message;
     frm.OptionDescription := _OptionDesc;
@@ -478,7 +478,7 @@ begin
   try
     frm.UserMessage := _ErrorMsg;
     frm.Details := _Details;
-    frm.ShowDetailButton := true;
+    frm.ShowDetailButton := True;
     frm.SetVisibleButtons(_Buttons);
     frm.OptionDescription := _OptionDesc;
     frm.GenerateControls;
@@ -522,7 +522,7 @@ begin
   inherited;
   FFocusButton := 0;
   FDialogType := mtError;
-  FShowDetailButton := true;
+  FShowDetailButton := True;
   FDontShowAgainText := _('Do not show again.');
   FCallStack := TStringList.Create;
   try
@@ -603,11 +603,11 @@ var
   FocusButton: TButton;
 begin
   inherited;
-  EnableMenuItem(GetSystemMenu(Handle, LongBool(false)), SC_MAXIMIZE, MF_BYCOMMAND or MF_GRAYED);
+  EnableMenuItem(GetSystemMenu(Handle, LongBool(False)), SC_MAXIMIZE, MF_BYCOMMAND or MF_GRAYED);
   if FUserMessage = '' then
     FUserMessage := Format(_('An error occurred:'#13#10'%s'), [FExceptionMessage]);
   l_Message.Caption := FUserMessage;
-  l_Message.AutoSize := true;
+  l_Message.AutoSize := True;
   if l_Message.Height > im_Icon.Height then
     MinHeight := l_Message.Top + l_Message.Height
   else
@@ -616,11 +616,11 @@ begin
   MinWidth := 250; // 400;
   MinWidth := Max(MinWidth, l_Message.Left + l_Message.Width + 8);
   if FOptionDescription = '' then
-    l_Options.Visible := false
+    l_Options.Visible := False
   else begin
     l_Options.Top := MinHeight;
     l_Options.Caption := FOptionDescription;
-    l_Options.AutoSize := true;
+    l_Options.AutoSize := True;
     MinHeight := MinHeight + l_Options.Height + 8;
     MinWidth := Max(MinWidth, l_Options.Left + l_Options.Width + 8);
   end;
@@ -777,7 +777,7 @@ begin
   Constraints.MaxHeight := 0;
   ClientHeight := p_Top.Height + p_Details.Height;
   Constraints.MinHeight := p_Top.Height + 100 + Height - ClientHeight;
-  p_Details.Visible := true;
+  p_Details.Visible := True;
   p_Details.Align := alClient;
   //  EnableMenuItem(GetSystemMenu(Handle, LongBool(false)), SC_MAXIMIZE, MF_BYCOMMAND or MF_ENABLED);
   //  BorderIcons := BorderIcons - [biMaximize];
@@ -794,11 +794,11 @@ begin
       WindowState := wsNormal;
   end;
   p_Details.Align := alNone;
-  p_Details.Visible := false;
+  p_Details.Visible := False;
   Constraints.MinHeight := p_Top.Height + Height - ClientHeight;
   Constraints.MaxHeight := Self.Height;
   ClientHeight := p_Top.Height;
-  EnableMenuItem(GetSystemMenu(Handle, LongBool(false)), SC_MAXIMIZE, MF_BYCOMMAND or MF_GRAYED);
+  EnableMenuItem(GetSystemMenu(Handle, LongBool(False)), SC_MAXIMIZE, MF_BYCOMMAND or MF_GRAYED);
   //  BorderIcons := BorderIcons - [biMaximize];
 end;
 
