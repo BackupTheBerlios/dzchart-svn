@@ -7,7 +7,7 @@ uses
   dbf;
 
 type
-  TDataSetHelperTdbf = class(TDatasetHelper, IDatasetHelper)
+  TDataSetHelperTdbf = class(TDatasetHelper)
   public
     constructor Create(_Table: TDBF); overload;
   end;
@@ -18,9 +18,7 @@ implementation
 
 constructor TDataSetHelperTdbf.Create(_Table: TDBF);
 begin
-  inherited Create;
-  FDataset := _Table;
-  FTableName := _Table.TableName;
+  inherited Create(_Table, _Table.TableName);
 end;
 
 end.
