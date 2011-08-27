@@ -48,12 +48,15 @@ type
     function LoadSHFolder(var _SHGetFolderPath: TSHGetFolderPath): Integer;
   protected
     FAppHandle: THandle;
-    function GetSpecialFolder(_CSIDL: integer): string;
+    function GetSpecialFolder(_CSIDL: Integer): string;
   public
     ///<summary> Creates a TWindowsShell object,
     ///   @param ApplicationHandle is the application's handle (Application.Handle) </summary>
     constructor Create(_ApplicationHandle: THandle = 0);
     destructor Destroy; override;
+    ///<summary> returns the path to the user's profile folder (c:\documents and settings\<username>) </summary>
+    function GetProfile: string;
+    class function GetProfileDir(_ApplicationHandle: THandle = 0): string;
     ///<summary> returns the path to the 'My Documents' folder </summary>
     function GetMyDocuments: string;
     class function GetMyDocumentsDir(_ApplicationHandle: THandle = 0): string;
@@ -87,9 +90,9 @@ type
     class function GetSystemWindowsDir: string;
 
     // Warning: These functions will display System dialogs if there is a problem!
-    class function CopyDir(const fromDir, toDir: string): boolean;
-    class function DelDir(dir: string): boolean;
-    class function MoveDir(const fromDir, toDir: string): boolean;
+    class function CopyDir(const fromDir, toDir: string): Boolean;
+    class function DelDir(dir: string): Boolean;
+    class function MoveDir(const fromDir, toDir: string): Boolean;
   end;
 
 implementation
@@ -245,6 +248,21 @@ begin
     end;
 end;
 
+function TWindowsShell.GetProfile: string;
+begin
+  Result := GetSpecialFolder(CSIDL_PROFILE);
+end;
+
+class function TWindowsShell.GetProfileDir(_ApplicationHandle: THandle): string;
+begin
+  with TWindowsShell.Create(_ApplicationHandle) do
+    try
+      Result := GetProfile;
+    finally
+      Free;
+    end;
+end;
+
 function TWindowsShell.GetProgramFiles: string;
 begin
   Result := GetSpecialFolder(CSIDL_PROGRAM_FILES);
@@ -330,7 +348,7 @@ begin
   Result := PChar(Result);
 end;
 
-class function TWindowsShell.CopyDir(const fromDir, toDir: string): boolean;
+class function TWindowsShell.CopyDir(const fromDir, toDir: string): Boolean;
 var
   fos: TSHFileOpStruct;
 begin
@@ -342,7 +360,7 @@ begin
   Result := (0 = ShFileOperation(fos));
 end;
 
-class function TWindowsShell.DelDir(dir: string): boolean;
+class function TWindowsShell.DelDir(dir: string): Boolean;
 var
   fos: TSHFileOpStruct;
 begin
@@ -353,7 +371,7 @@ begin
   Result := (0 = ShFileOperation(fos));
 end;
 
-class function TWindowsShell.MoveDir(const fromDir, toDir: string): boolean;
+class function TWindowsShell.MoveDir(const fromDir, toDir: string): Boolean;
 var
   fos: TSHFileOpStruct;
 begin
