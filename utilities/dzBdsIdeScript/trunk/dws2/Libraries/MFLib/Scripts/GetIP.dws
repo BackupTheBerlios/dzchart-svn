@@ -1,1 +1,0 @@
-  PrintLn('Your current IP adress: ' + IPAddress);

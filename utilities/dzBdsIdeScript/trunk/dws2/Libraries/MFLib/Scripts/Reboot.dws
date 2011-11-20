@@ -1,2 +1,0 @@
-if QuestionDlg('Really reboot?') then
-  ExitWindowsEx(EWX_REBOOT);

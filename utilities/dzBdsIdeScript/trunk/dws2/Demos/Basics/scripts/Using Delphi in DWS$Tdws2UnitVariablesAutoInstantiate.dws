@@ -1,9 +1,0 @@
-{
-   Using variables (Tdws2Global) 
-   defined in Tdws2Unit
-
-   Have a look at the definition of OnInstantiate
-   and OnCleanUp 
-}
-
-scriptCode.Add('// comment added by script : '+DateTimeToStr(Now));
